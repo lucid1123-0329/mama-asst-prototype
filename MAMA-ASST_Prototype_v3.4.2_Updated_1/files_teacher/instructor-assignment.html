@@ -516,7 +516,18 @@
       </div>
       
       <div class="flex-1 overflow-y-auto p-5 space-y-6">
-        
+
+        <!-- 빠른 템플릿 -->
+        <div class="mt-4 mb-2">
+          <p class="text-sm font-medium text-text-secondary mb-2">빠른 템플릿</p>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="applyTemplate('daily')" class="px-3 py-1.5 text-xs border border-border-light rounded-full hover:bg-primary-light hover:border-primary hover:text-primary transition-all">📝 일일 복습</button>
+            <button type="button" onclick="applyTemplate('weekly')" class="px-3 py-1.5 text-xs border border-border-light rounded-full hover:bg-primary-light hover:border-primary hover:text-primary transition-all">📚 주간 과제</button>
+            <button type="button" onclick="applyTemplate('workbook')" class="px-3 py-1.5 text-xs border border-border-light rounded-full hover:bg-primary-light hover:border-primary hover:text-primary transition-all">📖 교재 진도</button>
+            <button type="button" onclick="applyTemplate('test')" class="px-3 py-1.5 text-xs border border-border-light rounded-full hover:bg-primary-light hover:border-primary hover:text-primary transition-all">✏️ 시험 대비</button>
+          </div>
+        </div>
+
         <!-- Step 1: Assignment Type -->
         <div>
           <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2">
@@ -1187,7 +1198,22 @@
       closeAssignmentModal();
       showToast('숙제가 배정되었습니다.');
     }
-    
+
+    function applyTemplate(type) {
+      const templates = {
+        daily: { title: '일일 복습 과제', desc: '오늘 배운 내용을 복습하고, 교재 문제를 풀어오세요.' },
+        weekly: { title: '주간 종합 과제', desc: '이번 주 학습 내용을 정리하고, 요약 노트를 작성해오세요.' },
+        workbook: { title: '교재 진도 과제', desc: '교재 p.__ ~ p.__ 문제를 풀어오세요.' },
+        test: { title: '시험 대비 과제', desc: '시험 범위 핵심 개념을 정리하고, 기출문제를 풀어오세요.' }
+      };
+      const t = templates[type];
+      if (!t) return;
+      const titleEl = document.querySelector('#assignmentModal input[placeholder*="제목"], #assignmentModal input[type="text"]');
+      const descEl = document.querySelector('#assignmentModal textarea');
+      if (titleEl) titleEl.value = t.title;
+      if (descEl) descEl.value = t.desc;
+      showToast('템플릿이 적용되었습니다', 'success');
+    }
   </script>
   <script>
     function openMobileMenu() {

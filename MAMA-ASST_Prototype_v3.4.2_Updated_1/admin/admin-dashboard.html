@@ -277,7 +277,34 @@
       
       <!-- Content -->
       <div class="p-4 pb-24 lg:p-6 lg:pb-6 space-y-4 lg:space-y-6">
-        
+
+        <!-- 시작 가이드 배너 -->
+        <div id="welcomeGuide" class="bg-gradient-to-r from-primary to-orange-400 rounded-2xl p-5 lg:p-6 text-white relative overflow-hidden">
+          <button onclick="dismissGuide()" class="absolute top-3 right-3 p-1 hover:bg-white/20 rounded-lg transition-all">
+            <span class="material-icons-round text-sm">close</span>
+          </button>
+          <h3 class="text-lg font-bold mb-2">👋 환영합니다! MAMA-ASST 시작 가이드</h3>
+          <p class="text-sm text-white/90 mb-4">아래 단계를 따라 학원 운영을 시작해보세요.</p>
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <a href="admin-students.html" class="bg-white/15 hover:bg-white/25 rounded-xl p-3 text-center transition-all">
+              <span class="material-icons-round text-2xl mb-1">person_add</span>
+              <p class="text-xs font-medium">1. 학생 등록</p>
+            </a>
+            <a href="admin-classes.html" class="bg-white/15 hover:bg-white/25 rounded-xl p-3 text-center transition-all">
+              <span class="material-icons-round text-2xl mb-1">groups</span>
+              <p class="text-xs font-medium">2. 반 생성</p>
+            </a>
+            <a href="admin-instructors.html" class="bg-white/15 hover:bg-white/25 rounded-xl p-3 text-center transition-all">
+              <span class="material-icons-round text-2xl mb-1">school</span>
+              <p class="text-xs font-medium">3. 강사 배정</p>
+            </a>
+            <a href="admin-settings.html" class="bg-white/15 hover:bg-white/25 rounded-xl p-3 text-center transition-all">
+              <span class="material-icons-round text-2xl mb-1">settings</span>
+              <p class="text-xs font-medium">4. 학원 설정</p>
+            </a>
+          </div>
+        </div>
+
         <!-- Mobile Date -->
         <div class="lg:hidden flex items-center justify-between">
           <span class="text-sm text-text-secondary" id="currentDateMobile">2025년 1월 8일 (수)</span>
@@ -820,6 +847,16 @@
       if (dateMobileEl) dateMobileEl.textContent = dateStr;
     }
     updateDate();
+
+    function dismissGuide() {
+      document.getElementById('welcomeGuide').style.display = 'none';
+      localStorage.setItem('mama_guide_dismissed', 'true');
+    }
+    // 가이드 닫기 상태 복원
+    if (localStorage.getItem('mama_guide_dismissed') === 'true') {
+      const g = document.getElementById('welcomeGuide');
+      if (g) g.style.display = 'none';
+    }
   </script>
   <!-- MAMA-ASST Common Modules -->
   <script src="../assets/js/common.js"></script>
