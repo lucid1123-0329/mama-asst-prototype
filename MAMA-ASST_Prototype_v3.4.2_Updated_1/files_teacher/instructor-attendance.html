@@ -927,12 +927,6 @@
       showToast(`${name} 학생 관련 연락 요청을 관리자에게 보냈습니다.`);
     }
     
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMsg').textContent = msg;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3000);
-    }
   </script>
   <script>
     function openMobileMenu() {

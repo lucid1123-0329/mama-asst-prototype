@@ -1188,12 +1188,6 @@
       showToast('숙제가 배정되었습니다.');
     }
     
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3000);
-    }
   </script>
   <script>
     function openMobileMenu() {

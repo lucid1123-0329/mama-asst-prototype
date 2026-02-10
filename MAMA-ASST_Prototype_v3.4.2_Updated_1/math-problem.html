@@ -461,38 +461,6 @@
       document.getElementById('bonusXPText').textContent = `+${bonus} XP`;
     }
     
-    // Toast notification
-    function showToast(message, type = 'info', duration = 3000) {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      
-      const styles = {
-        info: 'bg-gray-800 text-white',
-        success: 'bg-success text-white',
-        error: 'bg-error text-white',
-        warning: 'bg-math text-gray-900'
-      };
-      const icons = {
-        info: 'info',
-        success: 'check_circle',
-        error: 'error',
-        warning: 'lightbulb'
-      };
-      
-      toast.className = `${styles[type]} px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 mb-2 toast-show pointer-events-auto max-w-xs`;
-      toast.innerHTML = `
-        <span class="material-icons-round text-lg">${icons[type]}</span>
-        <span class="text-sm font-medium">${message}</span>
-      `;
-      
-      container.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.classList.remove('toast-show');
-        toast.classList.add('toast-hide');
-        setTimeout(() => toast.remove(), 300);
-      }, duration);
-    }
     
     // Open direct answer modal
     function openDirectAnswer() {

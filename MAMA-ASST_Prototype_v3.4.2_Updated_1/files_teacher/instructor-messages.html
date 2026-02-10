@@ -466,12 +466,6 @@
     function sendBulk() { closeBulkModal(); showToast('단체 알림이 발송되었습니다.'); }
     function sendReport() { closeReportModal(); showToast('학습 리포트가 발송되었습니다.'); }
     
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMsg').textContent = msg;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3000);
-    }
   </script>
   <!-- MAMA-ASST Common Modules -->
   <script src="../assets/js/common.js"></script>

@@ -870,13 +870,6 @@
       showToast('평가 내역을 내보내는 중...');
     }
     
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3000);
-    }
-    
     // Modal outside click to close
     document.querySelectorAll('.modal-overlay').forEach(modal => {
       modal.addEventListener('click', function(e) {

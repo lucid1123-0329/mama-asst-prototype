@@ -479,14 +479,6 @@
       showToast('확인 완료 처리되었습니다');
     }
     
-    // Toast
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3000);
-    }
-    
     // Mobile Menu
     function openMobileMenu() {
       // Implementation for mobile menu

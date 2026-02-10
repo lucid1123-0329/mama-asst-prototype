@@ -1037,12 +1037,6 @@
       showToast('전체 평가가 저장되었습니다.');
     }
     
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3000);
-    }
   </script>
   <script>
     function openMobileMenu() {

@@ -1024,35 +1024,6 @@
       document.body.style.overflow = '';
     }
     
-    // 토스트 알림
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      const colors = {
-        success: 'bg-success',
-        error: 'bg-error',
-        warning: 'bg-warning',
-        info: 'bg-info'
-      };
-      const icons = {
-        success: 'check_circle',
-        error: 'error',
-        warning: 'warning',
-        info: 'info'
-      };
-      
-      const toast = document.createElement('div');
-      toast.className = `flex items-center gap-3 px-4 py-3 ${colors[type]} text-white rounded-xl shadow-lg slide-in`;
-      toast.innerHTML = `
-        <span class="material-icons-round">${icons[type]}</span>
-        <span class="text-sm font-medium">${message}</span>
-        <button onclick="this.parentElement.remove()" class="ml-2 hover:bg-white/20 rounded p-1">
-          <span class="material-icons-round text-sm">close</span>
-        </button>
-      `;
-      
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 5000);
-    }
     
     // 알림 배너 닫기
     function dismissAlert(btn) {

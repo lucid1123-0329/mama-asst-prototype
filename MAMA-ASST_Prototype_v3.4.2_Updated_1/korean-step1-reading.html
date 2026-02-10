@@ -683,28 +683,6 @@
       }
     });
     
-    // Toast Notification
-    function showToast(message, type = 'info') {
-      // Remove existing toast
-      const existingToast = document.querySelector('.toast-notification');
-      if (existingToast) existingToast.remove();
-      
-      const toast = document.createElement('div');
-      toast.className = `toast-notification fixed bottom-24 lg:bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 ${
-        type === 'success' ? 'bg-success text-white' : 'bg-navy text-white'
-      }`;
-      toast.innerHTML = `<span class="font-medium text-sm">${message}</span>`;
-      document.body.appendChild(toast);
-      
-      // Animate in
-      setTimeout(() => toast.style.opacity = '1', 10);
-      
-      // Remove after 2s
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-      }, 2000);
-    }
   </script>
   
   <!-- MAMA-ASST Common Modules -->

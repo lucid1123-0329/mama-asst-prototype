@@ -1129,13 +1129,6 @@
       }, 1500);
     }
     
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = message;
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 3000);
-    }
-    
     // Checklist 선택 스타일
     document.querySelectorAll('.checklist-item input').forEach(input => {
       input.addEventListener('change', function() {
