@@ -15,7 +15,9 @@
       "Bash(git add:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nchore: 프로젝트 정리 - desktop.ini 삭제, .gitignore 추가, v3.6 Style Variables 보완\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: Shadow 변수 v3.6 스펙 값으로 수정 \\(rgba→HEX, 값 통일\\)\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: common.css rgba\\(\\) 전체 HEX 변환 \\(v3.6 색상 표기 규칙 준수\\)\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: common.css rgba\\(\\) 전체 HEX 변환 \\(v3.6 색상 표기 규칙 준수\\)\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nrefactor: 인라인 showToast 중복 제거 \\(toast.js 모듈 통합\\)\n\n15개 HTML 파일에서 인라인 function showToast 정의를 삭제하고\ncommon.js의 window.showToast 글로벌 함수로 통합\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)"
     ]
   }
 }
