@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>레벨테스트 선택 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .subject-card {
+      transition: all 0.3s ease;
+    }
+    .subject-card:hover {
+      transform: translateY(-4px);
+    }
+    .subject-card.selected {
+      transform: scale(1.02);
+    }
+    
+    @keyframes checkmark {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .checkmark-animate {
+      animation: checkmark 0.3s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased min-h-screen">
+  
+  <!-- Guest Mode Header -->
+  <header class="h-16 bg-navy text-white flex items-center justify-between px-6 sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+        <span class="text-white font-bold text-lg">M</span>
+      </div>
+      <div>
+        <span class="font-bold text-lg">MAMA-ASST</span>
+        <span class="px-2 py-0.5 bg-info/20 text-info text-xs font-bold rounded ml-2">게스트 모드</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-sm text-white/70" id="studentNameDisplay">홍길동 학생</span>
+    </div>
+  </header>
+  
+  <!-- Progress Bar -->
+  <div class="bg-surface border-b border-border-light px-6 py-4">
+    <div class="max-w-3xl mx-auto">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-text-primary">레벨테스트 과목 선택</span>
+        <span class="text-sm text-text-tertiary">3단계 / 4단계</span>
+      </div>
+      <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 75%"></div>
+      </div>
+    </div>
+  </div>
+  
+  <main class="max-w-3xl mx-auto px-6 py-8">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 mx-auto rounded-full bg-primary-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-primary text-4xl">quiz</span>
+      </div>
+      <h1 class="text-2xl font-bold text-text-primary mb-2">레벨테스트</h1>
+      <p class="text-text-secondary">실력을 확인할 과목을 선택해주세요.</p>
+    </div>
+    
+    <!-- Subject Selection -->
+    <div class="space-y-4 mb-8">
+      
+      <!-- Korean -->
+      <label class="block cursor-pointer">
+        <input type="checkbox" name="subjects" value="korean" class="sr-only peer">
+        <div class="subject-card bg-surface rounded-2xl p-6 border-2 border-border-light peer-checked:border-korean peer-checked:bg-korean-light/30 shadow-sm">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl bg-korean-light flex items-center justify-center flex-shrink-0">
+              <span class="material-icons-round text-korean text-3xl">menu_book</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="text-xl font-bold text-text-primary">국어</h3>
+                <span class="px-2 py-0.5 bg-korean/10 text-korean text-xs font-bold rounded">독해력</span>
+              </div>
+              <p class="text-text-secondary">지문 읽기, 어휘력, 문법 등을 평가합니다.</p>
+              <div class="flex items-center gap-4 mt-2 text-sm text-text-tertiary">
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm">quiz</span>
+                  10문항
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm">schedule</span>
+                  약 10분
+                </span>
+              </div>
+            </div>
+            <div class="w-8 h-8 rounded-full border-2 border-border-light flex items-center justify-center peer-checked:bg-korean peer-checked:border-korean transition-all">
+              <span class="material-icons-round text-white text-lg hidden peer-checked:block checkmark-animate">check</span>
+            </div>
+          </div>
+        </div>
+      </label>
+      
+      <!-- English -->
+      <label class="block cursor-pointer">
+        <input type="checkbox" name="subjects" value="english" class="sr-only peer">
+        <div class="subject-card bg-surface rounded-2xl p-6 border-2 border-border-light peer-checked:border-english peer-checked:bg-english-light/30 shadow-sm">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl bg-english-light flex items-center justify-center flex-shrink-0">
+              <span class="material-icons-round text-english text-3xl">translate</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="text-xl font-bold text-text-primary">영어</h3>
+                <span class="px-2 py-0.5 bg-english/10 text-english text-xs font-bold rounded">어휘/문법</span>
+              </div>
+              <p class="text-text-secondary">단어 암기, 문법, 독해력을 평가합니다.</p>
+              <div class="flex items-center gap-4 mt-2 text-sm text-text-tertiary">
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm">quiz</span>
+                  15문항
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm">schedule</span>
+                  약 12분
+                </span>
+              </div>
+            </div>
+            <div class="w-8 h-8 rounded-full border-2 border-border-light flex items-center justify-center peer-checked:bg-english peer-checked:border-english transition-all">
+              <span class="material-icons-round text-white text-lg hidden peer-checked:block checkmark-animate">check</span>
+            </div>
+          </div>
+        </div>
+      </label>
+      
+      <!-- Math -->
+      <label class="block cursor-pointer">
+        <input type="checkbox" name="subjects" value="math" class="sr-only peer">
+        <div class="subject-card bg-surface rounded-2xl p-6 border-2 border-border-light peer-checked:border-math peer-checked:bg-math-light/30 shadow-sm">
+          <div class="flex items-center gap-5">
+            <div class="w-16 h-16 rounded-2xl bg-math-light flex items-center justify-center flex-shrink-0">
+              <span class="material-icons-round text-math text-3xl">calculate</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="text-xl font-bold text-text-primary">수학</h3>
+                <span class="px-2 py-0.5 bg-math/10 text-math text-xs font-bold rounded">연산/사고력</span>
+              </div>
+              <p class="text-text-secondary">연산, 개념 이해, 문제 해결력을 평가합니다.</p>
+              <div class="flex items-center gap-4 mt-2 text-sm text-text-tertiary">
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm">quiz</span>
+                  10문항
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm">schedule</span>
+                  약 15분
+                </span>
+              </div>
+            </div>
+            <div class="w-8 h-8 rounded-full border-2 border-border-light flex items-center justify-center peer-checked:bg-math peer-checked:border-math transition-all">
+              <span class="material-icons-round text-white text-lg hidden peer-checked:block checkmark-animate">check</span>
+            </div>
+          </div>
+        </div>
+      </label>
+      
+    </div>
+    
+    <!-- Selection Summary -->
+    <div id="selectionSummary" class="bg-info-light border border-info/20 rounded-xl p-4 mb-8 hidden">
+      <div class="flex items-center gap-3">
+        <span class="material-icons-round text-info">info</span>
+        <div>
+          <p class="font-medium text-text-primary">선택한 과목: <span id="selectedSubjects">-</span></p>
+          <p class="text-sm text-text-secondary">예상 소요 시간: <span id="estimatedTime">-</span></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex items-center justify-between">
+      <button onclick="callAdmin()" class="px-6 py-3 text-text-secondary hover:bg-gray-100 rounded-xl font-medium transition-colors flex items-center gap-2">
+        <span class="material-icons-round">support_agent</span>
+        관리자 호출
+      </button>
+      <div class="flex items-center gap-3">
+        <button onclick="skipLevelTest()" class="px-6 py-3 border border-border-light text-text-secondary hover:bg-gray-50 rounded-xl font-medium transition-colors">
+          건너뛰기
+        </button>
+        <button id="startBtn" onclick="startLevelTest()" disabled class="px-8 py-4 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold text-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          테스트 시작
+          <span class="material-icons-round">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+    
+  </main>
+  
+  <!-- Admin Call Modal -->
+  <div id="adminModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl p-8 max-w-sm mx-4 text-center">
+      <div class="w-16 h-16 mx-auto rounded-full bg-primary-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-primary text-3xl">support_agent</span>
+      </div>
+      <h2 class="text-xl font-bold text-text-primary mb-2">관리자를 호출했습니다</h2>
+      <p class="text-text-secondary mb-6">잠시만 기다려주세요.</p>
+      <button onclick="closeAdminModal()" class="w-full py-3 bg-primary text-white rounded-xl font-medium">확인</button>
+    </div>
+  </div>
+  
+  <script>
+    const subjectInfo = {
+      korean: { name: '국어', time: 10 },
+      english: { name: '영어', time: 12 },
+      math: { name: '수학', time: 15 }
+    };
+    
+    // Load student name
+    document.addEventListener('DOMContentLoaded', function() {
+      const guestInfo = JSON.parse(sessionStorage.getItem('guestInfo') || '{}');
+      if (guestInfo.studentName) {
+        document.getElementById('studentNameDisplay').textContent = guestInfo.studentName + ' 학생';
+      }
+      
+      // Add change listeners to checkboxes
+      document.querySelectorAll('input[name="subjects"]').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelection);
+      });
+    });
+    
+    function updateSelection() {
+      const selected = Array.from(document.querySelectorAll('input[name="subjects"]:checked')).map(c => c.value);
+      const summary = document.getElementById('selectionSummary');
+      const startBtn = document.getElementById('startBtn');
+      
+      if (selected.length > 0) {
+        summary.classList.remove('hidden');
+        startBtn.disabled = false;
+        
+        const names = selected.map(s => subjectInfo[s].name).join(', ');
+        const totalTime = selected.reduce((sum, s) => sum + subjectInfo[s].time, 0);
+        
+        document.getElementById('selectedSubjects').textContent = names;
+        document.getElementById('estimatedTime').textContent = `약 ${totalTime}분`;
+      } else {
+        summary.classList.add('hidden');
+        startBtn.disabled = true;
+      }
+      
+      // Update card check icons
+      document.querySelectorAll('input[name="subjects"]').forEach(checkbox => {
+        const card = checkbox.closest('label').querySelector('.subject-card');
+        const checkIcon = card.querySelector('.material-icons-round');
+        if (checkbox.checked) {
+          card.classList.add('selected');
+          checkIcon.classList.remove('hidden');
+        } else {
+          card.classList.remove('selected');
+          checkIcon.classList.add('hidden');
+        }
+      });
+    }
+    
+    function startLevelTest() {
+      const selected = Array.from(document.querySelectorAll('input[name="subjects"]:checked')).map(c => c.value);
+      sessionStorage.setItem('selectedLevelTests', JSON.stringify(selected));
+      sessionStorage.setItem('currentLevelTestIndex', '0');
+      window.location.href = 'guest-level-test.html';
+    }
+    
+    function skipLevelTest() {
+      if (confirm('레벨테스트를 건너뛰시겠습니까?')) {
+        window.location.href = 'guest-complete.html';
+      }
+    }
+    
+    function callAdmin() {
+      document.getElementById('adminModal').classList.remove('hidden');
+    }
+    
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.add('hidden');
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

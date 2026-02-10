@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>대시보드 | MAMA-ASST 강사</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%); color: white; }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+
+    /* Bottom Tab Bar */
+    .bottom-tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: #fff; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; z-index: 50; }
+    @supports (padding-bottom: env(safe-area-inset-bottom)) { .bottom-tab-bar { padding-bottom: env(safe-area-inset-bottom); } }
+    @media (min-width: 1024px) { .bottom-tab-bar { display: none; } }
+    .bottom-tab-bar__item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 12px; color: #9CA3AF; text-decoration: none; transition: color 0.2s; position: relative; -webkit-tap-highlight-color: transparent; }
+    .bottom-tab-bar__item:hover { color: #FF6D4D; }
+    .bottom-tab-bar__item--active, .bottom-tab-bar__item--active:hover { color: #FF6D4D; }
+    .bottom-tab-bar__item--active .material-icons-round { color: #FF6D4D; }
+    .bottom-tab-bar__label { font-size: 10px; font-weight: 500; line-height: 1; }
+    .bottom-tab-bar__badge { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: #EF4444; border-radius: 50%; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-navy text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-white/60">강사용</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span>
+          <span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span>
+          <span class="font-medium">시간표</span>
+        </a>
+        <a href="instructor-briefing.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">campaign</span>
+          <span class="font-medium">학원 브리핑</span>
+          <span class="ml-auto px-2 py-0.5 bg-error text-white text-xs rounded-full">2</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-navy text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="font-bold text-lg">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span>
+          <span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span>
+          <span class="font-medium">시간표</span>
+        </a>
+        <a href="instructor-briefing.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">campaign</span>
+          <span class="font-medium">학원 브리핑</span>
+          <span class="ml-auto px-2 py-0.5 bg-error text-white text-xs rounded-full">2</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64 pb-20 lg:pb-0">
+      
+      <!-- Mobile Header -->
+      <header class="lg:hidden h-14 bg-navy text-white flex items-center justify-between px-4 sticky top-0 z-30">
+        <button onclick="openMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">menu</span>
+        </button>
+        <h1 class="font-bold">대시보드</h1>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-sm">김</div>
+      </header>
+      
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-30">
+        <div>
+          <h1 class="text-xl font-bold text-text-primary">대시보드</h1>
+          <p class="text-sm text-text-tertiary">오늘의 수업 현황을 확인하세요</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-text-secondary">2025년 1월 8일 (수)</span>
+          <button class="p-2 hover:bg-gray-100 rounded-xl relative">
+            <span class="material-icons-round text-text-tertiary">notifications</span>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-4 lg:space-y-6">
+        
+        <!-- Mobile Date -->
+        <div class="lg:hidden flex items-center justify-between">
+          <span class="text-sm text-text-secondary">2025년 1월 8일 (수)</span>
+          <button class="p-2 hover:bg-gray-100 rounded-xl relative">
+            <span class="material-icons-round text-text-tertiary">notifications</span>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+          </button>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+          <div class="bg-surface rounded-xl lg:rounded-2xl border border-border-light p-3 lg:p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xl lg:text-2xl font-bold text-text-primary">3</p>
+                <p class="text-xs lg:text-sm text-text-tertiary">오늘 수업</p>
+              </div>
+              <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-info-light flex items-center justify-center">
+                <span class="material-icons-round text-info text-xl lg:text-2xl">school</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-xl lg:rounded-2xl border border-border-light p-3 lg:p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xl lg:text-2xl font-bold text-text-primary">36</p>
+                <p class="text-xs lg:text-sm text-text-tertiary">담당 학생</p>
+              </div>
+              <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-success-light flex items-center justify-center">
+                <span class="material-icons-round text-success text-xl lg:text-2xl">groups</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-xl lg:rounded-2xl border border-border-light p-3 lg:p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xl lg:text-2xl font-bold text-warning">5</p>
+                <p class="text-xs lg:text-sm text-text-tertiary">미완료 평가</p>
+              </div>
+              <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-warning-light flex items-center justify-center">
+                <span class="material-icons-round text-warning text-xl lg:text-2xl">rate_review</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-xl lg:rounded-2xl border border-border-light p-3 lg:p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xl lg:text-2xl font-bold text-error">2</p>
+                <p class="text-xs lg:text-sm text-text-tertiary">결석</p>
+              </div>
+              <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-error-light flex items-center justify-center">
+                <span class="material-icons-round text-error text-xl lg:text-2xl">person_off</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Today's Classes -->
+        <div class="bg-surface rounded-xl lg:rounded-2xl border border-border-light overflow-hidden">
+          <div class="p-4 lg:p-5 border-b border-border-light">
+            <h2 class="font-bold text-text-primary flex items-center gap-2">
+              <span class="material-icons-round text-primary">today</span>
+              오늘의 수업
+            </h2>
+          </div>
+          <div class="divide-y divide-border-light">
+            <div class="p-4 hover:bg-gray-50">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-korean flex items-center justify-center">
+                    <span class="material-icons-round text-white">menu_book</span>
+                  </div>
+                  <div>
+                    <p class="font-bold text-text-primary">중2A반 국어</p>
+                    <p class="text-xs lg:text-sm text-text-tertiary">14:00~15:30 · 8명</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                  <span class="px-2 py-1 bg-success-light text-success text-xs font-medium rounded-lg">완료</span>
+                  <span class="text-xs text-text-tertiary hidden sm:block">출석 7 / 결석 1</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-4 hover:bg-gray-50 bg-primary-light/30">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-math flex items-center justify-center">
+                    <span class="material-icons-round text-white">calculate</span>
+                  </div>
+                  <div>
+                    <p class="font-bold text-text-primary flex items-center gap-2">
+                      고1B반 수학
+                      <span class="px-2 py-0.5 bg-primary text-white text-xs rounded-full animate-pulse">진행중</span>
+                    </p>
+                    <p class="text-xs lg:text-sm text-text-tertiary">17:00~18:30 · 10명</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                  <a href="instructor-attendance.html" class="text-primary text-sm hover:underline">출결 확인</a>
+                </div>
+              </div>
+            </div>
+            <div class="p-4 hover:bg-gray-50">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-korean flex items-center justify-center">
+                    <span class="material-icons-round text-white">menu_book</span>
+                  </div>
+                  <div>
+                    <p class="font-bold text-text-primary">고2A반 국어</p>
+                    <p class="text-xs lg:text-sm text-text-tertiary">20:00~21:30 · 8명</p>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                  <span class="px-2 py-1 bg-gray-100 text-text-tertiary text-xs font-medium rounded-lg">예정</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Actions & Alerts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+          <div class="bg-surface rounded-xl lg:rounded-2xl border border-border-light overflow-hidden">
+            <div class="p-4 lg:p-5 border-b border-border-light">
+              <h2 class="font-bold text-text-primary flex items-center gap-2">
+                <span class="material-icons-round text-primary">bolt</span>
+                빠른 작업
+              </h2>
+            </div>
+            <div class="p-4 grid grid-cols-2 gap-3">
+              <a href="instructor-evaluation.html" class="p-3 lg:p-4 bg-gray-50 rounded-xl hover:bg-gray-100 text-center">
+                <span class="material-icons-round text-xl lg:text-2xl text-primary mb-1 lg:mb-2">rate_review</span>
+                <p class="text-xs lg:text-sm font-medium text-text-primary">일일평가</p>
+                <p class="text-xs text-warning">5명 미완료</p>
+              </a>
+              <a href="instructor-attendance.html" class="p-3 lg:p-4 bg-gray-50 rounded-xl hover:bg-gray-100 text-center">
+                <span class="material-icons-round text-xl lg:text-2xl text-success mb-1 lg:mb-2">fact_check</span>
+                <p class="text-xs lg:text-sm font-medium text-text-primary">출결 확인</p>
+              </a>
+              <a href="instructor-assignment.html" class="p-3 lg:p-4 bg-gray-50 rounded-xl hover:bg-gray-100 text-center">
+                <span class="material-icons-round text-xl lg:text-2xl text-info mb-1 lg:mb-2">assignment</span>
+                <p class="text-xs lg:text-sm font-medium text-text-primary">숙제 배정</p>
+              </a>
+              <a href="instructor-observation.html" class="p-3 lg:p-4 bg-gray-50 rounded-xl hover:bg-gray-100 text-center">
+                <span class="material-icons-round text-xl lg:text-2xl text-purple-500 mb-1 lg:mb-2">visibility</span>
+                <p class="text-xs lg:text-sm font-medium text-text-primary">관찰 입력</p>
+                <p class="text-xs text-error">3명 마감임박</p>
+              </a>
+            </div>
+          </div>
+          
+          <div class="bg-surface rounded-xl lg:rounded-2xl border border-border-light overflow-hidden">
+            <div class="p-4 lg:p-5 border-b border-border-light">
+              <h2 class="font-bold text-text-primary flex items-center gap-2">
+                <span class="material-icons-round text-error">warning</span>
+                주의 필요 학생
+              </h2>
+            </div>
+            <div class="divide-y divide-border-light">
+              <div class="p-3 lg:p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-gradient-to-br from-error to-red-400 flex items-center justify-center text-white font-bold text-sm">정</div>
+                  <div>
+                    <p class="font-medium text-text-primary text-sm">정수현</p>
+                    <p class="text-xs text-error">결석 · 병결</p>
+                  </div>
+                </div>
+                <span class="text-xs text-text-tertiary">중2A반</span>
+              </div>
+              <div class="p-3 lg:p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-gradient-to-br from-warning to-orange-400 flex items-center justify-center text-white font-bold text-sm">박</div>
+                  <div>
+                    <p class="font-medium text-text-primary text-sm">박민수</p>
+                    <p class="text-xs text-warning">정서조절 42점</p>
+                  </div>
+                </div>
+                <a href="instructor-student-detail.html" class="text-xs text-primary">상세</a>
+              </div>
+              <div class="p-3 lg:p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">오</div>
+                  <div>
+                    <p class="font-medium text-text-primary text-sm">오민재</p>
+                    <p class="text-xs text-purple-600">관찰 마감 D-2</p>
+                  </div>
+                </div>
+                <a href="instructor-observation.html" class="text-xs text-primary">입력</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <!-- Mobile Bottom Tab Bar -->
+    <nav class="bottom-tab-bar">
+      <a href="instructor-dashboard.html" class="bottom-tab-bar__item bottom-tab-bar__item--active">
+        <span class="material-icons-round">dashboard</span>
+        <span class="bottom-tab-bar__label">홈</span>
+      </a>
+      <a href="instructor-students.html" class="bottom-tab-bar__item">
+        <span class="material-icons-round">groups</span>
+        <span class="bottom-tab-bar__label">학생</span>
+      </a>
+      <a href="instructor-evaluation.html" class="bottom-tab-bar__item">
+        <span class="material-icons-round">rate_review</span>
+        <span class="bottom-tab-bar__label">평가</span>
+        <span class="bottom-tab-bar__badge"></span>
+      </a>
+      <a href="instructor-consultation.html" class="bottom-tab-bar__item">
+        <span class="material-icons-round">psychology</span>
+        <span class="bottom-tab-bar__label">상담</span>
+      </a>
+      <a href="instructor-briefing.html" class="bottom-tab-bar__item">
+        <span class="material-icons-round">summarize</span>
+        <span class="bottom-tab-bar__label">브리핑</span>
+      </a>
+    </nav>
+  </div>
+  
+  <script>
+    function openMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.getElementById('mobileMenu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학습 리포트 | MAMA-ASST 학부모</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            parent: '#8B5CF6',
+            'parent-light': '#EDE9FE',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%); color: white; }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .bottom-tab.active { color: #8B5CF6; }
+    .report-card { transition: all 0.2s ease; }
+    .report-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .period-toggle button { transition: all 0.2s ease; }
+    .period-toggle button.active { background: #8B5CF6; color: white; }
+    .progress-bar { height: 8px; border-radius: 9999px; overflow: hidden; background: #E5E7EB; }
+    .progress-bar__fill { height: 100%; border-radius: 9999px; transition: width 0.6s ease; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased pb-20 lg:pb-0">
+
+  <!-- Mobile Menu Overlay -->
+  <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+
+  <!-- Mobile Slide Menu -->
+  <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-navy z-50 lg:hidden flex flex-col">
+    <div class="p-5 border-b border-white/10 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-parent rounded-xl flex items-center justify-center">
+          <span class="text-white font-bold text-lg">M</span>
+        </div>
+        <span class="text-white font-bold text-lg">MAMA-ASST</span>
+      </div>
+      <button onclick="closeMobileMenu()" class="text-white p-2">
+        <span class="material-icons-round">close</span>
+      </button>
+    </div>
+    <div class="p-4 border-b border-white/10">
+      <label class="text-xs text-white/50 mb-2 block">자녀 선택</label>
+      <select class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white appearance-none cursor-pointer">
+        <option>김지민 (중2)</option>
+        <option>김서연 (초5)</option>
+      </select>
+    </div>
+    <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+      <a href="parent-dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10">
+        <span class="material-icons-round text-xl">home</span><span class="font-medium">홈</span>
+      </a>
+      <a href="parent-child-status.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10">
+        <span class="material-icons-round text-xl">person</span><span class="font-medium">자녀 현황</span>
+      </a>
+      <a href="parent-report.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/20 text-white">
+        <span class="material-icons-round text-xl">assessment</span><span class="font-medium">학습 리포트</span>
+      </a>
+      <a href="parent-attendance.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10">
+        <span class="material-icons-round text-xl">schedule</span><span class="font-medium">출결 확인</span>
+      </a>
+      <a href="parent-payment.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10">
+        <span class="material-icons-round text-xl">payments</span><span class="font-medium">결제</span>
+      </a>
+      <a href="parent-settings.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10">
+        <span class="material-icons-round text-xl">settings</span><span class="font-medium">설정</span>
+      </a>
+    </nav>
+    <div class="p-4 border-t border-white/10">
+      <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 text-sm">
+        <span class="material-icons-round text-sm">logout</span><span>로그아웃</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="flex min-h-screen">
+
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-navy text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-parent rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-parent-light">학부모</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 border-b border-white/10">
+        <label class="text-xs text-white/50 mb-2 block">자녀 선택</label>
+        <div class="relative">
+          <select class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white appearance-none cursor-pointer">
+            <option value="1">김지민 (중2)</option>
+            <option value="2">김서연 (초5)</option>
+          </select>
+          <span class="material-icons-round absolute right-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none">expand_more</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="parent-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">home</span>
+          <span class="font-medium">홈</span>
+        </a>
+        <a href="parent-child-status.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">person</span>
+          <span class="font-medium">자녀 현황</span>
+        </a>
+        <a href="parent-report.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">학습 리포트</span>
+        </a>
+        <a href="parent-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">schedule</span>
+          <span class="font-medium">출결 확인</span>
+        </a>
+        <a href="parent-payment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">payments</span>
+          <span class="font-medium">결제</span>
+        </a>
+        <a href="parent-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">settings</span>
+          <span class="font-medium">설정</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64">
+      
+      <!-- Top Header -->
+      <header class="h-16 bg-surface border-b border-border-light flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+          <button onclick="openMobileMenu()" class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+            <span class="material-icons-round">menu</span>
+          </button>
+          <h1 class="text-lg font-bold text-navy">학습 리포트</h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <select class="lg:hidden text-sm border border-border-light rounded-lg px-3 py-2">
+            <option>김지민 (중2)</option>
+            <option>김서연 (초5)</option>
+          </select>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-6">
+        
+        <!-- Filter & Period Toggle -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-3">
+            <select class="text-sm border border-border-light rounded-xl px-4 py-2.5 bg-surface">
+              <option>전체 리포트</option>
+              <option>상담 리포트</option>
+              <option>성향검사 리포트</option>
+              <option>월간 리포트</option>
+            </select>
+            <select class="text-sm border border-border-light rounded-xl px-4 py-2.5 bg-surface">
+              <option>최신순</option>
+              <option>오래된순</option>
+            </select>
+          </div>
+          <div class="period-toggle flex bg-gray-100 rounded-xl p-1">
+            <button onclick="switchPeriod('weekly')" class="active px-4 py-2 rounded-lg text-sm font-medium">주간</button>
+            <button onclick="switchPeriod('monthly')" class="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary">월간</button>
+          </div>
+        </div>
+
+        <!-- Learning Summary Section -->
+        <div class="space-y-4">
+
+          <!-- AI Comment -->
+          <div class="flex items-start gap-3 bg-parent-light rounded-xl p-4">
+            <span class="material-icons-round text-parent text-2xl flex-shrink-0">smart_toy</span>
+            <div>
+              <p class="text-sm font-medium text-parent mb-1">AI 학습 분석</p>
+              <p id="aiComment" class="text-sm text-text-primary leading-relaxed">이번 주 국어 독해력이 향상되고 있어요. 영어 발화 정확도도 꾸준히 좋아지고 있습니다. 수학 기초 연산에 더 집중하면 좋겠습니다.</p>
+            </div>
+          </div>
+
+          <!-- Subject Progress Bars -->
+          <div class="bg-surface rounded-xl border border-border-light p-4 lg:p-5">
+            <h3 class="font-bold text-navy text-sm mb-4">과목별 학습 진행률</h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="flex items-center gap-2 text-sm font-medium text-korean">
+                    <span class="w-6 h-6 rounded bg-korean-light flex items-center justify-center"><span class="material-icons-round text-korean text-sm">menu_book</span></span>
+                    국어
+                  </span>
+                  <span class="text-sm font-bold text-korean">85%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-bar__fill" style="width:85%; background:#4285F4;"></div></div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="flex items-center gap-2 text-sm font-medium text-english">
+                    <span class="w-6 h-6 rounded bg-english-light flex items-center justify-center"><span class="material-icons-round text-english text-sm">translate</span></span>
+                    영어
+                  </span>
+                  <span class="text-sm font-bold text-english">92%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-bar__fill" style="width:92%; background:#34A853;"></div></div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="flex items-center gap-2 text-sm font-medium" style="color:#FBBC05;">
+                    <span class="w-6 h-6 rounded bg-math-light flex items-center justify-center"><span class="material-icons-round text-sm" style="color:#FBBC05;">calculate</span></span>
+                    수학
+                  </span>
+                  <span class="text-sm font-bold" style="color:#FBBC05;">78%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-bar__fill" style="width:78%; background:#FBBC05;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="grid lg:grid-cols-2 gap-4">
+            <!-- Weekly XP Line Chart -->
+            <div class="bg-surface rounded-xl border border-border-light p-4 lg:p-5">
+              <h3 class="font-bold text-navy text-sm mb-3" id="xpChartTitle">주간 XP 추이</h3>
+              <div class="h-48">
+                <canvas id="xpChart"></canvas>
+              </div>
+            </div>
+            <!-- Attendance Donut Chart -->
+            <div class="bg-surface rounded-xl border border-border-light p-4 lg:p-5">
+              <h3 class="font-bold text-navy text-sm mb-3">출석 현황</h3>
+              <div class="flex items-center gap-6">
+                <div class="h-40 w-40 flex-shrink-0">
+                  <canvas id="attendanceChart"></canvas>
+                </div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full" style="background:#22C55E;"></span>
+                    <span class="text-text-secondary">출석</span>
+                    <span class="font-bold text-text-primary ml-auto">18일</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full" style="background:#F59E0B;"></span>
+                    <span class="text-text-secondary">지각</span>
+                    <span class="font-bold text-text-primary ml-auto">2일</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full" style="background:#EF4444;"></span>
+                    <span class="text-text-secondary">결석</span>
+                    <span class="font-bold text-text-primary ml-auto">1일</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Latest Report Highlight -->
+        <div class="bg-gradient-to-br from-parent to-purple-500 rounded-2xl p-6 text-white">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">NEW</span>
+              <h2 class="text-xl font-bold mt-3">2주차 상담 리포트</h2>
+              <p class="text-white/80 text-sm mt-1">2025년 1월 10일 · 명불허전 학원</p>
+            </div>
+            <span class="material-icons-round text-4xl opacity-50">description</span>
+          </div>
+          <p class="text-white/90 text-sm mb-4 line-clamp-2">
+            김지민 학생은 이번 2주간 국어와 수학에서 뛰어난 성과를 보였습니다. 특히 독해력이 15% 향상되었으며, 영어 발화 정확도도 개선되었습니다...
+          </p>
+          <button onclick="openReportModal()" class="px-5 py-2.5 bg-white text-parent font-medium rounded-xl hover:bg-white/90 transition-colors">
+            리포트 확인하기
+          </button>
+        </div>
+        
+        <!-- Report List -->
+        <div class="grid lg:grid-cols-2 gap-4">
+          
+          <!-- Report Card 1 -->
+          <div class="report-card bg-surface rounded-xl border border-border-light overflow-hidden cursor-pointer" onclick="openReportModal()">
+            <div class="p-4 flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-info-light flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-info">psychology</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-2 py-0.5 bg-info-light text-info text-xs font-medium rounded-full">성향검사</span>
+                  <span class="text-xs text-text-tertiary">2025년 1월 8일</span>
+                </div>
+                <h3 class="font-bold text-navy">학습 성향 분석 리포트</h3>
+                <p class="text-sm text-text-secondary mt-1 line-clamp-2">150문항 성향검사 결과와 5대 역량 분석 보고서입니다.</p>
+              </div>
+            </div>
+            <div class="px-4 py-3 bg-gray-50 flex items-center justify-between">
+              <div class="flex items-center gap-4 text-sm">
+                <span class="text-text-secondary">신뢰도: <span class="text-success font-medium">높음</span></span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">chevron_right</span>
+            </div>
+          </div>
+          
+          <!-- Report Card 2 -->
+          <div class="report-card bg-surface rounded-xl border border-border-light overflow-hidden cursor-pointer" onclick="openReportModal()">
+            <div class="p-4 flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-success-light flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-success">chat</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-2 py-0.5 bg-success-light text-success text-xs font-medium rounded-full">상담</span>
+                  <span class="text-xs text-text-tertiary">2024년 12월 27일</span>
+                </div>
+                <h3 class="font-bold text-navy">1주차 상담 리포트</h3>
+                <p class="text-sm text-text-secondary mt-1 line-clamp-2">입학 초기 적응 상담 및 학습 목표 설정 결과입니다.</p>
+              </div>
+            </div>
+            <div class="px-4 py-3 bg-gray-50 flex items-center justify-between">
+              <div class="flex items-center gap-4 text-sm">
+                <span class="text-text-secondary">담당: <span class="text-navy font-medium">김선생님</span></span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">chevron_right</span>
+            </div>
+          </div>
+          
+          <!-- Report Card 3 -->
+          <div class="report-card bg-surface rounded-xl border border-border-light overflow-hidden cursor-pointer" onclick="openReportModal()">
+            <div class="p-4 flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-warning-light flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-warning">calendar_month</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-2 py-0.5 bg-warning-light text-warning text-xs font-medium rounded-full">월간</span>
+                  <span class="text-xs text-text-tertiary">2024년 12월</span>
+                </div>
+                <h3 class="font-bold text-navy">12월 월간 학습 리포트</h3>
+                <p class="text-sm text-text-secondary mt-1 line-clamp-2">12월 한 달간의 학습 성과와 진도 현황 요약입니다.</p>
+              </div>
+            </div>
+            <div class="px-4 py-3 bg-gray-50 flex items-center justify-between">
+              <div class="flex items-center gap-4 text-sm">
+                <span class="text-text-secondary">성장률: <span class="text-success font-medium">+12%</span></span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">chevron_right</span>
+            </div>
+          </div>
+          
+          <!-- Report Card 4 -->
+          <div class="report-card bg-surface rounded-xl border border-border-light overflow-hidden cursor-pointer" onclick="openReportModal()">
+            <div class="p-4 flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-parent-light flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-parent">star</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-2 py-0.5 bg-parent-light text-parent text-xs font-medium rounded-full">입학</span>
+                  <span class="text-xs text-text-tertiary">2024년 12월 15일</span>
+                </div>
+                <h3 class="font-bold text-navy">입학 진단 리포트</h3>
+                <p class="text-sm text-text-secondary mt-1 line-clamp-2">초기 레벨 테스트 및 맞춤형 학습 계획 안내입니다.</p>
+              </div>
+            </div>
+            <div class="px-4 py-3 bg-gray-50 flex items-center justify-between">
+              <div class="flex items-center gap-4 text-sm">
+                <span class="text-text-secondary">진단 완료</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">chevron_right</span>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- Load More -->
+        <div class="text-center">
+          <button class="px-6 py-2.5 text-text-secondary hover:text-parent text-sm font-medium transition-colors">
+            더보기
+            <span class="material-icons-round text-sm align-middle ml-1">expand_more</span>
+          </button>
+        </div>
+        
+      </div>
+      
+    </main>
+    
+  </div>
+  
+  <!-- Report Detail Modal -->
+  <div id="reportModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity">
+    <div class="bg-surface rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      <!-- Modal Header -->
+      <div class="p-4 border-b border-border-light flex items-center justify-between flex-shrink-0">
+        <div>
+          <span class="px-2 py-0.5 bg-parent-light text-parent text-xs font-medium rounded-full">상담 리포트</span>
+          <h2 class="text-lg font-bold text-navy mt-1">2주차 상담 리포트</h2>
+        </div>
+        <button onclick="closeReportModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <!-- Modal Content -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        <!-- Meta Info -->
+        <div class="flex flex-wrap gap-4 text-sm text-text-secondary">
+          <div class="flex items-center gap-2">
+            <span class="material-icons-round text-lg">calendar_today</span>
+            <span>2025년 1월 10일</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-icons-round text-lg">apartment</span>
+            <span>명불허전 학원</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-icons-round text-lg">school</span>
+            <span>김지민 (중2)</span>
+          </div>
+        </div>
+        
+        <!-- Summary Section -->
+        <div class="bg-parent-light rounded-xl p-5">
+          <h3 class="font-bold text-parent mb-3 flex items-center gap-2">
+            <span class="material-icons-round">auto_awesome</span>
+            AI 상담 요약
+          </h3>
+          <p class="text-sm text-text-primary leading-relaxed">
+            김지민 학생은 이번 2주간 <strong>국어 독해력에서 눈에 띄는 성장</strong>을 보였습니다. 
+            5단계 학습 완료율이 85%로 향상되었으며, 특히 시 분석 영역에서 탁월한 이해력을 보여주었습니다.
+            <br><br>
+            영어 발화 테스트에서는 <strong>정확도가 88%에서 92%로 개선</strong>되었고, 
+            ERROR 상태 단어가 5개에서 3개로 감소했습니다.
+            <br><br>
+            수학은 일차함수 단원 진행 중이며, 그래프 해석 부분에서 추가 학습이 권장됩니다.
+          </p>
+        </div>
+        
+        <!-- Key Points -->
+        <div>
+          <h3 class="font-bold text-navy mb-4">📌 핵심 포인트</h3>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3 p-4 bg-success-light rounded-xl">
+              <span class="material-icons-round text-success">trending_up</span>
+              <div>
+                <p class="font-medium text-success">강점</p>
+                <p class="text-sm text-text-secondary mt-1">문학 작품에 대한 이해와 감상 능력이 우수합니다. 영어 발화에 대한 자신감이 높아졌습니다.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 p-4 bg-warning-light rounded-xl">
+              <span class="material-icons-round text-warning">lightbulb</span>
+              <div>
+                <p class="font-medium text-warning">개선점</p>
+                <p class="text-sm text-text-secondary mt-1">수학 그래프 해석 능력 보강이 필요합니다. 비문학 지문 독해 시간 단축을 위한 연습이 권장됩니다.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 p-4 bg-info-light rounded-xl">
+              <span class="material-icons-round text-info">tips_and_updates</span>
+              <div>
+                <p class="font-medium text-info">가정 학습 조언</p>
+                <p class="text-sm text-text-secondary mt-1">하루 15분 독서 습관을 유지해주세요. 영어 단어는 저녁 시간에 복습하면 더 효과적입니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Subject Details -->
+        <div>
+          <h3 class="font-bold text-navy mb-4">📊 과목별 상세</h3>
+          <div class="grid gap-4">
+            <div class="border border-border-light rounded-xl p-4">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 rounded-lg bg-korean-light flex items-center justify-center">
+                  <span class="material-icons-round text-korean text-sm">menu_book</span>
+                </div>
+                <span class="font-bold text-korean">국어</span>
+              </div>
+              <ul class="text-sm text-text-secondary space-y-2">
+                <li>• 5단계 학습 완료율: 85% (+10%)</li>
+                <li>• O/X 퀴즈 정답률: 88%</li>
+                <li>• 요약 피드백 점수: 평균 4.2점</li>
+              </ul>
+            </div>
+            <div class="border border-border-light rounded-xl p-4">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 rounded-lg bg-english-light flex items-center justify-center">
+                  <span class="material-icons-round text-english text-sm">translate</span>
+                </div>
+                <span class="font-bold text-english">영어</span>
+              </div>
+              <ul class="text-sm text-text-secondary space-y-2">
+                <li>• 7초 발화 정확도: 92% (+4%)</li>
+                <li>• 졸업(GRADUATED) 단어: 12개 신규</li>
+                <li>• ERROR 상태 단어: 3개 (감소)</li>
+              </ul>
+            </div>
+            <div class="border border-border-light rounded-xl p-4">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 rounded-lg bg-math-light flex items-center justify-center">
+                  <span class="material-icons-round text-warning text-sm">calculate</span>
+                </div>
+                <span class="font-bold text-warning">수학</span>
+              </div>
+              <ul class="text-sm text-text-secondary space-y-2">
+                <li>• 현재 단원: 3-2 일차함수 (60% 진행)</li>
+                <li>• 단원 정답률: 78%</li>
+                <li>• 취약 유형: 그래프 해석, 응용문제</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Next Actions -->
+        <div class="bg-gray-50 rounded-xl p-5">
+          <h3 class="font-bold text-navy mb-3">📅 다음 액션</h3>
+          <ul class="text-sm text-text-secondary space-y-2">
+            <li class="flex items-center gap-2">
+              <span class="material-icons-round text-parent text-lg">event</span>
+              <span>다음 상담: 2025년 1월 24일 (금) 오후 4시</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="material-icons-round text-warning text-lg">quiz</span>
+              <span>수학 그래프 보강 문제 10문제 배정 예정</span>
+            </li>
+          </ul>
+        </div>
+        
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-border-light flex items-center justify-between flex-shrink-0">
+        <button class="flex items-center gap-2 text-text-secondary hover:text-primary text-sm transition-colors">
+          <span class="material-icons-round text-lg">download</span>
+          PDF 다운로드
+        </button>
+        <button onclick="closeReportModal()" class="px-5 py-2.5 bg-parent text-white font-medium rounded-xl hover:bg-parent-dark transition-colors">
+          확인
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mobile Bottom Navigation -->
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-border-light flex items-center justify-around px-2 z-40">
+    <a href="parent-dashboard.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">home</span>
+      <span class="text-[10px] font-medium">홈</span>
+    </a>
+    <a href="parent-child-status.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">person</span>
+      <span class="text-[10px] font-medium">자녀</span>
+    </a>
+    <a href="parent-report.html" class="bottom-tab active flex flex-col items-center gap-1 px-3 py-2">
+      <span class="material-icons-round">assessment</span>
+      <span class="text-[10px] font-medium">리포트</span>
+    </a>
+    <a href="parent-payment.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">payments</span>
+      <span class="text-[10px] font-medium">결제</span>
+    </a>
+    <a href="parent-settings.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">settings</span>
+      <span class="text-[10px] font-medium">설정</span>
+    </a>
+  </nav>
+  
+  <script>
+    // Report Modal
+    function openReportModal() {
+      const modal = document.getElementById('reportModal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeReportModal() {
+      const modal = document.getElementById('reportModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = '';
+    }
+
+    // Mobile menu
+    function openMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Period Toggle
+    function switchPeriod(period) {
+      document.querySelectorAll('.period-toggle button').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.add('text-text-secondary');
+      });
+      event.target.classList.add('active');
+      event.target.classList.remove('text-text-secondary');
+
+      const titleEl = document.getElementById('xpChartTitle');
+      const commentEl = document.getElementById('aiComment');
+      if (period === 'monthly') {
+        titleEl.textContent = '월간 XP 추이';
+        commentEl.textContent = '이번 달 전체 과목에서 고른 성장을 보이고 있어요. 국어 독해력 향상이 눈에 띄며, 수학은 기초 연산 보충이 필요합니다.';
+        updateXpChart(['1주차','2주차','3주차','4주차'], [180, 220, 260, 310]);
+      } else {
+        titleEl.textContent = '주간 XP 추이';
+        commentEl.textContent = '이번 주 국어 독해력이 향상되고 있어요. 영어 발화 정확도도 꾸준히 좋아지고 있습니다. 수학 기초 연산에 더 집중하면 좋겠습니다.';
+        updateXpChart(['월','화','수','목','금'], [45, 62, 38, 70, 55]);
+      }
+    }
+
+    // Charts
+    let xpChartInstance = null;
+
+    function updateXpChart(labels, data) {
+      if (xpChartInstance) xpChartInstance.destroy();
+      const ctx = document.getElementById('xpChart').getContext('2d');
+      xpChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'XP',
+            data: data,
+            borderColor: '#8B5CF6',
+            backgroundColor: 'rgba(139,92,246,0.1)',
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#8B5CF6',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 12, family: 'Pretendard' } } },
+            y: { beginAtZero: true, grid: { color: '#F3F4F6' }, ticks: { font: { size: 11, family: 'Pretendard' } } }
+          }
+        }
+      });
+    }
+
+    function initAttendanceChart() {
+      const ctx = document.getElementById('attendanceChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['출석', '지각', '결석'],
+          datasets: [{
+            data: [18, 2, 1],
+            backgroundColor: ['#22C55E', '#F59E0B', '#EF4444'],
+            borderWidth: 0,
+            spacing: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '65%',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) { return ctx.label + ': ' + ctx.raw + '일'; }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Init charts on load
+    document.addEventListener('DOMContentLoaded', function() {
+      updateXpChart(['월','화','수','목','금'], [45, 62, 38, 70, 55]);
+      initAttendanceChart();
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

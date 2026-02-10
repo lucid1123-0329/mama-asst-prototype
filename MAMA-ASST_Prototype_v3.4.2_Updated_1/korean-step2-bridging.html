@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2단계: 어휘 | 국어 학습 | MAMA-ASST</title>
+  <meta name="description" content="MAMA-ASST 국어 5단계 학습 - 2단계 어휘 연결">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-hover': '#E55A3C',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            'korean-dark': '#3367D6',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            warning: '#F59E0B',
+          },
+          fontFamily: {
+            sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    
+    .step-circle {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 14px;
+    }
+    .step-circle.active {
+      background: linear-gradient(135deg, #4285F4 0%, #5A95F5 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
+    }
+    .step-circle.completed { background: #22C55E; color: white; }
+    .step-circle.pending { background: #F3F4F6; color: #9CA3AF; }
+    .step-connector {
+      position: absolute; top: 20px; left: 40px;
+      width: calc(100% - 40px); height: 3px; background: #E5E7EB; z-index: 0;
+    }
+    .step-connector.completed { background: #22C55E; }
+    .step-connector.active { background: linear-gradient(90deg, #22C55E 0%, #4285F4 100%); }
+    
+    /* Vocabulary Card */
+    .vocab-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .vocab-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(66, 133, 244, 0.15);
+    }
+    .vocab-card.learned {
+      border-color: #22C55E;
+      background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+    }
+    .vocab-card.learned .check-icon {
+      display: flex;
+    }
+    
+    /* Flip animation */
+    .flip-card { perspective: 1000px; }
+    .flip-card-inner {
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back {
+      backface-visibility: hidden;
+    }
+    .flip-card-back { transform: rotateY(180deg); }
+    
+    /* Highlight in passage */
+    .highlight-word {
+      background: linear-gradient(180deg, transparent 60%, rgba(66, 133, 244, 0.3) 60%);
+      padding: 0 2px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .highlight-word:hover {
+      background: linear-gradient(180deg, transparent 40%, rgba(66, 133, 244, 0.5) 40%);
+    }
+    
+    @keyframes bounce-in {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .bounce-in { animation: bounce-in 0.4s ease-out; }
+    
+    .bottom-nav-mobile {
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <!-- Desktop Layout -->
+  <div class="hidden lg:flex h-screen overflow-hidden">
+    
+    <!-- Sidebar (Compact) -->
+    <aside class="w-20 bg-navy flex flex-col items-center py-6 flex-shrink-0">
+      <a href="student-dashboard.html" class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg mb-8">
+        <span class="text-white font-bold text-xl">M</span>
+      </a>
+      <nav class="flex flex-col items-center gap-4 flex-1">
+        <a href="student-dashboard.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors">
+          <span class="material-icons-round">home</span>
+        </a>
+        <a href="subject-korean.html" class="w-12 h-12 rounded-xl flex items-center justify-center bg-korean text-white shadow-lg">
+          <span class="material-icons-round">menu_book</span>
+        </a>
+        <a href="subject-english.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors">
+          <span class="material-icons-round">translate</span>
+        </a>
+        <a href="subject-math.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors">
+          <span class="material-icons-round">calculate</span>
+        </a>
+      </nav>
+      <a href="subject-korean.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-red-400 transition-colors">
+        <span class="material-icons-round">close</span>
+      </a>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Top Header -->
+      <header class="bg-surface border-b border-border-light px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <a href="korean-step1-reading.html" class="w-10 h-10 rounded-xl bg-background hover:bg-border-light flex items-center justify-center transition-colors">
+              <span class="material-icons-round text-text-secondary">arrow_back</span>
+            </a>
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 bg-korean-light text-korean text-xs font-bold rounded">비문학</span>
+                <span class="text-xs text-text-tertiary">과학/기술</span>
+              </div>
+              <h1 class="text-xl font-bold text-text-primary">인공지능과 미래 사회</h1>
+            </div>
+          </div>
+          
+          <!-- Progress -->
+          <div class="flex items-center gap-6">
+            <div class="flex items-center gap-3 px-4 py-2 bg-success-light rounded-xl">
+              <span class="material-icons-round text-success">check_circle</span>
+              <div>
+                <p class="text-xs text-success font-medium">학습한 어휘</p>
+                <p class="text-lg font-bold text-success"><span id="learnedCount">3</span> / 6</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 bg-primary-light rounded-xl">
+              <span class="material-icons-round text-primary">star</span>
+              <div>
+                <p class="text-xs text-primary font-medium">예상 XP</p>
+                <p class="text-lg font-bold text-primary">+30</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step Indicator -->
+        <div class="mt-6">
+          <div class="flex items-center">
+            <!-- Step 1: Completed -->
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle completed">
+                  <span class="material-icons-round text-lg">check</span>
+                </div>
+                <span class="text-xs font-medium text-success mt-2">읽기</span>
+              </div>
+              <div class="step-connector completed"></div>
+            </div>
+            
+            <!-- Step 2: Active -->
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle active">
+                  <span class="material-icons-round text-lg">link</span>
+                </div>
+                <span class="text-xs font-semibold text-korean mt-2">어휘</span>
+              </div>
+              <div class="step-connector active"></div>
+            </div>
+            
+            <!-- Step 3-5: Pending -->
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle pending">
+                  <span class="material-icons-round text-lg">account_tree</span>
+                </div>
+                <span class="text-xs font-medium text-text-tertiary mt-2">구조화</span>
+              </div>
+              <div class="step-connector"></div>
+            </div>
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle pending">
+                  <span class="material-icons-round text-lg">quiz</span>
+                </div>
+                <span class="text-xs font-medium text-text-tertiary mt-2">검증</span>
+              </div>
+              <div class="step-connector"></div>
+            </div>
+            <div class="step-item flex items-center">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle pending">
+                  <span class="material-icons-round text-lg">summarize</span>
+                </div>
+                <span class="text-xs font-medium text-text-tertiary mt-2">요약</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="flex-1 overflow-hidden flex">
+        
+        <!-- Left: Passage with Highlights -->
+        <div class="w-2/5 overflow-y-auto p-6 border-r border-border-light">
+          <div class="bg-surface rounded-2xl shadow-card p-6 border border-border-light/50">
+            <h3 class="font-bold text-text-primary mb-4 flex items-center gap-2">
+              <span class="material-icons-round text-korean">auto_stories</span>
+              지문 (핵심 어휘 표시)
+            </h3>
+            <div class="text-[15px] leading-relaxed text-text-primary space-y-4">
+              <p><span class="highlight-word" data-vocab="딥러닝">딥러닝</span> 기술의 발전으로 AI는 이미지 인식, <span class="highlight-word" data-vocab="자연어처리">자연어 처리</span>, 게임 등 다양한 분야에서 인간의 능력을 뛰어넘는 성과를 보여주고 있다.</p>
+              
+              <p>단순 반복적인 업무는 AI로 대체될 가능성이 높으며, 이로 인해 일부 직업은 사라지고 새로운 형태의 직업이 생겨날 것이다. 2030년까지 약 4억 개의 일자리가 <span class="highlight-word" data-vocab="자동화">자동화</span>의 영향을 받을 것으로 전망된다.</p>
+              
+              <p>의료 분야에서 AI는 질병의 조기 진단과 <span class="highlight-word" data-vocab="맞춤형">맞춤형</span> 치료법 개발에 활용되고 있다.</p>
+              
+              <p>AI 시스템의 <span class="highlight-word" data-vocab="편향성">편향성</span> 문제, 개인정보 보호 이슈, AI의 의사결정에 대한 <span class="highlight-word" data-vocab="책임소재">책임 소재</span> 등 해결해야 할 윤리적 문제들이 산적해 있다.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right: Vocabulary Cards -->
+        <div class="flex-1 overflow-y-auto p-6">
+          
+          <!-- Instructions -->
+          <div class="bg-gradient-to-r from-korean-light to-blue-50 rounded-2xl p-5 mb-6 border border-korean/20">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-korean flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-white">touch_app</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-text-primary mb-1">어휘 학습 방법</h3>
+                <p class="text-sm text-text-secondary">카드를 클릭하면 뜻이 나타나요. 모든 어휘를 학습하면 다음 단계로 넘어갈 수 있어요!</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Vocabulary Grid -->
+          <div class="grid grid-cols-2 gap-4" id="vocabGrid">
+            
+            <!-- Vocab 1 - Learned -->
+            <div class="vocab-card learned bg-surface rounded-2xl p-5 border-2 border-success shadow-card relative" data-learned="true">
+              <div class="check-icon absolute top-3 right-3 w-6 h-6 bg-success rounded-full flex items-center justify-center">
+                <span class="material-icons-round text-white text-sm">check</span>
+              </div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-korean text-white text-[10px] font-bold rounded">핵심</span>
+                <span class="text-xs text-text-tertiary">1문단</span>
+              </div>
+              <h4 class="text-xl font-bold text-text-primary mb-2">딥러닝</h4>
+              <p class="text-sm text-text-secondary">Deep Learning</p>
+              <div class="mt-4 pt-4 border-t border-border-light">
+                <p class="text-sm text-text-primary">인공 신경망을 여러 층으로 쌓아 복잡한 패턴을 학습하는 기계 학습 방법</p>
+              </div>
+            </div>
+            
+            <!-- Vocab 2 - Learned -->
+            <div class="vocab-card learned bg-surface rounded-2xl p-5 border-2 border-success shadow-card relative" data-learned="true">
+              <div class="check-icon absolute top-3 right-3 w-6 h-6 bg-success rounded-full flex items-center justify-center">
+                <span class="material-icons-round text-white text-sm">check</span>
+              </div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-korean text-white text-[10px] font-bold rounded">핵심</span>
+                <span class="text-xs text-text-tertiary">1문단</span>
+              </div>
+              <h4 class="text-xl font-bold text-text-primary mb-2">자연어 처리</h4>
+              <p class="text-sm text-text-secondary">Natural Language Processing</p>
+              <div class="mt-4 pt-4 border-t border-border-light">
+                <p class="text-sm text-text-primary">컴퓨터가 인간의 언어를 이해하고 처리하는 인공지능 기술</p>
+              </div>
+            </div>
+            
+            <!-- Vocab 3 - Learned -->
+            <div class="vocab-card learned bg-surface rounded-2xl p-5 border-2 border-success shadow-card relative" data-learned="true">
+              <div class="check-icon absolute top-3 right-3 w-6 h-6 bg-success rounded-full flex items-center justify-center">
+                <span class="material-icons-round text-white text-sm">check</span>
+              </div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded">중요</span>
+                <span class="text-xs text-text-tertiary">2문단</span>
+              </div>
+              <h4 class="text-xl font-bold text-text-primary mb-2">자동화</h4>
+              <p class="text-sm text-text-secondary">Automation</p>
+              <div class="mt-4 pt-4 border-t border-border-light">
+                <p class="text-sm text-text-primary">인간의 개입 없이 기계나 시스템이 스스로 작업을 수행하는 것</p>
+              </div>
+            </div>
+            
+            <!-- Vocab 4 - Not learned yet -->
+            <div class="vocab-card bg-surface rounded-2xl p-5 border-2 border-border-light shadow-card relative hover:border-korean" data-learned="false" onclick="learnVocab(this)">
+              <div class="check-icon absolute top-3 right-3 w-6 h-6 bg-success rounded-full hidden items-center justify-center">
+                <span class="material-icons-round text-white text-sm">check</span>
+              </div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded">중요</span>
+                <span class="text-xs text-text-tertiary">3문단</span>
+              </div>
+              <h4 class="text-xl font-bold text-text-primary mb-2">맞춤형</h4>
+              <p class="text-sm text-text-secondary">Personalized</p>
+              <div class="mt-4 pt-4 border-t border-border-light vocab-meaning hidden">
+                <p class="text-sm text-text-primary">개인의 특성이나 요구에 맞게 특별히 조정된 것</p>
+              </div>
+              <div class="mt-4 pt-4 border-t border-border-light vocab-hint">
+                <p class="text-sm text-korean flex items-center gap-1">
+                  <span class="material-icons-round text-sm">touch_app</span>
+                  클릭하여 뜻 확인하기
+                </p>
+              </div>
+            </div>
+            
+            <!-- Vocab 5 - Not learned yet -->
+            <div class="vocab-card bg-surface rounded-2xl p-5 border-2 border-border-light shadow-card relative hover:border-korean" data-learned="false" onclick="learnVocab(this)">
+              <div class="check-icon absolute top-3 right-3 w-6 h-6 bg-success rounded-full hidden items-center justify-center">
+                <span class="material-icons-round text-white text-sm">check</span>
+              </div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-korean text-white text-[10px] font-bold rounded">핵심</span>
+                <span class="text-xs text-text-tertiary">4문단</span>
+              </div>
+              <h4 class="text-xl font-bold text-text-primary mb-2">편향성</h4>
+              <p class="text-sm text-text-secondary">Bias</p>
+              <div class="mt-4 pt-4 border-t border-border-light vocab-meaning hidden">
+                <p class="text-sm text-text-primary">한쪽으로 치우친 성질, 특정 방향으로 기울어진 경향</p>
+              </div>
+              <div class="mt-4 pt-4 border-t border-border-light vocab-hint">
+                <p class="text-sm text-korean flex items-center gap-1">
+                  <span class="material-icons-round text-sm">touch_app</span>
+                  클릭하여 뜻 확인하기
+                </p>
+              </div>
+            </div>
+            
+            <!-- Vocab 6 - Not learned yet -->
+            <div class="vocab-card bg-surface rounded-2xl p-5 border-2 border-border-light shadow-card relative hover:border-korean" data-learned="false" onclick="learnVocab(this)">
+              <div class="check-icon absolute top-3 right-3 w-6 h-6 bg-success rounded-full hidden items-center justify-center">
+                <span class="material-icons-round text-white text-sm">check</span>
+              </div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded">중요</span>
+                <span class="text-xs text-text-tertiary">4문단</span>
+              </div>
+              <h4 class="text-xl font-bold text-text-primary mb-2">책임 소재</h4>
+              <p class="text-sm text-text-secondary">Accountability</p>
+              <div class="mt-4 pt-4 border-t border-border-light vocab-meaning hidden">
+                <p class="text-sm text-text-primary">어떤 일에 대해 책임져야 할 위치나 대상</p>
+              </div>
+              <div class="mt-4 pt-4 border-t border-border-light vocab-hint">
+                <p class="text-sm text-korean flex items-center gap-1">
+                  <span class="material-icons-round text-sm">touch_app</span>
+                  클릭하여 뜻 확인하기
+                </p>
+              </div>
+            </div>
+            
+          </div>
+          
+          <!-- Next Step -->
+          <div class="mt-8 flex items-center justify-between">
+            <a href="korean-step1-reading.html" class="px-6 py-3 bg-background hover:bg-border-light text-text-secondary font-medium rounded-xl transition-colors flex items-center gap-2">
+              <span class="material-icons-round">arrow_back</span>
+              이전 단계
+            </a>
+            <a href="korean-step3-structuring.html" id="nextButton" class="px-8 py-4 bg-korean hover:bg-korean-dark text-white font-bold rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-korean/30 opacity-50 pointer-events-none">
+              다음 단계로
+              <span class="material-icons-round">arrow_forward</span>
+            </a>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+  </div>
+  
+  <!-- Mobile Layout -->
+  <div class="lg:hidden min-h-screen flex flex-col">
+    
+    <!-- Mobile Header -->
+    <header class="bg-surface border-b border-border-light px-4 py-3 sticky top-0 z-30">
+      <div class="flex items-center justify-between mb-3">
+        <a href="korean-step1-reading.html" class="w-10 h-10 rounded-xl bg-background flex items-center justify-center">
+          <span class="material-icons-round text-text-secondary">arrow_back</span>
+        </a>
+        <div class="text-center">
+          <span class="px-2 py-0.5 bg-korean-light text-korean text-[10px] font-bold rounded">STEP 2</span>
+          <h1 class="text-sm font-bold text-text-primary">어휘 (Bridging)</h1>
+        </div>
+        <div class="flex items-center gap-1 px-2 py-1 bg-success-light rounded-lg">
+          <span class="text-sm font-bold text-success"><span id="mobileLearnedCount">3</span>/6</span>
+        </div>
+      </div>
+      
+      <!-- Mobile Step Indicator -->
+      <div class="flex items-center gap-1">
+        <div class="flex-1 h-1.5 bg-success rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-korean rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-border-light rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-border-light rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-border-light rounded-full"></div>
+      </div>
+    </header>
+    
+    <!-- Mobile Content -->
+    <main class="flex-1 overflow-y-auto p-4 pb-24">
+      
+      <div class="grid grid-cols-1 gap-3">
+        <!-- Mobile Vocab Cards -->
+        <div class="vocab-card learned bg-surface rounded-xl p-4 border-2 border-success shadow-card relative">
+          <div class="check-icon absolute top-3 right-3 w-5 h-5 bg-success rounded-full flex items-center justify-center">
+            <span class="material-icons-round text-white text-xs">check</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-text-primary">딥러닝</h4>
+              <p class="text-xs text-text-secondary">Deep Learning</p>
+            </div>
+            <span class="text-xs text-success">학습 완료</span>
+          </div>
+        </div>
+        
+        <div class="vocab-card learned bg-surface rounded-xl p-4 border-2 border-success shadow-card relative">
+          <div class="check-icon absolute top-3 right-3 w-5 h-5 bg-success rounded-full flex items-center justify-center">
+            <span class="material-icons-round text-white text-xs">check</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-text-primary">자연어 처리</h4>
+              <p class="text-xs text-text-secondary">NLP</p>
+            </div>
+            <span class="text-xs text-success">학습 완료</span>
+          </div>
+        </div>
+        
+        <div class="vocab-card learned bg-surface rounded-xl p-4 border-2 border-success shadow-card relative">
+          <div class="check-icon absolute top-3 right-3 w-5 h-5 bg-success rounded-full flex items-center justify-center">
+            <span class="material-icons-round text-white text-xs">check</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-text-primary">자동화</h4>
+              <p class="text-xs text-text-secondary">Automation</p>
+            </div>
+            <span class="text-xs text-success">학습 완료</span>
+          </div>
+        </div>
+        
+        <div class="vocab-card bg-surface rounded-xl p-4 border-2 border-korean shadow-card" onclick="learnVocabMobile(this)">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-text-primary">맞춤형</h4>
+              <p class="text-xs text-text-secondary">Personalized</p>
+            </div>
+            <span class="text-xs text-korean">탭하여 학습</span>
+          </div>
+        </div>
+        
+        <div class="vocab-card bg-surface rounded-xl p-4 border-2 border-border-light shadow-card" onclick="learnVocabMobile(this)">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-text-primary">편향성</h4>
+              <p class="text-xs text-text-secondary">Bias</p>
+            </div>
+            <span class="text-xs text-korean">탭하여 학습</span>
+          </div>
+        </div>
+        
+        <div class="vocab-card bg-surface rounded-xl p-4 border-2 border-border-light shadow-card" onclick="learnVocabMobile(this)">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-text-primary">책임 소재</h4>
+              <p class="text-xs text-text-secondary">Accountability</p>
+            </div>
+            <span class="text-xs text-korean">탭하여 학습</span>
+          </div>
+        </div>
+      </div>
+      
+    </main>
+    
+    <!-- Mobile Bottom Nav -->
+    <div class="fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light p-4 bottom-nav-mobile">
+      <a href="korean-step3-structuring.html" id="mobileNextButton" class="w-full py-4 bg-korean text-white font-bold rounded-xl flex items-center justify-center gap-2 opacity-50 pointer-events-none">
+        다음 단계로
+        <span class="material-icons-round">arrow_forward</span>
+      </a>
+    </div>
+    
+  </div>
+  
+  <script>
+    let learnedCount = 3;
+    const totalVocab = 6;
+    
+    function learnVocab(card) {
+      if (card.dataset.learned === 'true') return;
+      
+      card.dataset.learned = 'true';
+      card.classList.add('learned', 'bounce-in');
+      card.querySelector('.vocab-meaning').classList.remove('hidden');
+      card.querySelector('.vocab-hint').classList.add('hidden');
+      card.querySelector('.check-icon').classList.remove('hidden');
+      card.querySelector('.check-icon').classList.add('flex');
+      
+      learnedCount++;
+      document.getElementById('learnedCount').textContent = learnedCount;
+      
+      if (learnedCount >= totalVocab) {
+        const nextBtn = document.getElementById('nextButton');
+        nextBtn.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    }
+    
+    function learnVocabMobile(card) {
+      card.classList.add('learned');
+      card.style.borderColor = '#22C55E';
+      card.querySelector('span:last-child').textContent = '학습 완료';
+      card.querySelector('span:last-child').classList.remove('text-korean');
+      card.querySelector('span:last-child').classList.add('text-success');
+      card.onclick = null;
+      
+      learnedCount++;
+      document.getElementById('mobileLearnedCount').textContent = learnedCount;
+      
+      if (learnedCount >= totalVocab) {
+        const mobileNextBtn = document.getElementById('mobileNextButton');
+        mobileNextBtn.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    }
+  </script>
+  
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

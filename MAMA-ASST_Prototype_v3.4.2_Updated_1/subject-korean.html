@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>국어 | MAMA-ASST</title>
+  <meta name="description" content="MAMA-ASST 국어 학습 - 5단계 독해 학습">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234285F4' rx='20' width='100' height='100'/><text x='50' y='68' font-size='50' text-anchor='middle' fill='white'>국</text></svg>">
+  
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-hover': '#E55A3C',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            'korean-dark': '#3367D6',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            warning: '#F59E0B',
+          },
+          fontFamily: {
+            sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'],
+          },
+          borderRadius: {
+            'xl': '12px',
+            '2xl': '16px',
+            '3xl': '24px',
+          },
+          boxShadow: {
+            'soft': '0 2px 8px rgba(0, 0, 0, 0.04), 0 4px 24px rgba(0, 0, 0, 0.06)',
+            'card': '0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04)',
+            'card-hover': '0 4px 12px rgba(0, 0, 0, 0.1), 0 8px 24px rgba(0, 0, 0, 0.08)',
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+    
+    .transition-card {
+      transition: all 0.2s ease-out;
+    }
+    .transition-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    .nav-active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 70%;
+      background: #FF6D4D;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    
+    .sidebar-mobile {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-out;
+    }
+    .sidebar-mobile.open {
+      transform: translateX(0);
+    }
+    
+    /* Step indicator */
+    .step-active {
+      background: linear-gradient(135deg, #4285F4 0%, #5A95F5 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+    }
+    .step-completed {
+      background: #22C55E;
+      color: white;
+    }
+    .step-connector {
+      height: 2px;
+      background: #E5E7EB;
+      flex: 1;
+      margin: 0 8px;
+    }
+    .step-connector.completed {
+      background: #22C55E;
+    }
+    .step-connector.active {
+      background: linear-gradient(90deg, #22C55E 0%, #4285F4 100%);
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <!-- Desktop Layout -->
+  <div class="hidden lg:flex h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-navy flex flex-col flex-shrink-0">
+      <!-- Logo -->
+      <div class="p-5 border-b border-white/10">
+        <a href="student-dashboard.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="text-white font-bold text-lg tracking-tight">MAMA-ASST</span>
+            <span class="block text-white/50 text-[10px] tracking-wider">MATCHING & MANAGEMENT</span>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Profile -->
+      <a href="mypage.html" class="p-5 border-b border-white/10 flex items-center gap-3 hover:bg-white/5 transition-colors">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-300 p-0.5">
+          <div class="w-full h-full rounded-full bg-navy overflow-hidden">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=jimin&backgroundColor=ffdfbf" alt="프로필" class="w-full h-full object-cover">
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-white font-semibold truncate">김지민</p>
+          <p class="text-white/50 text-xs">중학교 2학년</p>
+        </div>
+      </a>
+      
+      <!-- Navigation -->
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="student-dashboard.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">home</span>
+          <span>홈</span>
+        </a>
+        <a href="subjects.html" class="nav-active relative flex items-center gap-3 px-4 py-3 bg-white/10 text-white rounded-xl font-medium">
+          <span class="material-icons-round text-korean">auto_stories</span>
+          <span>과목</span>
+        </a>
+        <a href="report.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">insights</span>
+          <span>리포트</span>
+        </a>
+        <a href="planner.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">calendar_month</span>
+          <span>일정</span>
+        </a>
+      </nav>
+      
+      <!-- Footer -->
+      <div class="p-4 border-t border-white/10 space-y-2">
+        <a href="settings.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">settings</span>
+          <span>설정</span>
+        </a>
+        <a href="login.html" class="flex items-center justify-center gap-2 px-4 py-3 border border-white/20 text-white/70 hover:bg-white/5 rounded-xl transition-colors">
+          <span class="material-icons-round text-sm">logout</span>
+          <span class="text-sm">로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <!-- Top Bar -->
+      <header class="h-16 bg-surface border-b border-border-light flex items-center justify-between px-6 flex-shrink-0">
+        <!-- Breadcrumb -->
+        <div class="flex items-center gap-2 text-sm">
+          <a href="student-dashboard.html" class="text-text-tertiary hover:text-primary transition-colors">홈</a>
+          <span class="material-icons-round text-text-tertiary text-sm">chevron_right</span>
+          <a href="subjects.html" class="text-text-tertiary hover:text-primary transition-colors">과목</a>
+          <span class="material-icons-round text-text-tertiary text-sm">chevron_right</span>
+          <span class="text-korean font-medium">국어</span>
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex items-center gap-3">
+          <a href="notifications.html" class="relative p-2 text-text-secondary hover:text-text-primary hover:bg-background rounded-lg transition-colors">
+            <span class="material-icons-round">notifications</span>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full pulse-dot"></span>
+          </a>
+          <a href="ai-tutor.html" class="flex items-center gap-2 px-4 py-2 bg-korean/10 text-korean border border-korean/20 rounded-full hover:bg-korean/20 transition-colors font-medium">
+            <span class="material-icons-round text-lg">smart_toy</span>
+            <span>AI 도움받기</span>
+          </a>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        <!-- Subject Header -->
+        <section class="bg-gradient-to-r from-korean to-blue-400 rounded-2xl p-6 text-white relative overflow-hidden">
+          <div class="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full"></div>
+          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full"></div>
+          <div class="relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-14 h-14 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
+                <span class="material-icons-round text-3xl">menu_book</span>
+              </div>
+              <div>
+                <h1 class="text-2xl font-bold">국어 (Korean)</h1>
+                <p class="text-white/80">5단계 독해 학습 시스템</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-6">
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-sm">local_fire_department</span>
+                <span class="font-medium">12일 연속</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-sm">auto_awesome</span>
+                <span class="font-medium">정답률 92%</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-sm">description</span>
+                <span class="font-medium">완료 지문 12개</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- 5 Steps Progress -->
+        <section class="bg-surface rounded-2xl p-6 shadow-card border border-border-light/50">
+          <h2 class="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
+            <span class="material-icons-round text-korean">route</span>
+            5단계 학습 플로우 (Learning Steps)
+          </h2>
+          
+          <!-- Step Indicator -->
+          <div class="flex items-center mb-8">
+            <!-- Step 1: Reading -->
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 rounded-full step-completed flex items-center justify-center mb-2">
+                <span class="material-icons-round">check</span>
+              </div>
+              <span class="text-xs font-medium text-success">읽기</span>
+              <span class="text-[10px] text-text-tertiary">Reading</span>
+            </div>
+            <div class="step-connector completed"></div>
+            
+            <!-- Step 2: Bridging -->
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 rounded-full step-completed flex items-center justify-center mb-2">
+                <span class="material-icons-round">check</span>
+              </div>
+              <span class="text-xs font-medium text-success">연결하기</span>
+              <span class="text-[10px] text-text-tertiary">Bridging</span>
+            </div>
+            <div class="step-connector active"></div>
+            
+            <!-- Step 3: Structuring -->
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 rounded-full step-active flex items-center justify-center mb-2">
+                <span class="material-icons-round">account_tree</span>
+              </div>
+              <span class="text-xs font-medium text-korean">구조화</span>
+              <span class="text-[10px] text-text-tertiary">Structuring</span>
+            </div>
+            <div class="step-connector"></div>
+            
+            <!-- Step 4: Verifying -->
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 rounded-full bg-border-light flex items-center justify-center mb-2">
+                <span class="material-icons-round text-text-tertiary">quiz</span>
+              </div>
+              <span class="text-xs font-medium text-text-tertiary">검증하기</span>
+              <span class="text-[10px] text-text-tertiary">Verifying</span>
+            </div>
+            <div class="step-connector"></div>
+            
+            <!-- Step 5: Summary -->
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 rounded-full bg-border-light flex items-center justify-center mb-2">
+                <span class="material-icons-round text-text-tertiary">summarize</span>
+              </div>
+              <span class="text-xs font-medium text-text-tertiary">요약하기</span>
+              <span class="text-[10px] text-text-tertiary">Summary</span>
+            </div>
+          </div>
+          
+          <!-- Current Step Card -->
+          <div class="bg-korean-light rounded-xl p-5 border border-korean/20">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-korean flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-white text-2xl">account_tree</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-2 py-0.5 bg-korean text-white text-[10px] font-bold rounded">STEP 3</span>
+                  <h3 class="font-bold text-text-primary">구조화 (Structuring)</h3>
+                </div>
+                <p class="text-sm text-text-secondary mb-4">글의 구조를 파악하고, 핵심 문단을 선택하세요. AI가 생성한 구조도를 참고할 수 있어요.</p>
+                <a href="korean-step3-structuring.html" class="px-6 py-2.5 bg-korean hover:bg-korean-dark text-white font-semibold rounded-xl transition-colors flex items-center gap-2 inline-flex">
+                  이어서 학습하기
+                  <span class="material-icons-round text-lg">arrow_forward</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Instructor Comment Section -->
+        <section id="instructorComment" class="bg-surface rounded-2xl shadow-card border-l-4 border-korean p-5 mb-6">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-korean to-blue-300 p-0.5 flex-shrink-0">
+              <div class="w-full h-full rounded-full bg-surface overflow-hidden">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=teacher2&backgroundColor=c0aede" alt="강사" class="w-full h-full object-cover">
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-bold text-text-primary">박국어 선생님</span>
+                <span class="text-xs text-text-tertiary">· 어제</span>
+              </div>
+              <p class="text-sm text-text-secondary leading-relaxed">
+                지민아, 비문학 지문 분석 실력이 많이 늘었어요! 📚 
+                <strong class="text-korean-dark">핵심 문단 찾기</strong>가 점점 정확해지고 있어요.
+                이번 주는 문학 지문도 도전해보자. 시와 소설의 표현 방식을 비교해보면 좋겠어!
+              </p>
+            </div>
+          </div>
+        </section>
+        
+        <!-- 🎯 Instructor Assigned Learning (강사 지정 학습) -->
+        <section class="mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-text-primary flex items-center gap-2">
+              <span class="material-icons-round text-primary">assignment_ind</span>
+              강사 지정 학습
+              <span class="px-2 py-0.5 bg-primary text-white text-xs font-bold rounded-full">필수</span>
+            </h2>
+            <span class="text-sm text-text-secondary">1 / 2 완료</span>
+          </div>
+          
+          <!-- Instructor Info Banner -->
+          <div class="bg-primary-light border border-primary/20 rounded-xl p-3 mb-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-sm">박</div>
+            <div class="flex-1">
+              <p class="text-sm text-text-primary"><strong>박국어 선생님</strong>이 지정한 학습이에요</p>
+              <p class="text-xs text-text-tertiary">마감: 내일 (1/6) 23:59까지</p>
+            </div>
+            <span class="px-2 py-1 bg-error text-white text-xs font-bold rounded">D-1</span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Assigned Passage 1 - Completed -->
+            <a href="korean-learning.html" class="bg-surface rounded-2xl p-5 shadow-card border-2 border-success relative overflow-hidden block hover:shadow-card-hover transition-shadow cursor-pointer">
+              <div class="absolute top-0 left-0 w-full h-1 bg-success"></div>
+              <div class="absolute top-2 right-2">
+                <span class="material-icons-round text-success">check_circle</span>
+              </div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="px-2 py-0.5 bg-primary-light text-primary text-[10px] font-bold rounded">강사지정</span>
+                <span class="px-2 py-0.5 bg-success-light text-success text-[10px] font-bold rounded">완료</span>
+              </div>
+              <h3 class="font-bold text-text-primary mb-1">디지털 시대의 독서</h3>
+              <p class="text-xs text-text-secondary mb-3">비문학 · 사회/문화 · 중</p>
+              <div class="flex items-center gap-4 text-xs">
+                <div class="flex items-center gap-1">
+                  <span class="material-icons-round text-success text-sm">check</span>
+                  <span class="text-text-secondary">O/X 7/10</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="material-icons-round text-korean text-sm">schedule</span>
+                  <span class="text-text-secondary">12분</span>
+                </div>
+              </div>
+            </a>
+            
+            <!-- Assigned Passage 2 - Not Started -->
+            <a href="korean-learning.html" class="bg-surface rounded-2xl p-5 shadow-card border-2 border-primary relative overflow-hidden block hover:shadow-card-hover transition-shadow cursor-pointer group">
+              <div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+              <div class="absolute top-2 right-2">
+                <span class="material-icons-round text-primary">play_circle</span>
+              </div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="px-2 py-0.5 bg-primary-light text-primary text-[10px] font-bold rounded">강사지정</span>
+                <span class="px-2 py-0.5 bg-warning-light text-warning text-[10px] font-bold rounded">미완료</span>
+              </div>
+              <h3 class="font-bold text-text-primary mb-1">한글의 과학적 우수성</h3>
+              <p class="text-xs text-text-secondary mb-3">비문학 · 언어 · 중</p>
+              <div class="mt-3 pt-3 border-t border-border-light">
+                <button class="w-full py-2 bg-primary text-white rounded-lg text-sm font-medium group-hover:bg-primary-hover transition-colors flex items-center justify-center gap-1">
+                  <span class="material-icons-round text-sm">play_arrow</span>
+                  학습 시작
+                </button>
+              </div>
+            </a>
+          </div>
+        </section>
+        
+        <!-- 🤖 AI Recommended Learning (AI 추천 학습) -->
+        <section>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-text-primary flex items-center gap-2">
+              <span class="material-icons-round text-korean">auto_awesome</span>
+              AI 추천 학습
+              <span class="px-2 py-0.5 bg-korean-light text-korean text-xs font-bold rounded-full">권장</span>
+            </h2>
+            <span class="text-sm text-text-secondary">2 / 2 완료</span>
+          </div>
+          
+          <!-- AI Recommendation Info -->
+          <div class="bg-korean-light/50 border border-korean/20 rounded-xl p-3 mb-4">
+            <p class="text-sm text-text-secondary flex items-center gap-2">
+              <span class="material-icons-round text-korean text-lg">psychology</span>
+              학습 데이터 분석 결과, <strong class="text-korean">비문학 독해력 강화</strong>가 필요해요!
+            </p>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Passage 1 - Completed -->
+            <a href="korean-result.html" class="bg-surface rounded-2xl p-5 shadow-card border border-success/30 relative overflow-hidden block hover:shadow-card-hover transition-shadow cursor-pointer">
+              <div class="absolute top-0 right-0 w-16 h-16 bg-success/10 rounded-bl-full"></div>
+              <div class="absolute top-2 right-2">
+                <span class="material-icons-round text-success">check_circle</span>
+              </div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="px-2 py-0.5 bg-korean-light text-korean text-[10px] font-bold rounded">AI추천</span>
+                <span class="px-2 py-0.5 bg-success-light text-success text-[10px] font-bold rounded">완료</span>
+              </div>
+              <h3 class="font-bold text-text-primary mb-1">인공지능과 미래 사회</h3>
+              <p class="text-xs text-text-secondary mb-3">비문학 · 과학/기술</p>
+              <div class="flex items-center gap-4 text-xs">
+                <div class="flex items-center gap-1">
+                  <span class="material-icons-round text-success text-sm">check</span>
+                  <span class="text-text-secondary">O/X 8/10</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="material-icons-round text-korean text-sm">schedule</span>
+                  <span class="text-text-secondary">15분</span>
+                </div>
+              </div>
+            </a>
+            
+            <!-- Passage 2 - Completed -->
+            <a href="korean-result.html" class="bg-surface rounded-2xl p-5 shadow-card border border-success/30 relative overflow-hidden block hover:shadow-card-hover transition-shadow cursor-pointer">
+              <div class="absolute top-0 right-0 w-16 h-16 bg-success/10 rounded-bl-full"></div>
+              <div class="absolute top-2 right-2">
+                <span class="material-icons-round text-success">check_circle</span>
+              </div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="px-2 py-0.5 bg-korean-light text-korean text-[10px] font-bold rounded">AI추천</span>
+                <span class="px-2 py-0.5 bg-success-light text-success text-[10px] font-bold rounded">완료</span>
+              </div>
+              <h3 class="font-bold text-text-primary mb-1">기후 변화의 원인과 대책</h3>
+              <p class="text-xs text-text-secondary mb-3">비문학 · 환경</p>
+              <div class="flex items-center gap-4 text-xs">
+                <div class="flex items-center gap-1">
+                  <span class="material-icons-round text-success text-sm">check</span>
+                  <span class="text-text-secondary">O/X 9/10</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="material-icons-round text-korean text-sm">schedule</span>
+                  <span class="text-text-secondary">18분</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </section>
+        
+        <!-- Favorites Section (즐겨찾기) -->
+        <section id="favoritesSection" class="hidden">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-text-primary flex items-center gap-2">
+              <span class="material-icons-round text-primary">bookmark</span>
+              내 즐겨찾기
+            </h2>
+            <button onclick="clearAllFavorites()" class="text-sm text-text-tertiary hover:text-error font-medium flex items-center gap-1">
+              <span class="material-icons-round text-sm">delete_outline</span>
+              전체 삭제
+            </button>
+          </div>
+          
+          <div id="favoritesContainer" class="grid grid-cols-3 gap-4">
+            <!-- Favorite items will be dynamically inserted here -->
+          </div>
+          
+          <!-- Empty State -->
+          <div id="favoritesEmpty" class="hidden bg-surface rounded-2xl p-8 text-center border border-dashed border-border-light">
+            <span class="material-icons-round text-5xl text-text-tertiary mb-3">bookmark_border</span>
+            <h3 class="font-bold text-text-primary mb-2">즐겨찾기가 비어있어요</h3>
+            <p class="text-sm text-text-secondary">지문 학습 중 ⭐ 버튼을 눌러<br>나중에 다시 볼 지문을 저장하세요!</p>
+          </div>
+        </section>
+        
+        <!-- More Passages -->
+        <section>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-text-primary flex items-center gap-2">
+              <span class="material-icons-round text-korean">library_books</span>
+              더 풀어보기 (More Passages)
+            </h2>
+            <button class="text-sm text-korean hover:underline font-medium">전체보기 →</button>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-4">
+            <!-- Passage Card -->
+            <a href="korean-learning.html" class="group bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50 hover:border-korean/30 cursor-pointer block">
+              <div class="flex items-start justify-between mb-3">
+                <span class="px-2 py-1 bg-korean-light text-korean text-[10px] font-bold rounded">비문학</span>
+                <span class="material-icons-round text-text-tertiary group-hover:text-korean transition-colors">chevron_right</span>
+              </div>
+              <h3 class="font-bold text-text-primary mb-1 line-clamp-2">민주주의의 발전 과정</h3>
+              <p class="text-xs text-text-secondary mb-3">사회/역사 · 중급</p>
+              <div class="flex items-center gap-2 text-xs text-text-tertiary">
+                <span class="material-icons-round text-sm">schedule</span>
+                <span>약 20분</span>
+              </div>
+            </a>
+            
+            <a href="korean-learning.html" class="group bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50 hover:border-korean/30 cursor-pointer block">
+              <div class="flex items-start justify-between mb-3">
+                <span class="px-2 py-1 bg-purple-100 text-purple-600 text-[10px] font-bold rounded">문학</span>
+                <span class="material-icons-round text-text-tertiary group-hover:text-korean transition-colors">chevron_right</span>
+              </div>
+              <h3 class="font-bold text-text-primary mb-1 line-clamp-2">봄봄 (김유정)</h3>
+              <p class="text-xs text-text-secondary mb-3">소설 · 중급</p>
+              <div class="flex items-center gap-2 text-xs text-text-tertiary">
+                <span class="material-icons-round text-sm">schedule</span>
+                <span>약 25분</span>
+              </div>
+            </a>
+            
+            <a href="korean-learning.html" class="group bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50 hover:border-korean/30 cursor-pointer block">
+              <div class="flex items-start justify-between mb-3">
+                <span class="px-2 py-1 bg-korean-light text-korean text-[10px] font-bold rounded">비문학</span>
+                <span class="material-icons-round text-text-tertiary group-hover:text-korean transition-colors">chevron_right</span>
+              </div>
+              <h3 class="font-bold text-text-primary mb-1 line-clamp-2">경제 성장과 환경 보전</h3>
+              <p class="text-xs text-text-secondary mb-3">경제 · 고급</p>
+              <div class="flex items-center gap-2 text-xs text-text-tertiary">
+                <span class="material-icons-round text-sm">schedule</span>
+                <span>약 22분</span>
+              </div>
+            </a>
+          </div>
+        </section>
+        
+        <!-- Learning History -->
+        <section>
+          <h2 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+            <span class="material-icons-round text-korean">history</span>
+            최근 학습 기록 (Recent History)
+          </h2>
+          
+          <div class="bg-surface rounded-2xl shadow-card border border-border-light/50 overflow-hidden">
+            <table class="w-full">
+              <thead class="bg-background">
+                <tr class="text-xs text-text-secondary">
+                  <th class="text-left px-5 py-3 font-medium">지문</th>
+                  <th class="text-left px-5 py-3 font-medium">유형</th>
+                  <th class="text-center px-5 py-3 font-medium">O/X 점수</th>
+                  <th class="text-center px-5 py-3 font-medium">소요시간</th>
+                  <th class="text-center px-5 py-3 font-medium">학습일</th>
+                  <th class="text-center px-5 py-3 font-medium">상태</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-light">
+                <tr class="hover:bg-background/50 transition-colors">
+                  <td class="px-5 py-4 font-medium">인공지능과 미래 사회</td>
+                  <td class="px-5 py-4 text-sm text-text-secondary">비문학 · 과학</td>
+                  <td class="px-5 py-4 text-center text-sm font-semibold text-success">8/10</td>
+                  <td class="px-5 py-4 text-center text-sm text-text-secondary">15분</td>
+                  <td class="px-5 py-4 text-center text-sm text-text-secondary">오늘</td>
+                  <td class="px-5 py-4 text-center">
+                    <span class="px-2 py-1 bg-success-light text-success text-xs font-bold rounded">완료</span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-background/50 transition-colors">
+                  <td class="px-5 py-4 font-medium">기후 변화의 원인과 대책</td>
+                  <td class="px-5 py-4 text-sm text-text-secondary">비문학 · 환경</td>
+                  <td class="px-5 py-4 text-center text-sm font-semibold text-success">9/10</td>
+                  <td class="px-5 py-4 text-center text-sm text-text-secondary">18분</td>
+                  <td class="px-5 py-4 text-center text-sm text-text-secondary">오늘</td>
+                  <td class="px-5 py-4 text-center">
+                    <span class="px-2 py-1 bg-success-light text-success text-xs font-bold rounded">완료</span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-background/50 transition-colors">
+                  <td class="px-5 py-4 font-medium">한국 전통 건축의 특징</td>
+                  <td class="px-5 py-4 text-sm text-text-secondary">비문학 · 예술</td>
+                  <td class="px-5 py-4 text-center text-sm font-semibold text-korean">7/10</td>
+                  <td class="px-5 py-4 text-center text-sm text-text-secondary">20분</td>
+                  <td class="px-5 py-4 text-center text-sm text-text-secondary">어제</td>
+                  <td class="px-5 py-4 text-center">
+                    <span class="px-2 py-1 bg-success-light text-success text-xs font-bold rounded">완료</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        
+      </div>
+    </main>
+  </div>
+  
+  <!-- Mobile Layout -->
+  <div class="lg:hidden flex flex-col h-screen">
+    <!-- Mobile Header -->
+    <header class="h-14 bg-korean flex items-center justify-between px-4 flex-shrink-0">
+      <a href="subjects.html" class="p-2 -ml-2 text-white/80 hover:text-white rounded-lg">
+        <span class="material-icons-round">arrow_back</span>
+      </a>
+      <span class="font-bold text-white">국어</span>
+      <a href="ai-tutor.html" class="p-2 -mr-2 text-white/80 hover:text-white rounded-lg">
+        <span class="material-icons-round">smart_toy</span>
+      </a>
+    </header>
+    
+    <!-- Mobile Content -->
+    <div class="flex-1 overflow-y-auto pb-20">
+      
+      <!-- Stats Bar -->
+      <div class="bg-korean px-4 pb-5">
+        <div class="flex items-center justify-around text-white text-center">
+          <div>
+            <div class="text-2xl font-bold">85%</div>
+            <div class="text-xs text-white/70">진도율</div>
+          </div>
+          <div class="w-px h-8 bg-white/20"></div>
+          <div>
+            <div class="text-2xl font-bold">92%</div>
+            <div class="text-xs text-white/70">정답률</div>
+          </div>
+          <div class="w-px h-8 bg-white/20"></div>
+          <div>
+            <div class="text-2xl font-bold">12</div>
+            <div class="text-xs text-white/70">완료 지문</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 space-y-4">
+        <!-- Mobile Instructor Comment -->
+        <section class="bg-surface rounded-xl p-3 shadow-card border-l-4 border-korean">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-korean to-blue-300 p-0.5 flex-shrink-0">
+              <div class="w-full h-full rounded-full bg-surface overflow-hidden">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=teacher2&backgroundColor=c0aede" alt="강사" class="w-full h-full object-cover">
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-bold text-text-primary text-sm">박국어 선생님</span>
+                <span class="text-[10px] text-text-tertiary">· 어제</span>
+              </div>
+              <p class="text-xs text-text-secondary leading-relaxed line-clamp-2">
+                비문학 지문 분석 실력이 늘었어요! 이번 주는 문학 지문도 도전해보자.
+              </p>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Current Step -->
+        <section class="bg-korean-light rounded-xl p-4 border border-korean/20">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="px-2 py-0.5 bg-korean text-white text-[10px] font-bold rounded">STEP 3</span>
+            <span class="font-bold text-text-primary">구조화 (Structuring)</span>
+          </div>
+          <p class="text-sm text-text-secondary mb-4">글의 구조를 파악하고 핵심 문단을 선택하세요.</p>
+          <button class="w-full py-3 bg-korean text-white font-semibold rounded-xl">
+            이어서 학습하기 →
+          </button>
+        </section>
+        
+        <!-- 5 Steps Mini -->
+        <section class="bg-surface rounded-xl p-4 shadow-card border border-border-light/50">
+          <h3 class="font-bold text-text-primary mb-3 text-sm">5단계 학습</h3>
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-success flex items-center justify-center text-white text-xs">✓</div>
+              <span class="text-[10px] text-text-tertiary mt-1">읽기</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-success mx-1"></div>
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-success flex items-center justify-center text-white text-xs">✓</div>
+              <span class="text-[10px] text-text-tertiary mt-1">연결</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-gradient-to-r from-success to-korean mx-1"></div>
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-korean flex items-center justify-center text-white text-xs">3</div>
+              <span class="text-[10px] text-korean font-medium mt-1">구조화</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-border-light mx-1"></div>
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-border-light flex items-center justify-center text-text-tertiary text-xs">4</div>
+              <span class="text-[10px] text-text-tertiary mt-1">검증</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-border-light mx-1"></div>
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-border-light flex items-center justify-center text-text-tertiary text-xs">5</div>
+              <span class="text-[10px] text-text-tertiary mt-1">요약</span>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Today's Passages -->
+        <section>
+          <h3 class="font-bold text-text-primary mb-3">오늘의 학습</h3>
+          <div class="space-y-3">
+            <div class="bg-surface rounded-xl p-4 shadow-card border border-success/30">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-success-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-success">check</span>
+                </div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-text-primary text-sm">인공지능과 미래 사회</h4>
+                  <p class="text-xs text-text-secondary">비문학 · 과학/기술</p>
+                  <div class="flex items-center gap-3 mt-2 text-xs text-text-tertiary">
+                    <span>O/X 8/10</span>
+                    <span>15분</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-surface rounded-xl p-4 shadow-card border border-success/30">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-success-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-success">check</span>
+                </div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-text-primary text-sm">기후 변화의 원인과 대책</h4>
+                  <p class="text-xs text-text-secondary">비문학 · 환경</p>
+                  <div class="flex items-center gap-3 mt-2 text-xs text-text-tertiary">
+                    <span>O/X 9/10</span>
+                    <span>18분</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- More Passages -->
+        <section>
+          <h3 class="font-bold text-text-primary mb-3">더 풀어보기</h3>
+          <div class="space-y-3">
+            <a href="#" class="block bg-surface rounded-xl p-4 shadow-card border border-border-light/50">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="inline-block px-2 py-0.5 bg-korean-light text-korean text-[10px] font-bold rounded mb-1">비문학</span>
+                  <h4 class="font-semibold text-text-primary text-sm">민주주의의 발전 과정</h4>
+                  <p class="text-xs text-text-secondary">사회/역사 · 중급 · 약 20분</p>
+                </div>
+                <span class="material-icons-round text-text-tertiary">chevron_right</span>
+              </div>
+            </a>
+            
+            <a href="#" class="block bg-surface rounded-xl p-4 shadow-card border border-border-light/50">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="inline-block px-2 py-0.5 bg-purple-100 text-purple-600 text-[10px] font-bold rounded mb-1">문학</span>
+                  <h4 class="font-semibold text-text-primary text-sm">봄봄 (김유정)</h4>
+                  <p class="text-xs text-text-secondary">소설 · 중급 · 약 25분</p>
+                </div>
+                <span class="material-icons-round text-text-tertiary">chevron_right</span>
+              </div>
+            </a>
+          </div>
+        </section>
+        
+        <!-- Recent Learning History (Mobile) -->
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-text-primary flex items-center gap-2">
+              <span class="material-icons-round text-korean text-lg">history</span>
+              최근 학습 기록
+            </h3>
+            <a href="#" class="text-xs text-korean font-medium">전체보기</a>
+          </div>
+          <div class="space-y-3">
+            <!-- Record 1 -->
+            <div class="bg-surface rounded-xl p-4 shadow-card border border-border-light/50">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 bg-korean-light text-korean text-[10px] font-bold rounded">비문학</span>
+                  <span class="text-xs text-text-tertiary">오늘</span>
+                </div>
+                <span class="px-2 py-0.5 bg-success-light text-success text-[10px] font-bold rounded">완료</span>
+              </div>
+              <h4 class="font-semibold text-text-primary text-sm mb-2">인공지능과 미래 사회</h4>
+              <div class="flex items-center gap-4 text-xs text-text-secondary">
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm text-success">check_circle</span>
+                  O/X 8/10
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm">schedule</span>
+                  15분
+                </span>
+              </div>
+            </div>
+            
+            <!-- Record 2 -->
+            <div class="bg-surface rounded-xl p-4 shadow-card border border-border-light/50">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 bg-korean-light text-korean text-[10px] font-bold rounded">비문학</span>
+                  <span class="text-xs text-text-tertiary">오늘</span>
+                </div>
+                <span class="px-2 py-0.5 bg-success-light text-success text-[10px] font-bold rounded">완료</span>
+              </div>
+              <h4 class="font-semibold text-text-primary text-sm mb-2">기후 변화의 원인과 대책</h4>
+              <div class="flex items-center gap-4 text-xs text-text-secondary">
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm text-success">check_circle</span>
+                  O/X 9/10
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm">schedule</span>
+                  18분
+                </span>
+              </div>
+            </div>
+            
+            <!-- Record 3 -->
+            <div class="bg-surface rounded-xl p-4 shadow-card border border-border-light/50">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 bg-korean-light text-korean text-[10px] font-bold rounded">비문학</span>
+                  <span class="text-xs text-text-tertiary">어제</span>
+                </div>
+                <span class="px-2 py-0.5 bg-success-light text-success text-[10px] font-bold rounded">완료</span>
+              </div>
+              <h4 class="font-semibold text-text-primary text-sm mb-2">한국 전통 건축의 특징</h4>
+              <div class="flex items-center gap-4 text-xs text-text-secondary">
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm text-korean">check_circle</span>
+                  O/X 7/10
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm">schedule</span>
+                  20분
+                </span>
+              </div>
+            </div>
+            
+            <!-- Record 4 -->
+            <div class="bg-surface rounded-xl p-4 shadow-card border border-border-light/50">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 bg-purple-100 text-purple-600 text-[10px] font-bold rounded">문학</span>
+                  <span class="text-xs text-text-tertiary">2일 전</span>
+                </div>
+                <span class="px-2 py-0.5 bg-success-light text-success text-[10px] font-bold rounded">완료</span>
+              </div>
+              <h4 class="font-semibold text-text-primary text-sm mb-2">소나기 (황순원)</h4>
+              <div class="flex items-center gap-4 text-xs text-text-secondary">
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm text-success">check_circle</span>
+                  O/X 10/10
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-sm">schedule</span>
+                  22분
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    
+    <!-- Mobile Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-border-light flex items-center justify-around px-2 z-50">
+      <a href="student-dashboard.html" class="flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+        <span class="material-icons-round">home</span>
+        <span class="text-[10px] font-medium">홈</span>
+      </a>
+      <a href="subjects.html" class="flex flex-col items-center gap-1 px-3 py-2 text-korean">
+        <span class="material-icons-round">auto_stories</span>
+        <span class="text-[10px] font-medium">과목</span>
+      </a>
+      <a href="ai-tutor.html" class="flex flex-col items-center gap-1 px-3 py-2">
+        <div class="w-12 h-12 -mt-6 bg-primary rounded-full flex items-center justify-center shadow-lg">
+          <span class="material-icons-round text-white">smart_toy</span>
+        </div>
+        <span class="text-[10px] font-medium text-primary -mt-1">AI튜터</span>
+      </a>
+      <a href="report.html" class="flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+        <span class="material-icons-round">insights</span>
+        <span class="text-[10px] font-medium">리포트</span>
+      </a>
+      <a href="mypage.html" class="flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+        <span class="material-icons-round">person</span>
+        <span class="text-[10px] font-medium">MY</span>
+      </a>
+    </nav>
+  </div>
+  
+  <script>
+    // Favorites Data (would come from database in real app)
+    const passageData = {
+      'korean_ai_future_001': {
+        id: 'korean_ai_future_001',
+        title: '인공지능과 미래 사회',
+        type: '비문학',
+        category: '과학/기술',
+        difficulty: '중급',
+        time: '약 18분'
+      },
+      'korean_democracy_002': {
+        id: 'korean_democracy_002',
+        title: '민주주의의 발전 과정',
+        type: '비문학',
+        category: '사회/역사',
+        difficulty: '중급',
+        time: '약 20분'
+      },
+      'korean_spring_003': {
+        id: 'korean_spring_003',
+        title: '봄봄 (김유정)',
+        type: '문학',
+        category: '소설',
+        difficulty: '중급',
+        time: '약 25분'
+      }
+    };
+    
+    // Load and display favorites on page load
+    function loadFavorites() {
+      const favorites = JSON.parse(localStorage.getItem('koreanFavorites') || '[]');
+      const section = document.getElementById('favoritesSection');
+      const container = document.getElementById('favoritesContainer');
+      const emptyState = document.getElementById('favoritesEmpty');
+      
+      if (favorites.length === 0) {
+        section.classList.add('hidden');
+        return;
+      }
+      
+      section.classList.remove('hidden');
+      container.innerHTML = '';
+      
+      let hasValidFavorites = false;
+      
+      favorites.forEach(passageId => {
+        const passage = passageData[passageId];
+        if (!passage) return;
+        
+        hasValidFavorites = true;
+        
+        const isLiterature = passage.type === '문학';
+        const typeClass = isLiterature ? 'bg-purple-100 text-purple-600' : 'bg-korean-light text-korean';
+        
+        const card = document.createElement('div');
+        card.className = 'group relative bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50 hover:border-korean/30';
+        card.innerHTML = `
+          <button onclick="removeFavorite('${passageId}')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-background hover:bg-error-light flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <span class="material-icons-round text-text-tertiary hover:text-error text-lg">close</span>
+          </button>
+          <a href="korean-learning.html" class="block">
+            <div class="flex items-start gap-2 mb-3">
+              <span class="px-2 py-1 ${typeClass} text-[10px] font-bold rounded">${passage.type}</span>
+              <span class="material-icons-round text-primary text-lg">bookmark</span>
+            </div>
+            <h3 class="font-bold text-text-primary mb-1 line-clamp-2 pr-6">${passage.title}</h3>
+            <p class="text-xs text-text-secondary mb-3">${passage.category} · ${passage.difficulty}</p>
+            <div class="flex items-center gap-2 text-xs text-text-tertiary">
+              <span class="material-icons-round text-sm">schedule</span>
+              <span>${passage.time}</span>
+            </div>
+          </a>
+        `;
+        container.appendChild(card);
+      });
+      
+      if (!hasValidFavorites) {
+        container.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+      } else {
+        container.classList.remove('hidden');
+        emptyState.classList.add('hidden');
+      }
+    }
+    
+    // Remove a favorite
+    function removeFavorite(passageId) {
+      let favorites = JSON.parse(localStorage.getItem('koreanFavorites') || '[]');
+      favorites = favorites.filter(id => id !== passageId);
+      localStorage.setItem('koreanFavorites', JSON.stringify(favorites));
+      
+      // Show toast
+      showToast('즐겨찾기에서 제거했어요');
+      
+      // Reload favorites
+      loadFavorites();
+    }
+    
+    // Clear all favorites
+    function clearAllFavorites() {
+      if (!confirm('모든 즐겨찾기를 삭제하시겠어요?')) return;
+      
+      localStorage.removeItem('koreanFavorites');
+      loadFavorites();
+      showToast('즐겨찾기를 모두 삭제했어요');
+    }
+    
+    // Toast notification
+    function showToast(message) {
+      const existingToast = document.querySelector('.toast-notification');
+      if (existingToast) existingToast.remove();
+      
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification fixed bottom-24 lg:bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 bg-navy text-white rounded-xl shadow-lg z-50';
+      toast.innerHTML = `<span class="font-medium text-sm">${message}</span>`;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', loadFavorites);
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

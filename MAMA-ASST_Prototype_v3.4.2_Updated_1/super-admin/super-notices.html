@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>공지사항 | MAMA-ASST 슈퍼관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'super': '#6366F1',
+            'super-dark': '#4F46E5',
+            'super-light': '#EEF2FF',
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { 
+      background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); 
+      color: white; 
+    }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .gradient-super { background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); }
+    .modal-overlay { opacity: 0; visibility: hidden; transition: all 0.3s; }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-content { transform: scale(0.95) translateY(10px); transition: all 0.3s; }
+    .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+    .notice-card { transition: all 0.2s ease; }
+    .notice-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+    .status-badge { padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+    .table-row:hover { background-color: #F9FAFB; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-72 bg-gradient-to-b from-slate-900 to-slate-800 text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-super-light">Super Admin</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">비즈니스</p>
+          <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">apartment</span>
+            <span class="font-medium">학원 관리</span>
+          </a>
+          <a href="super-inquiries.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">support_agent</span>
+            <span class="font-medium">도입 문의</span>
+          </a>
+          <a href="super-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">account_balance</span>
+            <span class="font-medium">결제/정산</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">콘텐츠</p>
+          <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">library_books</span>
+            <span class="font-medium">콘텐츠 마스터</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">운영</p>
+          <a href="super-users.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">groups</span>
+            <span class="font-medium">사용자 관리</span>
+          </a>
+          <a href="super-ai-usage.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">smart_toy</span>
+            <span class="font-medium">AI 모니터링</span>
+          </a>
+          <a href="super-notices.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+            <span class="material-icons-round text-xl">campaign</span>
+            <span class="font-medium">공지사항</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">시스템</p>
+          <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">tune</span>
+            <span class="font-medium">시스템 설정</span>
+          </a>
+          <a href="super-logs.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">history</span>
+            <span class="font-medium">로그/감사</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full gradient-super flex items-center justify-center text-white font-bold">
+            <span class="material-icons-round text-xl">admin_panel_settings</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">Super Admin</p>
+            <p class="text-xs text-white/60">MAMA-ASST Platform</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <span class="font-bold text-lg">Super Admin</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">apartment</span>
+          <span class="font-medium">학원 관리</span>
+        </a>
+        <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">library_books</span>
+          <span class="font-medium">콘텐츠 마스터</span>
+        </a>
+        <a href="super-notices.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl">
+          <span class="material-icons-round text-xl">campaign</span>
+          <span class="font-medium">공지사항</span>
+        </a>
+        <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">tune</span>
+          <span class="font-medium">시스템 설정</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-72">
+      <!-- Top Header -->
+      <header class="bg-white border-b border-border-light sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 lg:px-8 py-4">
+          <div class="flex items-center gap-4">
+            <button onclick="openMobileMenu()" class="lg:hidden p-2 hover:bg-gray-100 rounded-xl">
+              <span class="material-icons-round">menu</span>
+            </button>
+            <div>
+              <h1 class="text-xl font-bold text-navy">공지사항</h1>
+              <p class="text-sm text-text-secondary">전체 학원 대상 공지 관리</p>
+            </div>
+          </div>
+          
+          <button onclick="openNoticeModal()" class="flex items-center gap-2 px-4 py-2 gradient-super text-white rounded-xl hover:opacity-90 transition-opacity">
+            <span class="material-icons-round text-sm">add</span>
+            <span class="font-medium">새 공지</span>
+          </button>
+        </div>
+      </header>
+      
+      <div class="p-4 lg:p-8">
+        <!-- 통계 카드 -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-xl gradient-super flex items-center justify-center">
+                <span class="material-icons-round text-white">article</span>
+              </div>
+            </div>
+            <p class="text-sm text-text-secondary">전체 공지</p>
+            <p class="text-2xl font-bold text-navy">24</p>
+          </div>
+          
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-success to-emerald-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">visibility</span>
+              </div>
+            </div>
+            <p class="text-sm text-text-secondary">게시 중</p>
+            <p class="text-2xl font-bold text-success">18</p>
+          </div>
+          
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-warning to-orange-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">push_pin</span>
+              </div>
+            </div>
+            <p class="text-sm text-text-secondary">상단 고정</p>
+            <p class="text-2xl font-bold text-warning">3</p>
+          </div>
+          
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center">
+                <span class="material-icons-round text-white">edit_note</span>
+              </div>
+            </div>
+            <p class="text-sm text-text-secondary">임시저장</p>
+            <p class="text-2xl font-bold text-text-secondary">3</p>
+          </div>
+        </div>
+        
+        <!-- 검색 및 필터 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-border-light mb-6">
+          <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex-1 relative">
+              <span class="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-text-tertiary">search</span>
+              <input type="text" placeholder="제목, 내용 검색" 
+                     class="w-full pl-12 pr-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+            
+            <div class="flex flex-wrap gap-3">
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none text-sm">
+                <option>전체 유형</option>
+                <option>공지</option>
+                <option>업데이트</option>
+                <option>점검</option>
+                <option>이벤트</option>
+              </select>
+              
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none text-sm">
+                <option>전체 상태</option>
+                <option>게시 중</option>
+                <option>예약됨</option>
+                <option>종료됨</option>
+                <option>임시저장</option>
+              </select>
+              
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none text-sm">
+                <option>최신순</option>
+                <option>조회순</option>
+                <option>제목순</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 공지사항 목록 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-border-light overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 border-b border-border-light">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-light">
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase">유형</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase">제목</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary uppercase">대상</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary uppercase">상태</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary uppercase">조회수</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary uppercase">작성일</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary uppercase">관리</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-light">
+                <!-- 상단 고정 공지 -->
+                <tr class="table-row bg-warning-light/30 cursor-pointer" onclick="openNoticeDetail('NTC001', 'urgent', '[긴급] 1월 15일 서버 점검 안내', true)">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-light">
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="status-badge bg-error-light text-error">긴급</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-2">
+                      <span class="material-icons-round text-warning text-sm">push_pin</span>
+                      <div>
+                        <p class="font-medium text-navy">[긴급] 1월 15일 서버 점검 안내</p>
+                        <p class="text-xs text-text-tertiary">00:00 ~ 06:00 서비스 중단 예정</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-super-light text-super">전체</span>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-success text-white">게시 중</span>
+                  </td>
+                  <td class="px-4 py-4 text-center font-medium">1,234</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">01.08</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openNoticeModal('NTC001')" class="p-2 hover:bg-gray-100 rounded-lg" title="수정">
+                        <span class="material-icons-round text-text-secondary text-lg">edit</span>
+                      </button>
+                      <button onclick="currentNoticeId='NTC001'; openDeleteNoticeModal()" class="p-2 hover:bg-error-light rounded-lg" title="삭제">
+                        <span class="material-icons-round text-error text-lg">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 상단 고정 공지 2 -->
+                <tr class="table-row bg-warning-light/30 cursor-pointer" onclick="openNoticeDetail('NTC002', 'update', 'v3.1 MVP 업데이트 안내', true)">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-light">
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="status-badge bg-info-light text-info">업데이트</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-2">
+                      <span class="material-icons-round text-warning text-sm">push_pin</span>
+                      <div>
+                        <p class="font-medium text-navy">v3.1 MVP 업데이트 안내</p>
+                        <p class="text-xs text-text-tertiary">새로운 기능 및 개선사항</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-super-light text-super">전체</span>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-success text-white">게시 중</span>
+                  </td>
+                  <td class="px-4 py-4 text-center font-medium">2,156</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">01.05</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openNoticeModal('NTC002')" class="p-2 hover:bg-gray-100 rounded-lg" title="수정">
+                        <span class="material-icons-round text-text-secondary text-lg">edit</span>
+                      </button>
+                      <button onclick="currentNoticeId='NTC002'; openDeleteNoticeModal()" class="p-2 hover:bg-error-light rounded-lg" title="삭제">
+                        <span class="material-icons-round text-error text-lg">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 일반 공지 -->
+                <tr class="table-row cursor-pointer" onclick="openNoticeDetail('NTC003', 'notice', '2025년 1월 요금 청구 안내', false)">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-light">
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="status-badge bg-gray-100 text-text-secondary">공지</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div>
+                      <p class="font-medium text-navy">2025년 1월 요금 청구 안내</p>
+                      <p class="text-xs text-text-tertiary">청구서 발송 일정 및 납부 방법</p>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-primary-light text-primary">관리자</span>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-success text-white">게시 중</span>
+                  </td>
+                  <td class="px-4 py-4 text-center font-medium">456</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">01.02</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openNoticeModal('NTC003')" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <span class="material-icons-round text-text-secondary text-lg">edit</span>
+                      </button>
+                      <button onclick="currentNoticeId='NTC003'; openDeleteNoticeModal()" class="p-2 hover:bg-error-light rounded-lg">
+                        <span class="material-icons-round text-error text-lg">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 예약된 공지 -->
+                <tr class="table-row cursor-pointer" onclick="openNoticeDetail('NTC004', 'event', '설 연휴 이벤트 안내', false)">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-light">
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="status-badge bg-success-light text-success">이벤트</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div>
+                      <p class="font-medium text-navy">설 연휴 이벤트 안내</p>
+                      <p class="text-xs text-text-tertiary">01.25 게시 예정</p>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-super-light text-super">전체</span>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-info text-white">예약됨</span>
+                  </td>
+                  <td class="px-4 py-4 text-center font-medium">-</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">01.10</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openNoticeModal('NTC004')" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <span class="material-icons-round text-text-secondary text-lg">edit</span>
+                      </button>
+                      <button onclick="currentNoticeId='NTC004'; openDeleteNoticeModal()" class="p-2 hover:bg-error-light rounded-lg">
+                        <span class="material-icons-round text-error text-lg">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 종료된 공지 -->
+                <tr class="table-row cursor-pointer opacity-60" onclick="openNoticeDetail('NTC005', 'maintenance', '12월 30일 서버 점검 완료', false)">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-light">
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="status-badge bg-error-light text-error">점검</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div>
+                      <p class="font-medium text-text-secondary">12월 30일 서버 점검 완료</p>
+                      <p class="text-xs text-text-tertiary">점검이 완료되었습니다</p>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-gray-100 text-text-tertiary">전체</span>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-gray-200 text-text-tertiary">종료됨</span>
+                  </td>
+                  <td class="px-4 py-4 text-center text-text-tertiary">892</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-tertiary">12.28</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openNoticeDetail('NTC005', 'maintenance', '12월 30일 서버 점검 완료', false)" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <span class="material-icons-round text-text-tertiary text-lg">visibility</span>
+                      </button>
+                      <button onclick="currentNoticeId='NTC005'; openDeleteNoticeModal()" class="p-2 hover:bg-error-light rounded-lg">
+                        <span class="material-icons-round text-error text-lg">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 임시저장 -->
+                <tr class="table-row cursor-pointer" onclick="openNoticeModal('NTC006')">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-light">
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="status-badge bg-gray-100 text-text-secondary">공지</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div>
+                      <p class="font-medium text-navy">새 학기 준비 안내 (작성 중)</p>
+                      <p class="text-xs text-text-tertiary">임시저장됨</p>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-gray-100 text-text-tertiary">-</span>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-warning-light text-warning">임시저장</span>
+                  </td>
+                  <td class="px-4 py-4 text-center font-medium">-</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">01.09</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openNoticeModal('NTC006')" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <span class="material-icons-round text-text-secondary text-lg">edit</span>
+                      </button>
+                      <button onclick="currentNoticeId='NTC006'; openDeleteNoticeModal()" class="p-2 hover:bg-error-light rounded-lg">
+                        <span class="material-icons-round text-error text-lg">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- 페이지네이션 -->
+          <div class="px-6 py-4 border-t border-border-light flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-text-secondary">총 <span class="font-bold text-navy">24개</span> 공지</p>
+            <div class="flex items-center gap-2">
+              <button class="p-2 border border-border-light rounded-lg hover:bg-gray-50 disabled:opacity-50" disabled>
+                <span class="material-icons-round text-sm">chevron_left</span>
+              </button>
+              <button class="w-10 h-10 gradient-super text-white rounded-lg font-medium">1</button>
+              <button class="w-10 h-10 border border-border-light rounded-lg hover:bg-gray-50 font-medium">2</button>
+              <button class="w-10 h-10 border border-border-light rounded-lg hover:bg-gray-50 font-medium">3</button>
+              <button class="p-2 border border-border-light rounded-lg hover:bg-gray-50">
+                <span class="material-icons-round text-sm">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- 새 공지 작성 모달 -->
+  <div id="noticeModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeNoticeModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy">새 공지 작성</h2>
+        <button onclick="closeNoticeModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[65vh]">
+        <!-- 유형 선택 -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-navy mb-2">유형</label>
+          <div class="flex flex-wrap gap-2">
+            <button class="px-4 py-2 border-2 border-super bg-super-light text-super rounded-xl text-sm font-medium">공지</button>
+            <button class="px-4 py-2 border-2 border-border-light rounded-xl text-sm text-text-secondary hover:border-info hover:bg-info-light hover:text-info">업데이트</button>
+            <button class="px-4 py-2 border-2 border-border-light rounded-xl text-sm text-text-secondary hover:border-error hover:bg-error-light hover:text-error">점검</button>
+            <button class="px-4 py-2 border-2 border-border-light rounded-xl text-sm text-text-secondary hover:border-success hover:bg-success-light hover:text-success">이벤트</button>
+            <button class="px-4 py-2 border-2 border-border-light rounded-xl text-sm text-text-secondary hover:border-error hover:bg-error-light hover:text-error">긴급</button>
+          </div>
+        </div>
+        
+        <!-- 제목 -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-navy mb-2">제목 <span class="text-error">*</span></label>
+          <input type="text" placeholder="공지 제목을 입력하세요" 
+                 class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+        </div>
+        
+        <!-- 내용 -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-navy mb-2">내용 <span class="text-error">*</span></label>
+          <textarea rows="8" placeholder="공지 내용을 입력하세요..." 
+                    class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super resize-none"></textarea>
+        </div>
+        
+        <!-- 대상 선택 -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-navy mb-2">대상</label>
+          <div class="flex flex-wrap gap-2">
+            <button class="px-4 py-2 border-2 border-super bg-super-light text-super rounded-xl text-sm font-medium">전체</button>
+            <button class="px-4 py-2 border-2 border-border-light rounded-xl text-sm text-text-secondary hover:border-primary hover:bg-primary-light hover:text-primary">관리자만</button>
+            <button class="px-4 py-2 border-2 border-border-light rounded-xl text-sm text-text-secondary hover:border-info hover:bg-info-light hover:text-info">강사만</button>
+          </div>
+        </div>
+        
+        <!-- 옵션 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">게시 시작일</label>
+            <input type="datetime-local" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">게시 종료일 (선택)</label>
+            <input type="datetime-local" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+          </div>
+        </div>
+        
+        <!-- 추가 옵션 -->
+        <div class="space-y-3">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="w-5 h-5 rounded border-border-light text-super focus:ring-super/20">
+            <span class="text-sm">상단 고정</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" id="sendPushNotice" class="w-5 h-5 rounded border-border-light text-super focus:ring-super/20">
+            <span class="text-sm">푸시 알림 발송</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="saveDraft()" class="px-4 py-2 text-text-secondary hover:text-navy">임시저장</button>
+        <div class="flex gap-3">
+          <button onclick="closeNoticeModal()" class="px-6 py-2 border border-border-light rounded-xl hover:bg-gray-50">
+            취소
+          </button>
+          <button onclick="publishNotice()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+            게시하기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 공지 상세 모달 -->
+  <div id="noticeDetailModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeNoticeDetailModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span id="detailTypeBadge" class="px-3 py-1 bg-super-light text-super text-sm font-medium rounded-full">공지</span>
+          <span id="detailPinBadge" class="hidden px-2 py-1 bg-warning-light text-warning text-xs rounded-full">📌 고정</span>
+        </div>
+        <button onclick="closeNoticeDetailModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <h2 id="detailTitle" class="text-xl font-bold text-navy mb-4">MAMA-ASST v2.0 업데이트 안내</h2>
+        
+        <div class="flex items-center gap-4 text-sm text-text-secondary mb-6">
+          <span class="flex items-center gap-1">
+            <span class="material-icons-round text-sm">person</span>
+            <span id="detailAuthor">운영팀</span>
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="material-icons-round text-sm">schedule</span>
+            <span id="detailDate">2025.01.12 10:00</span>
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="material-icons-round text-sm">visibility</span>
+            <span id="detailViews">1,234</span>
+          </span>
+        </div>
+        
+        <div id="detailContent" class="prose prose-sm max-w-none text-text-primary leading-relaxed">
+          <p>안녕하세요, MAMA-ASST 운영팀입니다.</p>
+          <p class="mt-4">더 나은 서비스 제공을 위해 다음과 같이 업데이트가 예정되어 있습니다.</p>
+          <ul class="mt-4 space-y-2 list-disc list-inside">
+            <li>대시보드 UI 개선</li>
+            <li>AI 학습 추천 알고리즘 고도화</li>
+            <li>성능 최적화 및 버그 수정</li>
+          </ul>
+          <p class="mt-4">이용에 참고 부탁드립니다.</p>
+        </div>
+        
+        <!-- 대상 표시 -->
+        <div class="mt-6 pt-6 border-t border-border-light">
+          <p class="text-sm text-text-secondary">
+            <span class="font-medium">대상:</span> 
+            <span id="detailTarget" class="ml-1">전체</span>
+          </p>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <div class="flex gap-2">
+          <button onclick="editNotice()" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2">
+            <span class="material-icons-round text-sm">edit</span>
+            수정
+          </button>
+          <button onclick="openDeleteNoticeModal()" class="px-4 py-2 border border-error text-error rounded-xl hover:bg-error-light flex items-center gap-2">
+            <span class="material-icons-round text-sm">delete</span>
+            삭제
+          </button>
+        </div>
+        <button onclick="closeNoticeDetailModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 공지 삭제 확인 모달 -->
+  <div id="deleteNoticeModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeDeleteNoticeModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-sm overflow-hidden" onclick="event.stopPropagation()">
+      <div class="p-6 text-center">
+        <div class="w-16 h-16 rounded-full bg-error-light mx-auto mb-4 flex items-center justify-center">
+          <span class="material-icons-round text-error text-3xl">delete_forever</span>
+        </div>
+        <h2 class="text-lg font-bold text-navy mb-2">공지를 삭제하시겠습니까?</h2>
+        <p class="text-sm text-text-secondary mb-6">삭제된 공지는 복구할 수 없습니다.</p>
+        
+        <div class="flex gap-3">
+          <button onclick="closeDeleteNoticeModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+            취소
+          </button>
+          <button onclick="confirmDeleteNotice()" class="flex-1 px-4 py-2.5 bg-error text-white rounded-xl hover:bg-error/90">
+            삭제
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 푸시 알림 발송 모달 -->
+  <div id="pushNotifyModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closePushNotifyModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">notifications_active</span>
+          푸시 알림 발송
+        </h2>
+        <button onclick="closePushNotifyModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <div class="bg-super-light rounded-xl p-4 mb-4">
+          <p class="font-medium text-navy mb-1" id="pushNoticeTitle">MAMA-ASST v2.0 업데이트 안내</p>
+          <p class="text-sm text-text-secondary">공지 유형: 업데이트</p>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">발송 대상</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="radio" name="pushTarget" value="all" class="accent-super" checked>
+              <div class="flex-1">
+                <p class="text-sm font-medium">전체 사용자</p>
+                <p class="text-xs text-text-tertiary">12,450명</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="radio" name="pushTarget" value="admin" class="accent-super">
+              <div class="flex-1">
+                <p class="text-sm font-medium">관리자만</p>
+                <p class="text-xs text-text-tertiary">45명</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="radio" name="pushTarget" value="instructor" class="accent-super">
+              <div class="flex-1">
+                <p class="text-sm font-medium">강사만</p>
+                <p class="text-xs text-text-tertiary">124명</p>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <div class="bg-warning-light rounded-xl p-3">
+          <p class="text-xs text-warning flex items-center gap-2">
+            <span class="material-icons-round text-sm">info</span>
+            발송 후에는 취소할 수 없습니다.
+          </p>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closePushNotifyModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmPushNotify()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90 flex items-center gap-2">
+          <span class="material-icons-round text-sm">send</span>
+          발송하기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 토스트 컨테이너 -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-3"></div>
+  
+  <script>
+    // ========================================
+    // 토스트 알림 시스템
+    // ========================================
+    // [MIGRATED TO MODULE] showToast - now using toast.js module
+    
+    // ========================================
+    // Mobile Menu
+    // ========================================
+    function openMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // ========================================
+    // 새 공지 작성 모달
+    // ========================================
+    let isEditMode = false;
+    let currentNoticeId = null;
+    
+    function openNoticeModal(editId = null) {
+      isEditMode = !!editId;
+      currentNoticeId = editId;
+      
+      // 모달 제목 변경
+      document.querySelector('#noticeModal h2').textContent = isEditMode ? '공지 수정' : '새 공지 작성';
+      
+      document.getElementById('noticeModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeNoticeModal() {
+      document.getElementById('noticeModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveDraft() {
+      showToast('임시저장 되었습니다.', 'info');
+    }
+    
+    function publishNotice() {
+      closeNoticeModal();
+      
+      if (isEditMode) {
+        showToast('공지가 수정되었습니다.', 'success');
+      } else {
+        showToast('공지가 게시되었습니다.', 'success');
+      }
+    }
+    
+    // ========================================
+    // 공지 상세 모달
+    // ========================================
+    function openNoticeDetail(id, type, title, pinned) {
+      // 유형 배지 설정
+      const typeBadge = document.getElementById('detailTypeBadge');
+      const typeStyles = {
+        notice: { bg: 'bg-super-light', text: 'text-super', label: '공지' },
+        update: { bg: 'bg-info-light', text: 'text-info', label: '업데이트' },
+        maintenance: { bg: 'bg-error-light', text: 'text-error', label: '점검' },
+        event: { bg: 'bg-success-light', text: 'text-success', label: '이벤트' },
+        urgent: { bg: 'bg-error-light', text: 'text-error', label: '긴급' }
+      };
+      
+      const style = typeStyles[type] || typeStyles.notice;
+      typeBadge.className = `px-3 py-1 ${style.bg} ${style.text} text-sm font-medium rounded-full`;
+      typeBadge.textContent = style.label;
+      
+      // 고정 배지
+      document.getElementById('detailPinBadge').classList.toggle('hidden', !pinned);
+      
+      // 제목
+      if (title) {
+        document.getElementById('detailTitle').textContent = title;
+      }
+      
+      currentNoticeId = id;
+      document.getElementById('noticeDetailModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeNoticeDetailModal() {
+      document.getElementById('noticeDetailModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function editNotice() {
+      closeNoticeDetailModal();
+      openNoticeModal(currentNoticeId);
+    }
+    
+    // ========================================
+    // 공지 삭제 모달
+    // ========================================
+    function openDeleteNoticeModal() {
+      document.getElementById('deleteNoticeModal').classList.add('open');
+    }
+    
+    function closeDeleteNoticeModal() {
+      document.getElementById('deleteNoticeModal').classList.remove('open');
+    }
+    
+    function confirmDeleteNotice() {
+      closeDeleteNoticeModal();
+      closeNoticeDetailModal();
+      showToast('공지가 삭제되었습니다.', 'success');
+    }
+    
+    // ========================================
+    // 푸시 알림 모달
+    // ========================================
+    function openPushNotifyModal(title) {
+      if (title) {
+        document.getElementById('pushNoticeTitle').textContent = title;
+      }
+      document.getElementById('pushNotifyModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closePushNotifyModal() {
+      document.getElementById('pushNotifyModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmPushNotify() {
+      const target = document.querySelector('input[name="pushTarget"]:checked').value;
+      const targetText = { all: '전체 사용자', admin: '관리자', instructor: '강사' };
+      
+      closePushNotifyModal();
+      showToast(`${targetText[target]}에게 푸시 알림을 발송했습니다.`, 'success');
+    }
+    
+    // ========================================
+    // 유형 버튼 선택
+    // ========================================
+    document.querySelectorAll('#noticeModal .mb-6:first-child button').forEach(btn => {
+      btn.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('button').forEach(b => {
+          b.classList.remove('border-super', 'bg-super-light', 'text-super', 'border-info', 'bg-info-light', 'text-info', 'border-error', 'bg-error-light', 'text-error', 'border-success', 'bg-success-light', 'text-success');
+          b.classList.add('border-border-light', 'text-text-secondary');
+        });
+        
+        const typeColors = {
+          '공지': ['border-super', 'bg-super-light', 'text-super'],
+          '업데이트': ['border-info', 'bg-info-light', 'text-info'],
+          '점검': ['border-error', 'bg-error-light', 'text-error'],
+          '이벤트': ['border-success', 'bg-success-light', 'text-success'],
+          '긴급': ['border-error', 'bg-error-light', 'text-error']
+        };
+        
+        const colors = typeColors[this.textContent] || typeColors['공지'];
+        this.classList.remove('border-border-light', 'text-text-secondary');
+        this.classList.add(...colors);
+      });
+    });
+    
+    // ========================================
+    // Quick Actions
+    // ========================================
+    function filterNotices() {
+      showToast('필터가 적용되었습니다.', 'info');
+    }
+    
+    function searchNotices() {
+      const query = document.querySelector('input[placeholder*="검색"]').value;
+      if (query) {
+        showToast(`"${query}" 검색 결과를 표시합니다.`, 'info');
+      }
+    }
+    
+    // ========================================
+    // Keyboard Shortcuts
+    // ========================================
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeNoticeModal();
+        closeNoticeDetailModal();
+        closeDeleteNoticeModal();
+        closePushNotifyModal();
+      }
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

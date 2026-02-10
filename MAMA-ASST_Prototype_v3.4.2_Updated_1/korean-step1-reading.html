@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1단계: 읽기 | 국어 학습 | MAMA-ASST</title>
+  <meta name="description" content="MAMA-ASST 국어 5단계 학습 - 1단계 지문 읽기">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-hover': '#E55A3C',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            'korean-dark': '#3367D6',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            warning: '#F59E0B',
+          },
+          fontFamily: {
+            sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'],
+          },
+          borderRadius: {
+            'xl': '12px',
+            '2xl': '16px',
+            '3xl': '24px',
+          },
+          boxShadow: {
+            'soft': '0 2px 8px rgba(0, 0, 0, 0.04), 0 4px 24px rgba(0, 0, 0, 0.06)',
+            'card': '0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04)',
+            'card-hover': '0 4px 12px rgba(0, 0, 0, 0.1), 0 8px 24px rgba(0, 0, 0, 0.08)',
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+    
+    /* Step indicator styles */
+    .step-item { position: relative; }
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    .step-circle.active {
+      background: linear-gradient(135deg, #4285F4 0%, #5A95F5 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
+    }
+    .step-circle.completed {
+      background: #22C55E;
+      color: white;
+    }
+    .step-circle.pending {
+      background: #F3F4F6;
+      color: #9CA3AF;
+    }
+    .step-connector {
+      position: absolute;
+      top: 20px;
+      left: 40px;
+      width: calc(100% - 40px);
+      height: 3px;
+      background: #E5E7EB;
+      z-index: 0;
+    }
+    .step-connector.completed { background: #22C55E; }
+    .step-connector.active { 
+      background: linear-gradient(90deg, #22C55E 0%, #4285F4 100%);
+    }
+    
+    /* Reading timer pulse */
+    @keyframes timer-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(66, 133, 244, 0); }
+    }
+    .timer-active { animation: timer-pulse 2s infinite; }
+    
+    /* Paragraph highlight on hover */
+    .paragraph-block {
+      transition: all 0.2s ease;
+      padding: 12px 16px;
+      margin: -12px -16px;
+      border-radius: 8px;
+    }
+    .paragraph-block:hover {
+      background: rgba(66, 133, 244, 0.05);
+    }
+    
+    /* Progress bar animation */
+    @keyframes progress-fill {
+      from { width: 0%; }
+    }
+    .progress-animated { animation: progress-fill 1s ease-out; }
+    
+    /* Reading mode enhancement */
+    .reading-text {
+      font-size: 17px;
+      line-height: 1.9;
+      letter-spacing: -0.01em;
+      word-break: keep-all;
+    }
+    
+    /* Bottom nav for mobile */
+    .bottom-nav-mobile {
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <!-- Desktop Layout -->
+  <div class="hidden lg:flex h-screen overflow-hidden">
+    
+    <!-- Sidebar (Compact for learning mode) -->
+    <aside class="w-20 bg-navy flex flex-col items-center py-6 flex-shrink-0">
+      <!-- Logo -->
+      <a href="student-dashboard.html" class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg mb-8">
+        <span class="text-white font-bold text-xl">M</span>
+      </a>
+      
+      <!-- Nav Icons -->
+      <nav class="flex flex-col items-center gap-4 flex-1">
+        <a href="student-dashboard.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors" title="홈">
+          <span class="material-icons-round">home</span>
+        </a>
+        <a href="subject-korean.html" class="w-12 h-12 rounded-xl flex items-center justify-center bg-korean text-white shadow-lg" title="국어">
+          <span class="material-icons-round">menu_book</span>
+        </a>
+        <a href="subject-english.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors" title="영어">
+          <span class="material-icons-round">translate</span>
+        </a>
+        <a href="subject-math.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors" title="수학">
+          <span class="material-icons-round">calculate</span>
+        </a>
+      </nav>
+      
+      <!-- Exit -->
+      <a href="subject-korean.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-red-400 transition-colors" title="학습 종료">
+        <span class="material-icons-round">close</span>
+      </a>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Top Header -->
+      <header class="bg-surface border-b border-border-light px-8 py-4">
+        <div class="flex items-center justify-between">
+          <!-- Back & Title -->
+          <div class="flex items-center gap-4">
+            <a href="subject-korean.html" class="w-10 h-10 rounded-xl bg-background hover:bg-border-light flex items-center justify-center transition-colors">
+              <span class="material-icons-round text-text-secondary">arrow_back</span>
+            </a>
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 bg-korean-light text-korean text-xs font-bold rounded">비문학</span>
+                <span class="text-xs text-text-tertiary">과학/기술</span>
+              </div>
+              <h1 class="text-xl font-bold text-text-primary">인공지능과 미래 사회</h1>
+            </div>
+          </div>
+          
+          <!-- Timer & XP -->
+          <div class="flex items-center gap-6">
+            <!-- Reading Timer -->
+            <div class="flex items-center gap-3 px-4 py-2 bg-korean-light rounded-xl timer-active">
+              <span class="material-icons-round text-korean">timer</span>
+              <div>
+                <p class="text-xs text-korean font-medium">읽기 시간</p>
+                <p class="text-lg font-bold text-korean" id="readingTimer">02:34</p>
+              </div>
+            </div>
+            
+            <!-- XP -->
+            <div class="flex items-center gap-2 px-4 py-2 bg-primary-light rounded-xl">
+              <span class="material-icons-round text-primary">star</span>
+              <div>
+                <p class="text-xs text-primary font-medium">예상 XP</p>
+                <p class="text-lg font-bold text-primary">+30</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step Indicator -->
+        <div class="mt-6">
+          <div class="flex items-center">
+            <!-- Step 1: Reading (Active) -->
+            <div class="step-item flex items-center" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle active">
+                  <span class="material-icons-round text-lg">auto_stories</span>
+                </div>
+                <span class="text-xs font-semibold text-korean mt-2">읽기</span>
+              </div>
+              <div class="step-connector active"></div>
+            </div>
+            
+            <!-- Step 2: Bridging -->
+            <div class="step-item flex items-center" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle pending">
+                  <span class="material-icons-round text-lg">link</span>
+                </div>
+                <span class="text-xs font-medium text-text-tertiary mt-2">어휘</span>
+              </div>
+              <div class="step-connector"></div>
+            </div>
+            
+            <!-- Step 3: Structuring -->
+            <div class="step-item flex items-center" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle pending">
+                  <span class="material-icons-round text-lg">account_tree</span>
+                </div>
+                <span class="text-xs font-medium text-text-tertiary mt-2">구조화</span>
+              </div>
+              <div class="step-connector"></div>
+            </div>
+            
+            <!-- Step 4: Verifying -->
+            <div class="step-item flex items-center" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle pending">
+                  <span class="material-icons-round text-lg">quiz</span>
+                </div>
+                <span class="text-xs font-medium text-text-tertiary mt-2">검증</span>
+              </div>
+              <div class="step-connector"></div>
+            </div>
+            
+            <!-- Step 5: Summary -->
+            <div class="step-item flex items-center">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle pending">
+                  <span class="material-icons-round text-lg">summarize</span>
+                </div>
+                <span class="text-xs font-medium text-text-tertiary mt-2">요약</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="flex-1 overflow-hidden flex">
+        
+        <!-- Left: Passage Text -->
+        <div class="flex-1 overflow-y-auto p-8">
+          <div class="max-w-3xl mx-auto">
+            
+            <!-- Reading Tips Card -->
+            <div class="bg-gradient-to-r from-korean-light to-blue-50 rounded-2xl p-5 mb-6 border border-korean/20">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-xl bg-korean flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-white">lightbulb</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-text-primary mb-1">읽기 팁</h3>
+                  <p class="text-sm text-text-secondary">천천히 읽으면서 각 문단의 핵심 내용을 파악해보세요. 중요한 부분은 하이라이트 할 수 있어요.</p>
+                </div>
+                <button class="text-text-tertiary hover:text-text-secondary ml-auto">
+                  <span class="material-icons-round">close</span>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Passage Content -->
+            <article class="bg-surface rounded-2xl shadow-card p-8 border border-border-light/50">
+              <div class="reading-text text-text-primary space-y-6">
+                
+                <!-- Paragraph 1 -->
+                <div class="paragraph-block" data-para="1">
+                  <p><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-korean-light text-korean text-xs font-bold mr-2">1</span>인공지능(AI)은 인간의 학습능력, 추론능력, 지각능력을 인공적으로 구현한 컴퓨터 프로그램 또는 이를 포함한 컴퓨터 시스템을 의미한다. 최근 딥러닝 기술의 발전으로 AI는 이미지 인식, 자연어 처리, 게임 등 다양한 분야에서 인간의 능력을 뛰어넘는 성과를 보여주고 있다.</p>
+                </div>
+                
+                <!-- Paragraph 2 -->
+                <div class="paragraph-block" data-para="2">
+                  <p><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-korean-light text-korean text-xs font-bold mr-2">2</span>AI의 발전은 우리 사회에 큰 변화를 가져올 것으로 예상된다. 우선, 노동 시장에서 큰 변화가 일어날 것이다. 단순 반복적인 업무는 AI로 대체될 가능성이 높으며, 이로 인해 일부 직업은 사라지고 새로운 형태의 직업이 생겨날 것이다. 맥킨지 글로벌 연구소의 보고서에 따르면, 2030년까지 전 세계적으로 약 4억 개의 일자리가 자동화의 영향을 받을 것으로 전망된다.</p>
+                </div>
+                
+                <!-- Paragraph 3 -->
+                <div class="paragraph-block" data-para="3">
+                  <p><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-korean-light text-korean text-xs font-bold mr-2">3</span>한편, AI는 의료, 교육, 환경 등 다양한 분야에서 긍정적인 역할을 할 것으로 기대된다. 의료 분야에서 AI는 질병의 조기 진단과 맞춤형 치료법 개발에 활용되고 있으며, 교육 분야에서는 개인별 맞춤 학습을 가능하게 한다. 또한 환경 문제 해결을 위한 에너지 효율 최적화와 기후 변화 예측 모델 개발에도 AI가 활용되고 있다.</p>
+                </div>
+                
+                <!-- Paragraph 4 -->
+                <div class="paragraph-block" data-para="4">
+                  <p><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-korean-light text-korean text-xs font-bold mr-2">4</span>그러나 AI의 발전이 가져올 부정적인 측면도 간과해서는 안 된다. AI 시스템의 편향성 문제, 개인정보 보호 이슈, 그리고 AI의 의사결정에 대한 책임 소재 등 해결해야 할 윤리적 문제들이 산적해 있다. 특히 AI가 인간의 일자리를 대체함에 따라 발생할 수 있는 사회적 불평등 문제는 심각하게 고려되어야 한다.</p>
+                </div>
+                
+                <!-- Paragraph 5 -->
+                <div class="paragraph-block" data-para="5">
+                  <p><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-korean-light text-korean text-xs font-bold mr-2">5</span>따라서 AI 기술의 발전과 함께 이에 대한 사회적 논의와 제도적 장치 마련이 필요하다. AI 기술의 혜택을 모든 사람이 누릴 수 있도록 하면서도, 그로 인한 부작용을 최소화하기 위한 노력이 병행되어야 할 것이다. 궁극적으로 AI는 인간을 대체하는 것이 아니라 인간의 능력을 보완하고 확장하는 도구로 활용되어야 하며, 이를 위한 인간 중심의 AI 윤리 원칙 수립이 시급하다.</p>
+                </div>
+                
+              </div>
+              
+              <!-- Word Count & Estimated Time -->
+              <div class="mt-8 pt-6 border-t border-border-light flex items-center justify-between text-sm text-text-secondary">
+                <div class="flex items-center gap-4">
+                  <span class="flex items-center gap-1">
+                    <span class="material-icons-round text-lg">text_fields</span>
+                    총 5개 문단
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <span class="material-icons-round text-lg">article</span>
+                    약 650자
+                  </span>
+                </div>
+                <span class="flex items-center gap-1">
+                  <span class="material-icons-round text-lg">schedule</span>
+                  권장 읽기 시간: 3~5분
+                </span>
+              </div>
+            </article>
+            
+          </div>
+        </div>
+        
+        <!-- Right: Tools Panel -->
+        <aside class="w-80 bg-surface border-l border-border-light p-6 overflow-y-auto">
+          
+          <!-- Reading Progress -->
+          <div class="mb-6">
+            <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+              <span class="material-icons-round text-korean">trending_up</span>
+              읽기 진행률
+            </h3>
+            <div class="bg-background rounded-xl p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-text-secondary">스크롤 진행</span>
+                <span class="text-sm font-bold text-korean" id="scrollPercent">45%</span>
+              </div>
+              <div class="h-2 bg-border-light rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-korean to-blue-400 rounded-full progress-animated" style="width: 45%;" id="progressBar"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Quick Tools -->
+          <div class="mb-6">
+            <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+              <span class="material-icons-round text-korean">build</span>
+              읽기 도구
+            </h3>
+            <div class="grid grid-cols-2 gap-3">
+              <button id="fontIncreaseBtn" onclick="changeFontSize(1)" class="flex flex-col items-center gap-2 p-4 bg-background hover:bg-korean-light rounded-xl transition-colors group">
+                <span class="material-icons-round text-text-secondary group-hover:text-korean text-2xl">text_increase</span>
+                <span class="text-xs font-medium text-text-secondary group-hover:text-korean">글자 크게</span>
+              </button>
+              <button id="fontDecreaseBtn" onclick="changeFontSize(-1)" class="flex flex-col items-center gap-2 p-4 bg-background hover:bg-korean-light rounded-xl transition-colors group">
+                <span class="material-icons-round text-text-secondary group-hover:text-korean text-2xl">text_decrease</span>
+                <span class="text-xs font-medium text-text-secondary group-hover:text-korean">글자 작게</span>
+              </button>
+              <button id="highlightBtn" onclick="toggleHighlightMode()" class="flex flex-col items-center gap-2 p-4 bg-background hover:bg-korean-light rounded-xl transition-colors group">
+                <span class="material-icons-round text-text-secondary group-hover:text-korean text-2xl">highlight</span>
+                <span class="text-xs font-medium text-text-secondary group-hover:text-korean">하이라이트</span>
+              </button>
+              <button id="bookmarkBtn" onclick="toggleBookmark()" class="flex flex-col items-center gap-2 p-4 bg-background hover:bg-korean-light rounded-xl transition-colors group">
+                <span id="bookmarkIcon" class="material-icons-round text-text-secondary group-hover:text-korean text-2xl">bookmark_border</span>
+                <span class="text-xs font-medium text-text-secondary group-hover:text-korean">즐겨찾기</span>
+              </button>
+            </div>
+            <!-- Font Size Indicator -->
+            <div class="mt-3 flex items-center justify-between text-xs text-text-tertiary px-2">
+              <span>글자 크기</span>
+              <span id="fontSizeIndicator" class="font-bold text-korean">보통</span>
+            </div>
+          </div>
+          
+          <!-- Key Vocabulary Preview -->
+          <div class="mb-6">
+            <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+              <span class="material-icons-round text-korean">spellcheck</span>
+              핵심 어휘 미리보기
+            </h3>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between p-3 bg-background rounded-lg">
+                <span class="font-medium text-text-primary">딥러닝</span>
+                <span class="text-xs text-text-tertiary">2단계에서 학습</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-background rounded-lg">
+                <span class="font-medium text-text-primary">자동화</span>
+                <span class="text-xs text-text-tertiary">2단계에서 학습</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-background rounded-lg">
+                <span class="font-medium text-text-primary">편향성</span>
+                <span class="text-xs text-text-tertiary">2단계에서 학습</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- AI Hint -->
+          <div class="bg-gradient-to-br from-purple-50 to-korean-light rounded-xl p-4 border border-purple-100">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-korean flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-white text-sm">auto_awesome</span>
+              </div>
+              <div>
+                <h4 class="font-bold text-text-primary text-sm mb-1">AI 힌트</h4>
+                <p class="text-xs text-text-secondary">이 글은 AI의 <strong>긍정적 측면</strong>과 <strong>부정적 측면</strong>을 균형있게 다루고 있어요. 각 문단의 핵심 주장을 파악해보세요!</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Next Step Button -->
+          <div class="mt-8">
+            <a href="korean-step2-bridging.html" class="w-full py-4 bg-korean hover:bg-korean-dark text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-korean/30">
+              다 읽었어요! 다음 단계로
+              <span class="material-icons-round">arrow_forward</span>
+            </a>
+            <p class="text-xs text-text-tertiary text-center mt-3">최소 2분 이상 읽기를 권장해요</p>
+          </div>
+          
+        </aside>
+        
+      </div>
+      
+    </main>
+  </div>
+  
+  <!-- Mobile Layout -->
+  <div class="lg:hidden min-h-screen flex flex-col">
+    
+    <!-- Mobile Header -->
+    <header class="bg-surface border-b border-border-light px-4 py-3 sticky top-0 z-30">
+      <div class="flex items-center justify-between mb-3">
+        <a href="subject-korean.html" class="w-10 h-10 rounded-xl bg-background flex items-center justify-center">
+          <span class="material-icons-round text-text-secondary">arrow_back</span>
+        </a>
+        <div class="text-center">
+          <span class="px-2 py-0.5 bg-korean-light text-korean text-[10px] font-bold rounded">STEP 1</span>
+          <h1 class="text-sm font-bold text-text-primary">읽기 (Reading)</h1>
+        </div>
+        <div class="flex items-center gap-1 px-2 py-1 bg-korean-light rounded-lg timer-active">
+          <span class="material-icons-round text-korean text-sm">timer</span>
+          <span class="text-sm font-bold text-korean" id="mobileTimer">02:34</span>
+        </div>
+      </div>
+      
+      <!-- Mobile Step Indicator -->
+      <div class="flex items-center gap-1">
+        <div class="flex-1 h-1.5 bg-korean rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-border-light rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-border-light rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-border-light rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-border-light rounded-full"></div>
+      </div>
+    </header>
+    
+    <!-- Mobile Content -->
+    <main class="flex-1 overflow-y-auto p-4 pb-24">
+      
+      <!-- Passage Title Card -->
+      <div class="bg-korean-light rounded-xl p-4 mb-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2 py-0.5 bg-korean text-white text-[10px] font-bold rounded">비문학</span>
+          <span class="text-xs text-korean">과학/기술</span>
+        </div>
+        <h2 class="font-bold text-text-primary">인공지능과 미래 사회</h2>
+      </div>
+      
+      <!-- Mobile Passage -->
+      <article class="bg-surface rounded-2xl shadow-card p-5 border border-border-light/50">
+        <div class="text-base leading-relaxed text-text-primary space-y-5">
+          
+          <p><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-korean-light text-korean text-[10px] font-bold mr-1">1</span>인공지능(AI)은 인간의 학습능력, 추론능력, 지각능력을 인공적으로 구현한 컴퓨터 프로그램 또는 이를 포함한 컴퓨터 시스템을 의미한다.</p>
+          
+          <p><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-korean-light text-korean text-[10px] font-bold mr-1">2</span>AI의 발전은 우리 사회에 큰 변화를 가져올 것으로 예상된다. 노동 시장에서 큰 변화가 일어나 일부 직업은 사라지고 새로운 형태의 직업이 생겨날 것이다.</p>
+          
+          <p><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-korean-light text-korean text-[10px] font-bold mr-1">3</span>한편, AI는 의료, 교육, 환경 등 다양한 분야에서 긍정적인 역할을 할 것으로 기대된다.</p>
+          
+          <p><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-korean-light text-korean text-[10px] font-bold mr-1">4</span>그러나 AI의 발전이 가져올 부정적인 측면도 간과해서는 안 된다. AI 시스템의 편향성 문제, 개인정보 보호 이슈 등 해결해야 할 윤리적 문제들이 산적해 있다.</p>
+          
+          <p><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-korean-light text-korean text-[10px] font-bold mr-1">5</span>따라서 AI 기술의 발전과 함께 이에 대한 사회적 논의와 제도적 장치 마련이 필요하다.</p>
+          
+        </div>
+      </article>
+      
+    </main>
+    
+    <!-- Mobile Bottom Nav -->
+    <div class="fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light p-4 bottom-nav-mobile">
+      <a href="korean-step2-bridging.html" class="w-full py-4 bg-korean text-white font-bold rounded-xl flex items-center justify-center gap-2">
+        다 읽었어요! 다음 단계로
+        <span class="material-icons-round">arrow_forward</span>
+      </a>
+    </div>
+    
+  </div>
+  
+  <script>
+    // Reading Timer
+    let seconds = 154; // 2:34
+    function updateTimer() {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      document.getElementById('readingTimer').textContent = timeStr;
+      document.getElementById('mobileTimer').textContent = timeStr;
+      seconds++;
+    }
+    setInterval(updateTimer, 1000);
+    
+    // Scroll Progress
+    const contentArea = document.querySelector('.lg\\:flex .overflow-y-auto');
+    if (contentArea) {
+      contentArea.addEventListener('scroll', function() {
+        const scrollTop = this.scrollTop;
+        const scrollHeight = this.scrollHeight - this.clientHeight;
+        const progress = Math.min(100, Math.round((scrollTop / scrollHeight) * 100));
+        document.getElementById('scrollPercent').textContent = progress + '%';
+        document.getElementById('progressBar').style.width = progress + '%';
+      });
+    }
+    
+    // ===== Reading Tools =====
+    
+    // Font Size Control
+    const fontSizes = [
+      { size: 15, label: '작게', lineHeight: 1.8 },
+      { size: 17, label: '보통', lineHeight: 1.9 },
+      { size: 19, label: '크게', lineHeight: 2.0 },
+      { size: 21, label: '아주 크게', lineHeight: 2.1 }
+    ];
+    let currentFontIndex = 1; // Default: 보통
+    
+    function changeFontSize(direction) {
+      currentFontIndex += direction;
+      currentFontIndex = Math.max(0, Math.min(fontSizes.length - 1, currentFontIndex));
+      
+      const { size, label, lineHeight } = fontSizes[currentFontIndex];
+      
+      // Apply to all paragraph blocks
+      document.querySelectorAll('.paragraph-block p').forEach(p => {
+        p.style.fontSize = size + 'px';
+        p.style.lineHeight = lineHeight;
+      });
+      
+      // Update indicator
+      document.getElementById('fontSizeIndicator').textContent = label;
+      
+      // Show toast
+      showToast(`글자 크기: ${label}`);
+    }
+    
+    // Highlight Mode
+    let highlightMode = false;
+    
+    function toggleHighlightMode() {
+      highlightMode = !highlightMode;
+      const btn = document.getElementById('highlightBtn');
+      
+      if (highlightMode) {
+        btn.classList.remove('bg-background');
+        btn.classList.add('bg-yellow-100', 'ring-2', 'ring-yellow-400');
+        showToast('하이라이트 모드 ON - 문단을 클릭하세요');
+      } else {
+        btn.classList.add('bg-background');
+        btn.classList.remove('bg-yellow-100', 'ring-2', 'ring-yellow-400');
+        showToast('하이라이트 모드 OFF');
+      }
+    }
+    
+    // Apply highlight on paragraph click
+    document.querySelectorAll('.paragraph-block').forEach(para => {
+      para.style.cursor = 'pointer';
+      para.addEventListener('click', function() {
+        if (!highlightMode) return;
+        
+        const p = this.querySelector('p');
+        if (p.style.backgroundColor === 'rgb(254, 249, 195)') {
+          // Remove highlight
+          p.style.backgroundColor = '';
+          p.style.borderRadius = '';
+          p.style.padding = '';
+          p.style.margin = '';
+        } else {
+          // Add highlight
+          p.style.backgroundColor = '#fef9c3'; // yellow-100
+          p.style.borderRadius = '8px';
+          p.style.padding = '8px 12px';
+          p.style.margin = '-8px -12px';
+        }
+      });
+    });
+    
+    // Bookmark (Favorites)
+    let isBookmarked = false;
+    const passageId = 'korean_ai_future_001'; // Unique passage ID
+    
+    function toggleBookmark() {
+      isBookmarked = !isBookmarked;
+      const icon = document.getElementById('bookmarkIcon');
+      const btn = document.getElementById('bookmarkBtn');
+      
+      if (isBookmarked) {
+        icon.textContent = 'bookmark';
+        icon.classList.remove('text-text-secondary');
+        icon.classList.add('text-primary');
+        btn.classList.remove('bg-background');
+        btn.classList.add('bg-primary-light');
+        
+        // Save to localStorage
+        let favorites = JSON.parse(localStorage.getItem('koreanFavorites') || '[]');
+        if (!favorites.includes(passageId)) {
+          favorites.push(passageId);
+          localStorage.setItem('koreanFavorites', JSON.stringify(favorites));
+        }
+        
+        showToast('📌 즐겨찾기에 추가했어요!', 'success');
+      } else {
+        icon.textContent = 'bookmark_border';
+        icon.classList.add('text-text-secondary');
+        icon.classList.remove('text-primary');
+        btn.classList.add('bg-background');
+        btn.classList.remove('bg-primary-light');
+        
+        // Remove from localStorage
+        let favorites = JSON.parse(localStorage.getItem('koreanFavorites') || '[]');
+        favorites = favorites.filter(id => id !== passageId);
+        localStorage.setItem('koreanFavorites', JSON.stringify(favorites));
+        
+        showToast('즐겨찾기에서 제거했어요');
+      }
+    }
+    
+    // Check if already bookmarked on load
+    window.addEventListener('load', () => {
+      const favorites = JSON.parse(localStorage.getItem('koreanFavorites') || '[]');
+      if (favorites.includes(passageId)) {
+        isBookmarked = true;
+        const icon = document.getElementById('bookmarkIcon');
+        const btn = document.getElementById('bookmarkBtn');
+        icon.textContent = 'bookmark';
+        icon.classList.remove('text-text-secondary');
+        icon.classList.add('text-primary');
+        btn.classList.remove('bg-background');
+        btn.classList.add('bg-primary-light');
+      }
+    });
+    
+    // Toast Notification
+    function showToast(message, type = 'info') {
+      // Remove existing toast
+      const existingToast = document.querySelector('.toast-notification');
+      if (existingToast) existingToast.remove();
+      
+      const toast = document.createElement('div');
+      toast.className = `toast-notification fixed bottom-24 lg:bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg z-50 transition-all duration-300 ${
+        type === 'success' ? 'bg-success text-white' : 'bg-navy text-white'
+      }`;
+      toast.innerHTML = `<span class="font-medium text-sm">${message}</span>`;
+      document.body.appendChild(toast);
+      
+      // Animate in
+      setTimeout(() => toast.style.opacity = '1', 10);
+      
+      // Remove after 2s
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+  </script>
+  
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

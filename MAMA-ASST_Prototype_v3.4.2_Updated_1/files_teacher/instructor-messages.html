@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학부모 소통 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%); color: white; }
+    .chat-item { transition: all 0.2s ease; }
+    .chat-item:hover { background-color: #F9FAFB; }
+    .chat-item.active { background-color: #FFF0ED; border-left: 3px solid #FF6D4D; }
+    .message-in { background: #F3F4F6; border-radius: 0 16px 16px 16px; }
+    .message-out { background: #FF6D4D; color: white; border-radius: 16px 0 16px 16px; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Left Sidebar -->
+    <aside class="w-64 bg-navy text-white flex flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-white/60">강사용</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span><span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span><span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">rate_review</span><span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">history</span><span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span><span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span><span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span><span class="font-medium">시간표</span>
+        </a>
+        <a href="instructor-messages.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">chat</span><span class="font-medium">학부모 소통</span>
+          <span class="ml-auto px-2 py-0.5 bg-white/20 text-xs rounded-full">3</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content - Chat Layout -->
+    <main class="flex-1 ml-64 flex">
+      
+      <!-- Chat List -->
+      <div class="w-80 bg-surface border-r border-border-light flex flex-col h-screen">
+        <div class="p-4 border-b border-border-light">
+          <h2 class="font-bold text-lg text-text-primary mb-3">학부모 소통</h2>
+          <div class="relative">
+            <span class="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary text-xl">search</span>
+            <input type="text" placeholder="학부모 검색..." class="w-full pl-10 pr-4 py-2.5 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button class="flex-1 px-3 py-2 bg-primary text-white rounded-lg text-sm font-medium">전체</button>
+            <button class="flex-1 px-3 py-2 bg-gray-100 text-text-secondary rounded-lg text-sm font-medium hover:bg-gray-200">안읽음</button>
+            <button onclick="openBulkModal()" class="p-2 bg-gray-100 rounded-lg hover:bg-gray-200" title="단체 알림">
+              <span class="material-icons-round text-text-secondary">campaign</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto">
+          <!-- Chat Items -->
+          <div onclick="selectChat(this)" class="chat-item active p-4 cursor-pointer border-b border-border-light">
+            <div class="flex items-start gap-3">
+              <div class="relative">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">박</div>
+                <span class="absolute -top-1 -right-1 w-5 h-5 bg-error text-white text-xs rounded-full flex items-center justify-center">2</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <p class="font-bold text-text-primary">박민수 어머니</p>
+                  <span class="text-xs text-text-tertiary">오후 2:30</span>
+                </div>
+                <p class="text-sm text-text-secondary truncate">숙제 관련해서 여쭤볼게 있어요</p>
+                <span class="inline-block mt-1 px-2 py-0.5 bg-korean-light text-korean text-xs rounded">중2A반</span>
+              </div>
+            </div>
+          </div>
+          
+          <div onclick="selectChat(this)" class="chat-item p-4 cursor-pointer border-b border-border-light">
+            <div class="flex items-start gap-3">
+              <div class="relative">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold">김</div>
+                <span class="absolute -top-1 -right-1 w-5 h-5 bg-error text-white text-xs rounded-full flex items-center justify-center">1</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <p class="font-bold text-text-primary">김서연 어머니</p>
+                  <span class="text-xs text-text-tertiary">오전 10:15</span>
+                </div>
+                <p class="text-sm text-text-secondary truncate">상담 일정 확인 부탁드립니다</p>
+                <span class="inline-block mt-1 px-2 py-0.5 bg-korean-light text-korean text-xs rounded">중2A반</span>
+              </div>
+            </div>
+          </div>
+          
+          <div onclick="selectChat(this)" class="chat-item p-4 cursor-pointer border-b border-border-light">
+            <div class="flex items-start gap-3">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">이</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <p class="font-bold text-text-primary">이지훈 어머니</p>
+                  <span class="text-xs text-text-tertiary">어제</span>
+                </div>
+                <p class="text-sm text-text-secondary truncate">네, 감사합니다 선생님</p>
+                <span class="inline-block mt-1 px-2 py-0.5 bg-korean-light text-korean text-xs rounded">중2A반</span>
+              </div>
+            </div>
+          </div>
+          
+          <div onclick="selectChat(this)" class="chat-item p-4 cursor-pointer border-b border-border-light">
+            <div class="flex items-start gap-3">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold">최</div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <p class="font-bold text-text-primary">최예은 어머니</p>
+                  <span class="text-xs text-text-tertiary">1/3</span>
+                </div>
+                <p class="text-sm text-text-secondary truncate">출결 확인했습니다</p>
+                <span class="inline-block mt-1 px-2 py-0.5 bg-math-light text-yellow-700 text-xs rounded">고1B반</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Chat Content -->
+      <div class="flex-1 flex flex-col h-screen bg-gray-50">
+        
+        <!-- Chat Header -->
+        <div class="bg-surface border-b border-border-light p-4 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">박</div>
+            <div>
+              <p class="font-bold text-text-primary">박민수 어머니</p>
+              <p class="text-sm text-text-tertiary">박민수 (중2A반) · 국어/수학</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openReportModal()" class="p-2 hover:bg-gray-100 rounded-lg" title="학습 리포트">
+              <span class="material-icons-round text-text-tertiary">summarize</span>
+            </button>
+            <button onclick="openNotifyModal()" class="p-2 hover:bg-gray-100 rounded-lg" title="알림톡">
+              <span class="material-icons-round text-text-tertiary">notifications_active</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Messages Area -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+          <div class="flex items-center gap-4 py-2">
+            <div class="flex-1 h-px bg-border-light"></div>
+            <span class="text-xs text-text-tertiary">오늘</span>
+            <div class="flex-1 h-px bg-border-light"></div>
+          </div>
+          
+          <div class="flex items-end gap-2">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">박</div>
+            <div class="message-in p-3 max-w-[75%]">
+              <p class="text-sm text-text-primary">선생님 안녕하세요~</p>
+            </div>
+            <span class="text-xs text-text-tertiary">오후 2:28</span>
+          </div>
+          
+          <div class="flex items-end gap-2">
+            <div class="w-8 h-8 flex-shrink-0"></div>
+            <div class="message-in p-3 max-w-[75%]">
+              <p class="text-sm text-text-primary">민수가 이번 주에 숙제를 많이 밀렸다고 하는데, 학원에서는 어떤가요?</p>
+            </div>
+            <span class="text-xs text-text-tertiary">오후 2:28</span>
+          </div>
+          
+          <div class="flex items-end gap-2">
+            <div class="w-8 h-8 flex-shrink-0"></div>
+            <div class="message-in p-3 max-w-[75%]">
+              <p class="text-sm text-text-primary">숙제 관련해서 여쭤볼게 있어요</p>
+            </div>
+            <span class="text-xs text-text-tertiary">오후 2:30</span>
+          </div>
+          
+          <div class="flex justify-center">
+            <div class="px-4 py-2 bg-info-light text-info text-xs rounded-full flex items-center gap-2">
+              <span class="material-icons-round text-sm">info</span>
+              학습 리포트가 공유되었습니다
+            </div>
+          </div>
+        </div>
+        
+        <!-- Message Input -->
+        <div class="bg-surface border-t border-border-light p-4">
+          <div class="flex items-end gap-3">
+            <div class="flex-1">
+              <div class="flex gap-2 mb-2">
+                <button class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-text-secondary flex items-center gap-1" onclick="insertTemplate('homework')">
+                  <span class="material-icons-round text-sm">assignment</span>숙제 안내
+                </button>
+                <button class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-text-secondary flex items-center gap-1" onclick="insertTemplate('attendance')">
+                  <span class="material-icons-round text-sm">event_available</span>출결 안내
+                </button>
+                <button class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-text-secondary flex items-center gap-1" onclick="insertTemplate('counseling')">
+                  <span class="material-icons-round text-sm">record_voice_over</span>상담 예약
+                </button>
+              </div>
+              <textarea id="messageInput" rows="2" placeholder="메시지를 입력하세요..." 
+                class="w-full px-4 py-3 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"></textarea>
+            </div>
+            <button onclick="sendMessage()" class="p-3 bg-primary text-white rounded-xl hover:bg-primary-dark">
+              <span class="material-icons-round">send</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Notification Modal -->
+  <div id="notifyModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl max-w-md w-full mx-4 overflow-hidden">
+      <div class="p-5 border-b border-border-light flex items-center justify-between">
+        <h3 class="font-bold text-lg text-text-primary flex items-center gap-2">
+          <span class="material-icons-round text-primary">notifications_active</span>알림톡 보내기
+        </h3>
+        <button onclick="closeNotifyModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">수신자</label>
+          <div class="px-4 py-3 bg-gray-100 rounded-xl"><p class="font-medium">박민수 어머니 (010-****-5678)</p></div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">알림 유형</label>
+          <select class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20">
+            <option>숙제 미완료 안내</option>
+            <option>출결 이상 알림</option>
+            <option>상담 일정 안내</option>
+            <option>학습 리포트 발송</option>
+            <option>직접 입력</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">메시지 내용</label>
+          <textarea rows="4" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none resize-none">[MAMA-ASST] 안녕하세요, 김선생님입니다.
+
+박민수 학생의 이번 주 숙제 완료율이 낮습니다.
+
+- 국어: 2개 중 0개 완료
+- 수학: 3개 중 1개 완료
+
+문의사항이 있으시면 연락 주세요.</textarea>
+        </div>
+        <div class="bg-warning-light border border-warning/20 rounded-xl p-3">
+          <p class="text-sm text-warning flex items-center gap-2">
+            <span class="material-icons-round text-lg">info</span>
+            카카오 알림톡으로 발송됩니다.
+          </p>
+        </div>
+      </div>
+      <div class="p-5 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeNotifyModal()" class="px-4 py-2 border border-border-light text-text-secondary rounded-xl hover:bg-gray-50">취소</button>
+        <button onclick="sendNotification()" class="px-6 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2">
+          <span class="material-icons-round text-lg">send</span>발송하기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bulk Modal -->
+  <div id="bulkModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl max-w-lg w-full mx-4 overflow-hidden">
+      <div class="p-5 border-b border-border-light flex items-center justify-between">
+        <h3 class="font-bold text-lg text-text-primary flex items-center gap-2">
+          <span class="material-icons-round text-primary">campaign</span>단체 알림 발송
+        </h3>
+        <button onclick="closeBulkModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">대상 선택</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:bg-gray-50">
+              <input type="checkbox" class="w-4 h-4 rounded border-border-medium text-primary focus:ring-primary">
+              <span class="font-medium">중2A반 전체 학부모</span>
+              <span class="ml-auto text-sm text-text-tertiary">8명</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:bg-gray-50">
+              <input type="checkbox" class="w-4 h-4 rounded border-border-medium text-primary focus:ring-primary">
+              <span class="font-medium">중2B반 전체 학부모</span>
+              <span class="ml-auto text-sm text-text-tertiary">10명</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:bg-gray-50">
+              <input type="checkbox" class="w-4 h-4 rounded border-border-medium text-primary focus:ring-primary">
+              <span class="font-medium">고1B반 전체 학부모</span>
+              <span class="ml-auto text-sm text-text-tertiary">12명</span>
+            </label>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">알림 내용</label>
+          <textarea rows="4" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none resize-none">[MAMA-ASST] 안녕하세요, 김선생님입니다.
+
+다음 주 월요일(1/6)은 휴원일입니다.
+수업이 없으니 참고 부탁드립니다.
+
+감사합니다.</textarea>
+        </div>
+      </div>
+      <div class="p-5 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeBulkModal()" class="px-4 py-2 border border-border-light text-text-secondary rounded-xl hover:bg-gray-50">취소</button>
+        <button onclick="sendBulk()" class="px-6 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2">
+          <span class="material-icons-round text-lg">send</span>단체 발송
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Report Modal -->
+  <div id="reportModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl max-w-md w-full mx-4 overflow-hidden">
+      <div class="p-5 border-b border-border-light flex items-center justify-between">
+        <h3 class="font-bold text-lg text-text-primary flex items-center gap-2">
+          <span class="material-icons-round text-info">summarize</span>학습 리포트 보내기
+        </h3>
+        <button onclick="closeReportModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="bg-info-light border border-info/20 rounded-xl p-4">
+          <h4 class="font-bold text-info mb-2">박민수 학생 주간 리포트</h4>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between"><span class="text-text-secondary">국어 학습량</span><span class="font-medium">지문 4개 완료</span></div>
+            <div class="flex justify-between"><span class="text-text-secondary">국어 정답률</span><span class="font-medium text-success">O/X 85%</span></div>
+            <div class="flex justify-between"><span class="text-text-secondary">수학 학습량</span><span class="font-medium">문제 12개 완료</span></div>
+            <div class="flex justify-between"><span class="text-text-secondary">수학 정답률</span><span class="font-medium text-warning">72%</span></div>
+            <div class="flex justify-between"><span class="text-text-secondary">숙제 완료율</span><span class="font-medium text-error">40%</span></div>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">추가 코멘트 (선택)</label>
+          <textarea rows="3" placeholder="학부모님께 전할 메시지..."
+            class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none resize-none"></textarea>
+        </div>
+      </div>
+      <div class="p-5 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeReportModal()" class="px-4 py-2 border border-border-light text-text-secondary rounded-xl hover:bg-gray-50">취소</button>
+        <button onclick="sendReport()" class="px-6 py-2 bg-info text-white rounded-xl hover:bg-blue-600 flex items-center gap-2">
+          <span class="material-icons-round text-lg">send</span>리포트 보내기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-navy text-white px-6 py-3 rounded-xl shadow-lg z-50 hidden flex items-center gap-2">
+    <span class="material-icons-round">check_circle</span><span id="toastMsg">발송되었습니다.</span>
+  </div>
+  
+  <script>
+    function selectChat(el) {
+      document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
+      el.classList.add('active');
+    }
+    
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      if (!input.value.trim()) return;
+      console.log('Sending:', input.value);
+      input.value = '';
+      showToast('메시지가 전송되었습니다.');
+    }
+    
+    function insertTemplate(type) {
+      const input = document.getElementById('messageInput');
+      const templates = {
+        homework: '안녕하세요. 이번 주 숙제 현황 안내드립니다.\n\n[숙제 현황]\n- 국어: 지문 2개\n- 마감: 금요일 23:59\n\n문의사항 있으시면 연락 주세요.',
+        attendance: '안녕하세요. 오늘 출결 현황 안내드립니다.\n\n✅ 등원: 오후 2:00\n✅ 하원: 오후 5:30\n\n감사합니다.',
+        counseling: '안녕하세요. 상담 일정 안내드립니다.\n\n📅 일시: 1월 8일 (수) 오후 8:00\n📍 장소: 학원 상담실\n\n참석 가능 여부 회신 부탁드립니다.'
+      };
+      input.value = templates[type] || '';
+    }
+    
+    function openNotifyModal() { document.getElementById('notifyModal').classList.remove('hidden'); }
+    function closeNotifyModal() { document.getElementById('notifyModal').classList.add('hidden'); }
+    function openBulkModal() { document.getElementById('bulkModal').classList.remove('hidden'); }
+    function closeBulkModal() { document.getElementById('bulkModal').classList.add('hidden'); }
+    function openReportModal() { document.getElementById('reportModal').classList.remove('hidden'); }
+    function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
+    
+    function sendNotification() { closeNotifyModal(); showToast('알림톡이 발송되었습니다.'); }
+    function sendBulk() { closeBulkModal(); showToast('단체 알림이 발송되었습니다.'); }
+    function sendReport() { closeReportModal(); showToast('학습 리포트가 발송되었습니다.'); }
+    
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

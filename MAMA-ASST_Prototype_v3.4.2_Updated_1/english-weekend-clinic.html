@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주말 클리닉 | MAMA-ASST</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3C',
+            'primary-light': '#FFF0ED',
+            secondary: '#1A2E4D',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#10B981',
+            'success-light': '#D1FAE5',
+            error: '#F43F5E',
+            'error-light': '#FFE4E6',
+            warning: '#F59E0B',
+            'warning-light': '#FEF3C7',
+          },
+          fontFamily: {
+            display: ['Lexend', 'sans-serif'],
+            body: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'],
+          },
+          borderRadius: {
+            'xl': '1rem',
+            '2xl': '1.5rem',
+            '3xl': '2rem',
+          },
+          boxShadow: {
+            'soft': '0 10px 40px -10px rgba(26, 46, 77, 0.08)',
+            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
+          }
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    .filled {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    
+    /* Pulse glow */
+    .glow-error { box-shadow: 0 0 20px rgba(244, 63, 94, 0.2); }
+    .glow-warning { box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
+  </style>
+</head>
+<body class="bg-background font-body text-secondary antialiased min-h-screen flex flex-col">
+  
+  <!-- Header -->
+  <header class="w-full bg-surface border-b border-border-light px-6 py-4 sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 bg-primary-light rounded-xl flex items-center justify-center text-primary border border-primary/10">
+          <span class="material-symbols-outlined text-2xl">local_hospital</span>
+        </div>
+        <div class="flex flex-col">
+          <h1 class="text-secondary text-lg md:text-xl font-bold tracking-tight leading-none">주말 클리닉 🏥</h1>
+          <span class="text-xs text-text-tertiary font-medium mt-1" id="weekRange">12월 23일 - 12월 29일</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 text-text-secondary text-sm font-medium">
+          <span class="material-symbols-outlined text-lg">calendar_month</span>
+          <span>이번 주차</span>
+        </div>
+        <a href="subject-english.html" class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-all text-text-tertiary">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
+  <main class="flex-1 w-full max-w-5xl mx-auto p-6 relative flex flex-col gap-6 pb-32">
+    <!-- Background -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      <div class="absolute top-0 right-[20%] w-[30vw] h-[30vw] bg-primary/5 rounded-full blur-[100px]"></div>
+      <div class="absolute top-[40%] left-[10%] w-[20vw] h-[20vw] bg-secondary/5 rounded-full blur-[80px]"></div>
+    </div>
+    
+    <div class="relative z-10 flex flex-col gap-6">
+      
+      <!-- Hero Banner -->
+      <div class="w-full bg-secondary rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-soft flex items-center justify-between group">
+        <div class="absolute -right-10 -top-10 w-64 h-64 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-all duration-700"></div>
+        <div class="relative z-10 text-white max-w-lg">
+          <div class="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-blue-200 mb-3 border border-white/10 shadow-sm">
+            <span class="material-symbols-outlined text-sm">notifications_active</span>
+            졸업 요건
+          </div>
+          <h2 class="text-2xl md:text-3xl font-bold leading-tight tracking-tight">
+            이번 주 졸업하려면<br>
+            <span class="text-primary-light">재시험</span>이 필요해요! 💪
+          </h2>
+        </div>
+        <div class="relative z-10 hidden md:flex w-20 h-20 bg-white/10 rounded-2xl items-center justify-center backdrop-blur-sm border border-white/5 rotate-3 hover:rotate-6 transition-transform">
+          <span class="material-symbols-outlined text-5xl text-primary-light">history_edu</span>
+        </div>
+      </div>
+      
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-3 gap-4">
+        <!-- Error Count -->
+        <div class="bg-surface p-6 rounded-2xl border border-border-light shadow-card flex flex-col items-center justify-center gap-2 hover:shadow-soft transition-shadow glow-error">
+          <div class="flex items-center gap-2 text-error mb-1">
+            <span class="material-symbols-outlined">cancel</span>
+            <span class="text-xs font-bold uppercase tracking-wider">틀린 단어</span>
+          </div>
+          <div class="text-4xl font-display font-bold text-error">오답 <span id="errorCount">5</span>개</div>
+        </div>
+        
+        <!-- Unstable Count -->
+        <div class="bg-surface p-6 rounded-2xl border border-border-light shadow-card flex flex-col items-center justify-center gap-2 hover:shadow-soft transition-shadow glow-warning">
+          <div class="flex items-center gap-2 text-warning mb-1">
+            <span class="material-symbols-outlined">warning</span>
+            <span class="text-xs font-bold uppercase tracking-wider">헷갈리는 단어</span>
+          </div>
+          <div class="text-4xl font-display font-bold text-warning">불안 <span id="unstableCount">3</span>개</div>
+        </div>
+        
+        <!-- Total -->
+        <div class="bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-border-light shadow-card flex flex-col items-center justify-center gap-2 hover:shadow-soft transition-shadow">
+          <div class="flex items-center gap-2 text-text-tertiary mb-1">
+            <span class="material-symbols-outlined">assignment</span>
+            <span class="text-xs font-bold uppercase tracking-wider">재시험 대상</span>
+          </div>
+          <div class="text-4xl font-display font-bold text-secondary">총 <span id="totalCount">8</span>개</div>
+        </div>
+      </div>
+      
+      <!-- Word Lists -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
+        
+        <!-- Error Words -->
+        <div class="flex flex-col gap-4">
+          <div class="flex items-center justify-between px-2">
+            <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+              <span class="flex w-3 h-3 rounded-full bg-error shadow-[0_0_8px_rgba(244,63,94,0.4)]"></span>
+              오답 단어 
+              <span class="text-error text-xs font-bold bg-error-light px-2 py-0.5 rounded ml-1">Error</span>
+            </h3>
+          </div>
+          <div class="bg-surface rounded-2xl border border-border-light shadow-card overflow-hidden">
+            <ul class="divide-y divide-gray-50" id="errorWordsList">
+              <!-- Error words will be inserted here -->
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Unstable Words -->
+        <div class="flex flex-col gap-4">
+          <div class="flex items-center justify-between px-2">
+            <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+              <span class="flex w-3 h-3 rounded-full bg-warning shadow-[0_0_8px_rgba(251,146,60,0.4)]"></span>
+              불안 단어 
+              <span class="text-warning text-xs font-bold bg-warning-light px-2 py-0.5 rounded ml-1">Unstable</span>
+            </h3>
+          </div>
+          <div class="bg-surface rounded-2xl border border-border-light shadow-card overflow-hidden">
+            <ul class="divide-y divide-gray-50" id="unstableWordsList">
+              <!-- Unstable words will be inserted here -->
+            </ul>
+          </div>
+        </div>
+        
+      </div>
+      
+      <!-- Badge Teaser -->
+      <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-100 p-5 flex items-center gap-5 relative overflow-hidden group hover:border-amber-200 transition-colors cursor-pointer mt-2">
+        <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-white/40 to-transparent"></div>
+        <div class="relative z-10 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm border border-amber-100 text-amber-400 group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-3xl filled">military_tech</span>
+        </div>
+        <div class="relative z-10 flex-1">
+          <div class="flex items-center gap-2 mb-0.5">
+            <h4 class="font-bold text-amber-900 text-lg">Golden Week 뱃지</h4>
+            <span class="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Locked</span>
+          </div>
+          <p class="text-sm text-amber-800/70 font-medium">이번 주말 클리닉을 100점으로 통과하고 특별 뱃지를 획득하세요!</p>
+        </div>
+        <div class="relative z-10">
+          <span class="material-symbols-outlined text-gray-300">chevron_right</span>
+        </div>
+      </div>
+      
+      <!-- Graduation Info -->
+      <div class="bg-english-light rounded-2xl p-5 border border-english/20">
+        <h4 class="font-bold text-english mb-3 flex items-center gap-2">
+          <span class="material-symbols-outlined">school</span>
+          졸업 조건
+        </h4>
+        <ul class="space-y-2 text-sm text-text-secondary">
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-english text-lg">check</span>
+            모든 오답 단어 재시험 통과 (PASS)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-english text-lg">check</span>
+            모든 불안 단어 재시험 통과 (발음 85% 이상)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-english text-lg">check</span>
+            7초 이내 응답
+          </li>
+        </ul>
+      </div>
+      
+    </div>
+  </main>
+  
+  <!-- Bottom Action Bar -->
+  <div class="fixed bottom-0 left-0 w-full z-40 px-6 py-6 bg-gradient-to-t from-background via-background/95 to-transparent pointer-events-none">
+    <div class="max-w-5xl mx-auto pointer-events-auto">
+      <div class="bg-white/90 backdrop-blur-xl border border-white/40 p-3 rounded-3xl shadow-[0_8px_30px_rgba(26,46,77,0.1)] flex gap-3 md:gap-4">
+        <button onclick="startPractice()" class="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 bg-surface border-2 border-gray-200 text-text-secondary hover:border-gray-300 hover:bg-gray-50 hover:text-secondary font-bold py-3.5 rounded-2xl transition-all group">
+          <span class="material-symbols-outlined group-hover:rotate-12 transition-transform">timer_off</span>
+          <div class="flex flex-col md:flex-row md:items-baseline md:gap-2">
+            <span class="text-base">연습 모드</span>
+            <span class="text-[10px] md:text-xs bg-gray-100 px-2 py-0.5 rounded text-text-tertiary font-medium">타이머 없음</span>
+          </div>
+        </button>
+        <button onclick="startClinicTest()" class="flex-1 flex flex-col md:flex-row items-center justify-center gap-2 bg-primary text-white hover:bg-primary-dark font-bold py-3.5 rounded-2xl shadow-[0_4px_14px_rgba(255,109,77,0.4)] transition-all active:scale-[0.98] group ring-4 ring-primary/10">
+          <span class="material-symbols-outlined group-hover:animate-pulse">timer</span>
+          <div class="flex flex-col md:flex-row md:items-baseline md:gap-2">
+            <span class="text-base">재시험 모드</span>
+            <span class="text-[10px] md:text-xs bg-white/20 px-2 py-0.5 rounded text-white font-medium">7초 컷</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Clinic data (would come from backend)
+    const clinicData = {
+      weekRange: '12월 23일 - 12월 29일',
+      errorWords: [
+        { word: 'Constitution', meaning: '헌법, 구조', reason: 'timeout', reasonText: '시간 초과' },
+        { word: 'Vague', meaning: '모호한, 애매한', reason: 'spelling', reasonText: '스펠링' },
+        { word: 'Perspective', meaning: '관점, 시각', reason: 'wrong', reasonText: '오답' },
+        { word: 'Thorough', meaning: '철저한, 빈틈없는', reason: 'timeout', reasonText: '시간 초과' },
+        { word: 'Phenomenon', meaning: '현상', reason: 'wrong', reasonText: '오답' }
+      ],
+      unstableWords: [
+        { word: 'Debt', meaning: '빚, 부채', reason: 'pronunciation', reasonText: '발음 불안', score: 72 },
+        { word: 'Genre', meaning: '장르, 유형', reason: 'pronunciation', reasonText: '발음 불안', score: 78 },
+        { word: 'Subtle', meaning: '미묘한, 감지하기 힘든', reason: 'silent', reasonText: '묵음 주의', score: 68 }
+      ]
+    };
+    
+    // Initialize page
+    function initPage() {
+      document.getElementById('weekRange').textContent = clinicData.weekRange;
+      document.getElementById('errorCount').textContent = clinicData.errorWords.length;
+      document.getElementById('unstableCount').textContent = clinicData.unstableWords.length;
+      document.getElementById('totalCount').textContent = clinicData.errorWords.length + clinicData.unstableWords.length;
+      
+      // Render error words
+      const errorList = document.getElementById('errorWordsList');
+      errorList.innerHTML = clinicData.errorWords.map(item => `
+        <li class="flex items-center justify-between p-5 hover:bg-gray-50 transition-colors group cursor-pointer" onclick="playWord('${item.word}')">
+          <div class="flex items-center gap-4">
+            <div class="w-1.5 h-1.5 rounded-full bg-error mt-1"></div>
+            <div>
+              <p class="font-display font-bold text-lg text-secondary group-hover:text-primary transition-colors">${item.word}</p>
+              <p class="text-sm text-text-tertiary font-medium">${item.meaning}</p>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <div class="flex items-center gap-1.5 text-xs font-bold text-error bg-error-light px-2 py-1 rounded-lg">
+              <span class="material-symbols-outlined text-sm">${getReasonIcon(item.reason)}</span>
+              <span>${item.reasonText}</span>
+            </div>
+          </div>
+        </li>
+      `).join('');
+      
+      // Render unstable words
+      const unstableList = document.getElementById('unstableWordsList');
+      unstableList.innerHTML = clinicData.unstableWords.map(item => `
+        <li class="flex items-center justify-between p-5 hover:bg-gray-50 transition-colors group cursor-pointer" onclick="playWord('${item.word}')">
+          <div class="flex items-center gap-4">
+            <div class="w-1.5 h-1.5 rounded-full bg-warning mt-1"></div>
+            <div>
+              <p class="font-display font-bold text-lg text-secondary group-hover:text-primary transition-colors">${item.word}</p>
+              <p class="text-sm text-text-tertiary font-medium">${item.meaning}</p>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <div class="flex items-center gap-1.5 text-xs font-bold text-warning bg-warning-light px-2 py-1 rounded-lg">
+              <span class="material-symbols-outlined text-sm">record_voice_over</span>
+              <span>${item.reasonText}</span>
+            </div>
+            ${item.score ? `<span class="text-xs text-text-tertiary">${item.score}%</span>` : ''}
+          </div>
+        </li>
+      `).join('');
+    }
+    
+    function getReasonIcon(reason) {
+      switch(reason) {
+        case 'timeout': return 'timer_off';
+        case 'spelling': return 'spellcheck';
+        case 'wrong': return 'close';
+        case 'pronunciation': return 'record_voice_over';
+        case 'silent': return 'volume_off';
+        default: return 'help';
+      }
+    }
+    
+    // Play word pronunciation
+    function playWord(word) {
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.8;
+      speechSynthesis.speak(utterance);
+    }
+    
+    // Start practice mode (no timer)
+    function startPractice() {
+      // Store clinic words and mode
+      localStorage.setItem('clinicMode', 'practice');
+      localStorage.setItem('clinicWords', JSON.stringify([...clinicData.errorWords, ...clinicData.unstableWords]));
+      window.location.href = 'english-test.html?mode=practice';
+    }
+    
+    // Start clinic test (with timer)
+    function startClinicTest() {
+      localStorage.setItem('clinicMode', 'test');
+      localStorage.setItem('clinicWords', JSON.stringify([...clinicData.errorWords, ...clinicData.unstableWords]));
+      window.location.href = 'english-test.html?mode=clinic';
+    }
+    
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initPage);
+  </script>
+  
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

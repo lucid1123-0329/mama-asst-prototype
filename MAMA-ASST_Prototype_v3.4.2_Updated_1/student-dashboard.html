@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>홈 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+          boxShadow: {
+            'card': '0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)',
+            'card-hover': '0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.08)',
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    
+    .nav-active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 70%;
+      background: #FF6D4D;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    
+    @keyframes fire-glow {
+      0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 109, 77, 0.4)); }
+      50% { filter: drop-shadow(0 0 8px rgba(255, 109, 77, 0.6)); }
+    }
+    .fire-icon { animation: fire-glow 1.5s ease-in-out infinite; }
+    
+    .transition-card {
+      transition: all 0.2s ease-out;
+    }
+    .transition-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.5s ease-out;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+    
+    .sidebar-mobile {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-out;
+    }
+    .sidebar-mobile.open {
+      transform: translateX(0);
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide-in {
+      animation: slideIn 0.4s ease-out;
+    }
+
+    .today-cta-scroll {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .today-cta-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Skeleton Loading Demo */
+    .skeleton-demo {
+      background: linear-gradient(90deg, #E5E7EB 25%, #F3F4F6 50%, #E5E7EB 75%);
+      background-size: 200% 100%;
+      animation: sk-demo 1.5s ease-in-out infinite;
+      border-radius: 8px;
+    }
+    @keyframes sk-demo {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Bottom Tab Bar */
+    .bottom-tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: #fff; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; z-index: 50; }
+    @supports (padding-bottom: env(safe-area-inset-bottom)) { .bottom-tab-bar { padding-bottom: env(safe-area-inset-bottom); } }
+    @media (min-width: 1024px) { .bottom-tab-bar { display: none; } }
+    .bottom-tab-bar__item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 12px; color: #9CA3AF; text-decoration: none; transition: color 0.2s; position: relative; -webkit-tap-highlight-color: transparent; }
+    .bottom-tab-bar__item:hover { color: #FF6D4D; }
+    .bottom-tab-bar__item--active, .bottom-tab-bar__item--active:hover { color: #FF6D4D; }
+    .bottom-tab-bar__item--active .material-icons-round { color: #FF6D4D; }
+    .bottom-tab-bar__label { font-size: 10px; font-weight: 500; line-height: 1; }
+    .bottom-tab-bar__fab { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 12px; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+    .bottom-tab-bar__fab-circle { width: 48px; height: 48px; margin-top: -24px; background: #FF6D4D; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(255,109,77,0.3); }
+    .bottom-tab-bar__fab-circle .material-icons-round { color: #fff; }
+    .bottom-tab-bar__fab-label { font-size: 10px; font-weight: 500; color: #FF6D4D; margin-top: -4px; line-height: 1; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+
+  <!-- Skeleton Loading Demo (2초 후 자동 제거) -->
+  <div id="skeletonOverlay" style="position:fixed;inset:0;z-index:60;background:#F9FAFB;transition:opacity .3s ease;" aria-hidden="true">
+    <div class="hidden lg:flex h-screen">
+      <div class="w-64 bg-navy flex-shrink-0"></div>
+      <div class="flex-1 flex flex-col">
+        <div class="h-16 bg-white border-b border-border-light flex-shrink-0"></div>
+        <div class="flex-1 flex">
+          <div class="flex-1 p-6 space-y-6">
+            <div class="flex items-end justify-between">
+              <div><div class="skeleton-demo h-8 w-56 mb-2"></div><div class="skeleton-demo h-4 w-72"></div></div>
+              <div class="skeleton-demo h-10 w-40"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="skeleton-demo h-48 rounded-2xl"></div>
+              <div class="skeleton-demo h-48 rounded-2xl"></div>
+              <div class="skeleton-demo h-48 rounded-2xl"></div>
+            </div>
+            <div class="skeleton-demo h-28 rounded-2xl"></div>
+            <div class="grid grid-cols-4 gap-4">
+              <div class="skeleton-demo h-24 rounded-2xl"></div>
+              <div class="skeleton-demo h-24 rounded-2xl"></div>
+              <div class="skeleton-demo h-24 rounded-2xl"></div>
+              <div class="skeleton-demo h-24 rounded-2xl"></div>
+            </div>
+          </div>
+          <div class="w-80 bg-white border-l border-border-light p-5 space-y-4">
+            <div class="skeleton-demo h-6 w-32"></div>
+            <div class="skeleton-demo h-16 w-16 rounded-full mx-auto"></div>
+            <div class="skeleton-demo h-4 w-full"></div>
+            <div class="skeleton-demo h-4 w-3/4"></div>
+            <div class="skeleton-demo h-4 w-full"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lg:hidden p-4 pt-16 space-y-4">
+      <div class="skeleton-demo h-7 w-48 mb-1"></div>
+      <div class="skeleton-demo h-4 w-64"></div>
+      <div class="flex gap-3 mt-4">
+        <div class="skeleton-demo h-44 flex-1 rounded-xl"></div>
+        <div class="skeleton-demo h-44 flex-1 rounded-xl"></div>
+        <div class="skeleton-demo h-44 flex-1 rounded-xl"></div>
+      </div>
+      <div class="skeleton-demo h-20 rounded-xl"></div>
+      <div class="flex gap-3">
+        <div class="skeleton-demo h-20 flex-1 rounded-xl"></div>
+        <div class="skeleton-demo h-20 flex-1 rounded-xl"></div>
+        <div class="skeleton-demo h-20 flex-1 rounded-xl"></div>
+        <div class="skeleton-demo h-20 flex-1 rounded-xl"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop Layout -->
+  <div class="hidden lg:flex h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-navy flex flex-col flex-shrink-0">
+      <div class="p-5 border-b border-white/10">
+        <a href="student-dashboard.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="text-white font-bold text-lg tracking-tight">MAMA-ASST</span>
+            <span class="block text-white/50 text-[10px] tracking-wider">MATCHING & MANAGEMENT</span>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Profile Link -->
+      <a href="mypage.html" class="p-5 border-b border-white/10 flex items-center gap-3 hover:bg-white/5 transition-colors group">
+        <div class="relative">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-300 p-0.5">
+            <div class="w-full h-full rounded-full bg-navy overflow-hidden">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=jimin&backgroundColor=ffdfbf" alt="프로필" class="w-full h-full object-cover">
+            </div>
+          </div>
+          <div class="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-success rounded-full border-2 border-navy flex items-center justify-center">
+            <span class="text-white text-[8px] font-bold">7</span>
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-white font-semibold truncate">김지민</p>
+          <div class="flex items-center gap-1">
+            <span class="text-white/50 text-xs">중학교 2학년</span>
+            <span class="material-icons-round text-primary text-xs fire-icon">local_fire_department</span>
+            <span class="text-primary text-xs font-bold">12</span>
+          </div>
+        </div>
+        <span class="material-icons-round text-white/30 text-sm group-hover:text-white/60 transition-colors">chevron_right</span>
+      </a>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="student-dashboard.html" class="nav-active relative flex items-center gap-3 px-4 py-3 bg-white/10 text-white rounded-xl font-medium">
+          <span class="material-icons-round text-primary">home</span>
+          <span>홈</span>
+        </a>
+        <a href="subjects.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">auto_stories</span>
+          <span>과목</span>
+        </a>
+        <a href="report.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">insights</span>
+          <span>리포트</span>
+        </a>
+        <a href="planner.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">event_note</span>
+          <span>플래너</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10 space-y-2">
+        <a href="settings.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">settings</span>
+          <span>설정</span>
+        </a>
+        <a href="login.html" class="flex items-center justify-center gap-2 px-4 py-2.5 border border-white/20 text-white/70 hover:bg-white/5 hover:text-white rounded-xl transition-colors text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <header class="h-16 bg-surface border-b border-border-light flex items-center justify-between px-6 flex-shrink-0">
+        <div class="relative w-96">
+          <label for="dashboardSearch" class="sr-only">검색</label>
+          <span class="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary text-xl" aria-hidden="true">search</span>
+          <input type="text" id="dashboardSearch" placeholder="무엇을 배우고 싶나요?" class="w-full pl-10 pr-4 py-2.5 bg-background border border-border-light rounded-xl text-sm placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <a href="notifications.html" class="relative p-2 text-text-secondary hover:text-text-primary hover:bg-background rounded-lg transition-colors" aria-label="알림 5개">
+            <span class="material-icons-round" aria-hidden="true">notifications</span>
+            <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-error text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1" aria-hidden="true">5</span>
+          </a>
+          <a href="ai-tutor.html" class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-full hover:bg-primary/20 transition-colors font-medium">
+            <span class="material-icons-round text-lg">smart_toy</span>
+            <span>AI 튜터</span>
+          </a>
+        </div>
+      </header>
+      
+      <div class="flex-1 flex overflow-hidden">
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+          
+          <!-- Welcome + Date -->
+          <section class="flex items-end justify-between">
+            <div>
+              <h1 class="text-2xl font-bold text-text-primary mb-1">
+                안녕, 지민아! <span class="inline-block animate-bounce">👋</span>
+              </h1>
+              <p class="text-text-secondary">오늘도 목표를 향해 한 걸음 더 나아가 볼까요?</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-text-tertiary mb-1">오늘의 날짜</p>
+              <p class="font-semibold text-text-primary" id="todayDate">2025년 1월 5일 일요일</p>
+            </div>
+          </section>
+
+          <!-- 오늘의 학습 CTA -->
+          <section class="animate-slide-in">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-bold text-text-primary flex items-center gap-2">
+                <span class="material-icons-round text-primary">play_circle</span>
+                오늘의 학습
+              </h2>
+              <span class="text-sm text-text-secondary">바로 시작하기</span>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+              <!-- 국어 -->
+              <a href="korean-learning.html" class="group bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50 hover:border-korean/30">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-10 h-10 rounded-xl bg-korean-light flex items-center justify-center">
+                    <span class="material-icons-round text-korean">menu_book</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-bold text-text-primary">국어</h3>
+                    <p class="text-xs text-text-secondary">5단계 학습 · 오늘 2/3</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-xs font-medium mb-2">
+                  <span class="text-text-secondary">진행률</span>
+                  <span class="text-korean font-bold">67%</span>
+                </div>
+                <div class="w-full h-1.5 bg-korean-light rounded-full overflow-hidden mb-4">
+                  <div class="h-full bg-korean rounded-full transition-all duration-500" style="width: 67%"></div>
+                </div>
+                <div class="flex items-center justify-center gap-1 py-2.5 bg-korean text-white text-sm font-semibold rounded-xl group-hover:opacity-90 transition-opacity">
+                  학습 시작
+                  <span class="material-icons-round text-base group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                </div>
+              </a>
+              <!-- 영어 -->
+              <a href="english-test.html" class="group bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50 hover:border-english/30">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-10 h-10 rounded-xl bg-english-light flex items-center justify-center">
+                    <span class="material-icons-round text-english">translate</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-bold text-text-primary">영어</h3>
+                    <p class="text-xs text-text-secondary">7초 발화 · 오늘 8/20</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-xs font-medium mb-2">
+                  <span class="text-text-secondary">진행률</span>
+                  <span class="text-english font-bold">40%</span>
+                </div>
+                <div class="w-full h-1.5 bg-english-light rounded-full overflow-hidden mb-4">
+                  <div class="h-full bg-english rounded-full transition-all duration-500" style="width: 40%"></div>
+                </div>
+                <div class="flex items-center justify-center gap-1 py-2.5 bg-english text-white text-sm font-semibold rounded-xl group-hover:opacity-90 transition-opacity">
+                  학습 시작
+                  <span class="material-icons-round text-base group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                </div>
+              </a>
+              <!-- 수학 -->
+              <a href="math-problem.html" class="group bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50 hover:border-math/30">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-10 h-10 rounded-xl bg-math-light flex items-center justify-center">
+                    <span class="material-icons-round text-math">calculate</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-bold text-text-primary">수학</h3>
+                    <p class="text-xs text-text-secondary">문제풀이 · 오늘 3/5</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-xs font-medium mb-2">
+                  <span class="text-text-secondary">진행률</span>
+                  <span class="text-math font-bold">60%</span>
+                </div>
+                <div class="w-full h-1.5 bg-math-light rounded-full overflow-hidden mb-4">
+                  <div class="h-full bg-math rounded-full transition-all duration-500" style="width: 60%"></div>
+                </div>
+                <div class="flex items-center justify-center gap-1 py-2.5 bg-math text-navy text-sm font-semibold rounded-xl group-hover:opacity-90 transition-opacity">
+                  학습 시작
+                  <span class="material-icons-round text-base group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                </div>
+              </a>
+            </div>
+          </section>
+
+          <!-- Instructor Comment Card -->
+          <section class="bg-gradient-to-r from-primary-light to-orange-50 rounded-2xl p-5 border border-primary/20 animate-slide-in">
+            <div class="flex items-start gap-4">
+              <div class="relative flex-shrink-0">
+                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-orange-400 p-0.5">
+                  <div class="w-full h-full rounded-full bg-white overflow-hidden">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=teacher-kim&backgroundColor=c0aede" alt="선생님" class="w-full h-full object-cover">
+                  </div>
+                </div>
+                <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow">
+                  <span class="material-icons-round text-white text-xs">chat</span>
+                </div>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="font-bold text-text-primary">김담임 선생님</span>
+                  <span class="text-xs text-text-tertiary">오늘 09:00</span>
+                </div>
+                <p class="text-sm text-text-secondary leading-relaxed">
+                  "지민아, 어제 국어 요약 과제 정말 잘했어! 👏 특히 핵심 문장 파악 능력이 많이 늘었네. 
+                  오늘은 수학 일차방정식 마무리하고, 영어 단어 암기도 조금씩 해보자. 화이팅! 💪"
+                </p>
+                <div class="flex items-center gap-3 mt-3">
+                  <button class="flex items-center gap-1 text-xs text-primary hover:underline">
+                    <span class="material-icons-round text-sm">reply</span>
+                    답장하기
+                  </button>
+                  <a href="mypage.html#feedback" class="flex items-center gap-1 text-xs text-text-tertiary hover:text-text-secondary">
+                    <span class="material-icons-round text-sm">history</span>
+                    이전 피드백 보기
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Stats Cards -->
+          <section class="grid grid-cols-4 gap-4">
+            <div class="bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center">
+                  <span class="material-icons-round text-primary text-xl fire-icon">local_fire_department</span>
+                </div>
+                <div>
+                  <p class="text-xs text-text-secondary font-medium">연속 학습</p>
+                  <div class="flex items-center gap-1">
+                    <span class="text-xl font-bold text-text-primary">12일</span>
+                    <span class="px-1.5 py-0.5 bg-success-light text-success text-[10px] font-bold rounded">+1</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center">
+                  <span class="material-icons-round text-blue-500 text-xl">schedule</span>
+                </div>
+                <div>
+                  <p class="text-xs text-text-secondary font-medium">이번 주 학습</p>
+                  <span class="text-xl font-bold text-text-primary">5h 30m</span>
+                </div>
+              </div>
+            </div>
+            
+            <a href="mypage.html#badges" class="bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 flex items-center justify-center">
+                  <span class="material-icons-round text-amber-500 text-xl">emoji_events</span>
+                </div>
+                <div>
+                  <p class="text-xs text-text-secondary font-medium">획득 배지</p>
+                  <div class="flex items-center gap-1">
+                    <span class="text-xl font-bold text-text-primary">8개</span>
+                    <span class="text-[10px] text-text-tertiary">/ 20</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+            
+            <a href="mypage.html" class="bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center">
+                  <span class="material-icons-round text-planner text-xl">star</span>
+                </div>
+                <div>
+                  <p class="text-xs text-text-secondary font-medium">총 XP</p>
+                  <div class="flex items-center gap-1">
+                    <span class="text-xl font-bold text-text-primary">1,250</span>
+                    <span class="text-xs text-text-tertiary">Lv.7</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </section>
+          
+          <!-- Homework Alert -->
+          <section class="bg-error-light border border-error/20 rounded-2xl p-4 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-icons-round text-error text-2xl">assignment_late</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="px-2 py-0.5 bg-error text-white text-[10px] font-bold rounded">D-DAY</span>
+                <span class="font-bold text-text-primary">마감 임박 숙제</span>
+              </div>
+              <p class="text-sm text-text-secondary">수학 일차방정식 문제 5개 풀이 - 오늘 자정까지</p>
+            </div>
+            <a href="subject-math.html" class="px-4 py-2 bg-error text-white font-medium rounded-lg hover:bg-error/90 transition-colors text-sm flex items-center gap-1">
+              지금 풀기
+              <span class="material-icons-round text-sm">arrow_forward</span>
+            </a>
+          </section>
+          
+          <!-- Focus Mode Card -->
+          <section class="bg-gradient-to-r from-navy to-navy-light rounded-2xl p-6 text-white relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
+            <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
+            
+            <div class="relative z-10">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-3 py-1 bg-primary/20 border border-primary/30 rounded-full text-xs font-bold text-primary flex items-center gap-1">
+                  <span class="material-icons-round text-sm">bolt</span>
+                  AI 추천 학습
+                </span>
+              </div>
+              <h2 class="text-xl font-bold mb-2">영어 7초 발화 테스트</h2>
+              <p class="text-white/70 text-sm mb-4">오늘의 단어 20개 중 12개 남았어요. AI 튜터와 함께 발음 연습을 해보세요!</p>
+              <a href="english-test.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl transition-colors">
+                학습 시작하기
+                <span class="material-icons-round text-lg">arrow_forward</span>
+              </a>
+            </div>
+          </section>
+          
+          <!-- Subjects Section -->
+          <section>
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-bold text-text-primary flex items-center gap-2">
+                <span class="material-icons-round text-primary">school</span>
+                과목별 진도
+              </h2>
+              <a href="subjects.html" class="text-sm text-text-secondary hover:text-primary flex items-center gap-1 transition-colors">
+                전체 보기
+                <span class="material-icons-round text-base">chevron_right</span>
+              </a>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4">
+              <a href="subject-korean.html" class="group bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50 hover:border-korean/30">
+                <div class="flex justify-between items-start mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-korean-light flex items-center justify-center">
+                    <span class="material-icons-round text-korean">menu_book</span>
+                  </div>
+                  <span class="material-icons-round text-text-tertiary group-hover:text-korean group-hover:translate-x-1 transition-all">arrow_forward</span>
+                </div>
+                <h3 class="font-bold text-text-primary mb-1">국어</h3>
+                <p class="text-xs text-text-secondary mb-4">5단계 학습 진행중</p>
+                <div class="flex items-center justify-between text-xs font-medium mb-2">
+                  <span class="text-text-secondary">오늘 2/3</span>
+                  <span class="text-korean font-bold">67%</span>
+                </div>
+                <div class="w-full h-2 bg-korean-light rounded-full overflow-hidden">
+                  <div class="h-full bg-korean rounded-full" style="width: 67%"></div>
+                </div>
+              </a>
+              
+              <a href="subject-english.html" class="group bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50 hover:border-english/30">
+                <div class="flex justify-between items-start mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-english-light flex items-center justify-center">
+                    <span class="material-icons-round text-english">translate</span>
+                  </div>
+                  <span class="material-icons-round text-text-tertiary group-hover:text-english group-hover:translate-x-1 transition-all">arrow_forward</span>
+                </div>
+                <h3 class="font-bold text-text-primary mb-1">영어</h3>
+                <p class="text-xs text-text-secondary mb-4">7초 발화 테스트</p>
+                <div class="flex items-center justify-between text-xs font-medium mb-2">
+                  <span class="text-text-secondary">오늘 8/20</span>
+                  <span class="text-english font-bold">40%</span>
+                </div>
+                <div class="w-full h-2 bg-english-light rounded-full overflow-hidden">
+                  <div class="h-full bg-english rounded-full" style="width: 40%"></div>
+                </div>
+              </a>
+              
+              <a href="subject-math.html" class="group bg-surface rounded-2xl p-5 shadow-card transition-card hover:shadow-card-hover border border-border-light/50 hover:border-math/30">
+                <div class="flex justify-between items-start mb-4">
+                  <div class="w-10 h-10 rounded-xl bg-math-light flex items-center justify-center">
+                    <span class="material-icons-round text-math">calculate</span>
+                  </div>
+                  <span class="material-icons-round text-text-tertiary group-hover:text-math group-hover:translate-x-1 transition-all">arrow_forward</span>
+                </div>
+                <h3 class="font-bold text-text-primary mb-1">수학</h3>
+                <p class="text-xs text-text-secondary mb-4">Jump/Anchor 학습</p>
+                <div class="flex items-center justify-between text-xs font-medium mb-2">
+                  <span class="text-text-secondary">오늘 3/5</span>
+                  <span class="text-math font-bold">60%</span>
+                </div>
+                <div class="w-full h-2 bg-math-light rounded-full overflow-hidden">
+                  <div class="h-full bg-math rounded-full" style="width: 60%"></div>
+                </div>
+              </a>
+            </div>
+          </section>
+          
+          <!-- Recent Activity -->
+          <section>
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-bold text-text-primary flex items-center gap-2">
+                <span class="material-icons-round text-primary">history</span>
+                최근 활동
+              </h2>
+              <a href="mypage.html#history" class="text-sm text-text-secondary hover:text-primary flex items-center gap-1">
+                전체 보기
+                <span class="material-icons-round text-base">chevron_right</span>
+              </a>
+            </div>
+            
+            <div class="bg-surface rounded-2xl shadow-card border border-border-light/50 divide-y divide-border-light overflow-hidden">
+              <div class="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-korean-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-korean">menu_book</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-text-primary">국어 5단계 학습 완료</p>
+                  <p class="text-xs text-text-tertiary">비문학 - 과학 지문</p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <p class="text-sm font-bold text-primary">+25 XP</p>
+                  <p class="text-xs text-text-tertiary">2시간 전</p>
+                </div>
+              </div>
+              
+              <div class="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-warning-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-warning">emoji_events</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-text-primary">🔥 12일 연속 학습 달성!</p>
+                  <p class="text-xs text-text-tertiary">불꽃 스트릭 배지 획득</p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <p class="text-sm font-bold text-primary">+50 XP</p>
+                  <p class="text-xs text-text-tertiary">오늘 00:00</p>
+                </div>
+              </div>
+              
+              <div class="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+                <div class="w-10 h-10 rounded-lg bg-english-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-english">translate</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-text-primary">영어 7초 발화 테스트</p>
+                  <p class="text-xs text-text-tertiary">단어 8개 PASS</p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <p class="text-sm font-bold text-primary">+20 XP</p>
+                  <p class="text-xs text-text-tertiary">어제</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+        </div>
+        
+        <!-- Right Sidebar -->
+        <aside class="w-80 bg-surface border-l border-border-light flex-shrink-0 flex flex-col overflow-hidden">
+          <div class="p-5 flex-1 overflow-y-auto">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="material-icons-round text-primary">smart_toy</span>
+              <h3 class="font-bold text-text-primary">AI 학습 플래너</h3>
+            </div>
+            <p class="text-xs text-text-secondary mb-5">오늘의 추천 일정입니다.</p>
+            
+            <!-- Today's Progress -->
+            <div class="bg-background rounded-2xl p-4 mb-6">
+              <div class="flex items-center gap-4">
+                <div class="relative w-16 h-16">
+                  <svg class="w-full h-full" viewBox="0 0 36 36">
+                    <path class="text-border-light" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    <path class="text-primary progress-ring-circle" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="55, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-sm font-bold text-text-primary">55%</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="font-bold text-text-primary">오늘 달성률</h4>
+                  <p class="text-xs text-text-secondary">조금만 더 힘내세요!</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Schedule Timeline -->
+            <div class="relative">
+              <div class="absolute left-[7px] top-2 bottom-4 w-0.5 bg-border-light"></div>
+              
+              <div class="relative pl-7 pb-5">
+                <div class="absolute left-0 top-1 w-4 h-4 rounded-full bg-success border-2 border-surface z-10 flex items-center justify-center">
+                  <span class="material-icons-round text-white text-[10px]">check</span>
+                </div>
+                <div>
+                  <span class="inline-block px-2 py-0.5 bg-success-light text-success text-[10px] font-bold rounded mb-1">완료</span>
+                  <h5 class="font-semibold text-sm text-text-primary">국어 5단계 학습</h5>
+                  <p class="text-xs text-text-tertiary mt-0.5">오후 2:00 • 15분</p>
+                </div>
+              </div>
+              
+              <div class="relative pl-7 pb-5">
+                <div class="absolute left-0 top-1 w-4 h-4 rounded-full bg-primary border-2 border-surface z-10 ring-4 ring-primary/20"></div>
+                <div>
+                  <span class="inline-block px-2 py-0.5 bg-primary-light text-primary text-[10px] font-bold rounded mb-1">진행 중</span>
+                  <div class="bg-surface border border-primary/20 rounded-xl p-4 shadow-card mt-2">
+                    <h5 class="font-semibold text-sm text-text-primary mb-1">영어 7초 발화 테스트</h5>
+                    <p class="text-xs text-text-tertiary mb-3">오후 3:30 • 20분</p>
+                    <a href="english-test.html" class="block w-full py-2 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg text-center transition-colors">
+                      바로 시작
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="relative pl-7 pb-5">
+                <div class="absolute left-0 top-1 w-4 h-4 rounded-full bg-error border-2 border-surface z-10"></div>
+                <div>
+                  <span class="inline-block px-2 py-0.5 bg-error-light text-error text-[10px] font-bold rounded mb-1">마감 임박</span>
+                  <h5 class="font-semibold text-sm text-text-primary">수학 숙제 제출</h5>
+                  <p class="text-xs text-text-tertiary mt-0.5">오늘 자정까지</p>
+                </div>
+              </div>
+              
+              <div class="relative pl-7">
+                <div class="absolute left-0 top-1 w-4 h-4 rounded-full bg-border-light border-2 border-surface z-10"></div>
+                <div>
+                  <h5 class="font-semibold text-sm text-text-secondary">주간 리포트 확인</h5>
+                  <p class="text-xs text-text-tertiary mt-0.5">오후 6:00</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Learning Tip -->
+          <div class="p-5 border-t border-border-light">
+            <div class="bg-amber-50 rounded-xl p-4 flex gap-3">
+              <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-amber-600 text-lg">lightbulb</span>
+              </div>
+              <div>
+                <h5 class="font-semibold text-sm text-text-primary mb-1">오늘의 학습 팁</h5>
+                <p class="text-xs text-text-secondary leading-relaxed">"영어 단어는 7초 안에 발화하면 장기 기억에 더 잘 남아요!"</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Mobile Layout -->
+  <div class="lg:hidden flex flex-col min-h-screen">
+    <header class="h-14 bg-surface border-b border-border-light flex items-center justify-between px-4 flex-shrink-0 sticky top-0 z-40">
+      <button id="mobileMenuBtn" class="p-2 -ml-2 text-text-secondary hover:text-text-primary rounded-lg" aria-label="메뉴 열기">
+        <span class="material-icons-round" aria-hidden="true">menu</span>
+      </button>
+      <a href="student-dashboard.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold">M</span>
+        </div>
+        <span class="font-bold text-text-primary">MAMA-ASST</span>
+      </a>
+      <a href="notifications.html" class="relative p-2 -mr-2 text-text-secondary hover:text-text-primary rounded-lg" aria-label="알림 5개">
+        <span class="material-icons-round" aria-hidden="true">notifications</span>
+        <span class="absolute top-0 right-0 min-w-[16px] h-[16px] bg-error text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1" aria-hidden="true">5</span>
+      </a>
+    </header>
+    
+    <div class="flex-1 overflow-y-auto p-4 pb-20 space-y-4">
+      <!-- Welcome -->
+      <section>
+        <h1 class="text-xl font-bold text-text-primary mb-1">안녕, 지민아! 👋</h1>
+        <p class="text-sm text-text-secondary">오늘도 열심히 공부해볼까요?</p>
+      </section>
+
+      <!-- 오늘의 학습 CTA (Mobile) -->
+      <section>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-bold text-text-primary flex items-center gap-1.5">
+            <span class="material-icons-round text-primary text-lg">play_circle</span>
+            오늘의 학습
+          </h2>
+        </div>
+        <div class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 today-cta-scroll min-[481px]:grid min-[481px]:grid-cols-3 min-[481px]:overflow-visible min-[481px]:mx-0 min-[481px]:px-0 min-[481px]:pb-0">
+          <!-- 국어 -->
+          <a href="korean-learning.html" class="flex-shrink-0 min-w-[140px] min-[481px]:min-w-0 bg-surface rounded-xl p-3.5 shadow-card border border-border-light/50">
+            <div class="w-9 h-9 rounded-lg bg-korean-light flex items-center justify-center mb-2">
+              <span class="material-icons-round text-korean text-lg">menu_book</span>
+            </div>
+            <h3 class="font-bold text-sm text-text-primary mb-0.5">국어</h3>
+            <p class="text-[10px] text-text-secondary mb-2">오늘 2/3</p>
+            <div class="w-full h-1 bg-korean-light rounded-full overflow-hidden mb-3">
+              <div class="h-full bg-korean rounded-full" style="width: 67%"></div>
+            </div>
+            <div class="flex items-center justify-center gap-0.5 py-2 bg-korean text-white text-xs font-semibold rounded-lg">
+              시작
+              <span class="material-icons-round text-xs">arrow_forward</span>
+            </div>
+          </a>
+          <!-- 영어 -->
+          <a href="english-test.html" class="flex-shrink-0 min-w-[140px] min-[481px]:min-w-0 bg-surface rounded-xl p-3.5 shadow-card border border-border-light/50">
+            <div class="w-9 h-9 rounded-lg bg-english-light flex items-center justify-center mb-2">
+              <span class="material-icons-round text-english text-lg">translate</span>
+            </div>
+            <h3 class="font-bold text-sm text-text-primary mb-0.5">영어</h3>
+            <p class="text-[10px] text-text-secondary mb-2">오늘 8/20</p>
+            <div class="w-full h-1 bg-english-light rounded-full overflow-hidden mb-3">
+              <div class="h-full bg-english rounded-full" style="width: 40%"></div>
+            </div>
+            <div class="flex items-center justify-center gap-0.5 py-2 bg-english text-white text-xs font-semibold rounded-lg">
+              시작
+              <span class="material-icons-round text-xs">arrow_forward</span>
+            </div>
+          </a>
+          <!-- 수학 -->
+          <a href="math-problem.html" class="flex-shrink-0 min-w-[140px] min-[481px]:min-w-0 bg-surface rounded-xl p-3.5 shadow-card border border-border-light/50">
+            <div class="w-9 h-9 rounded-lg bg-math-light flex items-center justify-center mb-2">
+              <span class="material-icons-round text-math text-lg">calculate</span>
+            </div>
+            <h3 class="font-bold text-sm text-text-primary mb-0.5">수학</h3>
+            <p class="text-[10px] text-text-secondary mb-2">오늘 3/5</p>
+            <div class="w-full h-1 bg-math-light rounded-full overflow-hidden mb-3">
+              <div class="h-full bg-math rounded-full" style="width: 60%"></div>
+            </div>
+            <div class="flex items-center justify-center gap-0.5 py-2 bg-math text-navy text-xs font-semibold rounded-lg">
+              시작
+              <span class="material-icons-round text-xs">arrow_forward</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Teacher Comment (Mobile) -->
+      <section class="bg-gradient-to-r from-primary-light to-orange-50 rounded-xl p-4 border border-primary/20">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 p-0.5 flex-shrink-0">
+            <div class="w-full h-full rounded-full bg-white overflow-hidden">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=teacher-kim&backgroundColor=c0aede" alt="선생님" class="w-full h-full object-cover">
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-bold text-sm text-text-primary">김담임 선생님</span>
+              <span class="text-[10px] text-text-tertiary">오늘</span>
+            </div>
+            <p class="text-xs text-text-secondary leading-relaxed line-clamp-2">
+              "지민아, 어제 국어 요약 과제 정말 잘했어! 오늘도 화이팅! 💪"
+            </p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Stats Horizontal Scroll -->
+      <section class="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+        <div class="flex-shrink-0 bg-surface rounded-xl p-4 shadow-card border border-border-light/50 min-w-[120px]">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-icons-round text-primary text-lg fire-icon">local_fire_department</span>
+            <span class="text-[10px] text-text-secondary">연속</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="text-lg font-bold">12일</span>
+            <span class="px-1 py-0.5 bg-success-light text-success text-[8px] font-bold rounded">+1</span>
+          </div>
+        </div>
+        <div class="flex-shrink-0 bg-surface rounded-xl p-4 shadow-card border border-border-light/50 min-w-[120px]">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-icons-round text-blue-500 text-lg">schedule</span>
+            <span class="text-[10px] text-text-secondary">이번 주</span>
+          </div>
+          <span class="text-lg font-bold">5h 30m</span>
+        </div>
+        <a href="mypage.html#badges" class="flex-shrink-0 bg-surface rounded-xl p-4 shadow-card border border-border-light/50 min-w-[120px]">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-icons-round text-amber-500 text-lg">emoji_events</span>
+            <span class="text-[10px] text-text-secondary">배지</span>
+          </div>
+          <span class="text-lg font-bold">8개</span>
+        </a>
+        <a href="mypage.html" class="flex-shrink-0 bg-surface rounded-xl p-4 shadow-card border border-border-light/50 min-w-[120px]">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-icons-round text-planner text-lg">star</span>
+            <span class="text-[10px] text-text-secondary">XP</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="text-lg font-bold">1,250</span>
+          </div>
+        </a>
+      </section>
+      
+      <!-- Homework Alert (Mobile) -->
+      <section class="bg-error-light border border-error/20 rounded-xl p-3 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-error/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-icons-round text-error">assignment_late</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs text-error font-bold">마감 임박!</p>
+          <p class="text-xs text-text-secondary truncate">수학 숙제 - 오늘 자정</p>
+        </div>
+        <a href="subject-math.html" class="px-3 py-1.5 bg-error text-white text-xs font-bold rounded-lg">풀기</a>
+      </section>
+      
+      <!-- Today's Progress -->
+      <section class="bg-gradient-to-r from-primary to-orange-400 rounded-xl p-4 text-white">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-bold">오늘의 학습</h2>
+          <span class="text-2xl font-bold">55%</span>
+        </div>
+        <div class="w-full h-2 bg-white/30 rounded-full overflow-hidden mb-3">
+          <div class="h-full bg-white rounded-full" style="width: 55%"></div>
+        </div>
+        <p class="text-sm text-white/80">조금만 더 하면 목표 달성! 💪</p>
+      </section>
+      
+      <!-- Focus Mode -->
+      <section class="bg-navy rounded-xl p-4 text-white">
+        <span class="inline-block px-2 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full mb-2">⚡ AI 추천</span>
+        <h3 class="font-bold mb-1">영어 7초 발화 테스트</h3>
+        <p class="text-sm text-white/70 mb-3">남은 단어 12개 완료하기</p>
+        <a href="english-test.html" class="block w-full py-2.5 bg-primary text-center font-semibold rounded-xl">
+          학습 시작 →
+        </a>
+      </section>
+      
+      <!-- Subjects -->
+      <section>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-bold text-text-primary">과목별 진도</h2>
+          <a href="subjects.html" class="text-xs text-text-secondary">전체보기 →</a>
+        </div>
+        <div class="space-y-3">
+          <a href="subject-korean.html" class="block bg-surface rounded-xl p-4 shadow-card border border-border-light/50">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-lg bg-korean-light flex items-center justify-center">
+                <span class="material-icons-round text-korean">menu_book</span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-semibold text-text-primary">국어</h3>
+                <p class="text-xs text-text-secondary">오늘 2/3 완료</p>
+              </div>
+              <span class="text-korean font-bold">67%</span>
+            </div>
+            <div class="w-full h-1.5 bg-korean-light rounded-full overflow-hidden">
+              <div class="h-full bg-korean rounded-full" style="width: 67%"></div>
+            </div>
+          </a>
+          
+          <a href="subject-english.html" class="block bg-surface rounded-xl p-4 shadow-card border border-border-light/50">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-lg bg-english-light flex items-center justify-center">
+                <span class="material-icons-round text-english">translate</span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-semibold text-text-primary">영어</h3>
+                <p class="text-xs text-text-secondary">오늘 8/20 완료</p>
+              </div>
+              <span class="text-english font-bold">40%</span>
+            </div>
+            <div class="w-full h-1.5 bg-english-light rounded-full overflow-hidden">
+              <div class="h-full bg-english rounded-full" style="width: 40%"></div>
+            </div>
+          </a>
+          
+          <a href="subject-math.html" class="block bg-surface rounded-xl p-4 shadow-card border border-border-light/50">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-lg bg-math-light flex items-center justify-center">
+                <span class="material-icons-round text-math">calculate</span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-semibold text-text-primary">수학</h3>
+                <p class="text-xs text-text-secondary">오늘 3/5 완료</p>
+              </div>
+              <span class="text-math font-bold">60%</span>
+            </div>
+            <div class="w-full h-1.5 bg-math-light rounded-full overflow-hidden">
+              <div class="h-full bg-math rounded-full" style="width: 60%"></div>
+            </div>
+          </a>
+        </div>
+      </section>
+      
+      <!-- Tip -->
+      <section class="bg-amber-50 rounded-xl p-4 flex gap-3">
+        <span class="material-icons-round text-amber-600">lightbulb</span>
+        <div>
+          <h4 class="font-semibold text-sm mb-1">오늘의 학습 팁</h4>
+          <p class="text-xs text-text-secondary">"영어 단어는 7초 안에 발화하면 장기 기억에 더 잘 남아요!"</p>
+        </div>
+      </section>
+    </div>
+    
+    <!-- Mobile Bottom Tab Bar -->
+    <nav class="bottom-tab-bar">
+      <a href="student-dashboard.html" class="bottom-tab-bar__item bottom-tab-bar__item--active">
+        <span class="material-icons-round">home</span>
+        <span class="bottom-tab-bar__label">홈</span>
+      </a>
+      <a href="subjects.html" class="bottom-tab-bar__item">
+        <span class="material-icons-round">auto_stories</span>
+        <span class="bottom-tab-bar__label">과목</span>
+      </a>
+      <a href="ai-tutor.html" class="bottom-tab-bar__fab">
+        <div class="bottom-tab-bar__fab-circle">
+          <span class="material-icons-round">smart_toy</span>
+        </div>
+        <span class="bottom-tab-bar__fab-label">AI튜터</span>
+      </a>
+      <a href="report.html" class="bottom-tab-bar__item">
+        <span class="material-icons-round">insights</span>
+        <span class="bottom-tab-bar__label">리포트</span>
+      </a>
+      <a href="mypage.html" class="bottom-tab-bar__item">
+        <span class="material-icons-round">person</span>
+        <span class="bottom-tab-bar__label">MY</span>
+      </a>
+    </nav>
+    
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 opacity-0 pointer-events-none transition-opacity"></div>
+    
+    <!-- Mobile Sidebar -->
+    <aside id="mobileSidebar" class="sidebar-mobile fixed top-0 left-0 bottom-0 w-72 bg-navy z-50 flex flex-col" role="dialog" aria-modal="true" aria-label="내비게이션 메뉴">
+      <div class="p-4 flex justify-between items-center border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold" aria-hidden="true">M</span>
+          </div>
+          <span class="text-white font-bold">MAMA-ASST</span>
+        </div>
+        <button id="closeSidebarBtn" class="p-2 text-white/60 hover:text-white rounded-lg" aria-label="메뉴 닫기">
+          <span class="material-icons-round" aria-hidden="true">close</span>
+        </button>
+      </div>
+      
+      <a href="mypage.html" class="p-4 flex items-center gap-3 border-b border-white/10 hover:bg-white/5">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-300 p-0.5">
+          <div class="w-full h-full rounded-full bg-navy overflow-hidden">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=jimin&backgroundColor=ffdfbf" alt="프로필" class="w-full h-full object-cover">
+          </div>
+        </div>
+        <div class="flex-1">
+          <p class="text-white font-semibold">김지민</p>
+          <p class="text-white/50 text-xs">중학교 2학년 · Lv.7</p>
+        </div>
+      </a>
+      
+      <nav class="flex-1 p-4 space-y-1">
+        <a href="student-dashboard.html" class="flex items-center gap-3 px-4 py-3 bg-white/10 text-white rounded-xl">
+          <span class="material-icons-round">home</span>
+          <span>홈</span>
+        </a>
+        <a href="subjects.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 rounded-xl">
+          <span class="material-icons-round">auto_stories</span>
+          <span>과목</span>
+        </a>
+        <a href="report.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 rounded-xl">
+          <span class="material-icons-round">insights</span>
+          <span>리포트</span>
+        </a>
+        <a href="planner.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 rounded-xl">
+          <span class="material-icons-round">event_note</span>
+          <span>플래너</span>
+        </a>
+        <a href="notifications.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 rounded-xl">
+          <span class="material-icons-round">notifications</span>
+          <span>알림</span>
+          <span class="ml-auto px-2 py-0.5 bg-error text-white text-xs font-bold rounded-full">5</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10 space-y-2">
+        <a href="settings.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 rounded-xl">
+          <span class="material-icons-round">settings</span>
+          <span>설정</span>
+        </a>
+        <a href="login.html" class="flex items-center justify-center gap-2 px-4 py-2.5 border border-white/20 text-white/70 rounded-xl text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+  </div>
+  
+  <script>
+    // Update date
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+    const dateEl = document.getElementById('todayDate');
+    if (dateEl) {
+      dateEl.textContent = today.toLocaleDateString('ko-KR', options);
+    }
+    
+    // Mobile sidebar
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    
+    function openSidebar() {
+      mobileSidebar.classList.add('open');
+      sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
+      sidebarOverlay.classList.add('opacity-100');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSidebar() {
+      mobileSidebar.classList.remove('open');
+      sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
+      sidebarOverlay.classList.remove('opacity-100');
+      document.body.style.overflow = '';
+    }
+    
+    if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openSidebar);
+    if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+    // Skeleton loading demo: 2초 후 페이드아웃 제거
+    setTimeout(function() {
+      var overlay = document.getElementById('skeletonOverlay');
+      if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(function() { overlay.remove(); }, 300);
+      }
+    }, 2000);
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

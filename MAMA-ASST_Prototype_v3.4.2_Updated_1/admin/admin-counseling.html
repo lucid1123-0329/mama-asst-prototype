@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2주 상담 | MAMA-ASST 관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            'deep-navy': '#1A2E4D',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'border-medium': '#D1D5DB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%); color: white; }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.open { display: flex; }
+    .stat-card { cursor: pointer; transition: all 0.2s ease; border: 2px solid transparent; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .stat-card.active { border-color: #FF6D4D; background: #FFF0ED; }
+    .student-row { transition: all 0.15s ease; }
+    .student-row:hover { background-color: #F9FAFB; }
+    .score-bar { height: 8px; border-radius: 4px; background: #E5E7EB; }
+    .score-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+    .checklist-item { cursor: pointer; transition: all 0.15s ease; }
+    .checklist-item:hover { background-color: #F9FAFB; }
+    .checklist-item.selected { background-color: #FFF0ED; border-color: #FF6D4D; }
+    .step-card { border-left: 4px solid transparent; }
+    .step-card.step-1 { border-left-color: #22C55E; }
+    .step-card.step-2 { border-left-color: #F59E0B; }
+    .step-card.step-3 { border-left-color: #3B82F6; }
+    .subject-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+    .loading-spinner { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .analyzing-dot { animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-deep-navy flex-col fixed h-full z-40">
+      <div class="p-4 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">M</span>
+          </div>
+          <span class="text-white font-bold">MAMA-ASST</span>
+          <span class="ml-auto px-2 py-0.5 bg-primary/20 text-primary text-xs rounded-full">Admin</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+        <a href="admin-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        
+        <div class="pt-2">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">사용자 관리</p>
+          <a href="admin-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">school</span>
+            <span class="font-medium">학생 관리</span>
+          </a>
+          <a href="admin-parents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">family_restroom</span>
+            <span class="font-medium">학부모 관리</span>
+          </a>
+          <a href="admin-instructors.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">person</span>
+            <span class="font-medium">강사 관리</span>
+          </a>
+        </div>
+        
+        <div class="pt-2">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">학원 운영</p>
+          <a href="admin-classes.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">class</span>
+            <span class="font-medium">반 관리</span>
+          </a>
+          <a href="admin-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">fact_check</span>
+            <span class="font-medium">출결 관리</span>
+          </a>
+          <a href="admin-daily-evaluations.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">rate_review</span>
+            <span class="font-medium">일일 평가</span>
+          </a>
+          <a href="admin-counseling.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+            <span class="material-icons-round text-xl">record_voice_over</span>
+            <span class="font-medium">2주 상담</span>
+          </a>
+          <a href="admin-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">payments</span>
+            <span class="font-medium">결제 관리</span>
+          </a>
+        </div>
+        
+        <div class="pt-2">
+          <a href="admin-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">settings</span>
+            <span class="font-medium">학원 설정</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">관</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-white font-medium text-sm truncate">관리자</p>
+            <p class="text-white/50 text-xs truncate">명불허전 학원</p>
+          </div>
+        </div>
+        <button class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-lg">logout</span>
+          <span>로그아웃</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-deep-navy text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="font-bold text-lg">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="admin-dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round">dashboard</span>
+          <span>대시보드</span>
+        </a>
+        <a href="admin-counseling.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white">
+          <span class="material-icons-round">record_voice_over</span>
+          <span>2주 상담</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64 pb-20 lg:pb-0">
+      
+      <!-- Mobile Header -->
+      <header class="lg:hidden h-14 bg-deep-navy text-white flex items-center justify-between px-4 sticky top-0 z-30">
+        <button onclick="openMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">menu</span>
+        </button>
+        <h1 class="font-bold">2주 상담</h1>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-sm">관</div>
+      </header>
+
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-30">
+        <div>
+          <h1 class="text-xl font-bold text-text-primary">📋 2주 상담 관리</h1>
+          <p class="text-sm text-text-tertiary">학습 전략 2주 상담 브리핑 및 체크리스트 관리</p>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-text-secondary">
+          <span class="material-icons-round text-lg">calendar_today</span>
+          <span>2026년 1월 8일 (수)</span>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-6">
+        
+        <!-- ========== 섹션 1: 이번 주 상담 현황 ========== -->
+        <section id="section1">
+          <h2 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+            <span class="material-icons-round text-primary">event_note</span>
+            이번 주 상담 현황
+          </h2>
+          
+          <!-- 현황 카드 -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div onclick="filterByStatus('all')" class="stat-card active bg-surface rounded-2xl p-5 border border-border-light" data-status="all">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-info-light rounded-xl flex items-center justify-center">
+                  <span class="material-icons-round text-info text-2xl">groups</span>
+                </div>
+                <div>
+                  <p class="text-2xl font-bold text-text-primary">18</p>
+                  <p class="text-sm text-text-secondary">이번 주 대상</p>
+                </div>
+              </div>
+            </div>
+            <div onclick="filterByStatus('completed')" class="stat-card bg-surface rounded-2xl p-5 border border-border-light" data-status="completed">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-success-light rounded-xl flex items-center justify-center">
+                  <span class="material-icons-round text-success text-2xl">check_circle</span>
+                </div>
+                <div>
+                  <p class="text-2xl font-bold text-success">12</p>
+                  <p class="text-sm text-text-secondary">상담 완료</p>
+                </div>
+              </div>
+            </div>
+            <div onclick="filterByStatus('pending')" class="stat-card bg-surface rounded-2xl p-5 border border-border-light" data-status="pending">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-warning-light rounded-xl flex items-center justify-center">
+                  <span class="material-icons-round text-warning text-2xl">schedule</span>
+                </div>
+                <div>
+                  <p class="text-2xl font-bold text-warning">4</p>
+                  <p class="text-sm text-text-secondary">상담 대기</p>
+                </div>
+              </div>
+            </div>
+            <div onclick="filterByStatus('delayed')" class="stat-card bg-surface rounded-2xl p-5 border border-border-light" data-status="delayed">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-error-light rounded-xl flex items-center justify-center">
+                  <span class="material-icons-round text-error text-2xl">warning</span>
+                </div>
+                <div>
+                  <p class="text-2xl font-bold text-error">2</p>
+                  <p class="text-sm text-text-secondary">상담 지연</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 선택된 현황 학생 리스트 -->
+          <div id="weeklyStudentList" class="bg-surface rounded-2xl border border-border-light overflow-hidden">
+            <div class="p-4 bg-gray-50 border-b border-border-light flex items-center justify-between">
+              <h3 id="weeklyListTitle" class="font-bold text-text-primary">이번 주 대상 학생 (18명)</h3>
+            </div>
+            <div class="divide-y divide-border-light" id="weeklyListContent">
+              <!-- 동적으로 채워짐 -->
+            </div>
+          </div>
+        </section>
+        
+        <!-- ========== 섹션 2: 전체 상담 로그 ========== -->
+        <section id="section2">
+          <h2 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+            <span class="material-icons-round text-planner">history</span>
+            전체 상담 로그 (과거 기록)
+          </h2>
+          
+          <div class="bg-surface rounded-2xl border border-border-light overflow-hidden">
+            <div class="p-4 bg-gray-50 border-b border-border-light flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div class="flex items-center gap-2">
+                <input type="text" placeholder="학생 검색..." class="px-3 py-2 border border-border-medium rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 w-48">
+                <select class="px-3 py-2 border border-border-medium rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                  <option>전체 상담자</option>
+                  <option>손정화</option>
+                  <option>김선생</option>
+                  <option>박선생</option>
+                </select>
+              </div>
+              <button class="px-4 py-2 bg-surface border border-border-light rounded-xl text-sm hover:bg-gray-50 flex items-center gap-1">
+                <span class="material-icons-round text-lg">file_download</span>
+                내보내기
+              </button>
+            </div>
+            
+            <!-- Table Header -->
+            <div class="hidden lg:grid grid-cols-12 gap-4 px-4 py-3 bg-gray-50 border-b border-border-light text-xs font-medium text-text-secondary uppercase">
+              <div class="col-span-3">학생</div>
+              <div class="col-span-2">상담자</div>
+              <div class="col-span-1 text-center">회차</div>
+              <div class="col-span-2">상담 기간</div>
+              <div class="col-span-2">다음 2주 목표</div>
+              <div class="col-span-1 text-center">상태</div>
+              <div class="col-span-1 text-center">조회</div>
+            </div>
+            
+            <!-- Log List -->
+            <div class="divide-y divide-border-light">
+              <!-- Log 1 -->
+              <div class="student-row p-4 cursor-pointer" onclick="openPastRecordModal('권나현', 2)">
+                <div class="lg:grid lg:grid-cols-12 lg:gap-4 lg:items-center">
+                  <div class="col-span-3 flex items-center gap-3 mb-2 lg:mb-0">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold">권</div>
+                    <div>
+                      <p class="font-bold text-text-primary">권나현</p>
+                      <p class="text-xs text-text-tertiary">중2A반</p>
+                    </div>
+                  </div>
+                  <div class="col-span-2 text-sm text-text-secondary mb-1 lg:mb-0">손정화</div>
+                  <div class="col-span-1 text-center mb-1 lg:mb-0">
+                    <span class="px-2 py-0.5 bg-planner-light text-planner text-xs font-medium rounded-full">2회차</span>
+                  </div>
+                  <div class="col-span-2 text-sm text-text-secondary mb-1 lg:mb-0">12/15 ~ 12/28</div>
+                  <div class="col-span-2 text-sm text-text-secondary mb-2 lg:mb-0 line-clamp-1">수업 중 1문제 이상 질문하기</div>
+                  <div class="col-span-1 text-center mb-2 lg:mb-0">
+                    <span class="px-2 py-1 bg-success-light text-success text-xs font-medium rounded-lg">완료</span>
+                  </div>
+                  <div class="col-span-1 text-center">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg">
+                      <span class="material-icons-round text-text-tertiary">visibility</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Log 2 -->
+              <div class="student-row p-4 cursor-pointer" onclick="openPastRecordModal('이준호', 3)">
+                <div class="lg:grid lg:grid-cols-12 lg:gap-4 lg:items-center">
+                  <div class="col-span-3 flex items-center gap-3 mb-2 lg:mb-0">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold">이</div>
+                    <div>
+                      <p class="font-bold text-text-primary">이준호</p>
+                      <p class="text-xs text-text-tertiary">고1B반</p>
+                    </div>
+                  </div>
+                  <div class="col-span-2 text-sm text-text-secondary mb-1 lg:mb-0">손정화</div>
+                  <div class="col-span-1 text-center mb-1 lg:mb-0">
+                    <span class="px-2 py-0.5 bg-planner-light text-planner text-xs font-medium rounded-full">3회차</span>
+                  </div>
+                  <div class="col-span-2 text-sm text-text-secondary mb-1 lg:mb-0">12/15 ~ 12/28</div>
+                  <div class="col-span-2 text-sm text-text-secondary mb-2 lg:mb-0 line-clamp-1">심화 문제 30분 이상 풀기</div>
+                  <div class="col-span-1 text-center mb-2 lg:mb-0">
+                    <span class="px-2 py-1 bg-success-light text-success text-xs font-medium rounded-lg">완료</span>
+                  </div>
+                  <div class="col-span-1 text-center">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg">
+                      <span class="material-icons-round text-text-tertiary">visibility</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Log 3 -->
+              <div class="student-row p-4 cursor-pointer" onclick="openPastRecordModal('박지후', 0)">
+                <div class="lg:grid lg:grid-cols-12 lg:gap-4 lg:items-center">
+                  <div class="col-span-3 flex items-center gap-3 mb-2 lg:mb-0">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">박</div>
+                    <div>
+                      <p class="font-bold text-text-primary">박지후</p>
+                      <p class="text-xs text-text-tertiary">중2A반</p>
+                    </div>
+                  </div>
+                  <div class="col-span-2 text-sm text-text-secondary mb-1 lg:mb-0">김선생</div>
+                  <div class="col-span-1 text-center mb-1 lg:mb-0">
+                    <span class="px-2 py-0.5 bg-gray-200 text-text-tertiary text-xs font-medium rounded-full">신규</span>
+                  </div>
+                  <div class="col-span-2 text-sm text-text-secondary mb-1 lg:mb-0">12/01 ~ 12/14</div>
+                  <div class="col-span-2 text-sm text-text-secondary mb-2 lg:mb-0 line-clamp-1">감정 기복 없이 꾸준히 과제하기</div>
+                  <div class="col-span-1 text-center mb-2 lg:mb-0">
+                    <span class="px-2 py-1 bg-success-light text-success text-xs font-medium rounded-lg">완료</span>
+                  </div>
+                  <div class="col-span-1 text-center">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg">
+                      <span class="material-icons-round text-text-tertiary">visibility</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="p-4 border-t border-border-light flex items-center justify-between">
+              <p class="text-sm text-text-tertiary">1-3 / 42건</p>
+              <div class="flex items-center gap-1">
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100">
+                  <span class="material-icons-round text-text-tertiary">chevron_left</span>
+                </button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white">1</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-text-secondary">2</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-text-secondary">3</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100">
+                  <span class="material-icons-round text-text-tertiary">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- ========== 섹션 3: 새 상담 시작 ========== -->
+        <section id="section3">
+          <h2 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+            <span class="material-icons-round text-success">play_circle</span>
+            새 상담 시작
+          </h2>
+          
+          <div class="bg-surface rounded-2xl border border-border-light overflow-hidden">
+            <!-- 학생 검색 영역 -->
+            <div class="p-5 border-b border-border-light">
+              <div class="flex flex-col lg:flex-row gap-4">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-text-primary mb-2">학생 선택</label>
+                  <select id="studentSelect" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30">
+                    <option value="">학생을 선택하세요</option>
+                    <option value="권나현">권나현 (중2A반) - 3회차 예정</option>
+                    <option value="박지후">박지후 (중2A반) - 1회차 예정</option>
+                    <option value="김서연">김서연 (중2B반) - 2회차 예정 ⚠️ 지연</option>
+                    <option value="최수현">최수현 (고1B반) - 2회차 예정</option>
+                  </select>
+                </div>
+                <div class="flex items-end">
+                  <button onclick="startCounseling()" class="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2 font-medium">
+                    <span class="material-icons-round">play_arrow</span>
+                    상담 시작
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- AI 분석 영역 (초기 숨김) -->
+            <div id="analysisArea" class="hidden">
+              <!-- 분석 중 로딩 -->
+              <div id="analysisLoading" class="p-12 text-center hidden">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-light rounded-full mb-4">
+                  <span class="material-icons-round text-primary text-3xl loading-spinner">sync</span>
+                </div>
+                <h3 class="text-lg font-bold text-text-primary mb-2">AI 분석 중...</h3>
+                <p class="text-text-secondary mb-4">마지막 상담 이후 데이터를 수집하고 분석하고 있습니다</p>
+                <div class="flex justify-center gap-2">
+                  <span class="analyzing-dot w-2 h-2 bg-primary rounded-full" style="animation-delay: 0s"></span>
+                  <span class="analyzing-dot w-2 h-2 bg-primary rounded-full" style="animation-delay: 0.2s"></span>
+                  <span class="analyzing-dot w-2 h-2 bg-primary rounded-full" style="animation-delay: 0.4s"></span>
+                </div>
+                <div class="mt-6 text-left max-w-md mx-auto bg-gray-50 rounded-xl p-4 text-sm text-text-secondary">
+                  <p class="mb-2">✓ 일일평가 기록 수집 (12/29 ~ 01/07)</p>
+                  <p class="mb-2">✓ 과목별 학습 기록 분석</p>
+                  <p>✓ 학습 성향 데이터 반영</p>
+                </div>
+              </div>
+              
+              <!-- 분석 결과 (브리핑 + 체크리스트) -->
+              <div id="analysisResult" class="hidden">
+                <!-- 브리핑 헤더 -->
+                <div class="p-5 bg-gradient-to-r from-primary-light to-planner-light border-b border-border-light">
+                  <div class="flex items-center gap-4">
+                    <div id="briefingAvatar" class="w-14 h-14 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold text-xl">권</div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h3 id="briefingStudentName" class="text-xl font-bold text-text-primary">권나현</h3>
+                        <span class="px-2 py-0.5 bg-planner text-white text-xs font-medium rounded-full">3회차</span>
+                      </div>
+                      <p class="text-sm text-text-secondary">중2A반 · 상담자: 손정화 · 분석 기간: 2025.12.29 ~ 2026.01.07</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="p-5 space-y-6">
+                  
+                  <!-- 1분 요약 -->
+                  <div class="bg-math-light rounded-2xl p-5 border border-math/30">
+                    <h4 class="font-bold text-text-primary mb-4 flex items-center gap-2">
+                      <span class="material-icons-round text-math">flash_on</span>
+                      1분 요약 (핵심만)
+                    </h4>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div class="space-y-3">
+                        <div class="bg-white rounded-xl p-4">
+                          <p class="text-xs text-text-tertiary mb-1">🎯 AI 헤드라인</p>
+                          <p class="font-medium text-text-primary">상승한 이해도를 격려하며, 완벽주의로 인한 과제 기복 및 질문 회피 다루기</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4">
+                          <p class="text-xs text-text-tertiary mb-1">👤 학생 성향</p>
+                          <p class="font-medium text-text-primary">성실하지만 불안감이 높은 <span class="text-primary">'의무감 주도형'</span> 학습자</p>
+                        </div>
+                      </div>
+                      <div class="space-y-3">
+                        <div class="bg-white rounded-xl p-4">
+                          <p class="text-xs text-text-tertiary mb-1">📝 직전 약속</p>
+                          <p class="text-sm text-text-primary">영어, 수학 수업 시간에 1문제 이상 반드시 손들고 질문하거나 수업 후 선생님께 여쭤보기</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4">
+                          <p class="text-xs text-text-tertiary mb-1">✅ 이행 결과</p>
+                          <p class="text-sm text-text-primary">12/29일 수학 수업에서 질문을 시도했으나, 이후 1주일간 질문 기록 없음</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- 14일간 데이터 + 과목별 학습 현황 -->
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 14일간 데이터 변화 -->
+                    <div class="bg-surface rounded-2xl border border-border-light p-5">
+                      <h4 class="font-bold text-text-primary mb-4 flex items-center gap-2">
+                        <span class="material-icons-round text-info">trending_up</span>
+                        14일간 데이터 변화
+                      </h4>
+                      <div class="space-y-4">
+                        <div>
+                          <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-text-secondary">과제완료도</span>
+                            <div class="flex items-center gap-2">
+                              <span class="text-sm font-bold text-error">3.2점</span>
+                              <span class="text-xs text-error">▼</span>
+                            </div>
+                          </div>
+                          <div class="score-bar"><div class="score-fill bg-error" style="width: 64%"></div></div>
+                        </div>
+                        <div>
+                          <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-text-secondary">수업이해도</span>
+                            <div class="flex items-center gap-2">
+                              <span class="text-sm font-bold text-success">4.2점</span>
+                              <span class="text-xs text-success">▲</span>
+                            </div>
+                          </div>
+                          <div class="score-bar"><div class="score-fill bg-success" style="width: 84%"></div></div>
+                        </div>
+                        <div>
+                          <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-text-secondary">수업 태도</span>
+                            <div class="flex items-center gap-2">
+                              <span class="text-sm font-bold text-warning">3.8점</span>
+                              <span class="text-xs text-error">▼</span>
+                            </div>
+                          </div>
+                          <div class="score-bar"><div class="score-fill bg-warning" style="width: 76%"></div></div>
+                        </div>
+                        <div>
+                          <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm text-text-secondary">성취도</span>
+                            <div class="flex items-center gap-2">
+                              <span class="text-sm font-bold text-success">4.2점</span>
+                              <span class="text-xs text-success">▲</span>
+                            </div>
+                          </div>
+                          <div class="score-bar"><div class="score-fill bg-success" style="width: 84%"></div></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- 과목별 학습 현황 -->
+                    <div class="bg-surface rounded-2xl border border-border-light p-5">
+                      <h4 class="font-bold text-text-primary mb-4 flex items-center gap-2">
+                        <span class="material-icons-round text-planner">school</span>
+                        과목별 학습 현황 (14일)
+                      </h4>
+                      <div class="space-y-4">
+                        <div class="bg-korean-light/50 rounded-xl p-3">
+                          <div class="flex items-center justify-between mb-2">
+                            <span class="subject-badge bg-korean text-white">📚 국어</span>
+                            <span class="text-xs text-text-tertiary">12지문 · 정답률 72%</span>
+                          </div>
+                          <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-0.5 bg-error-light text-error text-xs rounded">독해력 부족</span>
+                            <span class="px-2 py-0.5 bg-warning-light text-warning text-xs rounded">요약 미흡</span>
+                          </div>
+                        </div>
+                        <div class="bg-english-light/50 rounded-xl p-3">
+                          <div class="flex items-center justify-between mb-2">
+                            <span class="subject-badge bg-english text-white">💬 영어</span>
+                            <span class="text-xs text-text-tertiary">87단어 · 발화 85%</span>
+                          </div>
+                          <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-0.5 bg-success-light text-success text-xs rounded">발화 정확도 양호</span>
+                            <span class="px-2 py-0.5 bg-warning-light text-warning text-xs rounded">UNSTABLE 12개</span>
+                          </div>
+                        </div>
+                        <div class="bg-math-light/50 rounded-xl p-3">
+                          <div class="flex items-center justify-between mb-2">
+                            <span class="subject-badge bg-math text-white">➕ 수학</span>
+                            <span class="text-xs text-text-tertiary">45문제 · 정답률 68%</span>
+                          </div>
+                          <div class="flex flex-wrap gap-1">
+                            <span class="px-2 py-0.5 bg-error-light text-error text-xs rounded">단순 실수 빈발</span>
+                            <span class="px-2 py-0.5 bg-info-light text-info text-xs rounded">함수 영역 집중</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- 상담 전략 3단계 -->
+                  <div class="bg-surface rounded-2xl border border-border-light p-5">
+                    <h4 class="font-bold text-text-primary mb-4 flex items-center gap-2">
+                      <span class="material-icons-round text-success">psychology</span>
+                      상담 전략 (순서대로만 말하기)
+                    </h4>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                      <div class="step-card step-1 bg-success-light/30 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                          <span class="w-6 h-6 bg-success text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                          <span class="font-bold text-success">칭찬하기</span>
+                        </div>
+                        <p class="text-sm font-medium text-text-primary mb-2">상승한 수업 이해도와 끈기 칭찬</p>
+                        <div class="bg-white rounded-lg p-3 text-sm text-text-secondary italic">
+                          "나현아, 지난 2주 동안 수업 내용을 이해하고 끝까지 풀어내는 힘이 더 좋아졌네!"
+                        </div>
+                      </div>
+                      <div class="step-card step-2 bg-warning-light/30 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                          <span class="w-6 h-6 bg-warning text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                          <span class="font-bold text-warning">문제 확인</span>
+                        </div>
+                        <p class="text-sm font-medium text-text-primary mb-2">완벽주의로 인한 과제 수행 어려움</p>
+                        <div class="bg-white rounded-lg p-3 text-sm text-text-secondary italic">
+                          "선생님은 나현이가 너무 완벽하게 하려다 마음이 힘들어질까 봐 걱정돼."
+                        </div>
+                      </div>
+                      <div class="step-card step-3 bg-info-light/30 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                          <span class="w-6 h-6 bg-info text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                          <span class="font-bold text-info">다음 제안</span>
+                        </div>
+                        <p class="text-sm font-medium text-text-primary mb-2">질문 습관의 재시도 및 부담 완화</p>
+                        <div class="bg-white rounded-lg p-3 text-sm text-text-secondary italic">
+                          "저번에 수학 시간에 질문했던 거 기억나? 오늘부터 다시 딱 하나만 물어보자."
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- 주요 보완점 / 강사 피드백 / 특이사항 -->
+                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="bg-error-light/30 rounded-xl p-4 border border-error/20">
+                      <h4 class="font-bold text-error mb-2 flex items-center gap-2 text-sm">
+                        <span class="material-icons-round text-lg">priority_high</span>
+                        주요 보완점 (1순위)
+                      </h4>
+                      <p class="text-sm text-text-primary leading-relaxed">심리적 압박으로 인한 수행 기복 - 1/8 영어 수업에서 완벽주의 성향으로 인한 불안감이 과제 수행 저조(2점)로 이어졌으며, 수학에서는 단순 실수가 지속적으로 관찰됩니다.</p>
+                    </div>
+                    <div class="bg-info-light/30 rounded-xl p-4 border border-info/20">
+                      <h4 class="font-bold text-info mb-2 flex items-center gap-2 text-sm">
+                        <span class="material-icons-round text-lg">chat</span>
+                        강사 주요 피드백
+                      </h4>
+                      <p class="text-sm text-text-primary leading-relaxed">'스스로풀기' 태그가 다수 관찰되어 문제 해결 끈기는 인정받았으나, 선생님들은 학생이 스스로를 옥죄는 불안감을 우려하고 있습니다.</p>
+                    </div>
+                    <div class="bg-warning-light/30 rounded-xl p-4 border border-warning/20">
+                      <h4 class="font-bold text-warning mb-2 flex items-center gap-2 text-sm">
+                        <span class="material-icons-round text-lg">report</span>
+                        특이사항
+                      </h4>
+                      <p class="text-sm text-text-primary leading-relaxed">12/29 수학 수업에서 '질문하기'가 기록되었으나, 이후 1월 로그에서는 다시 스스로 해결하려는 경향만 강해져 질문 빈도가 줄어들었습니다.</p>
+                    </div>
+                  </div>
+                  
+                  <!-- 5분 상담 체크리스트 -->
+                  <div class="bg-primary-light rounded-2xl p-5 border-2 border-primary/30">
+                    <h4 class="font-bold text-text-primary mb-4 flex items-center gap-2">
+                      <span class="material-icons-round text-primary">checklist</span>
+                      5분 질적 상담 체크리스트 (필수 선택)
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <!-- (1) 학생 자기 진단 -->
+                      <div class="bg-white rounded-xl p-4">
+                        <p class="text-sm font-bold text-text-primary mb-3">(1) 학생 자기 진단 (SA)</p>
+                        <div class="space-y-2">
+                          <label class="checklist-item flex items-center gap-3 p-2 border border-border-light rounded-lg">
+                            <input type="radio" name="sa" class="w-4 h-4 text-primary">
+                            <span class="text-sm">매우 긍정적 (현재 방식 만족)</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-3 p-2 border border-border-light rounded-lg">
+                            <input type="radio" name="sa" class="w-4 h-4 text-primary">
+                            <span class="text-sm">대체로 긍정적 (과정이 다소 힘듦)</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-3 p-2 border border-border-light rounded-lg">
+                            <input type="radio" name="sa" class="w-4 h-4 text-primary">
+                            <span class="text-sm">보통 (노력은 하지만 성과 그저 그럼)</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-3 p-2 border border-border-light rounded-lg">
+                            <input type="radio" name="sa" class="w-4 h-4 text-primary">
+                            <span class="text-sm">대체로 부정적 (노력에 비해 성과 안남)</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-3 p-2 border border-border-light rounded-lg">
+                            <input type="radio" name="sa" class="w-4 h-4 text-primary">
+                            <span class="text-sm">매우 부정적 (어떻게 할지 모르겠음)</span>
+                          </label>
+                        </div>
+                      </div>
+                      
+                      <!-- (2) 상담자 관찰 -->
+                      <div class="bg-white rounded-xl p-4">
+                        <p class="text-sm font-bold text-text-primary mb-3">(2) 상담자 관찰: 정서/태도 (OB)</p>
+                        <div class="space-y-2">
+                          <label class="checklist-item flex items-center gap-3 p-2 border border-border-light rounded-lg">
+                            <input type="radio" name="ob" class="w-4 h-4 text-primary">
+                            <span class="text-sm">열정적 / 의욕적</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-3 p-2 border border-border-light rounded-lg">
+                            <input type="radio" name="ob" class="w-4 h-4 text-primary">
+                            <span class="text-sm">수용적 / 안정적</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-3 p-2 border border-border-light rounded-lg">
+                            <input type="radio" name="ob" class="w-4 h-4 text-primary">
+                            <span class="text-sm">수동적 / 방관적</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-3 p-2 border border-border-light rounded-lg">
+                            <input type="radio" name="ob" class="w-4 h-4 text-primary">
+                            <span class="text-sm">방어적 / 경계</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-3 p-2 border border-border-light rounded-lg">
+                            <input type="radio" name="ob" class="w-4 h-4 text-primary">
+                            <span class="text-sm">불안정 / 과민함</span>
+                          </label>
+                        </div>
+                      </div>
+                      
+                      <!-- (3) 주요 저해 요인 -->
+                      <div class="bg-white rounded-xl p-4">
+                        <p class="text-sm font-bold text-text-primary mb-3">(3) 주요 저해 요인 (BL)</p>
+                        <textarea class="w-full p-3 border border-border-medium rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" rows="5" placeholder="학습을 저해하는 주요 요인을 작성하세요...
+
+예시:
+- 건강/컨디션 난조 (수면 부족, 질병 등)
+- 학업 외 요인 (친구, 가족, 진로 등 심리적 문제)
+- 특정 과목(단원)에 대한 심리적 거부감/스트레스
+- (로그 기반) 개념 이해 부족
+- (성향 기반) 계획 수립 실패, 학습 동기 저하"></textarea>
+                      </div>
+                      
+                      <!-- (4) 다음 2주 목표 -->
+                      <div class="bg-white rounded-xl p-4">
+                        <p class="text-sm font-bold text-text-primary mb-3">(4) 다음 2주 목표 (G)</p>
+                        <textarea class="w-full p-3 border border-border-medium rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" rows="5" placeholder="다음 2주 목표를 작성하세요..."></textarea>
+                        <p class="mt-2 text-xs text-text-tertiary">💡 예시: "매일 저녁 10시, 선생님 코멘트 확인 후 '확인했습니다' 답장하기"</p>
+                      </div>
+                      
+                      <!-- (5) 직전 목표 이행 평가 -->
+                      <div class="bg-white rounded-xl p-4 lg:col-span-2">
+                        <p class="text-sm font-bold text-text-primary mb-3">(5) 직전 목표 이행 평가 (PF)</p>
+                        <div class="flex flex-wrap gap-2">
+                          <label class="checklist-item flex items-center gap-2 px-4 py-2 border border-border-light rounded-full">
+                            <input type="radio" name="pf" class="w-4 h-4 text-primary">
+                            <span class="text-sm">완전 이행 (100%)</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-2 px-4 py-2 border border-border-light rounded-full">
+                            <input type="radio" name="pf" class="w-4 h-4 text-primary">
+                            <span class="text-sm">대체로 이행 (70%)</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-2 px-4 py-2 border border-border-light rounded-full">
+                            <input type="radio" name="pf" class="w-4 h-4 text-primary">
+                            <span class="text-sm">부분 이행 (50%)</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-2 px-4 py-2 border border-border-light rounded-full">
+                            <input type="radio" name="pf" class="w-4 h-4 text-primary">
+                            <span class="text-sm">미흡 (30% 이하)</span>
+                          </label>
+                          <label class="checklist-item flex items-center gap-2 px-4 py-2 border border-border-light rounded-full">
+                            <input type="radio" name="pf" class="w-4 h-4 text-primary">
+                            <span class="text-sm">미이행 (0%)</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <!-- 상담 완료 버튼 -->
+                <div class="p-5 border-t border-border-light bg-gray-50 flex items-center justify-between">
+                  <button onclick="cancelCounseling()" class="px-4 py-2 border border-border-light text-text-secondary rounded-xl hover:bg-gray-100">
+                    취소
+                  </button>
+                  <button onclick="completeCounseling()" class="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2 font-medium">
+                    <span class="material-icons-round">check_circle</span>
+                    상담 완료 (AI 분석 후 저장)
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+      </div>
+    </main>
+  </div>
+  
+  <!-- 과거 상담 기록 조회 모달 -->
+  <div id="pastRecordModal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="p-5 border-b border-border-light flex-shrink-0">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div id="pastAvatar" class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold text-lg">권</div>
+            <div>
+              <h3 id="pastStudentName" class="font-bold text-lg text-text-primary">권나현</h3>
+              <p id="pastPeriod" class="text-sm text-text-secondary">2025.12.15 ~ 2025.12.28</p>
+            </div>
+          </div>
+          <button onclick="closePastRecordModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+            <span class="material-icons-round text-text-tertiary">close</span>
+          </button>
+        </div>
+        <!-- 회차 선택 드롭다운 -->
+        <div class="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+          <span class="text-sm font-medium text-text-secondary">회차 선택:</span>
+          <select id="cycleSelect" onchange="changeCycle()" class="flex-1 px-3 py-2 border border-border-medium rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+            <option value="2">2회차 (2025.12.15 ~ 12.28)</option>
+            <option value="1">1회차 (2025.12.01 ~ 12.14)</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto p-5 space-y-6">
+        <!-- 당시 AI 사전 브리핑 -->
+        <div class="bg-math-light rounded-xl p-4">
+          <h4 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-math">auto_awesome</span>
+            당시 AI 사전 브리핑
+          </h4>
+          <div class="bg-white rounded-lg p-4">
+            <p class="text-sm font-medium text-text-primary mb-2">🎯 AI 헤드라인</p>
+            <p class="text-sm text-text-secondary mb-4">질문 회피 습관을 개선하고, 완벽주의 성향으로 인한 스트레스 관리하기</p>
+            <p class="text-sm font-medium text-text-primary mb-2">👤 학생 성향</p>
+            <p class="text-sm text-text-secondary">성실하지만 불안감이 높은 '의무감 주도형' 학습자</p>
+          </div>
+        </div>
+        
+        <!-- 주요 보완점 / 강사 피드백 / 특이사항 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          <div class="bg-error-light/50 rounded-lg p-3">
+            <p class="text-xs font-bold text-error mb-1 flex items-center gap-1">
+              <span class="material-icons-round text-sm">priority_high</span> 주요 보완점
+            </p>
+            <p class="text-sm text-text-secondary">심리적 압박으로 인한 수행 기복, 완벽주의 성향으로 과제 수행 저조</p>
+          </div>
+          <div class="bg-info-light/50 rounded-lg p-3">
+            <p class="text-xs font-bold text-info mb-1 flex items-center gap-1">
+              <span class="material-icons-round text-sm">chat</span> 강사 피드백
+            </p>
+            <p class="text-sm text-text-secondary">문제 해결 끈기는 인정, 스스로를 옥죄는 불안감 우려</p>
+          </div>
+          <div class="bg-warning-light/50 rounded-lg p-3">
+            <p class="text-xs font-bold text-warning mb-1 flex items-center gap-1">
+              <span class="material-icons-round text-sm">report</span> 특이사항
+            </p>
+            <p class="text-sm text-text-secondary">수학 수업에서 질문하기 시도 후 다시 스스로 해결 경향</p>
+          </div>
+        </div>
+        
+        <!-- 상담자 체크 항목 -->
+        <div class="bg-surface rounded-xl border border-border-light p-4">
+          <h4 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-planner">checklist</span>
+            상담자 체크 항목
+          </h4>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-text-tertiary mb-1">(1) 학생 자기 진단 (SA)</p>
+              <p class="font-medium">보통 (노력은 하지만 성과 그저 그럼)</p>
+            </div>
+            <div>
+              <p class="text-text-tertiary mb-1">(2) 상담자 관찰 (OB)</p>
+              <p class="font-medium">불안정 / 과민함</p>
+            </div>
+            <div class="lg:col-span-2">
+              <p class="text-text-tertiary mb-1">(3) 주요 저해 요인 (BL)</p>
+              <p class="font-medium bg-gray-50 p-2 rounded">특정 과목(영어)에 대한 심리적 거부감, 완벽주의 성향으로 인한 과제 시작 지연, 계획 수립 후 실행 미흡</p>
+            </div>
+            <div>
+              <p class="text-text-tertiary mb-1">(5) 직전 목표 이행 (PF)</p>
+              <p class="font-medium">부분 이행 (50%)</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- AI 분석 리포트 결과 -->
+        <div class="bg-info-light rounded-xl p-4">
+          <h4 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-info">analytics</span>
+            AI 분석 리포트 결과
+          </h4>
+          <div class="bg-white rounded-lg p-4 text-sm text-text-secondary leading-relaxed">
+            <p class="mb-2">학생은 성실하게 학습에 임하고 있으나, 완벽주의 성향으로 인해 과제 시작 자체를 미루는 경향이 있습니다. 특히 영어 과목에서 심리적 거부감이 관찰되며, 이로 인해 영어 숙제 완료율이 타 과목 대비 20% 낮습니다.</p>
+            <p>질문하기 목표는 초반에 시도했으나 지속되지 못했습니다. 다음 사이클에서는 더 작은 목표(하루 1개 질문)로 시작하여 성공 경험을 쌓는 것이 권장됩니다.</p>
+          </div>
+        </div>
+        
+        <!-- 설정했던 다음 2주 목표 -->
+        <div class="bg-success-light rounded-xl p-4">
+          <h4 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-success">flag</span>
+            설정했던 다음 2주 목표
+          </h4>
+          <div class="bg-white rounded-lg p-4">
+            <p class="text-sm text-text-primary">영어, 수학 수업 시간에 1문제 이상 반드시 손들고 질문하거나 수업 후 선생님께 여쭤보기</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-5 border-t border-border-light flex justify-end">
+        <button onclick="closePastRecordModal()" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-navy text-white px-6 py-3 rounded-xl shadow-lg z-50 hidden flex items-center gap-2">
+    <span class="material-icons-round">check_circle</span>
+    <span id="toastMessage">저장되었습니다.</span>
+  </div>
+  
+  <script>
+    // 이번 주 학생 데이터
+    const weeklyStudents = [
+      { name: '권나현', class: '중2A반', counselor: '손정화', cycle: 3, status: 'pending', date: '01/08' },
+      { name: '박지후', class: '중2A반', counselor: '김선생', cycle: 1, status: 'pending', date: '01/09' },
+      { name: '김서연', class: '중2B반', counselor: '박선생', cycle: 2, status: 'delayed', date: '01/04' },
+      { name: '최수현', class: '고1B반', counselor: '김선생', cycle: 2, status: 'pending', date: '01/10' },
+      { name: '이준호', class: '고1B반', counselor: '손정화', cycle: 4, status: 'completed', date: '01/06' },
+      { name: '한민지', class: '중2A반', counselor: '손정화', cycle: 2, status: 'completed', date: '01/05' },
+      { name: '정예린', class: '고1B반', counselor: '이선생', cycle: 3, status: 'delayed', date: '01/03' },
+      { name: '오승현', class: '중2B반', counselor: '김선생', cycle: 1, status: 'completed', date: '01/07' },
+    ];
+    
+    function openMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.getElementById('mobileMenu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // 섹션 1: 현황 카드 클릭 시 필터링
+    function filterByStatus(status) {
+      // 카드 활성화 상태 변경
+      document.querySelectorAll('.stat-card').forEach(card => {
+        card.classList.remove('active');
+        if (card.dataset.status === status) {
+          card.classList.add('active');
+        }
+      });
+      
+      // 필터링된 학생 리스트 표시
+      let filtered = weeklyStudents;
+      let title = '이번 주 대상 학생';
+      
+      if (status === 'completed') {
+        filtered = weeklyStudents.filter(s => s.status === 'completed');
+        title = '상담 완료 학생';
+      } else if (status === 'pending') {
+        filtered = weeklyStudents.filter(s => s.status === 'pending');
+        title = '상담 대기 학생';
+      } else if (status === 'delayed') {
+        filtered = weeklyStudents.filter(s => s.status === 'delayed');
+        title = '상담 지연 학생';
+      }
+      
+      document.getElementById('weeklyListTitle').textContent = `${title} (${filtered.length}명)`;
+      renderWeeklyList(filtered);
+    }
+    
+    function renderWeeklyList(students) {
+      const container = document.getElementById('weeklyListContent');
+      container.innerHTML = students.map(s => {
+        const statusBadge = s.status === 'completed' 
+          ? '<span class="px-2 py-1 bg-success-light text-success text-xs rounded-lg">완료</span>'
+          : s.status === 'delayed'
+          ? '<span class="px-2 py-1 bg-error-light text-error text-xs rounded-lg">지연</span>'
+          : '<span class="px-2 py-1 bg-warning-light text-warning text-xs rounded-lg">대기</span>';
+        
+        const colors = ['from-pink-400 to-pink-600', 'from-blue-400 to-blue-600', 'from-purple-400 to-purple-600', 'from-green-400 to-green-600', 'from-indigo-400 to-indigo-600'];
+        const colorClass = colors[Math.floor(Math.random() * colors.length)];
+        
+        return `
+          <div class="student-row p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold">${s.name.charAt(0)}</div>
+              <div>
+                <p class="font-bold text-text-primary">${s.name}</p>
+                <p class="text-xs text-text-tertiary">${s.class} · ${s.counselor} · ${s.cycle}회차</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-text-secondary">${s.date}</span>
+              ${statusBadge}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // 초기 로드
+    filterByStatus('all');
+    
+    // 섹션 2: 과거 기록 모달
+    let currentStudentForPast = '';
+    
+    function openPastRecordModal(name, cycle) {
+      currentStudentForPast = name;
+      document.getElementById('pastStudentName').textContent = name;
+      document.getElementById('pastAvatar').textContent = name.charAt(0);
+      
+      // 회차 드롭다운 설정
+      const cycleSelect = document.getElementById('cycleSelect');
+      cycleSelect.innerHTML = '';
+      for (let i = cycle; i >= 1; i--) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        const startDate = getDateForCycle(i);
+        opt.textContent = `${i}회차 (${startDate})`;
+        cycleSelect.appendChild(opt);
+      }
+      
+      updatePastRecordContent(cycle);
+      document.getElementById('pastRecordModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function getDateForCycle(cycle) {
+      const dates = {
+        1: '2025.12.01 ~ 12.14',
+        2: '2025.12.15 ~ 12.28',
+        3: '2025.12.29 ~ 01.08',
+        4: '2026.01.09 ~ 01.22'
+      };
+      return dates[cycle] || '날짜 미정';
+    }
+    
+    function changeCycle() {
+      const cycle = parseInt(document.getElementById('cycleSelect').value);
+      updatePastRecordContent(cycle);
+    }
+    
+    function updatePastRecordContent(cycle) {
+      document.getElementById('pastPeriod').textContent = getDateForCycle(cycle);
+      // 실제 구현 시 여기서 해당 회차의 데이터를 API로 불러와서 표시
+    }
+    
+    function closePastRecordModal() {
+      document.getElementById('pastRecordModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // 섹션 3: 새 상담 시작
+    function startCounseling() {
+      const select = document.getElementById('studentSelect');
+      if (!select.value) {
+        showToast('학생을 선택해주세요.');
+        return;
+      }
+      
+      const studentName = select.value;
+      document.getElementById('briefingStudentName').textContent = studentName;
+      document.getElementById('briefingAvatar').textContent = studentName.charAt(0);
+      
+      // 분석 영역 표시
+      document.getElementById('analysisArea').classList.remove('hidden');
+      document.getElementById('analysisLoading').classList.remove('hidden');
+      document.getElementById('analysisResult').classList.add('hidden');
+      
+      // 스크롤
+      document.getElementById('analysisArea').scrollIntoView({ behavior: 'smooth' });
+      
+      // 2초 후 분석 결과 표시 (시뮬레이션)
+      setTimeout(() => {
+        document.getElementById('analysisLoading').classList.add('hidden');
+        document.getElementById('analysisResult').classList.remove('hidden');
+      }, 2500);
+    }
+    
+    function cancelCounseling() {
+      document.getElementById('analysisArea').classList.add('hidden');
+      document.getElementById('studentSelect').value = '';
+    }
+    
+    function completeCounseling() {
+      // 체크리스트 검증
+      const saChecked = document.querySelector('input[name="sa"]:checked');
+      const obChecked = document.querySelector('input[name="ob"]:checked');
+      const pfChecked = document.querySelector('input[name="pf"]:checked');
+      
+      if (!saChecked || !obChecked || !pfChecked) {
+        showToast('필수 체크리스트 항목을 모두 선택해주세요.');
+        return;
+      }
+      
+      // 저장 시뮬레이션
+      showToast('AI 최종 분석 후 저장 중...');
+      
+      setTimeout(() => {
+        showToast('상담이 완료되었습니다!');
+        cancelCounseling();
+      }, 1500);
+    }
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+    
+    // Checklist 선택 스타일
+    document.querySelectorAll('.checklist-item input').forEach(input => {
+      input.addEventListener('change', function() {
+        const parent = this.closest('.checklist-item');
+        if (this.type === 'radio') {
+          const name = this.name;
+          document.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
+            radio.closest('.checklist-item').classList.remove('selected');
+          });
+        }
+        if (this.checked) {
+          parent.classList.add('selected');
+        } else {
+          parent.classList.remove('selected');
+        }
+      });
+    });
+    
+    // 모달 외부 클릭 닫기
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          closePastRecordModal();
+        }
+      });
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

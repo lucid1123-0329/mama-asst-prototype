@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>설정 | MAMA-ASST 학부모</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            parent: '#8B5CF6',
+            'parent-light': '#EDE9FE',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%); color: white; }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .bottom-tab.active { color: #8B5CF6; }
+    .toggle-switch { transition: background-color 0.2s ease; }
+    .toggle-switch.active { background-color: #8B5CF6; }
+    .toggle-switch .toggle-knob { transition: transform 0.2s ease; }
+    .toggle-switch.active .toggle-knob { transform: translateX(20px); }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased pb-20 lg:pb-0">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-navy text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-parent rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-parent-light">학부모</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 border-b border-white/10">
+        <label class="text-xs text-white/50 mb-2 block">자녀 선택</label>
+        <div class="relative">
+          <select class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white appearance-none cursor-pointer">
+            <option value="1">김지민 (중2)</option>
+            <option value="2">김서연 (초5)</option>
+          </select>
+          <span class="material-icons-round absolute right-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none">expand_more</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="parent-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">home</span>
+          <span class="font-medium">홈</span>
+        </a>
+        <a href="parent-child-status.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">person</span>
+          <span class="font-medium">자녀 현황</span>
+        </a>
+        <a href="parent-report.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">학습 리포트</span>
+        </a>
+        <a href="parent-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">schedule</span>
+          <span class="font-medium">출결 확인</span>
+        </a>
+        <a href="parent-payment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">payments</span>
+          <span class="font-medium">결제</span>
+        </a>
+        <a href="parent-settings.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">settings</span>
+          <span class="font-medium">설정</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64">
+      
+      <!-- Top Header -->
+      <header class="h-16 bg-surface border-b border-border-light flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+          <button onclick="openMobileMenu()" class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+            <span class="material-icons-round">menu</span>
+          </button>
+          <h1 class="text-lg font-bold text-navy">설정</h1>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-6 max-w-2xl">
+        
+        <!-- Profile Section -->
+        <div class="bg-surface rounded-xl border border-border-light overflow-hidden">
+          <div class="p-4 border-b border-border-light">
+            <h3 class="font-bold text-navy">프로필</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-full bg-gradient-to-br from-parent to-purple-400 flex items-center justify-center text-white text-2xl font-bold">
+                김
+              </div>
+              <div class="flex-1">
+                <p class="font-bold text-lg">김부모님</p>
+                <p class="text-sm text-text-secondary">010-1234-5678</p>
+              </div>
+              <button class="px-4 py-2 border border-border-light rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
+                수정
+              </button>
+            </div>
+            
+            <div class="pt-4 border-t border-border-light space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-text-secondary">이메일</span>
+                <span class="font-medium">kim.parent@email.com</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-text-secondary">등록된 자녀</span>
+                <span class="font-medium">2명</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-text-secondary">학원</span>
+                <span class="font-medium">명불허전 학원</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Notification Settings -->
+        <div class="bg-surface rounded-xl border border-border-light overflow-hidden">
+          <div class="p-4 border-b border-border-light">
+            <h3 class="font-bold text-navy">알림 설정</h3>
+          </div>
+          <div class="divide-y divide-border-light">
+            
+            <div class="p-4 flex items-center justify-between">
+              <div>
+                <p class="font-medium">등/하원 알림</p>
+                <p class="text-sm text-text-secondary">자녀의 등원, 하원 시 알림을 받습니다</p>
+              </div>
+              <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-7 rounded-full bg-parent relative">
+                <span class="toggle-knob absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transform translate-x-5"></span>
+              </button>
+            </div>
+            
+            <div class="p-4 flex items-center justify-between">
+              <div>
+                <p class="font-medium">숙제 알림</p>
+                <p class="text-sm text-text-secondary">숙제 배정 및 마감 알림을 받습니다</p>
+              </div>
+              <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-7 rounded-full bg-parent relative">
+                <span class="toggle-knob absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transform translate-x-5"></span>
+              </button>
+            </div>
+            
+            <div class="p-4 flex items-center justify-between">
+              <div>
+                <p class="font-medium">상담 리포트 알림</p>
+                <p class="text-sm text-text-secondary">새 리포트가 공유되면 알림을 받습니다</p>
+              </div>
+              <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-7 rounded-full bg-parent relative">
+                <span class="toggle-knob absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transform translate-x-5"></span>
+              </button>
+            </div>
+            
+            <div class="p-4 flex items-center justify-between">
+              <div>
+                <p class="font-medium">결제 알림</p>
+                <p class="text-sm text-text-secondary">청구서 발행 및 결제 관련 알림을 받습니다</p>
+              </div>
+              <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-7 rounded-full bg-parent relative">
+                <span class="toggle-knob absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transform translate-x-5"></span>
+              </button>
+            </div>
+            
+            <div class="p-4 flex items-center justify-between">
+              <div>
+                <p class="font-medium">마케팅 알림</p>
+                <p class="text-sm text-text-secondary">이벤트 및 프로모션 정보를 받습니다</p>
+              </div>
+              <button onclick="toggleSwitch(this)" class="toggle-switch w-12 h-7 rounded-full bg-gray-300 relative">
+                <span class="toggle-knob absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow"></span>
+              </button>
+            </div>
+            
+          </div>
+        </div>
+        
+        <!-- Notification Channel -->
+        <div class="bg-surface rounded-xl border border-border-light overflow-hidden">
+          <div class="p-4 border-b border-border-light">
+            <h3 class="font-bold text-navy">알림 수신 채널</h3>
+          </div>
+          <div class="p-4 space-y-3">
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+              <input type="checkbox" checked class="w-5 h-5 text-parent rounded">
+              <div class="flex-1">
+                <p class="font-medium">카카오 알림톡</p>
+                <p class="text-xs text-text-secondary">카카오톡으로 알림을 받습니다</p>
+              </div>
+              <span class="px-2 py-1 bg-warning-light text-warning text-xs rounded-full">권장</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+              <input type="checkbox" checked class="w-5 h-5 text-parent rounded">
+              <div class="flex-1">
+                <p class="font-medium">SMS 문자</p>
+                <p class="text-xs text-text-secondary">문자 메시지로 알림을 받습니다</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+              <input type="checkbox" class="w-5 h-5 text-parent rounded">
+              <div class="flex-1">
+                <p class="font-medium">이메일</p>
+                <p class="text-xs text-text-secondary">이메일로 알림을 받습니다</p>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Security -->
+        <div class="bg-surface rounded-xl border border-border-light overflow-hidden">
+          <div class="p-4 border-b border-border-light">
+            <h3 class="font-bold text-navy">보안</h3>
+          </div>
+          <div class="divide-y divide-border-light">
+            <button class="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors text-left">
+              <div class="flex items-center gap-3">
+                <span class="material-icons-round text-text-secondary">lock</span>
+                <span class="font-medium">비밀번호 변경</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">chevron_right</span>
+            </button>
+            <button class="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors text-left">
+              <div class="flex items-center gap-3">
+                <span class="material-icons-round text-text-secondary">smartphone</span>
+                <span class="font-medium">연락처 변경</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">chevron_right</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Support -->
+        <div class="bg-surface rounded-xl border border-border-light overflow-hidden">
+          <div class="p-4 border-b border-border-light">
+            <h3 class="font-bold text-navy">지원</h3>
+          </div>
+          <div class="divide-y divide-border-light">
+            <button class="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors text-left">
+              <div class="flex items-center gap-3">
+                <span class="material-icons-round text-text-secondary">help</span>
+                <span class="font-medium">자주 묻는 질문</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">chevron_right</span>
+            </button>
+            <button class="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors text-left">
+              <div class="flex items-center gap-3">
+                <span class="material-icons-round text-text-secondary">support_agent</span>
+                <span class="font-medium">고객센터</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">chevron_right</span>
+            </button>
+            <button class="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors text-left">
+              <div class="flex items-center gap-3">
+                <span class="material-icons-round text-text-secondary">description</span>
+                <span class="font-medium">이용약관</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">chevron_right</span>
+            </button>
+            <button class="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors text-left">
+              <div class="flex items-center gap-3">
+                <span class="material-icons-round text-text-secondary">privacy_tip</span>
+                <span class="font-medium">개인정보 처리방침</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">chevron_right</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- App Info -->
+        <div class="bg-surface rounded-xl border border-border-light p-4">
+          <div class="text-center text-sm text-text-secondary">
+            <p>MAMA-ASST v1.0.0</p>
+            <p class="mt-1">© 2025 명불허전. All rights reserved.</p>
+          </div>
+        </div>
+        
+        <!-- Logout Button -->
+        <button class="w-full py-3.5 border border-error text-error font-medium rounded-xl hover:bg-error-light transition-colors">
+          로그아웃
+        </button>
+        
+      </div>
+      
+    </main>
+    
+  </div>
+  
+  <!-- Mobile Bottom Navigation -->
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-border-light flex items-center justify-around px-2 z-40">
+    <a href="parent-dashboard.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">home</span>
+      <span class="text-[10px] font-medium">홈</span>
+    </a>
+    <a href="parent-child-status.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">person</span>
+      <span class="text-[10px] font-medium">자녀</span>
+    </a>
+    <a href="parent-report.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">assessment</span>
+      <span class="text-[10px] font-medium">리포트</span>
+    </a>
+    <a href="parent-payment.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">payments</span>
+      <span class="text-[10px] font-medium">결제</span>
+    </a>
+    <a href="parent-settings.html" class="bottom-tab active flex flex-col items-center gap-1 px-3 py-2">
+      <span class="material-icons-round">settings</span>
+      <span class="text-[10px] font-medium">설정</span>
+    </a>
+  </nav>
+  
+  <script>
+    function toggleSwitch(btn) {
+      btn.classList.toggle('active');
+      const knob = btn.querySelector('.toggle-knob');
+      if (btn.classList.contains('active')) {
+        btn.style.backgroundColor = '#8B5CF6';
+        knob.style.transform = 'translateX(20px)';
+      } else {
+        btn.style.backgroundColor = '#D1D5DB';
+        knob.style.transform = 'translateX(0)';
+      }
+    }
+    
+    function openMobileMenu() {}
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

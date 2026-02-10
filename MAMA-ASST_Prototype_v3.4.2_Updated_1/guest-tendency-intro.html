@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>성향검사 안내 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .category-card {
+      transition: all 0.3s ease;
+    }
+    .category-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased min-h-screen">
+  
+  <!-- Guest Mode Header -->
+  <header class="h-16 bg-navy text-white flex items-center justify-between px-6 sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+        <span class="text-white font-bold text-lg">M</span>
+      </div>
+      <div>
+        <span class="font-bold text-lg">MAMA-ASST</span>
+        <span class="px-2 py-0.5 bg-info/20 text-info text-xs font-bold rounded ml-2">게스트 모드</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-sm text-white/70" id="studentNameDisplay">홍길동 학생</span>
+    </div>
+  </header>
+  
+  <!-- Progress Bar -->
+  <div class="bg-surface border-b border-border-light px-6 py-4">
+    <div class="max-w-3xl mx-auto">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-text-primary">성향검사 안내</span>
+        <span class="text-sm text-text-tertiary">2단계 / 4단계</span>
+      </div>
+      <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 50%"></div>
+      </div>
+    </div>
+  </div>
+  
+  <main class="max-w-3xl mx-auto px-6 py-8">
+    
+    <!-- Hero Section -->
+    <div class="text-center mb-10">
+      <div class="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br from-planner to-purple-400 flex items-center justify-center mb-6 float-animation">
+        <span class="material-icons-round text-white text-5xl">psychology</span>
+      </div>
+      <h1 class="text-3xl font-bold text-text-primary mb-3">학습 성향 검사</h1>
+      <p class="text-lg text-text-secondary">나에게 맞는 학습 방법을 찾아보아요!</p>
+    </div>
+    
+    <!-- Test Info Card -->
+    <div class="bg-surface rounded-2xl p-6 shadow-sm border border-border-light mb-8">
+      <div class="grid grid-cols-3 gap-6 text-center">
+        <div>
+          <div class="w-14 h-14 mx-auto rounded-xl bg-planner-light flex items-center justify-center mb-3">
+            <span class="material-icons-round text-planner text-2xl">quiz</span>
+          </div>
+          <p class="text-2xl font-bold text-text-primary">150</p>
+          <p class="text-sm text-text-secondary">문항</p>
+        </div>
+        <div>
+          <div class="w-14 h-14 mx-auto rounded-xl bg-info-light flex items-center justify-center mb-3">
+            <span class="material-icons-round text-info text-2xl">schedule</span>
+          </div>
+          <p class="text-2xl font-bold text-text-primary">약 20분</p>
+          <p class="text-sm text-text-secondary">소요 시간</p>
+        </div>
+        <div>
+          <div class="w-14 h-14 mx-auto rounded-xl bg-success/10 flex items-center justify-center mb-3">
+            <span class="material-icons-round text-success text-2xl">insights</span>
+          </div>
+          <p class="text-2xl font-bold text-text-primary">5대 역량</p>
+          <p class="text-sm text-text-secondary">분석 영역</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- What We Measure -->
+    <section class="mb-8">
+      <h2 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+        <span class="material-icons-round text-planner">assessment</span>
+        무엇을 알아볼까요?
+      </h2>
+      
+      <div class="grid grid-cols-5 gap-3">
+        <div class="category-card bg-surface rounded-xl p-4 text-center border border-border-light">
+          <div class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center mb-2">
+            <span class="material-icons-round text-red-500">favorite</span>
+          </div>
+          <p class="font-medium text-sm">학습동기</p>
+        </div>
+        <div class="category-card bg-surface rounded-xl p-4 text-center border border-border-light">
+          <div class="w-12 h-12 mx-auto rounded-full bg-blue-100 flex items-center justify-center mb-2">
+            <span class="material-icons-round text-blue-500">rocket_launch</span>
+          </div>
+          <p class="font-medium text-sm">실행전략</p>
+        </div>
+        <div class="category-card bg-surface rounded-xl p-4 text-center border border-border-light">
+          <div class="w-12 h-12 mx-auto rounded-full bg-purple-100 flex items-center justify-center mb-2">
+            <span class="material-icons-round text-purple-500">psychology</span>
+          </div>
+          <p class="font-medium text-sm">메타인지</p>
+        </div>
+        <div class="category-card bg-surface rounded-xl p-4 text-center border border-border-light">
+          <div class="w-12 h-12 mx-auto rounded-full bg-green-100 flex items-center justify-center mb-2">
+            <span class="material-icons-round text-green-500">sentiment_satisfied</span>
+          </div>
+          <p class="font-medium text-sm">정서조절</p>
+        </div>
+        <div class="category-card bg-surface rounded-xl p-4 text-center border border-border-light">
+          <div class="w-12 h-12 mx-auto rounded-full bg-amber-100 flex items-center justify-center mb-2">
+            <span class="material-icons-round text-amber-500">handshake</span>
+          </div>
+          <p class="font-medium text-sm">도움요청</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- How to Answer -->
+    <section class="bg-warning-light border border-warning/20 rounded-2xl p-6 mb-8">
+      <h2 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+        <span class="material-icons-round text-warning">tips_and_updates</span>
+        검사 요령
+      </h2>
+      
+      <ul class="space-y-3">
+        <li class="flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <span class="text-warning text-sm font-bold">1</span>
+          </span>
+          <p class="text-text-secondary"><strong class="text-text-primary">정답은 없어요.</strong> 평소 자신의 모습을 그대로 떠올리며 답해주세요.</p>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <span class="text-warning text-sm font-bold">2</span>
+          </span>
+          <p class="text-text-secondary"><strong class="text-text-primary">너무 오래 고민하지 마세요.</strong> 처음 떠오르는 생각대로 답하면 됩니다.</p>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <span class="text-warning text-sm font-bold">3</span>
+          </span>
+          <p class="text-text-secondary"><strong class="text-text-primary">모든 문항에 답해주세요.</strong> 건너뛰면 정확한 분석이 어려워요.</p>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <span class="text-warning text-sm font-bold">4</span>
+          </span>
+          <p class="text-text-secondary"><strong class="text-text-primary">솔직하게 답해주세요.</strong> 결과는 오직 나를 이해하기 위해 사용됩니다.</p>
+        </li>
+      </ul>
+    </section>
+    
+    <!-- Response Scale Example -->
+    <section class="bg-surface rounded-2xl p-6 shadow-sm border border-border-light mb-8">
+      <h2 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+        <span class="material-icons-round text-planner">touch_app</span>
+        응답 방법 예시
+      </h2>
+      
+      <div class="bg-gray-50 rounded-xl p-5 mb-4">
+        <p class="text-text-primary font-medium mb-4">"나는 수업 시간에 선생님의 설명을 집중해서 듣는다."</p>
+        
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex-1 text-center">
+            <div class="w-14 h-14 mx-auto rounded-full bg-red-100 border-2 border-red-300 flex items-center justify-center mb-2 cursor-pointer hover:scale-110 transition-transform">
+              <span class="text-xl">😟</span>
+            </div>
+            <p class="text-xs text-text-tertiary">전혀<br>아니다</p>
+          </div>
+          <div class="flex-1 text-center">
+            <div class="w-14 h-14 mx-auto rounded-full bg-orange-100 border-2 border-orange-300 flex items-center justify-center mb-2 cursor-pointer hover:scale-110 transition-transform">
+              <span class="text-xl">😕</span>
+            </div>
+            <p class="text-xs text-text-tertiary">아니다</p>
+          </div>
+          <div class="flex-1 text-center">
+            <div class="w-14 h-14 mx-auto rounded-full bg-gray-100 border-2 border-gray-300 flex items-center justify-center mb-2 cursor-pointer hover:scale-110 transition-transform">
+              <span class="text-xl">😐</span>
+            </div>
+            <p class="text-xs text-text-tertiary">보통<br>이다</p>
+          </div>
+          <div class="flex-1 text-center">
+            <div class="w-14 h-14 mx-auto rounded-full bg-green-100 border-2 border-green-300 flex items-center justify-center mb-2 cursor-pointer hover:scale-110 transition-transform">
+              <span class="text-xl">🙂</span>
+            </div>
+            <p class="text-xs text-text-tertiary">그렇다</p>
+          </div>
+          <div class="flex-1 text-center">
+            <div class="w-14 h-14 mx-auto rounded-full bg-primary-light border-2 border-primary flex items-center justify-center mb-2 cursor-pointer hover:scale-110 transition-transform ring-4 ring-primary/20">
+              <span class="text-xl">😊</span>
+            </div>
+            <p class="text-xs text-primary font-medium">매우<br>그렇다</p>
+          </div>
+        </div>
+      </div>
+      
+      <p class="text-sm text-text-tertiary text-center">원하는 응답을 클릭하면 다음 문항으로 자동 이동합니다.</p>
+    </section>
+    
+    <!-- Start Button -->
+    <div class="flex items-center justify-between">
+      <button onclick="callAdmin()" class="px-6 py-3 text-text-secondary hover:bg-gray-100 rounded-xl font-medium transition-colors flex items-center gap-2">
+        <span class="material-icons-round">support_agent</span>
+        관리자 호출
+      </button>
+      <button onclick="startTest()" class="px-10 py-4 bg-gradient-to-r from-planner to-purple-500 hover:from-planner/90 hover:to-purple-500/90 text-white rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-lg">
+        검사 시작하기
+        <span class="material-icons-round">arrow_forward</span>
+      </button>
+    </div>
+    
+  </main>
+  
+  <!-- Admin Call Modal -->
+  <div id="adminModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl p-8 max-w-sm mx-4 text-center">
+      <div class="w-16 h-16 mx-auto rounded-full bg-primary-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-primary text-3xl">support_agent</span>
+      </div>
+      <h2 class="text-xl font-bold text-text-primary mb-2">관리자를 호출했습니다</h2>
+      <p class="text-text-secondary mb-6">잠시만 기다려주세요.<br>담당자가 곧 도와드리겠습니다.</p>
+      <button onclick="closeAdminModal()" class="w-full py-3 bg-primary text-white rounded-xl font-medium">확인</button>
+    </div>
+  </div>
+  
+  <script>
+    // Load student name
+    document.addEventListener('DOMContentLoaded', function() {
+      const guestInfo = JSON.parse(sessionStorage.getItem('guestInfo') || '{}');
+      if (guestInfo.studentName) {
+        document.getElementById('studentNameDisplay').textContent = guestInfo.studentName + ' 학생';
+      }
+    });
+    
+    function startTest() {
+      window.location.href = 'guest-tendency-test.html';
+    }
+    
+    function callAdmin() {
+      document.getElementById('adminModal').classList.remove('hidden');
+    }
+    
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.add('hidden');
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

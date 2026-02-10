@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 모니터링 | MAMA-ASST 슈퍼관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'super': '#6366F1',
+            'super-dark': '#4F46E5',
+            'super-light': '#EEF2FF',
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { 
+      background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); 
+      color: white; 
+    }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    
+    /* Modal Styles */
+    .modal-overlay { opacity: 0; visibility: hidden; transition: all 0.3s; }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-content { transform: scale(0.95) translateY(10px); transition: all 0.3s; }
+    .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+    
+    .gradient-super { background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); }
+    .gradient-ai { background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%); }
+    .stat-card { transition: all 0.2s ease; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15); }
+    .chart-container { position: relative; height: 280px; }
+    .status-badge { padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+    .table-row { transition: all 0.15s ease; cursor: pointer; }
+    .table-row:hover { background-color: #F9FAFB; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .pulse { animation: pulse 2s ease-in-out infinite; }
+    .usage-bar { height: 8px; border-radius: 4px; background: #E5E7EB; overflow: hidden; }
+    .usage-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-72 bg-gradient-to-b from-slate-900 to-slate-800 text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-super-light">Super Admin</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">비즈니스</p>
+          <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">apartment</span>
+            <span class="font-medium">학원 관리</span>
+            <span class="ml-auto px-2 py-0.5 bg-super/50 text-white text-xs rounded-full">127</span>
+          </a>
+          <a href="super-inquiries.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">support_agent</span>
+            <span class="font-medium">도입 문의</span>
+            <span class="ml-auto px-2 py-0.5 bg-warning text-white text-xs rounded-full">12</span>
+          </a>
+          <a href="super-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">account_balance</span>
+            <span class="font-medium">결제/정산</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">콘텐츠</p>
+          <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">library_books</span>
+            <span class="font-medium">콘텐츠 마스터</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">운영</p>
+          <a href="super-users.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">groups</span>
+            <span class="font-medium">사용자 관리</span>
+          </a>
+          <a href="super-ai-usage.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+            <span class="material-icons-round text-xl">smart_toy</span>
+            <span class="font-medium">AI 모니터링</span>
+          </a>
+          <a href="super-notices.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">campaign</span>
+            <span class="font-medium">공지사항</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">시스템</p>
+          <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">tune</span>
+            <span class="font-medium">시스템 설정</span>
+          </a>
+          <a href="super-logs.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">history</span>
+            <span class="font-medium">로그/감사</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full gradient-super flex items-center justify-center text-white font-bold">
+            <span class="material-icons-round text-xl">admin_panel_settings</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">Super Admin</p>
+            <p class="text-xs text-white/60">MAMA-ASST Platform</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <span class="font-bold text-lg">Super Admin</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">apartment</span>
+          <span class="font-medium">학원 관리</span>
+        </a>
+        <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">library_books</span>
+          <span class="font-medium">콘텐츠 마스터</span>
+        </a>
+        <a href="super-users.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">사용자 관리</span>
+        </a>
+        <a href="super-ai-usage.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl">
+          <span class="material-icons-round text-xl">smart_toy</span>
+          <span class="font-medium">AI 모니터링</span>
+        </a>
+        <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">tune</span>
+          <span class="font-medium">시스템 설정</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-72">
+      <!-- Top Header -->
+      <header class="bg-white border-b border-border-light sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 lg:px-8 py-4">
+          <div class="flex items-center gap-4">
+            <button onclick="openMobileMenu()" class="lg:hidden p-2 hover:bg-gray-100 rounded-xl">
+              <span class="material-icons-round">menu</span>
+            </button>
+            <div>
+              <h1 class="text-xl font-bold text-navy">AI 모니터링</h1>
+              <p class="text-sm text-text-secondary">Gemini API 사용량 및 성능 현황</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <button onclick="openRealtimeMonitorModal()" class="hidden sm:flex items-center gap-2 px-3 py-2 bg-success-light rounded-xl hover:bg-success/20 transition-colors cursor-pointer" title="실시간 모니터링">
+              <span class="w-2 h-2 rounded-full bg-success pulse"></span>
+              <span class="text-sm font-medium text-success">API 정상</span>
+            </button>
+            <button onclick="refreshData()" class="p-2 hover:bg-gray-100 rounded-xl" title="새로고침">
+              <span class="material-icons-round text-text-secondary">refresh</span>
+            </button>
+            <button onclick="exportReport()" class="p-2 hover:bg-gray-100 rounded-xl" title="리포트 내보내기">
+              <span class="material-icons-round text-text-secondary">download</span>
+            </button>
+            <button onclick="openAcademyUsageModal()" class="p-2 hover:bg-gray-100 rounded-xl" title="학원별 사용량">
+              <span class="material-icons-round text-text-secondary">apartment</span>
+            </button>
+            <button onclick="openBudgetSettingsModal()" class="p-2 hover:bg-gray-100 rounded-xl" title="예산 설정">
+              <span class="material-icons-round text-text-secondary">account_balance_wallet</span>
+            </button>
+            <button onclick="openRateLimitModal()" class="p-2 hover:bg-gray-100 rounded-xl" title="Rate Limit 설정">
+              <span class="material-icons-round text-text-secondary">speed</span>
+            </button>
+            <button onclick="openAlertSettingsModal()" class="p-2 hover:bg-gray-100 rounded-xl" title="알림 설정">
+              <span class="material-icons-round text-text-secondary">notifications</span>
+            </button>
+            <select class="px-4 py-2 bg-background border border-border-light rounded-xl text-sm focus:outline-none" onchange="changePeriod(this.value)">
+              <option value="today">오늘</option>
+              <option value="7days">최근 7일</option>
+              <option value="30days">최근 30일</option>
+              <option value="month">이번 달</option>
+            </select>
+          </div>
+        </div>
+      </header>
+      
+      <div class="p-4 lg:p-8">
+        <!-- 핵심 KPI 카드 -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
+          <!-- 총 API 호출 -->
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer hover:border-super" onclick="openAcademyUsageModal()">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-12 h-12 rounded-xl gradient-ai flex items-center justify-center">
+                <span class="material-icons-round text-white text-2xl">api</span>
+              </div>
+              <span class="px-2 py-1 bg-success-light text-success text-xs font-medium rounded-lg flex items-center gap-1">
+                <span class="material-icons-round text-sm">trending_up</span>
+                +8%
+              </span>
+            </div>
+            <p class="text-sm text-text-secondary mb-1">오늘 API 호출</p>
+            <p class="text-2xl font-bold text-navy">42,350</p>
+            <div class="mt-2 text-xs text-text-tertiary">
+              이번 달 누적: 1,234,567건
+            </div>
+          </div>
+          
+          <!-- 오늘 비용 -->
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer hover:border-super" onclick="openBudgetSettingsModal()">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center">
+                <span class="material-icons-round text-white text-2xl">attach_money</span>
+              </div>
+              <span class="px-2 py-1 bg-warning-light text-warning text-xs font-medium rounded-lg">예산 82%</span>
+            </div>
+            <p class="text-sm text-text-secondary mb-1">이번 달 비용</p>
+            <p class="text-2xl font-bold text-navy">$1,234</p>
+            <div class="mt-2">
+              <div class="usage-bar">
+                <div class="usage-bar-fill bg-gradient-to-r from-success to-warning" style="width: 82%"></div>
+              </div>
+              <p class="text-xs text-text-tertiary mt-1">$1,500 예산 중</p>
+            </div>
+          </div>
+          
+          <!-- 평균 응답시간 -->
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer hover:border-super" onclick="openRateLimitModal()">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-info to-blue-400 flex items-center justify-center">
+                <span class="material-icons-round text-white text-2xl">speed</span>
+              </div>
+              <span class="px-2 py-1 bg-success-light text-success text-xs font-medium rounded-lg">정상</span>
+            </div>
+            <p class="text-sm text-text-secondary mb-1">평균 응답시간</p>
+            <p class="text-2xl font-bold text-navy">0.8s</p>
+            <div class="mt-2 text-xs text-text-tertiary">
+              Flash: 0.3s · Pro: 1.8s
+            </div>
+          </div>
+          
+          <!-- 성공률 -->
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer hover:border-error" onclick="scrollToErrors()">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-success to-emerald-400 flex items-center justify-center">
+                <span class="material-icons-round text-white text-2xl">check_circle</span>
+              </div>
+              <span class="px-2 py-1 bg-error-light text-error text-xs font-medium rounded-lg">12 실패</span>
+            </div>
+            <p class="text-sm text-text-secondary mb-1">성공률</p>
+            <p class="text-2xl font-bold text-success">99.7%</p>
+            <div class="mt-2 text-xs text-text-tertiary">
+              오늘 실패: 12건 / 42,350건
+            </div>
+          </div>
+        </div>
+        
+        <!-- 차트 영역 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <!-- API 호출량 차트 -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-navy">시간대별 API 호출량</h3>
+              <div class="flex gap-4 text-xs">
+                <span class="flex items-center gap-1">
+                  <span class="w-3 h-3 rounded-full bg-super"></span>
+                  Flash
+                </span>
+                <span class="flex items-center gap-1">
+                  <span class="w-3 h-3 rounded-full bg-planner"></span>
+                  Pro
+                </span>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="apiCallsChart"></canvas>
+            </div>
+          </div>
+          
+          <!-- 용도별 사용량 -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-navy">용도별 사용량</h3>
+              <span class="text-xs text-text-secondary">오늘 기준</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="usageByTypeChart"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 모델별 상세 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <!-- Gemini Flash -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl gradient-super flex items-center justify-center">
+                <span class="material-icons-round text-white">bolt</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">Gemini 2.0 Flash</h3>
+                <p class="text-xs text-text-secondary">빠른 응답, 일반 생성</p>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-text-secondary">오늘 호출</span>
+                <span class="font-bold text-navy">38,420건</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-text-secondary">평균 응답시간</span>
+                <span class="font-bold text-success">0.3초</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-text-secondary">토큰 사용량</span>
+                <span class="font-bold text-navy">2.8M 토큰</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-text-secondary">예상 비용</span>
+                <span class="font-bold text-navy">$28.50</span>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-1">
+                  <span class="text-text-secondary">Rate Limit</span>
+                  <span class="text-text-secondary">38 / 60 RPM</span>
+                </div>
+                <div class="usage-bar">
+                  <div class="usage-bar-fill bg-super" style="width: 63%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Gemini Pro -->
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-planner to-purple-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">psychology</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">Gemini 2.0 Pro</h3>
+                <p class="text-xs text-text-secondary">복잡한 분석, 고품질</p>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-text-secondary">오늘 호출</span>
+                <span class="font-bold text-navy">3,930건</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-text-secondary">평균 응답시간</span>
+                <span class="font-bold text-warning">1.8초</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-text-secondary">토큰 사용량</span>
+                <span class="font-bold text-navy">1.2M 토큰</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-text-secondary">예상 비용</span>
+                <span class="font-bold text-navy">$18.40</span>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-1">
+                  <span class="text-text-secondary">Rate Limit</span>
+                  <span class="text-text-secondary">12 / 30 RPM</span>
+                </div>
+                <div class="usage-bar">
+                  <div class="usage-bar-fill bg-planner" style="width: 40%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 프롬프트별 사용 현황 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-border-light overflow-hidden mb-6">
+          <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+            <h3 class="font-bold text-navy">프롬프트별 사용 현황</h3>
+            <select class="px-3 py-1.5 bg-background border border-border-light rounded-lg text-sm">
+              <option>오늘</option>
+              <option>이번 주</option>
+              <option>이번 달</option>
+            </select>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 border-b border-border-light">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase">프롬프트 ID</th>
+                  <th class="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase">용도</th>
+                  <th class="px-6 py-3 text-center text-xs font-semibold text-text-secondary uppercase">모델</th>
+                  <th class="px-6 py-3 text-right text-xs font-semibold text-text-secondary uppercase">호출수</th>
+                  <th class="px-6 py-3 text-right text-xs font-semibold text-text-secondary uppercase">평균 토큰</th>
+                  <th class="px-6 py-3 text-right text-xs font-semibold text-text-secondary uppercase">평균 응답</th>
+                  <th class="px-6 py-3 text-right text-xs font-semibold text-text-secondary uppercase">비용</th>
+                  <th class="px-6 py-3 text-center text-xs font-semibold text-text-secondary uppercase">성공률</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-light">
+                <tr class="table-row" onclick="openPromptDetailModal('KOR-02', 'O/X 퀴즈 생성', 'Flash', '국어')">
+                  <td class="px-6 py-4">
+                    <span class="font-mono text-sm text-super">KOR-02</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-korean"></span>
+                      <span class="text-sm">O/X 퀴즈 생성</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="status-badge bg-super-light text-super">Flash</span>
+                  </td>
+                  <td class="px-6 py-4 text-right font-medium">12,450</td>
+                  <td class="px-6 py-4 text-right text-text-secondary">850</td>
+                  <td class="px-6 py-4 text-right text-success">0.28s</td>
+                  <td class="px-6 py-4 text-right font-medium">$8.50</td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="text-success font-medium">99.9%</span>
+                  </td>
+                </tr>
+                
+                <tr class="table-row" onclick="openPromptDetailModal('ENG-01', '마커 처리', 'Flash', '영어')">
+                  <td class="px-6 py-4">
+                    <span class="font-mono text-sm text-super">ENG-01</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-english"></span>
+                      <span class="text-sm">마커 처리</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="status-badge bg-super-light text-super">Flash</span>
+                  </td>
+                  <td class="px-6 py-4 text-right font-medium">15,230</td>
+                  <td class="px-6 py-4 text-right text-text-secondary">320</td>
+                  <td class="px-6 py-4 text-right text-success">0.18s</td>
+                  <td class="px-6 py-4 text-right font-medium">$4.20</td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="text-success font-medium">99.8%</span>
+                  </td>
+                </tr>
+                
+                <tr class="table-row" onclick="openPromptDetailModal('TEND-01', '성향 종합 분석', 'Pro', '성향검사')">
+                  <td class="px-6 py-4">
+                    <span class="font-mono text-sm text-planner">TEND-01</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-planner"></span>
+                      <span class="text-sm">성향 종합 분석</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="status-badge bg-planner-light text-planner">Pro</span>
+                  </td>
+                  <td class="px-6 py-4 text-right font-medium">1,280</td>
+                  <td class="px-6 py-4 text-right text-text-secondary">2,400</td>
+                  <td class="px-6 py-4 text-right text-warning">2.1s</td>
+                  <td class="px-6 py-4 text-right font-medium">$12.80</td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="text-success font-medium">99.5%</span>
+                  </td>
+                </tr>
+                
+                <tr class="table-row" onclick="openPromptDetailModal('COUN-01', '상담 사전 브리핑', 'Pro', '상담')">
+                  <td class="px-6 py-4">
+                    <span class="font-mono text-sm text-planner">COUN-01</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-primary"></span>
+                      <span class="text-sm">상담 사전 브리핑</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="status-badge bg-planner-light text-planner">Pro</span>
+                  </td>
+                  <td class="px-6 py-4 text-right font-medium">890</td>
+                  <td class="px-6 py-4 text-right text-text-secondary">3,200</td>
+                  <td class="px-6 py-4 text-right text-warning">2.8s</td>
+                  <td class="px-6 py-4 text-right font-medium">$9.50</td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="text-success font-medium">99.2%</span>
+                  </td>
+                </tr>
+                
+                <tr class="table-row bg-error-light/20" onclick="openPromptDetailModal('MATH-01', '단계별 풀이 생성', 'Flash', '수학')">
+                  <td class="px-6 py-4">
+                    <span class="font-mono text-sm text-super">MATH-01</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-math"></span>
+                      <span class="text-sm">단계별 풀이 생성</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="status-badge bg-super-light text-super">Flash</span>
+                  </td>
+                  <td class="px-6 py-4 text-right font-medium">8,560</td>
+                  <td class="px-6 py-4 text-right text-text-secondary">1,100</td>
+                  <td class="px-6 py-4 text-right text-success">0.45s</td>
+                  <td class="px-6 py-4 text-right font-medium">$7.20</td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="text-error font-medium">98.2%</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- 최근 오류 로그 -->
+        <div id="errorLogSection" class="bg-white rounded-2xl shadow-sm border border-border-light overflow-hidden">
+          <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+            <h3 class="font-bold text-navy flex items-center gap-2">
+              <span class="material-icons-round text-error">error</span>
+              최근 오류 로그
+            </h3>
+            <span class="px-2 py-1 bg-error-light text-error text-xs font-medium rounded-lg">12건</span>
+          </div>
+          
+          <div class="divide-y divide-border-light max-h-80 overflow-y-auto">
+            <div class="px-6 py-4 hover:bg-gray-50 cursor-pointer" onclick="openErrorDetailModal('ERR-20250112-001')">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <span class="material-icons-round text-error mt-0.5">warning</span>
+                  <div>
+                    <p class="font-medium text-navy">Rate Limit Exceeded (429)</p>
+                    <p class="text-sm text-text-secondary">MATH-01 · Flash 모델</p>
+                    <p class="text-xs text-text-tertiary mt-1">재시도 후 성공</p>
+                  </div>
+                </div>
+                <span class="text-xs text-text-tertiary whitespace-nowrap">오늘 14:32</span>
+              </div>
+            </div>
+            
+            <div class="px-6 py-4 hover:bg-gray-50 cursor-pointer" onclick="openErrorDetailModal('ERR-20250112-002')">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <span class="material-icons-round text-error mt-0.5">warning</span>
+                  <div>
+                    <p class="font-medium text-navy">Invalid Response Format</p>
+                    <p class="text-sm text-text-secondary">KOR-02 · Flash 모델</p>
+                    <p class="text-xs text-text-tertiary mt-1">JSON 파싱 실패 - content_id: KOR-244</p>
+                  </div>
+                </div>
+                <span class="text-xs text-text-tertiary whitespace-nowrap">오늘 12:15</span>
+              </div>
+            </div>
+            
+            <div class="px-6 py-4 hover:bg-gray-50 cursor-pointer" onclick="openErrorDetailModal('ERR-20250112-003')">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <span class="material-icons-round text-warning mt-0.5">schedule</span>
+                  <div>
+                    <p class="font-medium text-navy">Request Timeout</p>
+                    <p class="text-sm text-text-secondary">TEND-01 · Pro 모델</p>
+                    <p class="text-xs text-text-tertiary mt-1">30초 타임아웃 - survey_id: SRV-1892</p>
+                  </div>
+                </div>
+                <span class="text-xs text-text-tertiary whitespace-nowrap">오늘 10:45</span>
+              </div>
+            </div>
+            
+            <div class="px-6 py-4 hover:bg-gray-50 cursor-pointer" onclick="openErrorDetailModal('ERR-20250112-004')">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                  <span class="material-icons-round text-error mt-0.5">warning</span>
+                  <div>
+                    <p class="font-medium text-navy">LaTeX Parsing Error</p>
+                    <p class="text-sm text-text-secondary">MATH-01 · Flash 모델</p>
+                    <p class="text-xs text-text-tertiary mt-1">수식 변환 실패 - problem_id: MATH-878</p>
+                  </div>
+                </div>
+                <span class="text-xs text-text-tertiary whitespace-nowrap">어제 18:20</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="px-6 py-3 border-t border-border-light bg-gray-50">
+            <a href="super-logs.html" class="text-sm text-super hover:underline flex items-center gap-1">
+              전체 로그 보기
+              <span class="material-icons-round text-sm">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- AI 호출 상세 모달 -->
+  <div id="aiCallDetailModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeAiCallDetailModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-super-light flex items-center justify-center">
+            <span class="material-icons-round text-super">smart_toy</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">AI 호출 상세</h2>
+            <p class="text-sm text-text-secondary" id="callDetailId">REQ-20250112-001234</p>
+          </div>
+        </div>
+        <button onclick="closeAiCallDetailModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <!-- 기본 정보 -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">호출 시간</p>
+            <p class="font-medium">2025.01.12 14:32:15</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">모델</p>
+            <p class="font-medium">Gemini 2.0 Flash</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">요청 유형</p>
+            <p class="font-medium">국어 O/X 생성</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">응답 시간</p>
+            <p class="font-medium text-success">0.8초</p>
+          </div>
+        </div>
+        
+        <!-- 토큰 정보 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy mb-3">토큰 사용량</h3>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-info-light rounded-xl p-4 text-center">
+              <p class="text-2xl font-bold text-info">1,245</p>
+              <p class="text-xs text-text-secondary">입력 토큰</p>
+            </div>
+            <div class="bg-success-light rounded-xl p-4 text-center">
+              <p class="text-2xl font-bold text-success">856</p>
+              <p class="text-xs text-text-secondary">출력 토큰</p>
+            </div>
+            <div class="bg-super-light rounded-xl p-4 text-center">
+              <p class="text-2xl font-bold text-super">₩12</p>
+              <p class="text-xs text-text-secondary">예상 비용</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 학원/사용자 정보 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy mb-3">요청 정보</h3>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">학원</p>
+                <p class="font-medium">명불허전학원 (MBH001)</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">사용자</p>
+                <p class="font-medium">이민준 (학생)</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">콘텐츠 ID</p>
+                <p class="font-mono text-sm">KOR-244</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">상태</p>
+                <span class="status-badge bg-success-light text-success">성공</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 프롬프트/응답 미리보기 -->
+        <div>
+          <h3 class="font-bold text-navy mb-3">프롬프트 미리보기</h3>
+          <div class="bg-gray-900 text-gray-100 rounded-xl p-4 font-mono text-xs overflow-x-auto">
+            <pre class="whitespace-pre-wrap">다음 지문을 읽고 O/X 퀴즈 5문항을 생성하세요.
+
+[지문]
+인공지능 기술이 발전하면서 우리 사회의 많은 부분이 변화하고 있다...
+
+[출력 형식]
+JSON 형태로 출력하세요.</pre>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="copyRequestId()" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2">
+          <span class="material-icons-round text-sm">content_copy</span>
+          ID 복사
+        </button>
+        <button onclick="closeAiCallDetailModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 에러 상세 모달 -->
+  <div id="errorDetailModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeErrorDetailModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-error bg-error-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="material-icons-round text-error text-2xl">error</span>
+          <div>
+            <h2 class="text-lg font-bold text-error">에러 상세</h2>
+            <p class="text-sm text-error/70" id="errorDetailId">ERR-20250112-001</p>
+          </div>
+        </div>
+        <button onclick="closeErrorDetailModal()" class="p-2 hover:bg-error/10 rounded-lg text-error">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <!-- 에러 요약 -->
+        <div class="bg-error-light rounded-xl p-4 mb-6">
+          <div class="flex items-start gap-3">
+            <span class="material-icons-round text-error">warning</span>
+            <div>
+              <p class="font-bold text-error mb-1">Rate Limit Exceeded</p>
+              <p class="text-sm text-error/80">API 호출 한도를 초과했습니다. 잠시 후 다시 시도해주세요.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 에러 정보 -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">발생 시간</p>
+            <p class="font-medium">2025.01.12 14:25:32</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">에러 코드</p>
+            <p class="font-mono font-medium">429</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">학원</p>
+            <p class="font-medium">분당영재학원</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">재시도 횟수</p>
+            <p class="font-medium">3회 (최대 도달)</p>
+          </div>
+        </div>
+        
+        <!-- 스택 트레이스 -->
+        <div>
+          <h3 class="font-bold text-navy mb-3">에러 로그</h3>
+          <div class="bg-gray-900 text-gray-100 rounded-xl p-4 font-mono text-xs overflow-x-auto">
+            <pre class="whitespace-pre-wrap text-error-light">{
+  "error": {
+    "code": 429,
+    "message": "Resource has been exhausted (e.g. check quota).",
+    "status": "RESOURCE_EXHAUSTED"
+  },
+  "timestamp": "2025-01-12T14:25:32.456Z",
+  "request_id": "REQ-20250112-004567"
+}</pre>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="retryFailedRequest()" class="px-4 py-2 border border-warning text-warning rounded-xl hover:bg-warning-light flex items-center gap-2">
+          <span class="material-icons-round text-sm">replay</span>
+          재시도
+        </button>
+        <button onclick="closeErrorDetailModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 알림 설정 모달 -->
+  <div id="alertSettingsModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeAlertSettingsModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">notifications</span>
+          알림 설정
+        </h2>
+        <button onclick="closeAlertSettingsModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <!-- 에러율 알림 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy mb-3">에러율 알림</h3>
+          <div class="space-y-3">
+            <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div>
+                <p class="text-sm font-medium">에러율 5% 초과 시</p>
+                <p class="text-xs text-text-tertiary">슬랙 + 이메일 알림</p>
+              </div>
+              <input type="checkbox" checked class="w-5 h-5 accent-super">
+            </label>
+            <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div>
+                <p class="text-sm font-medium">에러율 10% 초과 시</p>
+                <p class="text-xs text-text-tertiary">긴급 SMS 알림</p>
+              </div>
+              <input type="checkbox" checked class="w-5 h-5 accent-super">
+            </label>
+          </div>
+        </div>
+        
+        <!-- 비용 알림 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy mb-3">비용 알림</h3>
+          <div class="space-y-3">
+            <div class="p-3 bg-gray-50 rounded-xl">
+              <label class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium">일일 비용 한도</span>
+                <input type="checkbox" checked class="w-5 h-5 accent-super">
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="number" value="500000" class="flex-1 px-3 py-2 border border-border-light rounded-lg text-sm">
+                <span class="text-sm text-text-secondary">원</span>
+              </div>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-xl">
+              <label class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium">월간 비용 한도</span>
+                <input type="checkbox" checked class="w-5 h-5 accent-super">
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="number" value="10000000" class="flex-1 px-3 py-2 border border-border-light rounded-lg text-sm">
+                <span class="text-sm text-text-secondary">원</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 알림 수신자 -->
+        <div>
+          <h3 class="font-bold text-navy mb-3">알림 수신자</h3>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" checked class="w-4 h-4 accent-super">
+              <span class="text-sm"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cdaca9a0a4a38da0aca0ace0acbebeb9e3aea2a0">[email&#160;protected]</a></span>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" checked class="w-4 h-4 accent-super">
+              <span class="text-sm"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3b4f5e58537b565a565a165a48484f15585456">[email&#160;protected]</a></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeAlertSettingsModal()" class="px-6 py-2 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="saveAlertSettings()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          저장
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 프롬프트 상세 모달 -->
+  <div id="promptDetailModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closePromptDetailModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl gradient-ai flex items-center justify-center">
+            <span class="material-icons-round text-white">code</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">프롬프트 상세</h2>
+            <p class="text-sm text-text-secondary" id="promptDetailId">KOR-02 · O/X 퀴즈 생성</p>
+          </div>
+        </div>
+        <button onclick="closePromptDetailModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[65vh]">
+        <!-- 기본 정보 -->
+        <div class="grid grid-cols-4 gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-navy" id="promptTotalCalls">12,450</p>
+            <p class="text-xs text-text-secondary">총 호출 수</p>
+          </div>
+          <div class="bg-success-light rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-success" id="promptSuccessRate">99.9%</p>
+            <p class="text-xs text-text-secondary">성공률</p>
+          </div>
+          <div class="bg-info-light rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-info" id="promptAvgLatency">0.28s</p>
+            <p class="text-xs text-text-secondary">평균 응답</p>
+          </div>
+          <div class="bg-super-light rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-super" id="promptTotalCost">$8.50</p>
+            <p class="text-xs text-text-secondary">이번 달 비용</p>
+          </div>
+        </div>
+        
+        <!-- 프롬프트 정보 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-super text-sm">info</span>
+            프롬프트 정보
+          </h3>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">모델</p>
+                <p class="font-medium" id="promptModel">Gemini 2.0 Flash</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">과목</p>
+                <p class="font-medium" id="promptSubject">국어</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">최종 수정</p>
+                <p class="font-medium">2025.01.05 14:30</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">버전</p>
+                <p class="font-medium">v1.2</p>
+              </div>
+            </div>
+            <div>
+              <p class="text-xs text-text-tertiary mb-1">설명</p>
+              <p class="text-sm text-text-secondary">지문을 분석하여 O/X 형태의 퀴즈 5문항을 생성합니다. 학생의 독해력과 내용 이해도를 평가하는 데 사용됩니다.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 프롬프트 템플릿 -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-navy flex items-center gap-2">
+              <span class="material-icons-round text-super text-sm">description</span>
+              프롬프트 템플릿
+            </h3>
+            <button onclick="copyPromptTemplate()" class="text-sm text-super hover:text-super-dark flex items-center gap-1">
+              <span class="material-icons-round text-sm">content_copy</span>
+              복사
+            </button>
+          </div>
+          <div class="bg-gray-900 text-gray-100 rounded-xl p-4 font-mono text-xs overflow-x-auto max-h-48">
+            <pre class="whitespace-pre-wrap" id="promptTemplate">당신은 국어 교육 전문가입니다. 다음 지문을 읽고 O/X 퀴즈 5문항을 생성하세요.
+
+[지문]
+{{passage}}
+
+[작업 지시]
+1. 지문의 핵심 내용을 파악하세요.
+2. 사실 관계를 확인하는 문항 3개를 만드세요.
+3. 추론이 필요한 문항 2개를 만드세요.
+4. 각 문항에 정답과 해설을 포함하세요.
+
+[출력 형식]
+JSON 형태로 출력하세요.
+{
+  "questions": [
+    {
+      "question": "문항 내용",
+      "answer": true/false,
+      "explanation": "해설"
+    }
+  ]
+}</pre>
+          </div>
+        </div>
+        
+        <!-- 사용 통계 -->
+        <div>
+          <h3 class="font-bold text-navy mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-super text-sm">analytics</span>
+            최근 7일 사용 통계
+          </h3>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="grid grid-cols-7 gap-2 text-center">
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">월</p>
+                <p class="font-medium text-sm">1,520</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">화</p>
+                <p class="font-medium text-sm">1,890</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">수</p>
+                <p class="font-medium text-sm">2,100</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">목</p>
+                <p class="font-medium text-sm">1,980</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">금</p>
+                <p class="font-medium text-sm">2,340</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-tertiary mb-1">토</p>
+                <p class="font-medium text-sm">1,450</p>
+              </div>
+              <div class="bg-super-light rounded-lg py-1">
+                <p class="text-xs text-super mb-1">일(오늘)</p>
+                <p class="font-bold text-sm text-super">1,170</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="openPromptEditModal()" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2">
+          <span class="material-icons-round text-sm">edit</span>
+          템플릿 수정
+        </button>
+        <button onclick="closePromptDetailModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 예산 설정 모달 -->
+  <div id="budgetSettingsModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeBudgetSettingsModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-warning-light flex items-center justify-center">
+            <span class="material-icons-round text-warning">account_balance_wallet</span>
+          </div>
+          <h2 class="text-lg font-bold text-navy">월간 예산 설정</h2>
+        </div>
+        <button onclick="closeBudgetSettingsModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <!-- 현재 사용량 -->
+        <div class="bg-gray-50 rounded-xl p-4 mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm text-text-secondary">이번 달 사용량</span>
+            <span class="font-bold text-navy">$1,234 / $2,000</span>
+          </div>
+          <div class="usage-bar">
+            <div class="usage-bar-fill bg-super" style="width: 62%"></div>
+          </div>
+          <p class="text-xs text-text-tertiary mt-2">예산의 62% 사용 (잔여: $766)</p>
+        </div>
+        
+        <!-- 예산 설정 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">월간 예산 한도</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">$</span>
+            <input type="number" id="budgetLimit" value="2000" class="w-full pl-8 pr-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+          </div>
+        </div>
+        
+        <!-- 경고 임계값 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">경고 알림 (예산 대비 %)</label>
+          <select id="budgetWarningThreshold" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            <option value="50">50% 도달 시</option>
+            <option value="70" selected>70% 도달 시</option>
+            <option value="80">80% 도달 시</option>
+            <option value="90">90% 도달 시</option>
+          </select>
+        </div>
+        
+        <!-- 초과 시 동작 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">예산 초과 시</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="radio" name="overBudgetAction" value="alert" checked class="w-4 h-4 accent-super">
+              <div>
+                <span class="text-sm font-medium">알림만 발송</span>
+                <p class="text-xs text-text-tertiary">서비스는 계속 운영됩니다</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="radio" name="overBudgetAction" value="throttle" class="w-4 h-4 accent-super">
+              <div>
+                <span class="text-sm font-medium">요청 제한</span>
+                <p class="text-xs text-text-tertiary">초과 시 Flash 모델만 허용</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-error-light/50 rounded-xl cursor-pointer">
+              <input type="radio" name="overBudgetAction" value="stop" class="w-4 h-4 accent-error">
+              <div>
+                <span class="text-sm font-medium text-error">서비스 일시 중지</span>
+                <p class="text-xs text-text-tertiary">모든 AI 호출 차단</p>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeBudgetSettingsModal()" class="px-6 py-2 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="saveBudgetSettings()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          저장
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Rate Limit 설정 모달 -->
+  <div id="rateLimitModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeRateLimitModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-lg overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-info-light flex items-center justify-center">
+            <span class="material-icons-round text-info">speed</span>
+          </div>
+          <h2 class="text-lg font-bold text-navy">Rate Limit 설정</h2>
+        </div>
+        <button onclick="closeRateLimitModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <p class="text-sm text-text-secondary mb-6">API 호출 제한을 설정하여 비용을 관리하고 서비스 안정성을 유지합니다.</p>
+        
+        <!-- Flash 모델 설정 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy mb-3 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-super"></span>
+            Gemini Flash
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm text-text-secondary mb-2">분당 요청 (RPM)</label>
+              <input type="number" value="60" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+            <div>
+              <label class="block text-sm text-text-secondary mb-2">일일 요청 한도</label>
+              <input type="number" value="50000" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pro 모델 설정 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy mb-3 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-planner"></span>
+            Gemini Pro
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm text-text-secondary mb-2">분당 요청 (RPM)</label>
+              <input type="number" value="30" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+            <div>
+              <label class="block text-sm text-text-secondary mb-2">일일 요청 한도</label>
+              <input type="number" value="5000" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+          </div>
+        </div>
+        
+        <!-- 학원별 제한 -->
+        <div class="bg-gray-50 rounded-xl p-4">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" checked class="w-4 h-4 accent-super">
+            <div>
+              <span class="text-sm font-medium">학원별 제한 적용</span>
+              <p class="text-xs text-text-tertiary">개별 학원에 위 제한의 1/10 적용</p>
+            </div>
+          </label>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeRateLimitModal()" class="px-6 py-2 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="saveRateLimitSettings()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          저장
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 학원별 AI 사용량 모달 -->
+  <div id="academyUsageModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeAcademyUsageModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl gradient-super flex items-center justify-center">
+            <span class="material-icons-round text-white">apartment</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">학원별 AI 사용량</h2>
+            <p class="text-sm text-text-secondary">이번 달 기준</p>
+          </div>
+        </div>
+        <button onclick="closeAcademyUsageModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[65vh]">
+        <!-- 검색 -->
+        <div class="flex gap-4 mb-6">
+          <div class="flex-1 relative">
+            <span class="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary">search</span>
+            <input type="text" placeholder="학원명 검색..." class="w-full pl-10 pr-4 py-2 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+          </div>
+          <select class="px-4 py-2 border border-border-light rounded-xl focus:outline-none">
+            <option>호출수 높은 순</option>
+            <option>비용 높은 순</option>
+            <option>오류율 높은 순</option>
+          </select>
+        </div>
+        
+        <!-- 학원 리스트 -->
+        <div class="space-y-3">
+          <div class="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 cursor-pointer">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-super-light flex items-center justify-center">
+                  <span class="text-super font-bold">명</span>
+                </div>
+                <div>
+                  <p class="font-bold text-navy">명불허전학원</p>
+                  <p class="text-xs text-text-secondary">MBH001 · 학생 45명</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-navy">8,450건</p>
+                <p class="text-xs text-text-secondary">$124.50</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-4 gap-2 text-center text-xs">
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">국어</p>
+                <p class="font-bold text-korean">3,200</p>
+              </div>
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">영어</p>
+                <p class="font-bold text-english">2,850</p>
+              </div>
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">수학</p>
+                <p class="font-bold text-math">1,900</p>
+              </div>
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">기타</p>
+                <p class="font-bold text-text-secondary">500</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 cursor-pointer">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-info-light flex items-center justify-center">
+                  <span class="text-info font-bold">스</span>
+                </div>
+                <div>
+                  <p class="font-bold text-navy">스카이에듀</p>
+                  <p class="text-xs text-text-secondary">SKY001 · 학생 72명</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-navy">12,340건</p>
+                <p class="text-xs text-text-secondary">$186.20</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-4 gap-2 text-center text-xs">
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">국어</p>
+                <p class="font-bold text-korean">4,500</p>
+              </div>
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">영어</p>
+                <p class="font-bold text-english">4,200</p>
+              </div>
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">수학</p>
+                <p class="font-bold text-math">2,800</p>
+              </div>
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">기타</p>
+                <p class="font-bold text-text-secondary">840</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-error-light/30 rounded-xl p-4 hover:bg-error-light/50 cursor-pointer border border-error/20">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-error-light flex items-center justify-center">
+                  <span class="text-error font-bold">탑</span>
+                </div>
+                <div>
+                  <p class="font-bold text-navy">탑클래스학원</p>
+                  <p class="text-xs text-text-secondary">TOP001 · 학생 38명</p>
+                </div>
+                <span class="px-2 py-0.5 bg-error text-white text-xs rounded-full">예산 초과</span>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-error">6,890건</p>
+                <p class="text-xs text-error">$210.00 / $200</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-4 gap-2 text-center text-xs">
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">국어</p>
+                <p class="font-bold text-korean">2,100</p>
+              </div>
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">영어</p>
+                <p class="font-bold text-english">1,800</p>
+              </div>
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">수학</p>
+                <p class="font-bold text-math">2,500</p>
+              </div>
+              <div class="bg-white rounded-lg p-2">
+                <p class="text-text-tertiary">기타</p>
+                <p class="font-bold text-text-secondary">490</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="exportAcademyUsage()" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2">
+          <span class="material-icons-round text-sm">download</span>
+          엑셀 다운로드
+        </button>
+        <button onclick="closeAcademyUsageModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 실시간 모니터링 모달 -->
+  <div id="realtimeMonitorModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeRealtimeMonitorModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-success-light flex items-center justify-center">
+            <span class="material-icons-round text-success">monitor_heart</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">실시간 모니터링</h2>
+            <p class="text-sm text-text-secondary flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-success pulse"></span>
+              실시간 업데이트 중
+            </p>
+          </div>
+        </div>
+        <button onclick="closeRealtimeMonitorModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[65vh]">
+        <!-- 실시간 통계 -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="bg-super-light rounded-xl p-4 text-center">
+            <p class="text-3xl font-bold text-super" id="realtimeRpm">42</p>
+            <p class="text-xs text-text-secondary">현재 RPM</p>
+          </div>
+          <div class="bg-success-light rounded-xl p-4 text-center">
+            <p class="text-3xl font-bold text-success" id="realtimeQueue">3</p>
+            <p class="text-xs text-text-secondary">대기 중인 요청</p>
+          </div>
+          <div class="bg-info-light rounded-xl p-4 text-center">
+            <p class="text-3xl font-bold text-info" id="realtimeLatency">0.32s</p>
+            <p class="text-xs text-text-secondary">현재 응답시간</p>
+          </div>
+        </div>
+        
+        <!-- 실시간 로그 -->
+        <div class="bg-gray-900 rounded-xl p-4 font-mono text-xs text-gray-300 h-64 overflow-y-auto" id="realtimeLog">
+          <div class="text-success">[14:32:15] ✓ KOR-02 Flash 완료 (0.28s) - 명불허전학원</div>
+          <div class="text-success">[14:32:14] ✓ ENG-01 Flash 완료 (0.18s) - 스카이에듀</div>
+          <div class="text-success">[14:32:13] ✓ MATH-01 Flash 완료 (0.45s) - 명불허전학원</div>
+          <div class="text-warning">[14:32:12] ⚠ TEND-01 Pro 완료 (2.1s) - 탑클래스학원</div>
+          <div class="text-success">[14:32:11] ✓ KOR-02 Flash 완료 (0.31s) - 스카이에듀</div>
+          <div class="text-error">[14:32:10] ✗ MATH-01 Flash 실패 (Rate Limit) - 탑클래스학원</div>
+          <div class="text-success">[14:32:09] ✓ ENG-01 Flash 완료 (0.22s) - 명불허전학원</div>
+          <div class="text-success">[14:32:08] ✓ COUN-01 Pro 완료 (2.8s) - 스카이에듀</div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <div class="flex items-center gap-4">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked class="w-4 h-4 accent-super" id="autoScrollLog">
+            <span class="text-sm">자동 스크롤</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" class="w-4 h-4 accent-error" id="showErrorsOnly">
+            <span class="text-sm">오류만 보기</span>
+          </label>
+        </div>
+        <button onclick="closeRealtimeMonitorModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 토스트 컨테이너 -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-3"></div>
+  
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // ========================================
+    // 토스트 알림 시스템
+    // ========================================
+    // [MIGRATED TO MODULE] showToast - now using toast.js module
+    
+    // ========================================
+    // Mobile Menu
+    // ========================================
+    function openMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // ========================================
+    // AI Call Detail Modal
+    // ========================================
+    function openAiCallDetailModal(requestId) {
+      document.getElementById('callDetailId').textContent = requestId || 'REQ-20250112-001234';
+      document.getElementById('aiCallDetailModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAiCallDetailModal() {
+      document.getElementById('aiCallDetailModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function copyRequestId() {
+      const requestId = document.getElementById('callDetailId').textContent;
+      navigator.clipboard.writeText(requestId);
+      showToast('요청 ID가 복사되었습니다.', 'success');
+    }
+    
+    // ========================================
+    // Error Detail Modal
+    // ========================================
+    function openErrorDetailModal(errorId) {
+      document.getElementById('errorDetailId').textContent = errorId || 'ERR-20250112-001';
+      document.getElementById('errorDetailModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeErrorDetailModal() {
+      document.getElementById('errorDetailModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function retryFailedRequest() {
+      closeErrorDetailModal();
+      showToast('요청을 다시 시도합니다...', 'info');
+      setTimeout(() => {
+        showToast('요청이 성공적으로 처리되었습니다.', 'success');
+      }, 2000);
+    }
+    
+    // ========================================
+    // Alert Settings Modal
+    // ========================================
+    function openAlertSettingsModal() {
+      document.getElementById('alertSettingsModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAlertSettingsModal() {
+      document.getElementById('alertSettingsModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveAlertSettings() {
+      closeAlertSettingsModal();
+      showToast('알림 설정이 저장되었습니다.', 'success');
+    }
+    
+    // ========================================
+    // Prompt Detail Modal
+    // ========================================
+    const promptData = {
+      'KOR-02': { 
+        name: 'O/X 퀴즈 생성', 
+        model: 'Gemini 2.0 Flash', 
+        subject: '국어',
+        calls: '12,450',
+        successRate: '99.9%',
+        latency: '0.28s',
+        cost: '$8.50'
+      },
+      'ENG-01': { 
+        name: '마커 처리', 
+        model: 'Gemini 2.0 Flash', 
+        subject: '영어',
+        calls: '15,230',
+        successRate: '99.8%',
+        latency: '0.18s',
+        cost: '$4.20'
+      },
+      'TEND-01': { 
+        name: '성향 종합 분석', 
+        model: 'Gemini 2.0 Pro', 
+        subject: '성향검사',
+        calls: '1,280',
+        successRate: '99.5%',
+        latency: '2.1s',
+        cost: '$12.80'
+      },
+      'COUN-01': { 
+        name: '상담 사전 브리핑', 
+        model: 'Gemini 2.0 Pro', 
+        subject: '상담',
+        calls: '890',
+        successRate: '99.2%',
+        latency: '2.8s',
+        cost: '$9.50'
+      },
+      'MATH-01': { 
+        name: '단계별 풀이 생성', 
+        model: 'Gemini 2.0 Flash', 
+        subject: '수학',
+        calls: '8,560',
+        successRate: '98.2%',
+        latency: '0.45s',
+        cost: '$7.20'
+      }
+    };
+    
+    function openPromptDetailModal(promptId, name, model, subject) {
+      const data = promptData[promptId] || { name, model: 'Gemini 2.0 ' + model, subject, calls: '0', successRate: '0%', latency: '-', cost: '$0' };
+      
+      document.getElementById('promptDetailId').textContent = `${promptId} · ${data.name}`;
+      document.getElementById('promptTotalCalls').textContent = data.calls;
+      document.getElementById('promptSuccessRate').textContent = data.successRate;
+      document.getElementById('promptAvgLatency').textContent = data.latency;
+      document.getElementById('promptTotalCost').textContent = data.cost;
+      document.getElementById('promptModel').textContent = data.model;
+      document.getElementById('promptSubject').textContent = data.subject;
+      
+      document.getElementById('promptDetailModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closePromptDetailModal() {
+      document.getElementById('promptDetailModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function copyPromptTemplate() {
+      const template = document.getElementById('promptTemplate').textContent;
+      navigator.clipboard.writeText(template);
+      showToast('프롬프트 템플릿이 복사되었습니다.', 'success');
+    }
+    
+    function openPromptEditModal() {
+      closePromptDetailModal();
+      showToast('프롬프트 편집 기능은 준비 중입니다.', 'info');
+    }
+    
+    // ========================================
+    // Budget Settings Modal
+    // ========================================
+    function openBudgetSettingsModal() {
+      document.getElementById('budgetSettingsModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeBudgetSettingsModal() {
+      document.getElementById('budgetSettingsModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveBudgetSettings() {
+      const limit = document.getElementById('budgetLimit').value;
+      closeBudgetSettingsModal();
+      showToast(`월간 예산이 $${limit}로 설정되었습니다.`, 'success');
+    }
+    
+    // ========================================
+    // Rate Limit Modal
+    // ========================================
+    function openRateLimitModal() {
+      document.getElementById('rateLimitModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeRateLimitModal() {
+      document.getElementById('rateLimitModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveRateLimitSettings() {
+      closeRateLimitModal();
+      showToast('Rate Limit 설정이 저장되었습니다.', 'success');
+    }
+    
+    // ========================================
+    // Academy Usage Modal
+    // ========================================
+    function openAcademyUsageModal() {
+      document.getElementById('academyUsageModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAcademyUsageModal() {
+      document.getElementById('academyUsageModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function exportAcademyUsage() {
+      showToast('학원별 사용량 리포트를 다운로드합니다...', 'info');
+      setTimeout(() => {
+        showToast('Academy_AI_Usage_202501.xlsx 다운로드 완료', 'success');
+      }, 1000);
+    }
+    
+    // ========================================
+    // Realtime Monitor Modal
+    // ========================================
+    let realtimeInterval = null;
+    
+    function openRealtimeMonitorModal() {
+      document.getElementById('realtimeMonitorModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      startRealtimeUpdates();
+    }
+    
+    function closeRealtimeMonitorModal() {
+      document.getElementById('realtimeMonitorModal').classList.remove('open');
+      document.body.style.overflow = '';
+      stopRealtimeUpdates();
+    }
+    
+    function startRealtimeUpdates() {
+      const logs = [
+        { type: 'success', prompt: 'KOR-02', model: 'Flash', time: '0.28s', academy: '명불허전학원' },
+        { type: 'success', prompt: 'ENG-01', model: 'Flash', time: '0.18s', academy: '스카이에듀' },
+        { type: 'success', prompt: 'MATH-01', model: 'Flash', time: '0.45s', academy: '탑클래스학원' },
+        { type: 'warning', prompt: 'TEND-01', model: 'Pro', time: '2.1s', academy: '명불허전학원' },
+        { type: 'error', prompt: 'MATH-01', model: 'Flash', time: 'Rate Limit', academy: '탑클래스학원' },
+      ];
+      
+      realtimeInterval = setInterval(() => {
+        const log = logs[Math.floor(Math.random() * logs.length)];
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0];
+        const icon = log.type === 'success' ? '✓' : log.type === 'warning' ? '⚠' : '✗';
+        const status = log.type === 'error' ? '실패' : '완료';
+        
+        const logEl = document.getElementById('realtimeLog');
+        const newLine = document.createElement('div');
+        newLine.className = `text-${log.type}`;
+        newLine.textContent = `[${timeStr}] ${icon} ${log.prompt} ${log.model} ${status} (${log.time}) - ${log.academy}`;
+        logEl.insertBefore(newLine, logEl.firstChild);
+        
+        // Update stats
+        document.getElementById('realtimeRpm').textContent = Math.floor(Math.random() * 20 + 35);
+        document.getElementById('realtimeQueue').textContent = Math.floor(Math.random() * 8);
+        document.getElementById('realtimeLatency').textContent = (Math.random() * 0.5 + 0.2).toFixed(2) + 's';
+        
+        // Auto scroll
+        if (document.getElementById('autoScrollLog')?.checked) {
+          logEl.scrollTop = 0;
+        }
+      }, 2000);
+    }
+    
+    function stopRealtimeUpdates() {
+      if (realtimeInterval) {
+        clearInterval(realtimeInterval);
+        realtimeInterval = null;
+      }
+    }
+    
+    // ========================================
+    // Quick Actions
+    // ========================================
+    function refreshData() {
+      showToast('데이터를 새로고침합니다...', 'info');
+      setTimeout(() => {
+        showToast('데이터가 업데이트되었습니다.', 'success');
+      }, 1500);
+    }
+    
+    function exportReport() {
+      showToast('리포트를 다운로드합니다...', 'info');
+      setTimeout(() => {
+        showToast('AI_Usage_Report_202501.xlsx 다운로드 완료', 'success');
+      }, 1000);
+    }
+    
+    function changePeriod(period) {
+      const periods = {
+        'today': '오늘',
+        '7days': '최근 7일',
+        '30days': '최근 30일',
+        'month': '이번 달'
+      };
+      showToast(`${periods[period]} 데이터를 불러옵니다...`, 'info');
+      setTimeout(() => {
+        showToast('데이터가 업데이트되었습니다.', 'success');
+      }, 800);
+    }
+    
+    function scrollToErrors() {
+      const errorSection = document.getElementById('errorLogSection');
+      if (errorSection) {
+        errorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        errorSection.classList.add('ring-2', 'ring-error', 'ring-offset-2');
+        setTimeout(() => {
+          errorSection.classList.remove('ring-2', 'ring-error', 'ring-offset-2');
+        }, 2000);
+      }
+    }
+    
+    // ========================================
+    // Keyboard Shortcuts
+    // ========================================
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeAiCallDetailModal();
+        closeErrorDetailModal();
+        closeAlertSettingsModal();
+        closePromptDetailModal();
+        closeBudgetSettingsModal();
+        closeRateLimitModal();
+        closeAcademyUsageModal();
+        closeRealtimeMonitorModal();
+      }
+    });
+    
+    // Initialize Charts
+    document.addEventListener('DOMContentLoaded', function() {
+      // API Calls Chart
+      const apiCtx = document.getElementById('apiCallsChart').getContext('2d');
+      new Chart(apiCtx, {
+        type: 'bar',
+        data: {
+          labels: ['00시', '02시', '04시', '06시', '08시', '10시', '12시', '14시', '16시', '18시', '20시', '22시'],
+          datasets: [
+            {
+              label: 'Flash',
+              data: [120, 80, 60, 150, 890, 2100, 3200, 4500, 4200, 3800, 2100, 1200],
+              backgroundColor: 'rgba(99, 102, 241, 0.8)',
+              borderRadius: 4,
+            },
+            {
+              label: 'Pro',
+              data: [10, 5, 3, 20, 120, 280, 420, 580, 520, 450, 280, 150],
+              backgroundColor: 'rgba(156, 39, 176, 0.8)',
+              borderRadius: 4,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: { display: false }
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              ticks: {
+                callback: value => value >= 1000 ? (value / 1000) + 'k' : value
+              }
+            }
+          }
+        }
+      });
+      
+      // Usage by Type Chart
+      const usageCtx = document.getElementById('usageByTypeChart').getContext('2d');
+      new Chart(usageCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['국어 O/X', '영어 마커', '수학 풀이', '성향 분석', '상담 브리핑', '기타'],
+          datasets: [{
+            data: [12450, 15230, 8560, 1280, 890, 3940],
+            backgroundColor: [
+              '#4285F4',
+              '#34A853',
+              '#FBBC05',
+              '#9C27B0',
+              '#FF6D4D',
+              '#9CA3AF'
+            ],
+            borderWidth: 0,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                usePointStyle: true,
+                padding: 15,
+                font: { size: 12 }
+              }
+            }
+          },
+          cutout: '60%'
+        }
+      });
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>단어 학습 | 영어 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            'english-dark': '#2E9549',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+          },
+          fontFamily: {
+            sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'],
+            display: ['Lexend', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    @keyframes pulse-play {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .pulse-play { animation: pulse-play 0.3s ease; }
+    
+    .word-card.listened {
+      border-color: #34A853;
+      background: linear-gradient(135deg, #E6F4EA 0%, #ffffff 100%);
+    }
+    
+    .word-card.listened .listen-badge {
+      display: flex;
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased min-h-screen">
+  
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 h-14 bg-english text-white flex items-center justify-between px-4 z-50">
+    <a href="subject-english.html" class="p-2 -ml-2 hover:bg-white/10 rounded-lg transition-colors">
+      <span class="material-icons-round">arrow_back</span>
+    </a>
+    <div class="text-center">
+      <span class="font-bold">단어 학습</span>
+      <span class="text-sm text-white/80 ml-2" id="progressText">0 / 10</span>
+    </div>
+    <div class="w-10"></div>
+  </header>
+  
+  <!-- Progress Bar -->
+  <div class="fixed top-14 left-0 right-0 h-1 bg-white/30 z-50">
+    <div class="h-full bg-white transition-all duration-300" id="progressBar" style="width: 0%"></div>
+  </div>
+  
+  <!-- Main Content -->
+  <main class="pt-20 pb-32 px-4 max-w-4xl mx-auto">
+    
+    <!-- Instructions -->
+    <div class="bg-english-light rounded-xl p-4 mb-6 border border-english/20">
+      <div class="flex items-start gap-3">
+        <span class="material-icons-round text-english text-xl flex-shrink-0">info</span>
+        <div>
+          <p class="font-medium text-english mb-1">학습 안내</p>
+          <p class="text-sm text-text-secondary">
+            각 단어의 발음을 들어보세요. <strong>모든 단어를 최소 1번</strong> 들어야 테스트를 시작할 수 있습니다.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Word Cards -->
+    <div class="space-y-4" id="wordCards">
+      <!-- Rendered by JS -->
+    </div>
+    
+  </main>
+  
+  <!-- Bottom Fixed Bar -->
+  <div class="fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light p-4 z-40">
+    <div class="max-w-4xl mx-auto">
+      <!-- Progress Summary -->
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <span class="material-icons-round text-english">hearing</span>
+          <span class="text-sm text-text-secondary">들은 단어</span>
+          <span class="font-bold text-english" id="listenedCount">0</span>
+          <span class="text-sm text-text-tertiary">/ 10</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-text-secondary">총 재생</span>
+          <span class="font-bold text-text-primary" id="totalPlays">0</span>
+          <span class="text-sm text-text-tertiary">회</span>
+        </div>
+      </div>
+      
+      <!-- Start Test Button -->
+      <button 
+        id="startTestBtn" 
+        onclick="startTest()"
+        class="w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed bg-gray-200 text-gray-400"
+        disabled
+      >
+        <span class="material-icons-round">mic</span>
+        <span id="startTestText">모든 단어를 들어주세요</span>
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // Word Data
+    const words = [
+      { id: 1, word: 'determine', meaning: '결정하다', pos: 'verb', example: 'We need to determine the cause of the problem.', translation: '문제의 원인을 파악해야 합니다.' },
+      { id: 2, word: 'opportunity', meaning: '기회', pos: 'noun', example: 'This is a great opportunity for growth.', translation: '이것은 성장을 위한 좋은 기회입니다.' },
+      { id: 3, word: 'accommodate', meaning: '수용하다', pos: 'verb', example: 'The hall can accommodate 500 people.', translation: '홀은 500명을 수용할 수 있습니다.' },
+      { id: 4, word: 'enthusiastic', meaning: '열정적인', pos: 'adjective', example: 'She is enthusiastic about learning new things.', translation: '그녀는 새로운 것을 배우는 데 열정적입니다.' },
+      { id: 5, word: 'perspective', meaning: '관점', pos: 'noun', example: 'From my perspective, it makes sense.', translation: '제 관점에서는 말이 됩니다.' },
+      { id: 6, word: 'consequence', meaning: '결과', pos: 'noun', example: 'Every action has consequences.', translation: '모든 행동에는 결과가 있습니다.' },
+      { id: 7, word: 'comprehensive', meaning: '종합적인', pos: 'adjective', example: 'We need a comprehensive review of the data.', translation: '데이터에 대한 종합적인 검토가 필요합니다.' },
+      { id: 8, word: 'significant', meaning: '중요한', pos: 'adjective', example: 'This is a significant achievement.', translation: '이것은 중요한 성과입니다.' },
+      { id: 9, word: 'environment', meaning: '환경', pos: 'noun', example: 'We should protect the environment.', translation: '환경을 보호해야 합니다.' },
+      { id: 10, word: 'establish', meaning: '설립하다', pos: 'verb', example: 'They established a new company last year.', translation: '그들은 작년에 새 회사를 설립했습니다.' }
+    ];
+    
+    // State
+    let playCount = {}; // { wordId: count }
+    let listenedWords = new Set();
+    let totalPlayCount = 0;
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      renderWordCards();
+      updateProgress();
+    });
+    
+    function renderWordCards() {
+      const container = document.getElementById('wordCards');
+      
+      container.innerHTML = words.map((word, index) => `
+        <div class="word-card bg-surface rounded-2xl shadow-sm border-2 border-border-light p-5 transition-all" id="card-${word.id}">
+          <!-- Card Header -->
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-full bg-english-light text-english text-sm font-bold flex items-center justify-center">${index + 1}</span>
+              <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs font-medium rounded">${word.pos}</span>
+            </div>
+            
+            <!-- Listen Badge (hidden by default) -->
+            <div class="listen-badge hidden items-center gap-1 px-2 py-1 bg-success-light text-success text-xs font-medium rounded-full">
+              <span class="material-icons-round text-sm">check_circle</span>
+              <span>들음</span>
+            </div>
+          </div>
+          
+          <!-- Word & Meaning -->
+          <div class="mb-4">
+            <h2 class="text-3xl font-bold text-text-primary font-display mb-1">${word.word}</h2>
+            <p class="text-lg text-text-secondary">${word.meaning}</p>
+          </div>
+          
+          <!-- Example Sentence -->
+          <div class="bg-gray-50 rounded-xl p-4 mb-4">
+            <p class="text-sm text-english font-medium mb-1">${word.example}</p>
+            <p class="text-sm text-text-tertiary">${word.translation}</p>
+          </div>
+          
+          <!-- Play Buttons -->
+          <div class="flex gap-2">
+            <!-- Word Pronunciation -->
+            <button 
+              onclick="playWord(${word.id}, '${word.word}')"
+              class="flex-1 py-3 bg-english hover:bg-english-dark text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+              id="wordBtn-${word.id}"
+            >
+              <span class="material-icons-round">volume_up</span>
+              <span>단어 발음</span>
+              <span class="play-count ml-1 px-2 py-0.5 bg-white/20 rounded-full text-xs" id="wordCount-${word.id}">0회</span>
+            </button>
+            
+            <!-- Sentence Pronunciation -->
+            <button 
+              onclick="playSentence(${word.id}, '${word.example}')"
+              class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-text-primary font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+              id="sentenceBtn-${word.id}"
+            >
+              <span class="material-icons-round">record_voice_over</span>
+              <span>예문 발음</span>
+              <span class="play-count ml-1 px-2 py-0.5 bg-gray-200 rounded-full text-xs" id="sentenceCount-${word.id}">0회</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function playWord(id, word) {
+      // Play TTS
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.85;
+      speechSynthesis.speak(utterance);
+      
+      // Update play count
+      const key = `word-${id}`;
+      playCount[key] = (playCount[key] || 0) + 1;
+      totalPlayCount++;
+      
+      // Update UI
+      document.getElementById(`wordCount-${id}`).textContent = `${playCount[key]}회`;
+      
+      // Mark as listened
+      listenedWords.add(id);
+      document.getElementById(`card-${id}`).classList.add('listened');
+      
+      // Animate button
+      const btn = document.getElementById(`wordBtn-${id}`);
+      btn.classList.add('pulse-play');
+      setTimeout(() => btn.classList.remove('pulse-play'), 300);
+      
+      updateProgress();
+    }
+    
+    function playSentence(id, sentence) {
+      // Play TTS
+      const utterance = new SpeechSynthesisUtterance(sentence);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.8;
+      speechSynthesis.speak(utterance);
+      
+      // Update play count
+      const key = `sentence-${id}`;
+      playCount[key] = (playCount[key] || 0) + 1;
+      totalPlayCount++;
+      
+      // Update UI
+      document.getElementById(`sentenceCount-${id}`).textContent = `${playCount[key]}회`;
+      
+      // Also mark as listened (listening to sentence counts too)
+      listenedWords.add(id);
+      document.getElementById(`card-${id}`).classList.add('listened');
+      
+      // Animate button
+      const btn = document.getElementById(`sentenceBtn-${id}`);
+      btn.classList.add('pulse-play');
+      setTimeout(() => btn.classList.remove('pulse-play'), 300);
+      
+      updateProgress();
+    }
+    
+    function updateProgress() {
+      const listened = listenedWords.size;
+      const total = words.length;
+      const percentage = (listened / total) * 100;
+      
+      // Update progress bar
+      document.getElementById('progressBar').style.width = `${percentage}%`;
+      
+      // Update text
+      document.getElementById('progressText').textContent = `${listened} / ${total}`;
+      document.getElementById('listenedCount').textContent = listened;
+      document.getElementById('totalPlays').textContent = totalPlayCount;
+      
+      // Update start button
+      const startBtn = document.getElementById('startTestBtn');
+      const startText = document.getElementById('startTestText');
+      
+      if (listened >= total) {
+        startBtn.disabled = false;
+        startBtn.className = 'w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all bg-english hover:bg-english-dark text-white shadow-lg shadow-english/30';
+        startText.textContent = '시험 시작하기';
+      } else {
+        startBtn.disabled = true;
+        startBtn.className = 'w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed bg-gray-200 text-gray-400';
+        startText.textContent = `${total - listened}개 더 들어주세요`;
+      }
+    }
+    
+    function startTest() {
+      if (listenedWords.size < words.length) {
+        alert('모든 단어를 먼저 들어주세요!');
+        return;
+      }
+      
+      // Save prelearn data to localStorage
+      localStorage.setItem('englishPrelearnData', JSON.stringify({
+        listenedWords: Array.from(listenedWords),
+        playCount: playCount,
+        totalPlayCount: totalPlayCount,
+        timestamp: new Date().toISOString()
+      }));
+      
+      // Navigate to test page
+      window.location.href = 'english-test.html';
+    }
+    
+    // Play all words button (optional feature)
+    function playAllWords() {
+      let delay = 0;
+      words.forEach((word, index) => {
+        setTimeout(() => {
+          playWord(word.id, word.word);
+        }, delay);
+        delay += 2000; // 2 second gap between words
+      });
+    }
+  </script>
+  
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

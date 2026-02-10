@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기본 정보 입력 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            korean: '#4285F4',
+            english: '#34A853',
+            math: '#FBBC05',
+            planner: '#9C27B0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'border-medium': '#D1D5DB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            error: '#EF4444',
+            warning: '#F59E0B',
+            info: '#3B82F6',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    input, select, textarea {
+      font-size: 18px !important;
+      min-height: 56px;
+    }
+    
+    .radio-card input:checked + .card-content {
+      border-color: #FF6D4D;
+      background-color: #FFF0ED;
+    }
+    
+    .checkbox-card input:checked + .card-content {
+      border-color: #FF6D4D;
+      background-color: #FFF0ED;
+    }
+    
+    .section-card {
+      scroll-margin-top: 140px;
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased min-h-screen flex flex-col">
+  
+  <!-- Header -->
+  <header class="h-16 bg-navy text-white flex items-center justify-between px-6 flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+        <span class="text-white font-bold text-lg">M</span>
+      </div>
+      <div>
+        <span class="font-bold text-lg">MAMA-ASST</span>
+        <span class="px-2 py-0.5 bg-white/20 text-white text-xs font-medium rounded ml-2">상담 모드</span>
+      </div>
+    </div>
+    <button onclick="callAdmin()" class="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors">
+      <span class="material-icons-round text-lg">support_agent</span>
+      <span class="text-sm font-medium">선생님 호출</span>
+    </button>
+  </header>
+  
+  <!-- Progress Bar -->
+  <div class="bg-surface border-b border-border-light px-6 py-4 flex-shrink-0 sticky top-0 z-40">
+    <div class="max-w-3xl mx-auto">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-text-primary">1단계: 기본 정보 입력</span>
+        <span class="text-sm text-text-tertiary">1 / 4</span>
+      </div>
+      <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 25%"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Section Navigation -->
+  <div class="bg-surface border-b border-border-light px-6 py-3 flex-shrink-0 sticky top-[72px] z-30">
+    <div class="max-w-3xl mx-auto flex gap-2 overflow-x-auto pb-1">
+      <button onclick="scrollToSection('student')" class="section-nav active px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap bg-primary text-white">
+        학생 정보
+      </button>
+      <button onclick="scrollToSection('parent')" class="section-nav px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap bg-gray-100 text-text-secondary hover:bg-gray-200">
+        학부모 정보
+      </button>
+      <button onclick="scrollToSection('academic')" class="section-nav px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap bg-gray-100 text-text-secondary hover:bg-gray-200">
+        학업 정보
+      </button>
+      <button onclick="scrollToSection('previous')" class="section-nav px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap bg-gray-100 text-text-secondary hover:bg-gray-200">
+        이전 학원
+      </button>
+      <button onclick="scrollToSection('additional')" class="section-nav px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap bg-gray-100 text-text-secondary hover:bg-gray-200">
+        추가 정보
+      </button>
+    </div>
+  </div>
+  
+  <main class="flex-1 px-6 py-8 overflow-y-auto">
+    <div class="max-w-3xl mx-auto">
+      
+      <!-- Welcome Message -->
+      <div class="bg-primary-light rounded-2xl p-5 mb-8">
+        <div class="flex items-start gap-3">
+          <span class="material-icons-round text-primary text-2xl">waving_hand</span>
+          <div>
+            <p class="font-bold text-text-primary mb-1">안녕하세요! 반갑습니다 😊</p>
+            <p class="text-text-secondary">상담을 위해 몇 가지 정보를 입력해주세요. 정확한 정보를 입력해주시면 더 좋은 상담이 가능합니다.</p>
+          </div>
+        </div>
+      </div>
+      
+      <form id="guestInfoForm" class="space-y-8">
+        
+        <!-- Section 1: Student Info -->
+        <div id="student" class="section-card bg-surface rounded-2xl border border-border-light p-6">
+          <h2 class="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
+            <span class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <span class="material-icons-round text-primary text-sm">person</span>
+            </span>
+            학생 정보
+          </h2>
+          
+          <div class="space-y-5">
+            <!-- Student Name -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                학생 이름 <span class="text-error">*</span>
+              </label>
+              <input type="text" id="studentName" required placeholder="홍길동"
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            </div>
+            
+            <!-- School Level -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                학교급 <span class="text-error">*</span>
+              </label>
+              <div class="grid grid-cols-3 gap-3">
+                <label class="radio-card cursor-pointer">
+                  <input type="radio" name="schoolLevel" value="elementary" class="hidden" required>
+                  <div class="card-content p-4 border-2 border-border-light rounded-xl text-center transition-all">
+                    <span class="material-icons-round text-2xl text-info mb-1">child_care</span>
+                    <p class="font-medium">초등학교</p>
+                  </div>
+                </label>
+                <label class="radio-card cursor-pointer">
+                  <input type="radio" name="schoolLevel" value="middle" class="hidden">
+                  <div class="card-content p-4 border-2 border-border-light rounded-xl text-center transition-all">
+                    <span class="material-icons-round text-2xl text-success mb-1">school</span>
+                    <p class="font-medium">중학교</p>
+                  </div>
+                </label>
+                <label class="radio-card cursor-pointer">
+                  <input type="radio" name="schoolLevel" value="high" class="hidden">
+                  <div class="card-content p-4 border-2 border-border-light rounded-xl text-center transition-all">
+                    <span class="material-icons-round text-2xl text-warning mb-1">auto_stories</span>
+                    <p class="font-medium">고등학교</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+            
+            <!-- Grade -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                학년 <span class="text-error">*</span>
+              </label>
+              <select id="grade" required
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+                <option value="">학년을 선택하세요</option>
+              </select>
+            </div>
+            
+            <!-- School Name -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                학교명 <span class="text-error">*</span>
+              </label>
+              <input type="text" id="schoolName" required placeholder="서울중학교"
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            </div>
+            
+            <!-- Address -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                거주지 주소
+              </label>
+              <input type="text" id="address" placeholder="서울시 강남구 역삼동"
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+              <p class="text-xs text-text-tertiary mt-1">통학 거리 확인을 위해 입력해주세요</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section 2: Parent Info -->
+        <div id="parent" class="section-card bg-surface rounded-2xl border border-border-light p-6">
+          <h2 class="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
+            <span class="w-8 h-8 rounded-full bg-info/10 flex items-center justify-center">
+              <span class="material-icons-round text-info text-sm">family_restroom</span>
+            </span>
+            학부모 정보
+          </h2>
+          
+          <div class="space-y-5">
+            <!-- Parent Name -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                학부모 성함 <span class="text-error">*</span>
+              </label>
+              <input type="text" id="parentName" required placeholder="김학부모"
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            </div>
+            
+            <!-- Parent Phone -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                연락처 <span class="text-error">*</span>
+              </label>
+              <input type="tel" id="parentPhone" required placeholder="010-1234-5678"
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            </div>
+            
+            <!-- Relationship -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                관계 <span class="text-error">*</span>
+              </label>
+              <div class="grid grid-cols-3 gap-3">
+                <label class="radio-card cursor-pointer">
+                  <input type="radio" name="relationship" value="mother" class="hidden" required>
+                  <div class="card-content p-3 border-2 border-border-light rounded-xl text-center transition-all">
+                    <p class="font-medium">어머니</p>
+                  </div>
+                </label>
+                <label class="radio-card cursor-pointer">
+                  <input type="radio" name="relationship" value="father" class="hidden">
+                  <div class="card-content p-3 border-2 border-border-light rounded-xl text-center transition-all">
+                    <p class="font-medium">아버지</p>
+                  </div>
+                </label>
+                <label class="radio-card cursor-pointer">
+                  <input type="radio" name="relationship" value="other" class="hidden">
+                  <div class="card-content p-3 border-2 border-border-light rounded-xl text-center transition-all">
+                    <p class="font-medium">기타</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section 3: Academic Info -->
+        <div id="academic" class="section-card bg-surface rounded-2xl border border-border-light p-6">
+          <h2 class="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
+            <span class="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center">
+              <span class="material-icons-round text-success text-sm">assessment</span>
+            </span>
+            학업 정보
+          </h2>
+          
+          <div class="space-y-5">
+            <!-- School Grades -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                학교 내신 성적 (최근)
+              </label>
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="text-xs text-text-tertiary mb-1 block">국어</label>
+                  <select id="gradeKorean" class="w-full px-3 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white text-base">
+                    <option value="">선택</option>
+                    <option value="A">A (90점 이상)</option>
+                    <option value="B">B (80~89점)</option>
+                    <option value="C">C (70~79점)</option>
+                    <option value="D">D (60~69점)</option>
+                    <option value="E">E (60점 미만)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-xs text-text-tertiary mb-1 block">영어</label>
+                  <select id="gradeEnglish" class="w-full px-3 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white text-base">
+                    <option value="">선택</option>
+                    <option value="A">A (90점 이상)</option>
+                    <option value="B">B (80~89점)</option>
+                    <option value="C">C (70~79점)</option>
+                    <option value="D">D (60~69점)</option>
+                    <option value="E">E (60점 미만)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-xs text-text-tertiary mb-1 block">수학</label>
+                  <select id="gradeMath" class="w-full px-3 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white text-base">
+                    <option value="">선택</option>
+                    <option value="A">A (90점 이상)</option>
+                    <option value="B">B (80~89점)</option>
+                    <option value="C">C (70~79점)</option>
+                    <option value="D">D (60~69점)</option>
+                    <option value="E">E (60점 미만)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Mock Test Score (for high school) -->
+            <div id="mockTestSection" class="hidden">
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                모의고사 등급 (고등학생)
+              </label>
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="text-xs text-text-tertiary mb-1 block">국어</label>
+                  <select id="mockKorean" class="w-full px-3 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white text-base">
+                    <option value="">선택</option>
+                    <option value="1">1등급</option>
+                    <option value="2">2등급</option>
+                    <option value="3">3등급</option>
+                    <option value="4">4등급</option>
+                    <option value="5">5등급</option>
+                    <option value="6">6등급</option>
+                    <option value="7">7등급</option>
+                    <option value="8">8등급</option>
+                    <option value="9">9등급</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-xs text-text-tertiary mb-1 block">영어</label>
+                  <select id="mockEnglish" class="w-full px-3 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white text-base">
+                    <option value="">선택</option>
+                    <option value="1">1등급</option>
+                    <option value="2">2등급</option>
+                    <option value="3">3등급</option>
+                    <option value="4">4등급</option>
+                    <option value="5">5등급</option>
+                    <option value="6">6등급</option>
+                    <option value="7">7등급</option>
+                    <option value="8">8등급</option>
+                    <option value="9">9등급</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-xs text-text-tertiary mb-1 block">수학</label>
+                  <select id="mockMath" class="w-full px-3 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white text-base">
+                    <option value="">선택</option>
+                    <option value="1">1등급</option>
+                    <option value="2">2등급</option>
+                    <option value="3">3등급</option>
+                    <option value="4">4등급</option>
+                    <option value="5">5등급</option>
+                    <option value="6">6등급</option>
+                    <option value="7">7등급</option>
+                    <option value="8">8등급</option>
+                    <option value="9">9등급</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Target University -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                희망 목표 대학
+              </label>
+              <input type="text" id="targetUniversity" placeholder="예: 서울대, SKY권, 인서울 등"
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+              <p class="text-xs text-text-tertiary mt-1">구체적인 대학명 또는 목표 수준을 입력해주세요</p>
+            </div>
+            
+            <!-- Interested Subjects -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                관심 과목 (수강 희망)
+              </label>
+              <div class="grid grid-cols-3 gap-3">
+                <label class="checkbox-card cursor-pointer">
+                  <input type="checkbox" name="subjects" value="korean" class="hidden">
+                  <div class="card-content p-4 border-2 border-border-light rounded-xl text-center transition-all">
+                    <span class="material-icons-round text-2xl text-korean mb-1">menu_book</span>
+                    <p class="font-medium">국어</p>
+                  </div>
+                </label>
+                <label class="checkbox-card cursor-pointer">
+                  <input type="checkbox" name="subjects" value="english" class="hidden">
+                  <div class="card-content p-4 border-2 border-border-light rounded-xl text-center transition-all">
+                    <span class="material-icons-round text-2xl text-english mb-1">translate</span>
+                    <p class="font-medium">영어</p>
+                  </div>
+                </label>
+                <label class="checkbox-card cursor-pointer">
+                  <input type="checkbox" name="subjects" value="math" class="hidden">
+                  <div class="card-content p-4 border-2 border-border-light rounded-xl text-center transition-all">
+                    <span class="material-icons-round text-2xl text-math mb-1">calculate</span>
+                    <p class="font-medium">수학</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section 4: Previous Academy -->
+        <div id="previous" class="section-card bg-surface rounded-2xl border border-border-light p-6">
+          <h2 class="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
+            <span class="w-8 h-8 rounded-full bg-warning/10 flex items-center justify-center">
+              <span class="material-icons-round text-warning text-sm">history_edu</span>
+            </span>
+            이전 학원 이력
+          </h2>
+          
+          <div class="space-y-5">
+            <!-- Previous Academy Name -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                이전 학원명
+              </label>
+              <input type="text" id="previousAcademy" placeholder="이전에 다니던 학원명 (없으면 비워두세요)"
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            </div>
+            
+            <!-- Duration -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                등록 기간
+              </label>
+              <select id="previousDuration" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+                <option value="">선택하세요</option>
+                <option value="1month">1개월 미만</option>
+                <option value="3months">1~3개월</option>
+                <option value="6months">3~6개월</option>
+                <option value="1year">6개월~1년</option>
+                <option value="2years">1~2년</option>
+                <option value="over2years">2년 이상</option>
+              </select>
+            </div>
+            
+            <!-- Exit Reason -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                퇴원 사유
+              </label>
+              <select id="exitReason" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+                <option value="">선택하세요</option>
+                <option value="distance">거리/통학 문제</option>
+                <option value="schedule">시간표 불일치</option>
+                <option value="cost">비용 문제</option>
+                <option value="teaching">교육 방식 불만족</option>
+                <option value="progress">성적 향상 미흡</option>
+                <option value="relationship">선생님/친구 관계</option>
+                <option value="moving">이사</option>
+                <option value="other">기타</option>
+              </select>
+            </div>
+            
+            <!-- Exit Reason Detail -->
+            <div id="exitReasonDetailSection" class="hidden">
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                상세 사유
+              </label>
+              <textarea id="exitReasonDetail" rows="2" placeholder="구체적인 사유를 입력해주세요"
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section 5: Additional Info -->
+        <div id="additional" class="section-card bg-surface rounded-2xl border border-border-light p-6">
+          <h2 class="text-lg font-bold text-text-primary mb-6 flex items-center gap-2">
+            <span class="w-8 h-8 rounded-full bg-planner/10 flex items-center justify-center">
+              <span class="material-icons-round text-planner text-sm">info</span>
+            </span>
+            추가 정보
+          </h2>
+          
+          <div class="space-y-5">
+            <!-- Referral Source -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                학원을 알게 된 경로 <span class="text-error">*</span>
+              </label>
+              <select id="referralSource" required class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+                <option value="">선택하세요</option>
+                <option value="friend">지인 추천</option>
+                <option value="online">온라인 검색</option>
+                <option value="sns">SNS (인스타그램, 블로그 등)</option>
+                <option value="flyer">전단지/현수막</option>
+                <option value="nearby">주변 통행 중</option>
+                <option value="other">기타</option>
+              </select>
+            </div>
+            
+            <!-- Referrer Name -->
+            <div id="referrerSection" class="hidden">
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                추천인 성함
+              </label>
+              <input type="text" id="referrerName" placeholder="추천해주신 분의 성함을 입력해주세요"
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+              <p class="text-xs text-text-tertiary mt-1">추천인 혜택이 제공될 수 있습니다</p>
+            </div>
+            
+            <!-- Consultation Purpose -->
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-2">
+                상담 목적 및 기대사항
+              </label>
+              <textarea id="consultationPurpose" rows="3" placeholder="예: 성적 향상, 자기주도 학습 습관, 대입 준비 등"
+                class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Privacy Agreement -->
+        <div class="bg-gray-50 rounded-2xl p-5">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="privacyAgreement" required class="mt-1 w-5 h-5 rounded border-border-medium text-primary focus:ring-primary">
+            <div>
+              <p class="font-medium text-text-primary">개인정보 수집 및 이용 동의 <span class="text-error">*</span></p>
+              <p class="text-sm text-text-secondary mt-1">
+                상담 진행을 위해 위 정보를 수집하며, 수집된 정보는 상담 목적으로만 사용됩니다.
+                <button type="button" class="text-primary underline">전문 보기</button>
+              </p>
+            </div>
+          </label>
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="flex gap-3">
+          <button type="button" onclick="saveDraft()" class="flex-1 py-4 border border-border-light text-text-secondary rounded-xl font-bold text-lg hover:bg-gray-50 transition-colors">
+            임시 저장
+          </button>
+          <button type="submit" class="flex-[2] py-4 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-2">
+            다음 단계로
+            <span class="material-icons-round">arrow_forward</span>
+          </button>
+        </div>
+        
+      </form>
+      
+    </div>
+  </main>
+  
+  <!-- Admin Call Modal -->
+  <div id="adminCallModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl p-6 max-w-sm mx-4 text-center">
+      <div class="w-16 h-16 mx-auto rounded-full bg-primary-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-primary text-3xl animate-pulse">notifications_active</span>
+      </div>
+      <h2 class="text-lg font-bold text-text-primary mb-2">선생님을 호출했습니다</h2>
+      <p class="text-text-secondary mb-4">잠시만 기다려주세요.</p>
+      <button onclick="closeAdminModal()" class="px-6 py-2 bg-gray-100 text-text-secondary rounded-xl font-medium">
+        확인
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    // Grade options based on school level
+    const gradeOptions = {
+      elementary: ['1학년', '2학년', '3학년', '4학년', '5학년', '6학년'],
+      middle: ['1학년', '2학년', '3학년'],
+      high: ['1학년', '2학년', '3학년']
+    };
+    
+    // Update grade dropdown when school level changes
+    document.querySelectorAll('input[name="schoolLevel"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const gradeSelect = document.getElementById('grade');
+        const options = gradeOptions[this.value];
+        
+        gradeSelect.innerHTML = '<option value="">학년을 선택하세요</option>';
+        options.forEach((grade, index) => {
+          gradeSelect.innerHTML += `<option value="${index + 1}">${grade}</option>`;
+        });
+        
+        // Show/hide mock test section for high school
+        const mockTestSection = document.getElementById('mockTestSection');
+        if (this.value === 'high') {
+          mockTestSection.classList.remove('hidden');
+        } else {
+          mockTestSection.classList.add('hidden');
+        }
+      });
+    });
+    
+    // Show referrer section when "지인 추천" is selected
+    document.getElementById('referralSource').addEventListener('change', function() {
+      const referrerSection = document.getElementById('referrerSection');
+      if (this.value === 'friend') {
+        referrerSection.classList.remove('hidden');
+      } else {
+        referrerSection.classList.add('hidden');
+      }
+    });
+    
+    // Show exit reason detail when specific reasons are selected
+    document.getElementById('exitReason').addEventListener('change', function() {
+      const detailSection = document.getElementById('exitReasonDetailSection');
+      if (this.value && this.value !== '') {
+        detailSection.classList.remove('hidden');
+      } else {
+        detailSection.classList.add('hidden');
+      }
+    });
+    
+    // Format phone number
+    document.getElementById('parentPhone').addEventListener('input', function() {
+      let value = this.value.replace(/\D/g, '');
+      if (value.length > 3 && value.length <= 7) {
+        value = value.slice(0, 3) + '-' + value.slice(3);
+      } else if (value.length > 7) {
+        value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
+      }
+      this.value = value;
+    });
+    
+    // Scroll to section
+    function scrollToSection(sectionId) {
+      document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+      
+      // Update nav buttons
+      document.querySelectorAll('.section-nav').forEach(btn => {
+        btn.classList.remove('bg-primary', 'text-white');
+        btn.classList.add('bg-gray-100', 'text-text-secondary');
+      });
+      event.target.classList.remove('bg-gray-100', 'text-text-secondary');
+      event.target.classList.add('bg-primary', 'text-white');
+    }
+    
+    // Form submission
+    document.getElementById('guestInfoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Collect form data
+      const formData = {
+        studentName: document.getElementById('studentName').value,
+        schoolLevel: document.querySelector('input[name="schoolLevel"]:checked')?.value,
+        grade: document.getElementById('grade').value,
+        schoolName: document.getElementById('schoolName').value,
+        address: document.getElementById('address').value,
+        parentName: document.getElementById('parentName').value,
+        parentPhone: document.getElementById('parentPhone').value,
+        relationship: document.querySelector('input[name="relationship"]:checked')?.value,
+        grades: {
+          korean: document.getElementById('gradeKorean').value,
+          english: document.getElementById('gradeEnglish').value,
+          math: document.getElementById('gradeMath').value
+        },
+        mockTest: {
+          korean: document.getElementById('mockKorean').value,
+          english: document.getElementById('mockEnglish').value,
+          math: document.getElementById('mockMath').value
+        },
+        targetUniversity: document.getElementById('targetUniversity').value,
+        subjects: Array.from(document.querySelectorAll('input[name="subjects"]:checked')).map(cb => cb.value),
+        previousAcademy: document.getElementById('previousAcademy').value,
+        previousDuration: document.getElementById('previousDuration').value,
+        exitReason: document.getElementById('exitReason').value,
+        exitReasonDetail: document.getElementById('exitReasonDetail').value,
+        referralSource: document.getElementById('referralSource').value,
+        referrerName: document.getElementById('referrerName').value,
+        consultationPurpose: document.getElementById('consultationPurpose').value
+      };
+      
+      // Save to sessionStorage
+      sessionStorage.setItem('guestInfo', JSON.stringify(formData));
+      
+      // Navigate to tendency test intro
+      window.location.href = 'guest-tendency-intro.html';
+    });
+    
+    // Save draft
+    function saveDraft() {
+      const formData = {
+        studentName: document.getElementById('studentName').value,
+        schoolLevel: document.querySelector('input[name="schoolLevel"]:checked')?.value,
+        grade: document.getElementById('grade').value,
+        schoolName: document.getElementById('schoolName').value,
+        address: document.getElementById('address').value,
+        parentName: document.getElementById('parentName').value,
+        parentPhone: document.getElementById('parentPhone').value,
+        relationship: document.querySelector('input[name="relationship"]:checked')?.value,
+        grades: {
+          korean: document.getElementById('gradeKorean').value,
+          english: document.getElementById('gradeEnglish').value,
+          math: document.getElementById('gradeMath').value
+        },
+        targetUniversity: document.getElementById('targetUniversity').value,
+        subjects: Array.from(document.querySelectorAll('input[name="subjects"]:checked')).map(cb => cb.value),
+        previousAcademy: document.getElementById('previousAcademy').value,
+        previousDuration: document.getElementById('previousDuration').value,
+        exitReason: document.getElementById('exitReason').value,
+        referralSource: document.getElementById('referralSource').value,
+        referrerName: document.getElementById('referrerName').value,
+        consultationPurpose: document.getElementById('consultationPurpose').value
+      };
+      sessionStorage.setItem('guestInfoDraft', JSON.stringify(formData));
+      alert('임시 저장되었습니다.');
+    }
+    
+    // Admin call
+    function callAdmin() {
+      document.getElementById('adminCallModal').classList.remove('hidden');
+    }
+    
+    function closeAdminModal() {
+      document.getElementById('adminCallModal').classList.add('hidden');
+    }
+    
+    // Load draft on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const draft = sessionStorage.getItem('guestInfoDraft');
+      if (draft) {
+        const data = JSON.parse(draft);
+        if (data.studentName) document.getElementById('studentName').value = data.studentName;
+        if (data.schoolName) document.getElementById('schoolName').value = data.schoolName;
+        if (data.address) document.getElementById('address').value = data.address;
+        if (data.parentName) document.getElementById('parentName').value = data.parentName;
+        if (data.parentPhone) document.getElementById('parentPhone').value = data.parentPhone;
+        if (data.targetUniversity) document.getElementById('targetUniversity').value = data.targetUniversity;
+        if (data.previousAcademy) document.getElementById('previousAcademy').value = data.previousAcademy;
+        if (data.consultationPurpose) document.getElementById('consultationPurpose').value = data.consultationPurpose;
+        // Restore more fields as needed
+      }
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4단계: 검증 | 국어 학습 | MAMA-ASST</title>
+  <meta name="description" content="MAMA-ASST 국어 5단계 학습 - 4단계 O/X 검증">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            'korean-dark': '#3367D6',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    
+    .step-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .step-circle.active { background: linear-gradient(135deg, #4285F4 0%, #5A95F5 100%); color: white; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4); }
+    .step-circle.completed { background: #22C55E; color: white; }
+    .step-circle.pending { background: #F3F4F6; color: #9CA3AF; }
+    .step-connector { position: absolute; top: 20px; left: 40px; width: calc(100% - 40px); height: 3px; background: #E5E7EB; z-index: 0; }
+    .step-connector.completed { background: #22C55E; }
+    .step-connector.active { background: linear-gradient(90deg, #22C55E 0%, #4285F4 100%); }
+    
+    /* O/X Buttons */
+    .ox-btn {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-size: 48px; font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 4px solid transparent;
+    }
+    .ox-btn:hover { transform: scale(1.05); }
+    .ox-btn.o-btn {
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      color: #2E7D32;
+    }
+    .ox-btn.o-btn:hover { box-shadow: 0 8px 25px rgba(46, 125, 50, 0.3); }
+    .ox-btn.x-btn {
+      background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+      color: #C62828;
+    }
+    .ox-btn.x-btn:hover { box-shadow: 0 8px 25px rgba(198, 40, 40, 0.3); }
+    
+    .ox-btn.selected { transform: scale(1.1); }
+    .ox-btn.correct { 
+      border-color: #22C55E;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+    }
+    .ox-btn.incorrect {
+      border-color: #EF4444;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3);
+    }
+    .ox-btn.disabled { opacity: 0.5; pointer-events: none; }
+    
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
+    .confetti { animation: confetti 1s ease-out forwards; }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+    .shake { animation: shake 0.4s ease-in-out; }
+    
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+      100% { box-shadow: 0 0 0 20px rgba(34, 197, 94, 0); }
+    }
+    .pulse-ring { animation: pulse-ring 0.6s ease-out; }
+    
+    .quiz-progress-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    .quiz-progress-dot.current { transform: scale(1.3); box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.3); }
+    
+    .bottom-nav-mobile { box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08); }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <!-- Desktop Layout -->
+  <div class="hidden lg:flex h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-20 bg-navy flex flex-col items-center py-6 flex-shrink-0">
+      <a href="student-dashboard.html" class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg mb-8">
+        <span class="text-white font-bold text-xl">M</span>
+      </a>
+      <nav class="flex flex-col items-center gap-4 flex-1">
+        <a href="student-dashboard.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors"><span class="material-icons-round">home</span></a>
+        <a href="subject-korean.html" class="w-12 h-12 rounded-xl flex items-center justify-center bg-korean text-white shadow-lg"><span class="material-icons-round">menu_book</span></a>
+        <a href="subject-english.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors"><span class="material-icons-round">translate</span></a>
+        <a href="subject-math.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors"><span class="material-icons-round">calculate</span></a>
+      </nav>
+      <a href="subject-korean.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-red-400 transition-colors"><span class="material-icons-round">close</span></a>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Header -->
+      <header class="bg-surface border-b border-border-light px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <a href="korean-step3-structuring.html" class="w-10 h-10 rounded-xl bg-background hover:bg-border-light flex items-center justify-center transition-colors">
+              <span class="material-icons-round text-text-secondary">arrow_back</span>
+            </a>
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 bg-korean-light text-korean text-xs font-bold rounded">비문학</span>
+              </div>
+              <h1 class="text-xl font-bold text-text-primary">인공지능과 미래 사회</h1>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-6">
+            <!-- Score -->
+            <div class="flex items-center gap-3 px-4 py-2 bg-success-light rounded-xl">
+              <span class="material-icons-round text-success">check_circle</span>
+              <div>
+                <p class="text-xs text-success font-medium">맞힌 문제</p>
+                <p class="text-lg font-bold text-success"><span id="correctCount">3</span> / 5</p>
+              </div>
+            </div>
+            <!-- XP -->
+            <div class="flex items-center gap-2 px-4 py-2 bg-primary-light rounded-xl">
+              <span class="material-icons-round text-primary">star</span>
+              <p class="text-lg font-bold text-primary">+<span id="xpCount">30</span> XP</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step Indicator -->
+        <div class="mt-6">
+          <div class="flex items-center">
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle completed"><span class="material-icons-round text-lg">check</span></div>
+                <span class="text-xs font-medium text-success mt-2">읽기</span>
+              </div>
+              <div class="step-connector completed"></div>
+            </div>
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle completed"><span class="material-icons-round text-lg">check</span></div>
+                <span class="text-xs font-medium text-success mt-2">어휘</span>
+              </div>
+              <div class="step-connector completed"></div>
+            </div>
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle completed"><span class="material-icons-round text-lg">check</span></div>
+                <span class="text-xs font-medium text-success mt-2">구조화</span>
+              </div>
+              <div class="step-connector completed"></div>
+            </div>
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle active"><span class="material-icons-round text-lg">quiz</span></div>
+                <span class="text-xs font-semibold text-korean mt-2">검증</span>
+              </div>
+              <div class="step-connector active"></div>
+            </div>
+            <div class="step-item flex items-center">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle pending"><span class="material-icons-round text-lg">summarize</span></div>
+                <span class="text-xs font-medium text-text-tertiary mt-2">요약</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="flex-1 overflow-hidden flex items-center justify-center p-8">
+        
+        <div class="max-w-3xl w-full">
+          
+          <!-- Quiz Progress -->
+          <div class="flex items-center justify-center gap-3 mb-8">
+            <div class="quiz-progress-dot bg-success" data-q="1"></div>
+            <div class="quiz-progress-dot bg-success" data-q="2"></div>
+            <div class="quiz-progress-dot bg-error" data-q="3"></div>
+            <div class="quiz-progress-dot bg-korean current" data-q="4"></div>
+            <div class="quiz-progress-dot bg-border-light" data-q="5"></div>
+          </div>
+          
+          <!-- Question Card -->
+          <div class="bg-surface rounded-3xl shadow-card p-8 border border-border-light/50" id="quizCard">
+            
+            <!-- Question Number -->
+            <div class="text-center mb-6">
+              <span class="px-4 py-1 bg-korean-light text-korean text-sm font-bold rounded-full">문제 4 / 5</span>
+            </div>
+            
+            <!-- Question -->
+            <div class="text-center mb-10">
+              <h2 class="text-2xl font-bold text-text-primary leading-relaxed" id="questionText">
+                AI의 발전으로 인해 2030년까지<br>약 4억 개의 일자리가 사라질 것이다.
+              </h2>
+            </div>
+            
+            <!-- O/X Buttons -->
+            <div class="flex items-center justify-center gap-16" id="oxButtons">
+              <button class="ox-btn o-btn" onclick="selectAnswer('O')">
+                <span>O</span>
+                <span class="text-xs font-medium mt-1">맞아요</span>
+              </button>
+              <button class="ox-btn x-btn" onclick="selectAnswer('X')">
+                <span>X</span>
+                <span class="text-xs font-medium mt-1">아니에요</span>
+              </button>
+            </div>
+            
+            <!-- Result (Hidden) -->
+            <div id="resultArea" class="hidden mt-8">
+              <div id="resultContent" class="rounded-2xl p-6"></div>
+              <button onclick="nextQuestion()" id="nextBtn" class="mt-6 w-full py-4 bg-korean hover:bg-korean-dark text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
+                다음 문제
+                <span class="material-icons-round">arrow_forward</span>
+              </button>
+            </div>
+            
+          </div>
+          
+          <!-- Reference Text Toggle (Hidden until answer) -->
+          <div id="referenceToggleArea" class="hidden mt-6 text-center">
+            <button onclick="toggleReference()" class="text-korean hover:underline text-sm flex items-center justify-center gap-1 mx-auto">
+              <span class="material-icons-round text-sm">visibility</span>
+              지문 다시 보기
+            </button>
+          </div>
+          
+          <!-- Reference Panel (Hidden) -->
+          <div id="referencePanel" class="hidden mt-4 bg-surface rounded-xl p-6 border border-border-light max-h-60 overflow-y-auto">
+            <h4 class="font-bold text-text-primary mb-3 text-sm">📖 지문 내용</h4>
+            <p class="text-sm text-text-secondary leading-relaxed">
+              맥킨지 글로벌 연구소의 보고서에 따르면, 2030년까지 전 세계적으로 약 4억 개의 일자리가 <strong>자동화의 영향을 받을</strong> 것으로 전망된다. (※ '사라진다'가 아닌 '영향을 받는다')
+            </p>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+  </div>
+  
+  <!-- Mobile Layout -->
+  <div class="lg:hidden min-h-screen flex flex-col">
+    
+    <!-- Mobile Header -->
+    <header class="bg-surface border-b border-border-light px-4 py-3 sticky top-0 z-30">
+      <div class="flex items-center justify-between mb-3">
+        <a href="korean-step3-structuring.html" class="w-10 h-10 rounded-xl bg-background flex items-center justify-center">
+          <span class="material-icons-round text-text-secondary">arrow_back</span>
+        </a>
+        <div class="text-center">
+          <span class="px-2 py-0.5 bg-korean-light text-korean text-[10px] font-bold rounded">STEP 4</span>
+          <h1 class="text-sm font-bold text-text-primary">검증 (Verifying)</h1>
+        </div>
+        <div class="flex items-center gap-1 px-2 py-1 bg-success-light rounded-lg">
+          <span class="text-sm font-bold text-success" id="mobileCorrectCount">3/5</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-1">
+        <div class="flex-1 h-1.5 bg-success rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-success rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-success rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-korean rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-border-light rounded-full"></div>
+      </div>
+    </header>
+    
+    <!-- Mobile Content -->
+    <main class="flex-1 overflow-y-auto p-4 pb-24 flex flex-col items-center justify-center">
+      
+      <!-- Quiz Progress Dots -->
+      <div class="flex items-center justify-center gap-2 mb-6">
+        <div class="w-3 h-3 rounded-full bg-success"></div>
+        <div class="w-3 h-3 rounded-full bg-success"></div>
+        <div class="w-3 h-3 rounded-full bg-error"></div>
+        <div class="w-4 h-4 rounded-full bg-korean"></div>
+        <div class="w-3 h-3 rounded-full bg-border-light"></div>
+      </div>
+      
+      <!-- Question -->
+      <div class="bg-surface rounded-2xl shadow-card p-6 border border-border-light w-full max-w-md" id="mobileQuizCard">
+        <span class="px-3 py-0.5 bg-korean-light text-korean text-xs font-bold rounded-full">문제 4/5</span>
+        
+        <h2 class="text-lg font-bold text-text-primary mt-4 mb-8 leading-relaxed" id="mobileQuestionText">
+          AI의 발전으로 인해 2030년까지 약 4억 개의 일자리가 사라질 것이다.
+        </h2>
+        
+        <!-- Mobile O/X -->
+        <div class="flex items-center justify-center gap-8" id="mobileOxButtons">
+          <button class="ox-btn o-btn" style="width: 90px; height: 90px; font-size: 36px;" onclick="selectAnswerMobile('O')">
+            <span>O</span>
+          </button>
+          <button class="ox-btn x-btn" style="width: 90px; height: 90px; font-size: 36px;" onclick="selectAnswerMobile('X')">
+            <span>X</span>
+          </button>
+        </div>
+        
+        <!-- Mobile Result -->
+        <div id="mobileResultArea" class="hidden mt-6">
+          <div id="mobileResultContent" class="rounded-xl p-4"></div>
+        </div>
+      </div>
+      
+    </main>
+    
+    <!-- Mobile Bottom Nav -->
+    <div class="fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light p-4 bottom-nav-mobile">
+      <button onclick="nextQuestionMobile()" id="mobileNextBtn" class="w-full py-4 bg-korean text-white font-bold rounded-xl flex items-center justify-center gap-2 opacity-50 pointer-events-none">
+        다음 문제
+        <span class="material-icons-round">arrow_forward</span>
+      </button>
+    </div>
+    
+  </div>
+  
+  <script>
+    // Quiz Data
+    const quizzes = [
+      { q: "인공지능은 인간의 학습능력을 인공적으로 구현한 것이다.", answer: "O", explanation: "1문단에서 AI의 정의를 설명하고 있어요." },
+      { q: "딥러닝 기술은 AI 발전에 영향을 미치지 않았다.", answer: "X", explanation: "지문에서 '딥러닝 기술의 발전으로 AI는 성과를 보여주고 있다'고 했어요." },
+      { q: "AI는 의료 분야에서만 긍정적 역할을 할 것으로 기대된다.", answer: "X", explanation: "의료뿐만 아니라 교육, 환경 등 다양한 분야에서 긍정적 역할이 기대돼요." },
+      { q: "AI의 발전으로 2030년까지 약 4억 개의 일자리가 사라질 것이다.", answer: "X", explanation: "'사라진다'가 아닌 '자동화의 영향을 받는다'고 표현했어요. 사라지는 것과 영향을 받는 것은 다릅니다." },
+      { q: "글쓴이는 인간 중심의 AI 윤리 원칙 수립이 필요하다고 주장한다.", answer: "O", explanation: "5문단 결론에서 인간 중심의 AI 윤리 원칙 수립이 시급하다고 했어요." }
+    ];
+    
+    let currentQ = 3; // 0-indexed, showing question 4
+    let correctTotal = 3;
+    const correctAnswer = "X";
+    
+    function selectAnswer(choice) {
+      const oBtn = document.querySelector('.o-btn');
+      const xBtn = document.querySelector('.x-btn');
+      const resultArea = document.getElementById('resultArea');
+      const resultContent = document.getElementById('resultContent');
+      
+      oBtn.classList.add('disabled');
+      xBtn.classList.add('disabled');
+      
+      const selectedBtn = choice === 'O' ? oBtn : xBtn;
+      selectedBtn.classList.add('selected');
+      
+      setTimeout(() => {
+        const isCorrect = choice === correctAnswer;
+        
+        if (isCorrect) {
+          selectedBtn.classList.add('correct', 'pulse-ring');
+          resultContent.className = 'rounded-2xl p-6 bg-success-light border border-success/30';
+          resultContent.innerHTML = `
+            <div class="flex items-start gap-4">
+              <span class="material-icons-round text-success text-3xl">check_circle</span>
+              <div>
+                <h3 class="font-bold text-success text-lg">정답이에요! 🎉</h3>
+                <p class="text-sm text-text-secondary mt-2">${quizzes[currentQ].explanation}</p>
+              </div>
+            </div>
+          `;
+          correctTotal++;
+          document.getElementById('correctCount').textContent = correctTotal;
+          document.getElementById('xpCount').textContent = correctTotal * 10;
+        } else {
+          selectedBtn.classList.add('incorrect', 'shake');
+          const correctBtn = correctAnswer === 'O' ? oBtn : xBtn;
+          correctBtn.classList.add('correct');
+          resultContent.className = 'rounded-2xl p-6 bg-error-light border border-error/30';
+          resultContent.innerHTML = `
+            <div class="flex items-start gap-4">
+              <span class="material-icons-round text-error text-3xl">cancel</span>
+              <div>
+                <h3 class="font-bold text-error text-lg">아쉬워요!</h3>
+                <p class="text-sm text-text-secondary mt-2">정답은 <strong class="text-error">${correctAnswer}</strong>예요. ${quizzes[currentQ].explanation}</p>
+              </div>
+            </div>
+          `;
+        }
+        
+        resultArea.classList.remove('hidden');
+        
+        // Show reference toggle after answer
+        document.getElementById('referenceToggleArea').classList.remove('hidden');
+        
+        // Check if last question
+        if (currentQ >= quizzes.length - 1) {
+          document.getElementById('nextBtn').innerHTML = `
+            요약하기로 이동
+            <span class="material-icons-round">arrow_forward</span>
+          `;
+          document.getElementById('nextBtn').onclick = () => window.location.href = 'korean-step5-summary.html';
+        }
+      }, 500);
+    }
+    
+    function selectAnswerMobile(choice) {
+      const oBtn = document.querySelector('#mobileOxButtons .o-btn');
+      const xBtn = document.querySelector('#mobileOxButtons .x-btn');
+      const resultArea = document.getElementById('mobileResultArea');
+      const resultContent = document.getElementById('mobileResultContent');
+      const nextBtn = document.getElementById('mobileNextBtn');
+      
+      oBtn.classList.add('disabled');
+      xBtn.classList.add('disabled');
+      
+      const selectedBtn = choice === 'O' ? oBtn : xBtn;
+      const isCorrect = choice === correctAnswer;
+      
+      setTimeout(() => {
+        if (isCorrect) {
+          selectedBtn.style.borderColor = '#22C55E';
+          resultContent.className = 'rounded-xl p-4 bg-success-light border border-success/30';
+          resultContent.innerHTML = `
+            <div class="flex items-center gap-3">
+              <span class="material-icons-round text-success">check_circle</span>
+              <div>
+                <span class="font-bold text-success">정답! 🎉</span>
+                <p class="text-xs text-text-secondary">${quizzes[currentQ].explanation}</p>
+              </div>
+            </div>
+          `;
+        } else {
+          selectedBtn.style.borderColor = '#EF4444';
+          (correctAnswer === 'O' ? oBtn : xBtn).style.borderColor = '#22C55E';
+          resultContent.className = 'rounded-xl p-4 bg-error-light border border-error/30';
+          resultContent.innerHTML = `
+            <div class="flex items-center gap-3">
+              <span class="material-icons-round text-error">cancel</span>
+              <div>
+                <span class="font-bold text-error">오답</span>
+                <p class="text-xs text-text-secondary">정답은 ${correctAnswer}. ${quizzes[currentQ].explanation}</p>
+              </div>
+            </div>
+          `;
+        }
+        
+        resultArea.classList.remove('hidden');
+        nextBtn.classList.remove('opacity-50', 'pointer-events-none');
+        
+        if (currentQ >= quizzes.length - 1) {
+          nextBtn.innerHTML = `요약하기로 이동 <span class="material-icons-round">arrow_forward</span>`;
+          nextBtn.onclick = () => window.location.href = 'korean-step5-summary.html';
+        }
+      }, 300);
+    }
+    
+    function nextQuestion() {
+      currentQ++;
+      if (currentQ < quizzes.length) {
+        // Hide reference toggle for next question
+        document.getElementById('referenceToggleArea').classList.add('hidden');
+        document.getElementById('referencePanel').classList.add('hidden');
+        
+        // Reset UI and load next question
+        const oBtn = document.querySelector('.o-btn');
+        const xBtn = document.querySelector('.x-btn');
+        oBtn.classList.remove('disabled', 'selected', 'correct', 'incorrect', 'pulse-ring', 'shake');
+        xBtn.classList.remove('disabled', 'selected', 'correct', 'incorrect', 'pulse-ring', 'shake');
+        oBtn.style.borderColor = '';
+        xBtn.style.borderColor = '';
+        
+        document.getElementById('resultArea').classList.add('hidden');
+        
+        // Update question
+        const quiz = quizzes[currentQ];
+        correctAnswer = quiz.answer;
+        document.getElementById('questionNum').textContent = `문제 ${currentQ + 1}/5`;
+        document.getElementById('questionText').textContent = quiz.question;
+        
+        // Update progress dots
+        updateProgressDots();
+      } else {
+        // All questions complete - go to step5
+        window.location.href = 'korean-step5-summary.html';
+      }
+    }
+    
+    function updateProgressDots() {
+      // Update desktop dots (would need to implement based on answers)
+    }
+    
+    function nextQuestionMobile() {
+      currentQ++;
+      if (currentQ < quizzes.length) {
+        window.location.reload();
+      } else {
+        window.location.href = 'korean-step5-summary.html';
+      }
+    }
+    
+    function toggleReference() {
+      const panel = document.getElementById('referencePanel');
+      panel.classList.toggle('hidden');
+    }
+  </script>
+  
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

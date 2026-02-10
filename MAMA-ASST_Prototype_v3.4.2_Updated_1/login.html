@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 | MAMA-ASST</title>
+  <meta name="description" content="MAMA-ASST에 로그인하여 AI 튜터와 함께 학습을 시작하세요.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="assets/css/common.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23FF6D4D' rx='20' width='100' height='100'/><text x='50' y='68' font-size='50' text-anchor='middle' fill='white'>M</text></svg>">
+  
+  <style>
+    /* Login Page Specific Styles */
+    .login-form {
+      margin-top: var(--space-2);
+    }
+    
+    .form-group-phone .form-input {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='2' width='14' height='20' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='12' y1='18' x2='12.01' y2='18'%3E%3C/line%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 48px;
+    }
+    
+    .remember-me {
+      display: flex;
+      align-items: center;
+      margin-top: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+    
+    .remember-me .form-check-input {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .remember-me .form-check-label {
+      font-size: var(--text-body);
+      color: var(--color-text-secondary);
+      margin-left: var(--space-2);
+    }
+    
+    .login-btn {
+      margin-bottom: var(--space-6);
+    }
+    
+    .login-btn .btn {
+      gap: var(--space-2);
+    }
+    
+    .login-btn svg {
+      transition: transform var(--transition-fast);
+    }
+    
+    .login-btn .btn:hover svg {
+      transform: translateX(4px);
+    }
+    
+    /* Error state animation */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+      20%, 40%, 60%, 80% { transform: translateX(4px); }
+    }
+    
+    .form-input.shake {
+      animation: shake 0.5s ease-in-out;
+    }
+    
+    /* Account locked overlay */
+    .locked-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: var(--z-modal);
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition-base);
+    }
+    
+    .locked-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .locked-modal {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      max-width: 360px;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform var(--transition-base);
+    }
+    
+    .locked-overlay.show .locked-modal {
+      transform: scale(1);
+    }
+    
+    .locked-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--color-error-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-5);
+      color: var(--color-error);
+    }
+    
+    .locked-title {
+      font-size: var(--text-h3);
+      font-weight: var(--weight-bold);
+      color: var(--color-navy);
+      margin-bottom: var(--space-3);
+    }
+    
+    .locked-description {
+      font-size: var(--text-body);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+    }
+    
+    .locked-timer {
+      font-size: var(--text-h2);
+      font-weight: var(--weight-bold);
+      color: var(--color-error);
+      margin-bottom: var(--space-6);
+    }
+  </style>
+</head>
+<body>
+  <main class="auth-layout">
+    <div class="auth-card">
+      <header class="auth-header">
+        <div class="auth-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <h1 class="auth-title">환영합니다!</h1>
+        <p class="auth-subtitle">AI 튜터와 함께 공부의 즐거움을 찾으세요!</p>
+      </header>
+      
+      <form class="login-form" id="loginForm" novalidate>
+        <div class="form-group form-group-phone">
+          <label class="form-label" for="phone">휴대폰 번호</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            class="form-input" 
+            placeholder="010-0000-0000"
+            autocomplete="tel"
+            pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}"
+            maxlength="13"
+            required
+          >
+          <p class="form-error hidden" id="phoneError">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            올바른 휴대폰 번호를 입력해주세요
+          </p>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="password">비밀번호</label>
+          <div class="input-wrapper">
+            <input 
+              type="password" 
+              id="password" 
+              class="form-input" 
+              placeholder="비밀번호를 입력해주세요"
+              autocomplete="current-password"
+              required
+            >
+            <button type="button" class="password-toggle" data-target="password" aria-label="비밀번호 표시">
+              <span class="material-icons-round">visibility_off</span>
+            </button>
+          </div>
+          <p class="form-error hidden" id="passwordError">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            비밀번호를 입력해주세요
+          </p>
+        </div>
+        
+        <div class="remember-me">
+          <input type="checkbox" id="rememberMe" class="form-check-input">
+          <label for="rememberMe" class="form-check-label">자동 로그인</label>
+        </div>
+        
+        <div class="login-btn">
+          <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+            <span>로그인</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+        </div>
+      </form>
+      
+      <footer class="auth-footer">
+        <div class="auth-footer-links">
+          <a href="find-password.html">비밀번호 재설정</a>
+          <span class="divider">|</span>
+          <a href="inquiry.html">신규 상담 신청</a>
+        </div>
+      </footer>
+    </div>
+  </main>
+
+  <!-- Account Locked Modal -->
+  <div class="locked-overlay" id="lockedOverlay" role="dialog" aria-modal="true" aria-labelledby="lockedTitle">
+    <div class="locked-modal">
+      <div class="locked-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <h2 class="locked-title" id="lockedTitle">계정이 잠겼습니다</h2>
+      <p class="locked-description">
+        5회 이상 비밀번호를 잘못 입력했습니다.<br>
+        잠시 후 다시 시도해주세요.
+      </p>
+      <div class="locked-timer" id="lockedTimer">10:00</div>
+      <button class="btn btn-secondary btn-full" id="resetLockBtn">비밀번호 재설정</button>
+    </div>
+  </div>
+
+  <script>
+    // Phone number formatting
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 11) value = value.slice(0, 11);
+      
+      if (value.length > 7) {
+        value = value.replace(/(\d{3})(\d{4})(\d{0,4})/, '$1-$2-$3');
+      } else if (value.length > 3) {
+        value = value.replace(/(\d{3})(\d{0,4})/, '$1-$2');
+      }
+      
+      e.target.value = value;
+    });
+
+    // Password input reference (toggle handled by common.js initPasswordToggles)
+    const passwordInput = document.getElementById('password');
+
+    // Form validation and submission
+    const loginForm = document.getElementById('loginForm');
+    const phoneError = document.getElementById('phoneError');
+    const passwordError = document.getElementById('passwordError');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    let loginAttempts = 0;
+    const maxAttempts = 5;
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Reset errors
+      phoneError.classList.add('hidden');
+      passwordError.classList.add('hidden');
+      phoneInput.classList.remove('error', 'shake');
+      passwordInput.classList.remove('error', 'shake');
+      
+      let hasError = false;
+      
+      // Validate phone
+      const phoneRegex = /^010-\d{4}-\d{4}$/;
+      if (!phoneRegex.test(phoneInput.value)) {
+        phoneError.classList.remove('hidden');
+        phoneInput.classList.add('error', 'shake');
+        hasError = true;
+      }
+      
+      // Validate password
+      if (!passwordInput.value) {
+        passwordError.classList.remove('hidden');
+        passwordInput.classList.add('error', 'shake');
+        hasError = true;
+      }
+      
+      if (hasError) return;
+      
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> 로그인 중...';
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Demo: Check for initial password (0000)
+      if (passwordInput.value === '0000') {
+        // Redirect to change password page
+        window.location.href = 'change-password.html';
+        return;
+      }
+      
+      // Demo: Simulate login failure for demo purposes
+      loginAttempts++;
+      
+      if (loginAttempts >= maxAttempts) {
+        showLockedModal();
+        return;
+      }
+      
+      // Show error
+      passwordError.textContent = `아이디 또는 비밀번호가 일치하지 않습니다 (${loginAttempts}/${maxAttempts})`;
+      passwordError.classList.remove('hidden');
+      passwordInput.classList.add('error', 'shake');
+      
+      // Reset button
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `
+        <span>로그인</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      `;
+    });
+
+    // Account locked modal
+    const lockedOverlay = document.getElementById('lockedOverlay');
+    const lockedTimer = document.getElementById('lockedTimer');
+    const resetLockBtn = document.getElementById('resetLockBtn');
+    
+    function showLockedModal() {
+      lockedOverlay.classList.add('show');
+      submitBtn.disabled = true;
+      
+      let timeLeft = 10 * 60; // 10 minutes
+      const interval = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        lockedTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          hideLockedModal();
+        }
+      }, 1000);
+    }
+    
+    function hideLockedModal() {
+      lockedOverlay.classList.remove('show');
+      loginAttempts = 0;
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `
+        <span>로그인</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      `;
+    }
+    
+    resetLockBtn.addEventListener('click', () => {
+      window.location.href = 'find-password.html';
+    });
+
+    // Clear shake animation after it ends
+    document.querySelectorAll('.form-input').forEach(input => {
+      input.addEventListener('animationend', () => {
+        input.classList.remove('shake');
+      });
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

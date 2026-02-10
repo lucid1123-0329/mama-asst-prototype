@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>알림 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+          boxShadow: { 'card': '0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)' },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    
+    .nav-active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 70%;
+      background: #FF6D4D;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    .notification-item {
+      transition: all 0.2s ease;
+    }
+    .notification-item:hover {
+      background: #F3F4F6;
+    }
+    .notification-item.unread {
+      background: #FFF0ED;
+      border-left: 3px solid #FF6D4D;
+    }
+    .notification-item.unread:hover {
+      background: #FFE4DE;
+    }
+    
+    .filter-btn.active {
+      background: #FF6D4D;
+      color: white;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .notification-item {
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .toast {
+      animation: toastIn 0.3s ease-out;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <!-- Desktop Layout -->
+  <div class="hidden lg:flex h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-navy flex flex-col flex-shrink-0">
+      <div class="p-5 border-b border-white/10">
+        <a href="student-dashboard.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="text-white font-bold text-lg tracking-tight">MAMA-ASST</span>
+            <span class="block text-white/50 text-[10px] tracking-wider">MATCHING & MANAGEMENT</span>
+          </div>
+        </a>
+      </div>
+      
+      <a href="mypage.html" class="p-5 border-b border-white/10 flex items-center gap-3 hover:bg-white/5 transition-colors">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-300 p-0.5">
+          <div class="w-full h-full rounded-full bg-navy overflow-hidden">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=jimin&backgroundColor=ffdfbf" alt="프로필" class="w-full h-full object-cover">
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-white font-semibold truncate">김지민</p>
+          <p class="text-white/50 text-xs">중학교 2학년</p>
+        </div>
+      </a>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="student-dashboard.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">home</span>
+          <span>홈</span>
+        </a>
+        <a href="subjects.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">auto_stories</span>
+          <span>과목</span>
+        </a>
+        <a href="report.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">insights</span>
+          <span>리포트</span>
+        </a>
+        <a href="planner.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">event_note</span>
+          <span>플래너</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <a href="settings.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">settings</span>
+          <span>설정</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <header class="h-16 bg-surface border-b border-border-light flex items-center justify-between px-6 flex-shrink-0">
+        <div class="flex items-center gap-2 text-sm">
+          <a href="student-dashboard.html" class="text-text-tertiary hover:text-primary transition-colors">홈</a>
+          <span class="material-icons-round text-text-tertiary text-sm">chevron_right</span>
+          <span class="text-primary font-medium">알림</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="markAllRead()" class="text-sm text-primary hover:underline">모두 읽음</button>
+        </div>
+      </header>
+      
+      <div class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-3xl mx-auto">
+          
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h1 class="text-2xl font-bold text-text-primary">알림</h1>
+              <p class="text-sm text-text-secondary mt-1">읽지 않은 알림 <span id="unreadCount" class="text-primary font-bold">5</span>개</p>
+            </div>
+          </div>
+          
+          <!-- Filter Tabs -->
+          <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+            <button onclick="filterNotifications('all')" class="filter-btn active px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors" data-filter="all">
+              전체
+            </button>
+            <button onclick="filterNotifications('homework')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-text-secondary hover:bg-gray-200 transition-colors" data-filter="homework">
+              📚 숙제
+            </button>
+            <button onclick="filterNotifications('counseling')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-text-secondary hover:bg-gray-200 transition-colors" data-filter="counseling">
+              💬 상담
+            </button>
+            <button onclick="filterNotifications('achievement')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-text-secondary hover:bg-gray-200 transition-colors" data-filter="achievement">
+              🏆 성취
+            </button>
+            <button onclick="filterNotifications('feedback')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-text-secondary hover:bg-gray-200 transition-colors" data-filter="feedback">
+              ✍️ 피드백
+            </button>
+            <button onclick="filterNotifications('system')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-text-secondary hover:bg-gray-200 transition-colors" data-filter="system">
+              ⚙️ 시스템
+            </button>
+          </div>
+          
+          <!-- Notifications List -->
+          <div class="space-y-6">
+            
+            <!-- Today -->
+            <div class="notification-group" data-group="today">
+              <h3 class="text-sm font-bold text-text-tertiary mb-3 flex items-center gap-2">
+                <span class="material-icons-round text-sm">today</span>
+                오늘
+              </h3>
+              <div class="bg-surface rounded-2xl shadow-card overflow-hidden divide-y divide-border-light">
+                
+                <div class="notification-item unread p-4 flex items-start gap-4 cursor-pointer" data-type="homework" data-id="1" onclick="handleNotificationClick(this, 'planner.html')">
+                  <div class="w-10 h-10 rounded-xl bg-error-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-error">assignment_late</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="px-2 py-0.5 bg-error/10 text-error text-[10px] font-bold rounded">긴급</span>
+                      <span class="text-xs text-text-tertiary">10분 전</span>
+                    </div>
+                    <p class="font-medium text-text-primary">숙제 마감 임박!</p>
+                    <p class="text-sm text-text-secondary mt-0.5">수학 일차방정식 문제 풀이가 오늘 자정까지입니다.</p>
+                  </div>
+                  <button onclick="event.stopPropagation(); deleteNotification(1)" class="p-1 text-text-tertiary hover:text-error rounded transition-colors">
+                    <span class="material-icons-round text-lg">close</span>
+                  </button>
+                </div>
+                
+                <div class="notification-item unread p-4 flex items-start gap-4 cursor-pointer" data-type="achievement" data-id="2" onclick="handleNotificationClick(this, 'mypage.html')">
+                  <div class="w-10 h-10 rounded-xl bg-warning-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-warning">emoji_events</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-xs text-text-tertiary">30분 전</span>
+                    </div>
+                    <p class="font-medium text-text-primary">🔥 12일 연속 학습 달성!</p>
+                    <p class="text-sm text-text-secondary mt-0.5">불꽃 스트릭 배지를 획득했어요. +50 XP</p>
+                  </div>
+                  <button onclick="event.stopPropagation(); deleteNotification(2)" class="p-1 text-text-tertiary hover:text-error rounded transition-colors">
+                    <span class="material-icons-round text-lg">close</span>
+                  </button>
+                </div>
+                
+                <div class="notification-item unread p-4 flex items-start gap-4 cursor-pointer" data-type="feedback" data-id="3" onclick="handleNotificationClick(this, 'mypage.html')">
+                  <div class="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-primary">rate_review</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-xs text-text-tertiary">1시간 전</span>
+                    </div>
+                    <p class="font-medium text-text-primary">김담임 선생님의 피드백</p>
+                    <p class="text-sm text-text-secondary mt-0.5">"오늘 국어 학습 정말 잘했어요! 요약 실력이 많이 늘었네요 👍"</p>
+                  </div>
+                  <button onclick="event.stopPropagation(); deleteNotification(3)" class="p-1 text-text-tertiary hover:text-error rounded transition-colors">
+                    <span class="material-icons-round text-lg">close</span>
+                  </button>
+                </div>
+                
+              </div>
+            </div>
+            
+            <!-- Yesterday -->
+            <div class="notification-group" data-group="yesterday">
+              <h3 class="text-sm font-bold text-text-tertiary mb-3 flex items-center gap-2">
+                <span class="material-icons-round text-sm">event</span>
+                어제
+              </h3>
+              <div class="bg-surface rounded-2xl shadow-card overflow-hidden divide-y divide-border-light">
+                
+                <div class="notification-item unread p-4 flex items-start gap-4 cursor-pointer" data-type="counseling" data-id="4" onclick="handleNotificationClick(this, 'planner.html')">
+                  <div class="w-10 h-10 rounded-xl bg-planner-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-planner">event_available</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-xs text-text-tertiary">어제 오후 3:00</span>
+                    </div>
+                    <p class="font-medium text-text-primary">상담 일정 안내</p>
+                    <p class="text-sm text-text-secondary mt-0.5">1월 10일 (금) 오후 4시에 상담이 예정되어 있습니다.</p>
+                  </div>
+                  <button onclick="event.stopPropagation(); deleteNotification(4)" class="p-1 text-text-tertiary hover:text-error rounded transition-colors">
+                    <span class="material-icons-round text-lg">close</span>
+                  </button>
+                </div>
+                
+                <div class="notification-item p-4 flex items-start gap-4 cursor-pointer" data-type="homework" data-id="5" onclick="handleNotificationClick(this, 'subject-english.html')">
+                  <div class="w-10 h-10 rounded-xl bg-english-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-english">assignment</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-xs text-text-tertiary">어제 오전 9:00</span>
+                    </div>
+                    <p class="font-medium text-text-primary">새 숙제가 배정되었습니다</p>
+                    <p class="text-sm text-text-secondary mt-0.5">영어 단어 20개 암기 | 마감: 1월 8일</p>
+                  </div>
+                  <button onclick="event.stopPropagation(); deleteNotification(5)" class="p-1 text-text-tertiary hover:text-error rounded transition-colors">
+                    <span class="material-icons-round text-lg">close</span>
+                  </button>
+                </div>
+                
+              </div>
+            </div>
+            
+            <!-- This Week -->
+            <div class="notification-group" data-group="week">
+              <h3 class="text-sm font-bold text-text-tertiary mb-3 flex items-center gap-2">
+                <span class="material-icons-round text-sm">date_range</span>
+                이번 주
+              </h3>
+              <div class="bg-surface rounded-2xl shadow-card overflow-hidden divide-y divide-border-light">
+                
+                <div class="notification-item unread p-4 flex items-start gap-4 cursor-pointer" data-type="achievement" data-id="6" onclick="handleNotificationClick(this, 'mypage.html')">
+                  <div class="w-10 h-10 rounded-xl bg-success-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-success">military_tech</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-xs text-text-tertiary">3일 전</span>
+                    </div>
+                    <p class="font-medium text-text-primary">레벨 업! 🎉</p>
+                    <p class="text-sm text-text-secondary mt-0.5">Lv.7 학습왕이 되었습니다. 다음 레벨까지 250 XP!</p>
+                  </div>
+                  <button onclick="event.stopPropagation(); deleteNotification(6)" class="p-1 text-text-tertiary hover:text-error rounded transition-colors">
+                    <span class="material-icons-round text-lg">close</span>
+                  </button>
+                </div>
+                
+                <div class="notification-item p-4 flex items-start gap-4 cursor-pointer" data-type="system" data-id="7" onclick="handleNotificationClick(this, 'settings.html')">
+                  <div class="w-10 h-10 rounded-xl bg-info-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-info">info</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-xs text-text-tertiary">5일 전</span>
+                    </div>
+                    <p class="font-medium text-text-primary">앱 업데이트 안내</p>
+                    <p class="text-sm text-text-secondary mt-0.5">새로운 기능이 추가되었습니다. 플래너에서 습관 모드를 사용해보세요!</p>
+                  </div>
+                  <button onclick="event.stopPropagation(); deleteNotification(7)" class="p-1 text-text-tertiary hover:text-error rounded transition-colors">
+                    <span class="material-icons-round text-lg">close</span>
+                  </button>
+                </div>
+                
+                <div class="notification-item p-4 flex items-start gap-4 cursor-pointer" data-type="homework" data-id="8" onclick="handleNotificationClick(this, 'subject-korean.html')">
+                  <div class="w-10 h-10 rounded-xl bg-korean-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-korean">task_alt</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="px-2 py-0.5 bg-success/10 text-success text-[10px] font-bold rounded">완료</span>
+                      <span class="text-xs text-text-tertiary">6일 전</span>
+                    </div>
+                    <p class="font-medium text-text-primary">숙제 제출 완료</p>
+                    <p class="text-sm text-text-secondary mt-0.5">국어 비문학 지문 분석 숙제가 제출되었습니다.</p>
+                  </div>
+                  <button onclick="event.stopPropagation(); deleteNotification(8)" class="p-1 text-text-tertiary hover:text-error rounded transition-colors">
+                    <span class="material-icons-round text-lg">close</span>
+                  </button>
+                </div>
+                
+              </div>
+            </div>
+            
+            <!-- Load More -->
+            <div class="text-center py-4">
+              <button class="px-6 py-2.5 border border-border-light text-text-secondary rounded-xl hover:bg-gray-50 transition-colors text-sm font-medium">
+                이전 알림 더보기
+              </button>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Mobile Layout -->
+  <div class="lg:hidden flex flex-col min-h-screen">
+    <header class="h-14 bg-surface border-b border-border-light flex items-center justify-between px-4 flex-shrink-0 sticky top-0 z-40">
+      <a href="student-dashboard.html" class="p-2 -ml-2 text-text-secondary hover:text-text-primary rounded-lg">
+        <span class="material-icons-round">arrow_back</span>
+      </a>
+      <span class="font-bold text-text-primary">알림</span>
+      <button onclick="markAllRead()" class="text-sm text-primary font-medium">모두 읽음</button>
+    </header>
+    
+    <!-- Mobile Filter -->
+    <div class="bg-surface border-b border-border-light px-4 py-3 overflow-x-auto flex gap-2 sticky top-14 z-30">
+      <button onclick="filterNotifications('all')" class="filter-btn active px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors" data-filter="all">전체</button>
+      <button onclick="filterNotifications('homework')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-gray-100 text-text-secondary" data-filter="homework">📚 숙제</button>
+      <button onclick="filterNotifications('counseling')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-gray-100 text-text-secondary" data-filter="counseling">💬 상담</button>
+      <button onclick="filterNotifications('achievement')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-gray-100 text-text-secondary" data-filter="achievement">🏆 성취</button>
+      <button onclick="filterNotifications('feedback')" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-gray-100 text-text-secondary" data-filter="feedback">✍️ 피드백</button>
+    </div>
+    
+    <div class="flex-1 overflow-y-auto">
+      
+      <!-- Mobile Unread Count -->
+      <div class="px-4 py-3 bg-primary-light">
+        <p class="text-sm text-primary font-medium">읽지 않은 알림 <span id="mobileUnreadCount" class="font-bold">5</span>개</p>
+      </div>
+      
+      <!-- Mobile Notifications -->
+      <div class="divide-y divide-border-light">
+        
+        <!-- Today Header -->
+        <div class="px-4 py-2 bg-gray-50">
+          <span class="text-xs font-bold text-text-tertiary">오늘</span>
+        </div>
+        
+        <div class="notification-item unread p-4 flex items-start gap-3" data-type="homework" onclick="handleNotificationClick(this, 'planner.html')">
+          <div class="w-10 h-10 rounded-xl bg-error-light flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-error">assignment_late</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="px-1.5 py-0.5 bg-error/10 text-error text-[10px] font-bold rounded">긴급</span>
+              <span class="text-[10px] text-text-tertiary">10분 전</span>
+            </div>
+            <p class="font-medium text-sm text-text-primary">숙제 마감 임박!</p>
+            <p class="text-xs text-text-secondary mt-0.5 line-clamp-1">수학 일차방정식 문제 풀이가 오늘 자정까지입니다.</p>
+          </div>
+        </div>
+        
+        <div class="notification-item unread p-4 flex items-start gap-3" data-type="achievement" onclick="handleNotificationClick(this, 'mypage.html')">
+          <div class="w-10 h-10 rounded-xl bg-warning-light flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-warning">emoji_events</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] text-text-tertiary">30분 전</span>
+            </div>
+            <p class="font-medium text-sm text-text-primary">🔥 12일 연속 학습 달성!</p>
+            <p class="text-xs text-text-secondary mt-0.5">불꽃 스트릭 배지를 획득했어요. +50 XP</p>
+          </div>
+        </div>
+        
+        <div class="notification-item unread p-4 flex items-start gap-3" data-type="feedback" onclick="handleNotificationClick(this, 'mypage.html')">
+          <div class="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-primary">rate_review</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] text-text-tertiary">1시간 전</span>
+            </div>
+            <p class="font-medium text-sm text-text-primary">김담임 선생님의 피드백</p>
+            <p class="text-xs text-text-secondary mt-0.5 line-clamp-2">"오늘 국어 학습 정말 잘했어요! 요약 실력이 많이 늘었네요 👍"</p>
+          </div>
+        </div>
+        
+        <!-- Yesterday Header -->
+        <div class="px-4 py-2 bg-gray-50">
+          <span class="text-xs font-bold text-text-tertiary">어제</span>
+        </div>
+        
+        <div class="notification-item unread p-4 flex items-start gap-3" data-type="counseling" onclick="handleNotificationClick(this, 'planner.html')">
+          <div class="w-10 h-10 rounded-xl bg-planner-light flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-planner">event_available</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] text-text-tertiary">어제 오후 3:00</span>
+            </div>
+            <p class="font-medium text-sm text-text-primary">상담 일정 안내</p>
+            <p class="text-xs text-text-secondary mt-0.5">1월 10일 (금) 오후 4시에 상담이 예정되어 있습니다.</p>
+          </div>
+        </div>
+        
+        <div class="notification-item p-4 flex items-start gap-3" data-type="homework" onclick="handleNotificationClick(this, 'subject-english.html')">
+          <div class="w-10 h-10 rounded-xl bg-english-light flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-english">assignment</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] text-text-tertiary">어제 오전 9:00</span>
+            </div>
+            <p class="font-medium text-sm text-text-primary">새 숙제가 배정되었습니다</p>
+            <p class="text-xs text-text-secondary mt-0.5">영어 단어 20개 암기 | 마감: 1월 8일</p>
+          </div>
+        </div>
+        
+        <!-- This Week Header -->
+        <div class="px-4 py-2 bg-gray-50">
+          <span class="text-xs font-bold text-text-tertiary">이번 주</span>
+        </div>
+        
+        <div class="notification-item unread p-4 flex items-start gap-3" data-type="achievement" onclick="handleNotificationClick(this, 'mypage.html')">
+          <div class="w-10 h-10 rounded-xl bg-success-light flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-success">military_tech</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] text-text-tertiary">3일 전</span>
+            </div>
+            <p class="font-medium text-sm text-text-primary">레벨 업! 🎉</p>
+            <p class="text-xs text-text-secondary mt-0.5">Lv.7 학습왕이 되었습니다.</p>
+          </div>
+        </div>
+        
+        <div class="notification-item p-4 flex items-start gap-3" data-type="system" onclick="handleNotificationClick(this, 'settings.html')">
+          <div class="w-10 h-10 rounded-xl bg-info-light flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-info">info</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] text-text-tertiary">5일 전</span>
+            </div>
+            <p class="font-medium text-sm text-text-primary">앱 업데이트 안내</p>
+            <p class="text-xs text-text-secondary mt-0.5 line-clamp-1">새로운 기능이 추가되었습니다.</p>
+          </div>
+        </div>
+        
+        <!-- Load More -->
+        <div class="p-4 text-center">
+          <button class="text-sm text-primary font-medium">이전 알림 더보기</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-navy text-white px-4 py-3 rounded-xl shadow-lg hidden toast z-50">
+    <span id="toastMessage">알림을 읽음 처리했습니다</span>
+  </div>
+  
+  <script>
+    let currentFilter = 'all';
+    
+    function filterNotifications(type) {
+      currentFilter = type;
+      
+      // Update filter buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.dataset.filter === type) {
+          btn.classList.add('active');
+          btn.classList.remove('bg-gray-100', 'text-text-secondary', 'hover:bg-gray-200');
+        } else {
+          btn.classList.remove('active');
+          btn.classList.add('bg-gray-100', 'text-text-secondary', 'hover:bg-gray-200');
+        }
+      });
+      
+      // Filter notifications
+      document.querySelectorAll('.notification-item').forEach(item => {
+        const itemType = item.dataset.type;
+        if (type === 'all' || itemType === type) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+    
+    function handleNotificationClick(element, url) {
+      // Mark as read
+      element.classList.remove('unread');
+      updateUnreadCount();
+      
+      // Navigate after short delay
+      setTimeout(() => {
+        window.location.href = url;
+      }, 200);
+    }
+    
+    function markAllRead() {
+      document.querySelectorAll('.notification-item.unread').forEach(item => {
+        item.classList.remove('unread');
+      });
+      updateUnreadCount();
+      showToast('모든 알림을 읽음 처리했습니다');
+    }
+    
+    function deleteNotification(id) {
+      const item = document.querySelector(`[data-id="${id}"]`);
+      if (item) {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-20px)';
+        setTimeout(() => {
+          item.remove();
+          updateUnreadCount();
+        }, 200);
+        showToast('알림을 삭제했습니다');
+      }
+    }
+    
+    function updateUnreadCount() {
+      const count = document.querySelectorAll('.notification-item.unread').length;
+      document.getElementById('unreadCount').textContent = count;
+      const mobileCount = document.getElementById('mobileUnreadCount');
+      if (mobileCount) mobileCount.textContent = count;
+    }
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2000);
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

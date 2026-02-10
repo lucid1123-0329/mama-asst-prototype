@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>검사 완료 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            korean: '#4285F4',
+            english: '#34A853',
+            math: '#FBBC05',
+            planner: '#9C27B0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            info: '#3B82F6',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    .confetti {
+      position: fixed;
+      top: -10px;
+      animation: confetti 3s ease-out forwards;
+    }
+    
+    @keyframes bounce-in {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    .bounce-in {
+      animation: bounce-in 0.5s ease-out;
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(34, 197, 94, 0.5); }
+    }
+    .pulse-glow {
+      animation: pulse-glow 2s infinite;
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased min-h-screen flex flex-col">
+  
+  <!-- Confetti Container -->
+  <div id="confettiContainer"></div>
+  
+  <!-- Header -->
+  <header class="h-16 bg-navy text-white flex items-center justify-between px-6 flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+        <span class="text-white font-bold text-lg">M</span>
+      </div>
+      <div>
+        <span class="font-bold text-lg">MAMA-ASST</span>
+        <span class="px-2 py-0.5 bg-success/20 text-success text-xs font-bold rounded ml-2">완료</span>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Progress Bar -->
+  <div class="bg-surface border-b border-border-light px-6 py-4 flex-shrink-0">
+    <div class="max-w-3xl mx-auto">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-success">모든 검사 완료!</span>
+        <span class="text-sm text-text-tertiary">4단계 / 4단계</span>
+      </div>
+      <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-success rounded-full" style="width: 100%"></div>
+      </div>
+    </div>
+  </div>
+  
+  <main class="flex-1 flex items-center justify-center p-6">
+    <div class="max-w-lg w-full text-center">
+      
+      <!-- Success Icon -->
+      <div class="w-32 h-32 mx-auto rounded-full bg-success-light flex items-center justify-center mb-8 bounce-in pulse-glow">
+        <span class="material-icons-round text-success text-6xl">celebration</span>
+      </div>
+      
+      <!-- Message -->
+      <h1 class="text-3xl font-bold text-text-primary mb-3">수고하셨어요! 🎉</h1>
+      <p id="studentGreeting" class="text-lg text-text-secondary mb-8">모든 검사가 완료되었습니다.</p>
+      
+      <!-- Summary Card -->
+      <div class="bg-surface rounded-2xl p-6 shadow-sm border border-border-light mb-8 text-left">
+        <h2 class="font-bold text-text-primary mb-4 flex items-center gap-2">
+          <span class="material-icons-round text-success">task_alt</span>
+          완료된 검사
+        </h2>
+        
+        <div class="space-y-3" id="completedTests">
+          <!-- Dynamically filled -->
+        </div>
+      </div>
+      
+      <!-- Next Steps -->
+      <div class="bg-info/5 border border-info/20 rounded-xl p-5 mb-8 text-left">
+        <div class="flex items-start gap-3">
+          <span class="material-icons-round text-info mt-0.5">info</span>
+          <div>
+            <p class="font-medium text-text-primary mb-1">다음 단계</p>
+            <p class="text-sm text-text-secondary">담당 선생님이 검사 결과를 분석한 후, 상담을 진행해 드립니다. 잠시만 기다려주세요.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Call Admin Button -->
+      <button onclick="callAdmin()" class="w-full py-4 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-2">
+        <span class="material-icons-round">support_agent</span>
+        선생님 호출하기
+      </button>
+      
+      <p class="text-sm text-text-tertiary mt-4">버튼을 누르면 담당 선생님께 알림이 전송됩니다.</p>
+      
+    </div>
+  </main>
+  
+  <!-- Admin Called Modal -->
+  <div id="adminCalledModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl p-8 max-w-sm mx-4 text-center">
+      <div class="w-20 h-20 mx-auto rounded-full bg-primary-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-primary text-4xl animate-pulse">notifications_active</span>
+      </div>
+      <h2 class="text-xl font-bold text-text-primary mb-2">선생님을 호출했습니다</h2>
+      <p class="text-text-secondary mb-6">잠시만 기다려주세요.<br>선생님이 곧 오실 거예요!</p>
+      
+      <div class="flex items-center justify-center gap-2 text-text-tertiary">
+        <div class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0s"></div>
+        <div class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0.2s"></div>
+        <div class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0.4s"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Generate confetti
+    function createConfetti() {
+      const container = document.getElementById('confettiContainer');
+      const colors = ['#FF6D4D', '#22C55E', '#4285F4', '#FBBC05', '#9C27B0'];
+      
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.width = Math.random() * 10 + 5 + 'px';
+        confetti.style.height = confetti.style.width;
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+        container.appendChild(confetti);
+      }
+      
+      // Remove confetti after animation
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 5000);
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      createConfetti();
+      
+      // Load student info
+      const guestInfo = JSON.parse(sessionStorage.getItem('guestInfo') || '{}');
+      if (guestInfo.studentName) {
+        document.getElementById('studentGreeting').textContent = 
+          guestInfo.studentName + ' 학생, 모든 검사가 완료되었습니다.';
+      }
+      
+      // Build completed tests list
+      const completedTests = document.getElementById('completedTests');
+      let html = '';
+      
+      // Tendency test
+      const tendencyResponses = JSON.parse(sessionStorage.getItem('tendencyResponses') || '[]');
+      const tendencyCompleted = tendencyResponses.filter(r => r !== null).length;
+      if (tendencyCompleted > 0) {
+        html += `
+          <div class="flex items-center gap-3 p-3 bg-planner/5 rounded-xl">
+            <div class="w-10 h-10 rounded-lg bg-planner/10 flex items-center justify-center">
+              <span class="material-icons-round text-planner">psychology</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-text-primary">학습 성향 검사</p>
+              <p class="text-xs text-text-tertiary">${tendencyCompleted}/150 문항 완료</p>
+            </div>
+            <span class="material-icons-round text-success">check_circle</span>
+          </div>
+        `;
+      }
+      
+      // Level tests
+      const levelResults = JSON.parse(sessionStorage.getItem('levelTestResults') || '{}');
+      const subjectInfo = {
+        korean: { name: '국어', color: 'korean', icon: 'menu_book' },
+        english: { name: '영어', color: 'english', icon: 'translate' },
+        math: { name: '수학', color: 'math', icon: 'calculate' }
+      };
+      
+      Object.entries(levelResults).forEach(([subject, result]) => {
+        const info = subjectInfo[subject];
+        html += `
+          <div class="flex items-center gap-3 p-3 bg-${info.color}/5 rounded-xl">
+            <div class="w-10 h-10 rounded-lg bg-${info.color}/10 flex items-center justify-center">
+              <span class="material-icons-round text-${info.color}">${info.icon}</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-text-primary">${info.name} 레벨테스트</p>
+              <p class="text-xs text-text-tertiary">${result.score}/${result.total} 정답</p>
+            </div>
+            <span class="material-icons-round text-success">check_circle</span>
+          </div>
+        `;
+      });
+      
+      if (html === '') {
+        html = `
+          <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+            <span class="material-icons-round text-text-tertiary">info</span>
+            <p class="text-text-secondary">완료된 검사가 없습니다.</p>
+          </div>
+        `;
+      }
+      
+      completedTests.innerHTML = html;
+    });
+    
+    function callAdmin() {
+      document.getElementById('adminCalledModal').classList.remove('hidden');
+      
+      // In real app, send notification to admin
+      // Update session status
+      const session = JSON.parse(localStorage.getItem('currentSession') || '{}');
+      session.status = 'result_pending';
+      localStorage.setItem('currentSession', JSON.stringify(session));
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

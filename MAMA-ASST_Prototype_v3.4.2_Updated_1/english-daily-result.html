@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학습 결과 | MAMA-ASST</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3C',
+            'primary-light': '#FFF0ED',
+            secondary: '#1A2E4D',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            'english-dark': '#2D9248',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#10B981',
+            'success-light': '#D1FAE5',
+            error: '#F43F5E',
+            'error-light': '#FFE4E6',
+            warning: '#F59E0B',
+            'warning-light': '#FEF3C7',
+          },
+          fontFamily: {
+            display: ['Lexend', 'sans-serif'],
+            body: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'],
+          },
+          borderRadius: {
+            'xl': '1rem',
+            '2xl': '1.5rem',
+            '3xl': '2rem',
+          },
+          boxShadow: {
+            'soft': '0 10px 40px -10px rgba(26, 46, 77, 0.08)',
+            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
+          }
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    .filled {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    
+    /* Confetti animation */
+    @keyframes confetti-fall {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: 0;
+      animation: confetti-fall 3s linear forwards;
+    }
+    
+    /* Count up animation */
+    @keyframes count-up {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .count-up {
+      animation: count-up 0.5s ease-out forwards;
+    }
+    
+    /* Bounce in */
+    @keyframes bounce-in {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .bounce-in {
+      animation: bounce-in 0.6s ease-out forwards;
+    }
+    
+    /* Slide up */
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-up {
+      animation: slide-up 0.4s ease-out forwards;
+    }
+    .slide-up-delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .slide-up-delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .slide-up-delay-3 { animation-delay: 0.3s; opacity: 0; }
+    .slide-up-delay-4 { animation-delay: 0.4s; opacity: 0; }
+  </style>
+</head>
+<body class="bg-background font-body text-secondary antialiased min-h-screen">
+  
+  <!-- Confetti Container -->
+  <div id="confettiContainer"></div>
+  
+  <!-- Header -->
+  <header class="w-full bg-surface border-b border-border-light px-6 py-4 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-english-light rounded-xl flex items-center justify-center text-english">
+          <span class="material-symbols-outlined text-2xl filled">celebration</span>
+        </div>
+        <div>
+          <h1 class="text-secondary text-lg font-bold tracking-tight">오늘의 학습 완료!</h1>
+          <p class="text-xs text-text-tertiary" id="dateText">2025년 1월 1일</p>
+        </div>
+      </div>
+      <a href="subject-english.html" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-gray-100 transition-all text-text-secondary font-medium text-sm">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </a>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto p-6 pb-32">
+    
+    <!-- Score Card -->
+    <div class="bg-gradient-to-br from-english to-english-dark rounded-3xl p-8 text-white text-center mb-6 bounce-in">
+      <div class="mb-4">
+        <span class="text-7xl md:text-8xl font-display font-bold" id="totalScore">80</span>
+        <span class="text-3xl font-bold">점</span>
+      </div>
+      <p class="text-xl opacity-90 mb-2" id="gradeText">잘했어요! 👏</p>
+      <p class="text-sm opacity-70">정답률 <span id="accuracyRate">80</span>%</p>
+      
+      <!-- XP Earned -->
+      <div class="mt-6 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+        <span class="material-symbols-outlined filled text-yellow-300">star</span>
+        <span class="font-bold">+<span id="xpEarned">45</span> XP</span>
+      </div>
+    </div>
+    
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <!-- Pass -->
+      <div class="bg-surface rounded-2xl p-5 shadow-card border border-border-light text-center slide-up slide-up-delay-1">
+        <div class="w-12 h-12 bg-success-light rounded-full flex items-center justify-center mx-auto mb-3">
+          <span class="material-symbols-outlined text-success text-2xl filled">check_circle</span>
+        </div>
+        <p class="text-3xl font-display font-bold text-success" id="passCount">8</p>
+        <p class="text-sm text-text-secondary">PASS</p>
+      </div>
+      
+      <!-- Unstable -->
+      <div class="bg-surface rounded-2xl p-5 shadow-card border border-border-light text-center slide-up slide-up-delay-2">
+        <div class="w-12 h-12 bg-warning-light rounded-full flex items-center justify-center mx-auto mb-3">
+          <span class="material-symbols-outlined text-warning text-2xl">warning</span>
+        </div>
+        <p class="text-3xl font-display font-bold text-warning" id="unstableCount">1</p>
+        <p class="text-sm text-text-secondary">불안</p>
+      </div>
+      
+      <!-- Fail -->
+      <div class="bg-surface rounded-2xl p-5 shadow-card border border-border-light text-center slide-up slide-up-delay-3">
+        <div class="w-12 h-12 bg-error-light rounded-full flex items-center justify-center mx-auto mb-3">
+          <span class="material-symbols-outlined text-error text-2xl">cancel</span>
+        </div>
+        <p class="text-3xl font-display font-bold text-error" id="failCount">1</p>
+        <p class="text-sm text-text-secondary">오답</p>
+      </div>
+    </div>
+    
+    <!-- Detailed Results -->
+    <div class="bg-surface rounded-2xl shadow-card border border-border-light overflow-hidden mb-6 slide-up slide-up-delay-4">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="font-bold text-text-primary flex items-center gap-2">
+          <span class="material-symbols-outlined text-english">format_list_bulleted</span>
+          문제별 결과
+        </h2>
+        <span class="text-sm text-text-tertiary" id="totalQuestions">10문제</span>
+      </div>
+      
+      <div class="divide-y divide-border-light" id="resultList">
+        <!-- Results will be dynamically inserted -->
+      </div>
+    </div>
+    
+    <!-- Problem Words Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6" id="problemWordsSection">
+      <!-- Error Words -->
+      <div class="bg-surface rounded-2xl shadow-card border border-border-light overflow-hidden" id="errorWordsCard">
+        <div class="px-5 py-3 bg-error-light border-b border-error/20 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-error"></span>
+          <h3 class="font-bold text-error text-sm">오답 단어</h3>
+          <span class="ml-auto text-xs font-bold text-error bg-white px-2 py-0.5 rounded" id="errorWordCount">1개</span>
+        </div>
+        <ul class="divide-y divide-border-light" id="errorWordsList">
+          <!-- Error words will be inserted here -->
+        </ul>
+      </div>
+      
+      <!-- Unstable Words -->
+      <div class="bg-surface rounded-2xl shadow-card border border-border-light overflow-hidden" id="unstableWordsCard">
+        <div class="px-5 py-3 bg-warning-light border-b border-warning/20 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-warning"></span>
+          <h3 class="font-bold text-warning text-sm">불안 단어</h3>
+          <span class="ml-auto text-xs font-bold text-warning bg-white px-2 py-0.5 rounded" id="unstableWordCount">1개</span>
+        </div>
+        <ul class="divide-y divide-border-light" id="unstableWordsList">
+          <!-- Unstable words will be inserted here -->
+        </ul>
+      </div>
+    </div>
+    
+    <!-- Streak & Badge -->
+    <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100 flex items-center gap-4 mb-6">
+      <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm">
+        <span class="material-symbols-outlined text-amber-500 text-3xl filled">local_fire_department</span>
+      </div>
+      <div class="flex-1">
+        <h3 class="font-bold text-amber-900">🔥 <span id="streakDays">5</span>일 연속 학습 중!</h3>
+        <p class="text-sm text-amber-700">내일도 학습하면 Weekly Warrior 뱃지 획득!</p>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex flex-col md:flex-row gap-3">
+      <a href="subject-english.html" class="flex-1 py-4 bg-surface border-2 border-border-light hover:border-english text-secondary hover:text-english font-bold rounded-2xl transition-all flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined">home</span>
+        영어 홈
+      </a>
+      <a href="english-prelearn.html" class="flex-1 py-4 bg-english hover:bg-english-dark text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-english/30">
+        다음 학습하기
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </a>
+    </div>
+    
+  </main>
+  
+  <!-- Mobile Bottom Nav -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light p-4 z-40">
+    <div class="flex gap-3">
+      <a href="subject-english.html" class="flex-1 py-3 bg-gray-100 text-secondary font-bold rounded-xl text-center text-sm">
+        영어 홈
+      </a>
+      <a href="english-prelearn.html" class="flex-1 py-3 bg-english text-white font-bold rounded-xl text-center text-sm flex items-center justify-center gap-1">
+        다음 학습
+        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+      </a>
+    </div>
+  </div>
+  
+  <script>
+    // Get results from localStorage or use mock data
+    function getResults() {
+      const stored = localStorage.getItem('englishTestResults');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      
+      // Mock data for testing
+      return {
+        results: { pass: 8, unstable: 1, fail: 1 },
+        details: [
+          { word: 'book', userAnswer: 'book', result: 'pass', score: 92, time: 2.3 },
+          { word: 'apply', userAnswer: 'apply', result: 'pass', score: 88, time: 3.1 },
+          { word: 'consider', userAnswer: 'consider', result: 'pass', score: 95, time: 2.8 },
+          { word: 'determine', userAnswer: 'determine', result: 'pass', score: 90, time: 3.5 },
+          { word: 'establish', userAnswer: 'establish', result: 'pass', score: 87, time: 4.2 },
+          { word: 'evidence', userAnswer: 'evidence', result: 'unstable', score: 78, time: 5.5 },
+          { word: 'function', userAnswer: 'function', result: 'pass', score: 91, time: 2.9 },
+          { word: 'indicate', userAnswer: 'indicate', result: 'pass', score: 89, time: 3.3 },
+          { word: 'maintain', userAnswer: '', result: 'timeout', score: 0, time: 7 },
+          { word: 'obtain', userAnswer: 'obtain', result: 'pass', score: 93, time: 2.6 }
+        ],
+        date: new Date().toISOString()
+      };
+    }
+    
+    // Initialize page
+    function initPage() {
+      const data = getResults();
+      const { results, details } = data;
+      
+      // Calculate totals
+      const total = details.length;
+      const passCount = results.pass;
+      const unstableCount = results.unstable;
+      const failCount = results.fail;
+      const score = Math.round((passCount / total) * 100);
+      const xp = passCount * 5 + unstableCount * 2;
+      
+      // Update header stats
+      document.getElementById('totalScore').textContent = score;
+      document.getElementById('accuracyRate').textContent = score;
+      document.getElementById('xpEarned').textContent = xp;
+      document.getElementById('passCount').textContent = passCount;
+      document.getElementById('unstableCount').textContent = unstableCount;
+      document.getElementById('failCount').textContent = failCount;
+      document.getElementById('totalQuestions').textContent = `${total}문제`;
+      
+      // Grade text
+      let gradeText = '';
+      if (score >= 90) gradeText = '완벽해요! 🎉';
+      else if (score >= 80) gradeText = '잘했어요! 👏';
+      else if (score >= 60) gradeText = '좋아요! 💪';
+      else gradeText = '더 연습해봐요! 📚';
+      document.getElementById('gradeText').textContent = gradeText;
+      
+      // Date
+      const date = new Date(data.date);
+      document.getElementById('dateText').textContent = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+      
+      // Render result list
+      const resultList = document.getElementById('resultList');
+      resultList.innerHTML = details.map((item, idx) => {
+        let statusIcon, statusColor, statusBg;
+        switch(item.result) {
+          case 'pass':
+            statusIcon = 'check_circle';
+            statusColor = 'text-success';
+            statusBg = 'bg-success-light';
+            break;
+          case 'unstable':
+            statusIcon = 'warning';
+            statusColor = 'text-warning';
+            statusBg = 'bg-warning-light';
+            break;
+          case 'fail':
+          case 'timeout':
+            statusIcon = 'cancel';
+            statusColor = 'text-error';
+            statusBg = 'bg-error-light';
+            break;
+        }
+        
+        const reasonText = item.result === 'timeout' ? '시간 초과' : 
+                          item.result === 'fail' ? '오답' :
+                          item.result === 'unstable' ? `발음 ${item.score}%` :
+                          `${item.score}%`;
+        
+        return `
+          <div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors">
+            <div class="flex items-center gap-4">
+              <span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-text-tertiary">${idx + 1}</span>
+              <div>
+                <p class="font-display font-bold text-secondary">${item.word}</p>
+                <p class="text-sm text-text-tertiary">${item.userAnswer || '(응답 없음)'}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-medium text-text-tertiary">${item.time.toFixed(1)}초</span>
+              <div class="${statusBg} ${statusColor} px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm filled">${statusIcon}</span>
+                ${reasonText}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Problem words
+      const errorWords = details.filter(d => d.result === 'fail' || d.result === 'timeout');
+      const unstableWords = details.filter(d => d.result === 'unstable');
+      
+      if (errorWords.length === 0 && unstableWords.length === 0) {
+        document.getElementById('problemWordsSection').classList.add('hidden');
+      } else {
+        // Error words
+        if (errorWords.length > 0) {
+          document.getElementById('errorWordCount').textContent = `${errorWords.length}개`;
+          document.getElementById('errorWordsList').innerHTML = errorWords.map(item => `
+            <li class="flex items-center justify-between px-5 py-3">
+              <span class="font-display font-bold text-secondary">${item.word}</span>
+              <span class="text-xs text-error bg-error-light px-2 py-1 rounded">
+                ${item.result === 'timeout' ? '시간 초과' : '오답'}
+              </span>
+            </li>
+          `).join('');
+        } else {
+          document.getElementById('errorWordsCard').classList.add('hidden');
+        }
+        
+        // Unstable words
+        if (unstableWords.length > 0) {
+          document.getElementById('unstableWordCount').textContent = `${unstableWords.length}개`;
+          document.getElementById('unstableWordsList').innerHTML = unstableWords.map(item => `
+            <li class="flex items-center justify-between px-5 py-3">
+              <span class="font-display font-bold text-secondary">${item.word}</span>
+              <span class="text-xs text-warning bg-warning-light px-2 py-1 rounded">
+                발음 ${item.score}%
+              </span>
+            </li>
+          `).join('');
+        } else {
+          document.getElementById('unstableWordsCard').classList.add('hidden');
+        }
+      }
+      
+      // Trigger confetti if score >= 80
+      if (score >= 80) {
+        triggerConfetti();
+      }
+    }
+    
+    // Confetti effect
+    function triggerConfetti() {
+      const container = document.getElementById('confettiContainer');
+      const colors = ['#FF6D4D', '#34A853', '#F59E0B', '#3B82F6', '#8B5CF6'];
+      
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        container.appendChild(confetti);
+        
+        setTimeout(() => confetti.remove(), 4000);
+      }
+    }
+    
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initPage);
+  </script>
+  
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

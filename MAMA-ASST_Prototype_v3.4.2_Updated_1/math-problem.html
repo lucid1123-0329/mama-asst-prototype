@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문제 풀이 | 수학 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            'math-dark': '#E5A800',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .katex { font-size: 1.2em; }
+    @media (max-width: 480px) { .katex { font-size: 1em; } }
+    .math-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.4s ease-in-out; }
+    
+    @keyframes pulse-success {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+      50% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+    }
+    .pulse-success { animation: pulse-success 0.5s ease-out; }
+    
+    @keyframes slide-up {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .slide-up { animation: slide-up 0.3s ease-out forwards; }
+    
+    @keyframes countdown-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .countdown-pulse { animation: countdown-pulse 1s ease-in-out infinite; }
+    
+    @keyframes toast-slide {
+      from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+    @keyframes toast-hide {
+      from { transform: translateX(-50%) translateY(0); opacity: 1; }
+      to { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+    }
+    .toast-show { animation: toast-slide 0.3s ease-out forwards; }
+    .toast-hide { animation: toast-hide 0.3s ease-in forwards; }
+    
+    @keyframes confetti-fall {
+      0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    .choice-btn { transition: all 0.2s; }
+    .choice-btn:hover:not(.disabled) {
+      border-color: #FBBC05;
+      background: #FEF7E0;
+      transform: translateY(-2px);
+    }
+    .choice-btn.selected {
+      border-color: #FBBC05;
+      background: #FEF7E0;
+      box-shadow: 0 0 0 3px rgba(251, 188, 5, 0.2);
+    }
+    .choice-btn.correct {
+      border-color: #22C55E;
+      background: #F0FDF4;
+    }
+    .choice-btn.wrong {
+      border-color: #EF4444;
+      background: #FEF2F2;
+    }
+    .choice-btn.disabled { pointer-events: none; opacity: 0.6; }
+    
+    .final-choice-btn {
+      transition: all 0.15s;
+    }
+    .final-choice-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(251, 188, 5, 0.3);
+    }
+    .final-choice-btn.selected {
+      border-color: #FBBC05;
+      background: #FEF7E0;
+      transform: scale(1.02);
+    }
+    
+    .timer-ring { transition: stroke-dashoffset 0.1s linear; }
+    
+    .badge-direct {
+      background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+      color: white;
+    }
+    .badge-step {
+      background: linear-gradient(135deg, #FBBC05 0%, #F59E0B 100%);
+      color: #1F2937;
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased min-h-screen">
+  
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed top-16 left-1/2 -translate-x-1/2 z-[100] pointer-events-none"></div>
+  
+  <!-- Header -->
+  <header class="h-14 bg-surface border-b border-border-light flex items-center justify-between px-4 sticky top-0 z-40">
+    <a href="subject-math.html" class="p-2 -ml-2 text-text-secondary hover:text-text-primary rounded-lg transition-colors">
+      <span class="material-icons-round">close</span>
+    </a>
+    
+    <div class="flex items-center gap-2">
+      <span class="text-sm font-bold text-math">Q<span id="currentQ">3</span></span>
+      <span class="text-text-tertiary">/</span>
+      <span class="text-sm text-text-secondary">5</span>
+    </div>
+    
+    <div class="w-10"></div>
+  </header>
+  
+  <!-- Main Content -->
+  <main class="max-w-2xl mx-auto p-4 pb-32">
+    
+    <!-- Problem Card -->
+    <section class="bg-surface rounded-2xl shadow-lg border border-border-light overflow-hidden mb-4">
+      <!-- Problem Header -->
+      <div class="bg-math p-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-white/30 flex items-center justify-center">
+            <span class="text-2xl font-bold text-gray-900">∑</span>
+          </div>
+          <div>
+            <h1 class="font-bold text-gray-900" id="problemTitle">일차방정식의 풀이</h1>
+            <p class="text-sm text-gray-700" id="problemMeta">3단원 · 중급 난이도</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Problem Content -->
+      <div class="p-5">
+        <p class="text-text-secondary mb-3 text-sm">다음 방정식을 풀어라.</p>
+        
+        <div class="bg-math-light rounded-xl p-5 text-center mb-5 math-scroll">
+          <div id="problemEquation" class="text-2xl font-bold text-math-dark"></div>
+        </div>
+        
+        <!-- Step Progress -->
+        <div class="flex items-center justify-center gap-1.5 mb-5" id="stepProgress">
+          <!-- Dynamic step indicators -->
+        </div>
+        
+        <!-- Step Content -->
+        <div id="stepContent">
+          <!-- Dynamic step panels -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- Direct Answer Button -->
+    <div id="directAnswerSection" class="bg-gradient-to-r from-success/10 to-emerald-100 rounded-2xl p-4 border border-success/30">
+      <button onclick="openDirectAnswer()" id="directAnswerBtn" class="w-full flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-success text-white flex items-center justify-center">
+            <span class="material-icons-round">bolt</span>
+          </div>
+          <div class="text-left">
+            <p class="font-bold text-success">답을 알겠어요!</p>
+            <p class="text-xs text-text-secondary">맞추면 <span id="bonusXPText" class="font-bold text-success">+30 XP</span> 보너스</p>
+          </div>
+        </div>
+        <span class="material-icons-round text-success">arrow_forward</span>
+      </button>
+    </div>
+    
+    <!-- Bonus Used Message -->
+    <div id="bonusUsedSection" class="hidden bg-gray-100 rounded-2xl p-4 border border-border-light">
+      <div class="flex items-center gap-3 text-text-tertiary">
+        <span class="material-icons-round">block</span>
+        <p class="text-sm">보너스 기회를 이미 사용했어요. 단계별로 풀어주세요!</p>
+      </div>
+    </div>
+    
+    <!-- Hint Button -->
+    <div class="mt-4 text-center">
+      <button onclick="showHint()" class="px-4 py-3 min-h-[48px] bg-gray-100 hover:bg-gray-200 text-text-secondary rounded-lg transition-colors text-sm">
+        <span class="material-icons-round text-sm align-middle mr-1">lightbulb</span>
+        힌트 보기
+      </button>
+    </div>
+    
+  </main>
+  
+  <!-- Bottom Action Bar -->
+  <div class="fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light p-4 z-30">
+    <div class="max-w-2xl mx-auto flex gap-3">
+      <button onclick="skipProblem()" class="px-5 py-3 bg-gray-100 hover:bg-gray-200 text-text-secondary font-medium rounded-xl transition-colors text-sm">
+        건너뛰기
+      </button>
+      <button id="nextStepBtn" onclick="submitStepAnswer()" class="flex-1 py-3 bg-math hover:bg-math-dark text-gray-900 font-bold rounded-xl transition-colors flex items-center justify-center gap-2 opacity-50 pointer-events-none">
+        <span id="nextStepText">선택 후 다음</span>
+        <span class="material-icons-round">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Direct Answer Modal -->
+  <div id="directAnswerModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-surface rounded-2xl max-w-md w-full overflow-hidden slide-up">
+      <!-- Timer Header -->
+      <div class="bg-math p-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-icons-round text-gray-900">bolt</span>
+          <span class="font-bold text-gray-900">최종 답 선택</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="relative w-12 h-12">
+            <svg class="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="3"/>
+              <circle id="directTimerRing" cx="18" cy="18" r="16" fill="none" stroke="white" stroke-width="3"
+                      stroke-dasharray="100.53" stroke-dashoffset="0" stroke-linecap="round" class="timer-ring"/>
+            </svg>
+            <span id="directTimerText" class="absolute inset-0 flex items-center justify-center text-lg font-bold text-gray-900 countdown-pulse">10</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Choices -->
+      <div class="p-5">
+        <p class="text-sm text-text-secondary mb-4 text-center">10초 안에 정답을 선택하세요!</p>
+        
+        <div class="grid grid-cols-2 gap-3" id="finalChoices">
+          <!-- Dynamic final answer choices -->
+        </div>
+        
+        <button onclick="closeDirectAnswer()" class="w-full mt-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-text-secondary font-medium rounded-xl transition-colors text-sm">
+          취소하고 단계 계속
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Explanation Modal -->
+  <div id="explanationModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-surface rounded-2xl p-6 max-w-md w-full slide-up">
+      <div id="explanationContent"></div>
+      <button onclick="closeExplanationAndNext()" class="w-full mt-4 py-3 bg-math hover:bg-math-dark text-gray-900 font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
+        <span>확인</span>
+        <span class="material-icons-round">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Result Modal -->
+  <div id="resultModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden p-4">
+    <div id="resultContent" class="bg-surface rounded-2xl p-8 max-w-sm w-full text-center"></div>
+  </div>
+  
+  <script>
+    // Problem data
+    const problem = {
+      equation: '3x - 7 = 2x + 5',
+      finalAnswer: 'x = 12',
+      finalChoices: ['x = 12', 'x = -12', 'x = 2', 'x = -2', 'x = 7'],
+      correctFinalIndex: 0,
+      steps: [
+        { 
+          title: '단계 1: 방정식 정리',
+          desc: '좌변의 x항과 우변의 x항을 한쪽으로 모으세요.',
+          question: '에서 우변의',
+          questionPart: '를 좌변으로 이항하면?',
+          questionFormulas: ['3x - 7 = 2x + 5', '2x'],
+          choices: ['3x - 2x - 7 = 5', '3x + 2x - 7 = 5', '3x - 7 - 2x = 5', 'x - 7 = 5'],
+          correct: 0,
+          explanation: '이항할 때는 부호가 바뀝니다. 우변의 +2x를 좌변으로 이항하면 -2x가 됩니다.',
+          resultFormula: '3x - 2x - 7 = 5'
+        },
+        { 
+          title: '단계 2: 동류항 정리',
+          desc: '좌변의 x항을 계산하세요.',
+          question: '에서',
+          questionPart: '를 계산하면?',
+          questionFormulas: ['3x - 2x - 7 = 5', '3x - 2x'],
+          choices: ['x - 7 = 5', '5x - 7 = 5', '-x - 7 = 5', '6x - 7 = 5'],
+          correct: 0,
+          explanation: '동류항끼리 계산합니다. 3x - 2x = x 입니다.',
+          resultFormula: 'x - 7 = 5'
+        },
+        { 
+          title: '단계 3: 상수항 이항',
+          desc: '좌변의 상수항을 우변으로 이항하세요.',
+          question: '에서',
+          questionPart: '을 우변으로 이항하면?',
+          questionFormulas: ['x - 7 = 5', '-7'],
+          choices: ['x = 5 + 7', 'x = 5 - 7', 'x = -5 + 7', 'x = -5 - 7'],
+          correct: 0,
+          explanation: '상수항을 이항할 때도 부호가 바뀝니다. -7을 우변으로 이항하면 +7이 됩니다.',
+          resultFormula: 'x = 5 + 7'
+        },
+        { 
+          title: '단계 4: 최종 계산',
+          desc: '우변을 계산하여 x의 값을 구하세요.',
+          question: '을 계산하면?',
+          questionPart: '',
+          questionFormulas: ['x = 5 + 7'],
+          choices: ['x = 12', 'x = -12', 'x = 2', 'x = -2'],
+          correct: 0,
+          explanation: '단순 덧셈입니다. 5 + 7 = 12',
+          resultFormula: 'x = 12'
+        }
+      ],
+      hints: [
+        '💡 이항할 때는 부호가 바뀌어요. +가 -로, -가 +로!',
+        '💡 같은 문자끼리 계산해요. 3x - 2x = ?',
+        '💡 상수를 이항하면 부호가 바뀌어요. -7을 이항하면?',
+        '💡 단순 덧셈이에요. 5 + 7 = ?'
+      ]
+    };
+    
+    // State
+    let currentStep = 1;
+    let totalSteps = problem.steps.length;
+    let selectedChoice = null;
+    let bonusUsed = false;
+    let directTimer = 10;
+    let directTimerInterval = null;
+    let startTime = Date.now();
+    let errorLog = [];
+    let solveMethod = 'step'; // 'direct' or 'step'
+    
+    // Calculate bonus XP
+    function calculateBonus() {
+      return (totalSteps - currentStep + 1) * 10;
+    }
+    
+    // Render KaTeX
+    function renderKatex(element, formula) {
+      if (element && window.katex) {
+        try {
+          katex.render(formula, element, { displayMode: false, throwOnError: false });
+        } catch (e) {
+          element.textContent = formula;
+        }
+      }
+    }
+    
+    // Initialize step progress indicators
+    function initStepProgress() {
+      const container = document.getElementById('stepProgress');
+      let html = '';
+      
+      for (let i = 1; i <= totalSteps; i++) {
+        const isFirst = i === 1;
+        const isActive = i === 1;
+        
+        if (i > 1) {
+          html += `<div class="w-6 h-1 bg-border-light rounded step-connector transition-all" data-after="${i-1}"></div>`;
+        }
+        
+        html += `<div class="step-indicator w-8 h-8 rounded-full ${isActive ? 'bg-math text-gray-900' : 'bg-border-light text-text-tertiary'} flex items-center justify-center font-bold text-sm transition-all" data-step="${i}">${i}</div>`;
+      }
+      
+      container.innerHTML = html;
+    }
+    
+    // Render step content
+    function renderStep(stepNum) {
+      const step = problem.steps[stepNum - 1];
+      const container = document.getElementById('stepContent');
+      
+      let questionHTML = `<span data-katex="${step.questionFormulas[0]}"></span> ${step.question}`;
+      if (step.questionFormulas[1]) {
+        questionHTML += ` <span data-katex="${step.questionFormulas[1]}"></span>`;
+      }
+      questionHTML += step.questionPart;
+      
+      const choicesHTML = step.choices.map((choice, idx) => `
+        <button class="choice-btn p-4 min-h-[44px] border-2 border-border-light rounded-xl text-center w-full" data-choice="${idx}">
+          <span data-katex="${choice}"></span>
+        </button>
+      `).join('');
+      
+      container.innerHTML = `
+        <div class="step-panel slide-up">
+          <div class="bg-gray-50 rounded-xl p-4 mb-4">
+            <h3 class="font-bold text-text-primary mb-1 text-sm">${step.title}</h3>
+            <p class="text-xs text-text-secondary">${step.desc}</p>
+          </div>
+          
+          <p class="text-sm text-text-secondary mb-3">${questionHTML}</p>
+          
+          <div class="grid grid-cols-2 gap-3" id="stepChoices">
+            ${choicesHTML}
+          </div>
+        </div>
+      `;
+      
+      // Setup click handlers
+      container.querySelectorAll('.choice-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          if (this.classList.contains('disabled')) return;
+          container.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedChoice = parseInt(this.dataset.choice);
+          
+          const nextBtn = document.getElementById('nextStepBtn');
+          nextBtn.classList.remove('opacity-50', 'pointer-events-none');
+        });
+      });
+      
+      // Render KaTeX
+      setTimeout(() => {
+        document.querySelectorAll('[data-katex]').forEach(el => {
+          renderKatex(el, el.dataset.katex);
+        });
+      }, 50);
+      
+      // Update bonus text
+      updateBonusText();
+    }
+    
+    // Update bonus XP display
+    function updateBonusText() {
+      const bonus = calculateBonus();
+      document.getElementById('bonusXPText').textContent = `+${bonus} XP`;
+    }
+    
+    // Toast notification
+    function showToast(message, type = 'info', duration = 3000) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const styles = {
+        info: 'bg-gray-800 text-white',
+        success: 'bg-success text-white',
+        error: 'bg-error text-white',
+        warning: 'bg-math text-gray-900'
+      };
+      const icons = {
+        info: 'info',
+        success: 'check_circle',
+        error: 'error',
+        warning: 'lightbulb'
+      };
+      
+      toast.className = `${styles[type]} px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 mb-2 toast-show pointer-events-auto max-w-xs`;
+      toast.innerHTML = `
+        <span class="material-icons-round text-lg">${icons[type]}</span>
+        <span class="text-sm font-medium">${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.remove('toast-show');
+        toast.classList.add('toast-hide');
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
+    }
+    
+    // Open direct answer modal
+    function openDirectAnswer() {
+      if (bonusUsed) return;
+      
+      const modal = document.getElementById('directAnswerModal');
+      const choicesContainer = document.getElementById('finalChoices');
+      
+      // Render final choices
+      choicesContainer.innerHTML = problem.finalChoices.map((choice, idx) => `
+        <button class="final-choice-btn p-4 min-h-[44px] border-2 border-border-light rounded-xl text-center bg-white hover:border-math" data-choice="${idx}" onclick="selectFinalAnswer(${idx})">
+          <span data-katex="${choice}" class="text-lg font-bold"></span>
+        </button>
+      `).join('');
+      
+      // Render KaTeX
+      setTimeout(() => {
+        choicesContainer.querySelectorAll('[data-katex]').forEach(el => {
+          renderKatex(el, el.dataset.katex);
+        });
+      }, 50);
+      
+      modal.classList.remove('hidden');
+      
+      // Start timer
+      directTimer = 10;
+      updateDirectTimer();
+      directTimerInterval = setInterval(() => {
+        directTimer--;
+        updateDirectTimer();
+        
+        if (directTimer <= 0) {
+          clearInterval(directTimerInterval);
+          closeDirectAnswer();
+          bonusUsed = true;
+          updateBonusUI();
+          showToast('시간 초과! 단계별로 풀어주세요.', 'warning');
+        }
+      }, 1000);
+    }
+    
+    // Update direct answer timer display
+    function updateDirectTimer() {
+      const timerText = document.getElementById('directTimerText');
+      const timerRing = document.getElementById('directTimerRing');
+      
+      timerText.textContent = directTimer;
+      
+      const circumference = 100.53;
+      const offset = circumference - (directTimer / 10) * circumference;
+      timerRing.style.strokeDashoffset = offset;
+      
+      if (directTimer <= 3) {
+        timerText.classList.add('text-error');
+        timerRing.style.stroke = '#EF4444';
+      } else {
+        timerText.classList.remove('text-error');
+        timerRing.style.stroke = 'white';
+      }
+    }
+    
+    // Select final answer
+    function selectFinalAnswer(index) {
+      clearInterval(directTimerInterval);
+      bonusUsed = true;
+      
+      const isCorrect = index === problem.correctFinalIndex;
+      const bonus = calculateBonus();
+      
+      if (isCorrect) {
+        solveMethod = 'direct';
+        showResult(true, bonus);
+      } else {
+        // Record error
+        errorLog.push({
+          type: 'direct',
+          step: currentStep,
+          myAnswer: problem.finalChoices[index],
+          correctAnswer: problem.finalChoices[problem.correctFinalIndex],
+          timestamp: new Date().toISOString()
+        });
+        
+        closeDirectAnswer();
+        updateBonusUI();
+        showToast('오답! 단계별로 풀어보세요.', 'error');
+      }
+    }
+    
+    // Close direct answer modal (취소 = 기회 소진)
+    function closeDirectAnswer() {
+      clearInterval(directTimerInterval);
+      document.getElementById('directAnswerModal').classList.add('hidden');
+      
+      // 취소해도 기회 소진
+      if (!bonusUsed) {
+        bonusUsed = true;
+        updateBonusUI();
+        showToast('보너스 기회가 소진되었어요. 단계별로 풀어주세요!', 'warning');
+      }
+    }
+    
+    // Update bonus UI after used
+    function updateBonusUI() {
+      document.getElementById('directAnswerSection').classList.add('hidden');
+      document.getElementById('bonusUsedSection').classList.remove('hidden');
+    }
+    
+    // Submit step answer
+    function submitStepAnswer() {
+      if (selectedChoice === null) return;
+      
+      const stepData = problem.steps[currentStep - 1];
+      const isCorrect = selectedChoice === stepData.correct;
+      
+      const container = document.getElementById('stepChoices');
+      const buttons = container.querySelectorAll('.choice-btn');
+      
+      buttons.forEach(btn => btn.classList.add('disabled'));
+      
+      if (isCorrect) {
+        buttons[selectedChoice].classList.remove('selected');
+        buttons[selectedChoice].classList.add('correct', 'pulse-success');
+        
+        updateStepIndicator(currentStep, 'completed');
+        showToast('정답! 👏', 'success', 1500);
+        
+        setTimeout(() => proceedToNextStep(), 600);
+      } else {
+        errorLog.push({
+          type: 'step',
+          step: currentStep,
+          stepTitle: stepData.title,
+          myAnswer: stepData.choices[selectedChoice],
+          correctAnswer: stepData.choices[stepData.correct],
+          timestamp: new Date().toISOString()
+        });
+        
+        buttons[selectedChoice].classList.remove('selected');
+        buttons[selectedChoice].classList.add('wrong', 'shake');
+        buttons[stepData.correct].classList.add('correct');
+        
+        updateStepIndicator(currentStep, 'error');
+        
+        setTimeout(() => showExplanation(stepData), 400);
+      }
+    }
+    
+    // Update step indicator
+    function updateStepIndicator(step, status) {
+      const indicator = document.querySelector(`.step-indicator[data-step="${step}"]`);
+      const connector = document.querySelector(`.step-connector[data-after="${step}"]`);
+      
+      indicator.classList.remove('bg-math', 'bg-border-light', 'text-gray-900', 'text-text-tertiary');
+      
+      if (status === 'completed') {
+        indicator.classList.add('bg-success', 'text-white');
+        indicator.innerHTML = '<span class="material-icons-round text-sm">check</span>';
+        if (connector) {
+          connector.classList.remove('bg-border-light');
+          connector.classList.add('bg-success');
+        }
+      } else if (status === 'error') {
+        indicator.classList.add('bg-warning', 'text-gray-900');
+        indicator.innerHTML = '!';
+        if (connector) {
+          connector.classList.remove('bg-border-light');
+          connector.classList.add('bg-warning');
+        }
+      }
+    }
+    
+    // Show explanation modal
+    function showExplanation(stepData) {
+      const content = document.getElementById('explanationContent');
+      content.innerHTML = `
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 bg-warning-light rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-warning text-2xl">lightbulb</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-text-primary">이렇게 생각해보세요</h3>
+            <p class="text-sm text-text-secondary">${stepData.title}</p>
+          </div>
+        </div>
+        <div class="bg-math-light rounded-xl p-4 mb-4">
+          <p class="text-text-primary text-sm">${stepData.explanation}</p>
+        </div>
+        <div class="text-center bg-gray-50 rounded-xl p-4">
+          <span class="text-xs text-text-tertiary">정답</span>
+          <div id="explanationFormula" class="text-xl font-bold text-success mt-1"></div>
+        </div>
+      `;
+      
+      document.getElementById('explanationModal').classList.remove('hidden');
+      
+      setTimeout(() => {
+        const formulaEl = document.getElementById('explanationFormula');
+        renderKatex(formulaEl, stepData.resultFormula);
+      }, 50);
+    }
+    
+    // Close explanation and proceed
+    function closeExplanationAndNext() {
+      document.getElementById('explanationModal').classList.add('hidden');
+      proceedToNextStep();
+    }
+    
+    // Proceed to next step
+    function proceedToNextStep() {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        selectedChoice = null;
+        
+        const nextIndicator = document.querySelector(`.step-indicator[data-step="${currentStep}"]`);
+        nextIndicator.classList.remove('bg-border-light', 'text-text-tertiary');
+        nextIndicator.classList.add('bg-math', 'text-gray-900');
+        
+        const nextBtn = document.getElementById('nextStepBtn');
+        nextBtn.classList.add('opacity-50', 'pointer-events-none');
+        
+        renderStep(currentStep);
+        
+        // Update bonus text if not used
+        if (!bonusUsed) {
+          updateBonusText();
+        }
+      } else {
+        showResult(true, 0);
+      }
+    }
+    
+    // Show hint
+    function showHint() {
+      showToast(problem.hints[currentStep - 1], 'warning', 4000);
+    }
+    
+    // Show result
+    function showResult(success, bonusXP) {
+      const elapsedTime = Math.round((Date.now() - startTime) / 1000);
+      const baseXP = 20;
+      const totalXP = baseXP + bonusXP;
+      const stepErrors = errorLog.filter(e => e.type === 'step');
+      
+      // Save error log
+      const existingLog = JSON.parse(localStorage.getItem('mathErrorLog') || '[]');
+      localStorage.setItem('mathErrorLog', JSON.stringify([...existingLog, ...errorLog]));
+      
+      const isDirect = solveMethod === 'direct';
+      
+      const content = document.getElementById('resultContent');
+      content.innerHTML = `
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full ${isDirect ? 'badge-direct' : 'bg-success'} flex items-center justify-center">
+          <span class="material-icons-round text-4xl text-white">${isDirect ? 'bolt' : 'check'}</span>
+        </div>
+        <h2 class="text-2xl font-bold text-text-primary mb-2">
+          ${isDirect ? '🎉 바로 정답!' : '✨ 정답입니다!'}
+        </h2>
+        <p class="text-text-secondary mb-4 text-sm">
+          ${isDirect ? `${currentStep}단계에서 바로 맞췄어요!` : 
+            stepErrors.length > 0 ? `${stepErrors.length}개 단계에서 설명을 봤어요.` : '모든 단계를 완벽하게!'}
+        </p>
+        <div class="bg-gray-50 rounded-xl p-4 mb-4">
+          <div class="flex justify-around">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-success">+${totalXP}</div>
+              <div class="text-xs text-text-tertiary">XP</div>
+              ${bonusXP > 0 ? `<div class="text-[10px] text-success">(보너스 +${bonusXP})</div>` : ''}
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-text-primary">${elapsedTime}초</div>
+              <div class="text-xs text-text-tertiary">소요시간</div>
+            </div>
+            <div class="text-center">
+              <div class="text-sm font-bold ${isDirect ? 'text-success' : 'text-math'}">${isDirect ? '바로정답' : '단계완료'}</div>
+              <div class="text-xs text-text-tertiary">풀이방식</div>
+            </div>
+          </div>
+        </div>
+        ${stepErrors.length > 0 ? `
+          <div class="bg-warning-light rounded-lg p-3 mb-4 text-left">
+            <p class="text-xs text-warning font-medium flex items-center gap-1">
+              <span class="material-icons-round text-sm">info</span>
+              틀린 단계: ${stepErrors.map(e => e.step).join(', ')}단계
+            </p>
+          </div>
+        ` : ''}
+        <a href="math-daily-result.html" class="block w-full py-3 bg-math hover:bg-math-dark text-gray-900 font-bold rounded-xl transition-colors text-center">
+          다음 문제
+        </a>
+      `;
+      
+      document.getElementById('resultModal').classList.remove('hidden');
+      
+      if (isDirect) createConfetti();
+    }
+    
+    // Skip problem
+    function skipProblem() {
+      if (confirm('이 문제를 건너뛰시겠습니까?')) {
+        window.location.href = 'subject-math.html';
+      }
+    }
+    
+    // Create confetti
+    function createConfetti() {
+      const colors = ['#FBBC05', '#22C55E', '#FF6D4D', '#4285F4'];
+      const modal = document.getElementById('resultModal');
+      
+      for (let i = 0; i < 40; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.cssText = `
+          position: absolute;
+          width: ${Math.random() * 8 + 4}px;
+          height: ${Math.random() * 8 + 4}px;
+          background: ${colors[Math.floor(Math.random() * colors.length)]};
+          left: ${Math.random() * 100}%;
+          top: 0;
+          border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+          animation: confetti-fall ${Math.random() * 1.5 + 1}s ease-out forwards;
+        `;
+        modal.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 2500);
+      }
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Render main equation
+      setTimeout(() => {
+        renderKatex(document.getElementById('problemEquation'), problem.equation);
+      }, 100);
+      
+      initStepProgress();
+      renderStep(1);
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

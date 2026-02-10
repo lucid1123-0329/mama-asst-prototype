@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학원 설정 | MAMA-ASST 관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            'deep-navy': '#1A2E4D',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'border-medium': '#D1D5DB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%); color: white; }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .modal-overlay { 
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .tab-btn.active { color: #FF6D4D; border-color: #FF6D4D; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .toggle-switch { transition: background-color 0.3s; }
+    .toggle-switch.active { background-color: #FF6D4D; }
+    .toggle-switch .toggle-dot { transition: transform 0.3s; }
+    .toggle-switch.active .toggle-dot { transform: translateX(20px); }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-deep-navy flex-col fixed h-full z-40">
+      <div class="p-4 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">M</span>
+          </div>
+          <span class="text-white font-bold">MAMA-ASST</span>
+          <span class="ml-auto px-2 py-0.5 bg-primary/20 text-primary text-xs rounded-full">Admin</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+        <a href="admin-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        
+        <div class="pt-2">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">사용자 관리</p>
+          <a href="admin-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">school</span>
+            <span class="font-medium">학생 관리</span>
+          </a>
+          <a href="admin-temp-accounts.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">person_add</span>
+            <span class="font-medium">임시 계정</span>
+          </a>
+          <a href="admin-parents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">family_restroom</span>
+            <span class="font-medium">학부모 관리</span>
+          </a>
+          <a href="admin-instructors.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">person</span>
+            <span class="font-medium">강사 관리</span>
+          </a>
+        </div>
+        
+        <div class="pt-2">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">학원 운영</p>
+          <a href="admin-classes.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">class</span>
+            <span class="font-medium">반 관리</span>
+          </a>
+          <a href="admin-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">fact_check</span>
+            <span class="font-medium">출결 관리</span>
+          </a>
+          <a href="admin-homework.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">assignment</span>
+            <span class="font-medium">숙제 관리</span>
+          </a>
+          <a href="admin-daily-evaluations.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">rate_review</span>
+            <span class="font-medium">일일 평가</span>
+          </a>
+          <a href="admin-counseling.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">record_voice_over</span>
+            <span class="font-medium">2주 상담</span>
+          </a>
+          <a href="admin-learning-status.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">insights</span>
+            <span class="font-medium">학습 현황</span>
+          </a>
+          <a href="admin-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">payments</span>
+            <span class="font-medium">결제 관리</span>
+          </a>
+          <a href="admin-content-request.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">upload_file</span>
+            <span class="font-medium">콘텐츠 요청</span>
+          </a>
+        </div>
+        
+        <div class="pt-2">
+          <a href="admin-settings.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+            <span class="material-icons-round text-xl">settings</span>
+            <span class="font-medium">학원 설정</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">관</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">명불허전 학원</p>
+            <p class="text-xs text-white/60">관리자</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-navy text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="font-bold text-lg">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="admin-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="admin-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">school</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="admin-settings.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">settings</span>
+          <span class="font-medium">학원 설정</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64">
+      
+      <!-- Mobile Header -->
+      <header class="lg:hidden h-14 bg-navy text-white flex items-center justify-between px-4 sticky top-0 z-30">
+        <button onclick="openMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">menu</span>
+        </button>
+        <h1 class="font-bold">학원 설정</h1>
+        <div class="w-10"></div>
+      </header>
+      
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-30">
+        <div>
+          <h1 class="text-xl font-bold text-text-primary">학원 설정</h1>
+          <p class="text-sm text-text-tertiary">학원 정보 및 시스템 설정을 관리합니다</p>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6">
+        
+        <!-- Tabs -->
+        <div class="bg-surface rounded-2xl border border-border-light overflow-hidden">
+          <div class="border-b border-border-light">
+            <div class="flex overflow-x-auto">
+              <button onclick="switchTab('basic', this)" class="tab-btn active px-6 py-4 text-sm font-medium border-b-2 border-primary text-primary whitespace-nowrap">
+                기본 정보
+              </button>
+              <button onclick="switchTab('subscription', this)" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-text-secondary whitespace-nowrap">
+                구독 관리
+              </button>
+              <button onclick="switchTab('notification', this)" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-text-secondary whitespace-nowrap">
+                알림 설정
+              </button>
+              <button onclick="switchTab('security', this)" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-text-secondary whitespace-nowrap">
+                보안
+              </button>
+              <button onclick="switchTab('data', this)" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-text-secondary whitespace-nowrap">
+                데이터 관리
+              </button>
+            </div>
+          </div>
+          
+          <!-- Tab Content: Basic Info -->
+          <div id="tab-basic" class="tab-content active p-6">
+            <form class="space-y-6 max-w-2xl">
+              <div>
+                <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+                  <span class="material-icons-round text-primary">business</span>
+                  학원 기본 정보
+                </h3>
+                
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">학원명</label>
+                    <input type="text" value="명불허전 학원" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                  </div>
+                  
+                  <div class="grid lg:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-text-primary mb-2">사업자등록번호</label>
+                      <input type="text" value="123-45-67890" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-text-primary mb-2">대표자명</label>
+                      <input type="text" value="홍길동" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                    </div>
+                  </div>
+                  
+                  <div class="grid lg:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-text-primary mb-2">대표 연락처</label>
+                      <input type="tel" value="02-1234-5678" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-text-primary mb-2">이메일</label>
+                      <input type="email" value="contact@academy.co.kr" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">주소</label>
+                    <input type="text" value="서울시 강남구 테헤란로 123, 4층" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                  </div>
+                </div>
+              </div>
+              
+              <div class="pt-4 border-t border-border-light">
+                <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+                  <span class="material-icons-round text-primary">schedule</span>
+                  운영 시간
+                </h3>
+                
+                <div class="space-y-4">
+                  <div class="grid lg:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-text-primary mb-2">운영 시작 시간</label>
+                      <input type="time" value="09:00" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-text-primary mb-2">운영 종료 시간</label>
+                      <input type="time" value="22:00" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">휴무일</label>
+                    <div class="flex flex-wrap gap-2">
+                      <label class="cursor-pointer">
+                        <input type="checkbox" class="hidden peer">
+                        <span class="px-4 py-2 border border-border-light rounded-xl text-sm text-text-secondary peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all">일요일</span>
+                      </label>
+                      <label class="cursor-pointer">
+                        <input type="checkbox" class="hidden peer">
+                        <span class="px-4 py-2 border border-border-light rounded-xl text-sm text-text-secondary peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all">공휴일</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex gap-3 pt-4">
+                <button type="button" class="px-6 py-3 border border-border-light rounded-xl text-text-secondary hover:bg-gray-50 transition-colors">
+                  취소
+                </button>
+                <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors">
+                  저장
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <!-- Tab Content: Subscription -->
+          <div id="tab-subscription" class="tab-content p-6">
+            <div class="max-w-2xl space-y-6">
+              <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+                <span class="material-icons-round text-primary">card_membership</span>
+                구독 관리
+              </h3>
+              
+              <!-- Current Plan Card -->
+              <div class="bg-gradient-to-br from-primary to-orange-400 rounded-2xl p-6 text-white">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="px-3 py-1 bg-white/20 rounded-full text-sm font-medium">현재 플랜</span>
+                  <span class="text-2xl font-bold">Pro</span>
+                </div>
+                <div class="space-y-3">
+                  <div class="flex justify-between">
+                    <span class="text-white/80">등록 학생 수</span>
+                    <span class="font-bold">127명</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-white/80">월 이용료</span>
+                    <span class="font-bold">635,000원 <span class="text-sm font-normal">(학생당 5,000원)</span></span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-white/80">다음 결제일</span>
+                    <span class="font-bold">2025.02.01</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-white/80">구독 시작일</span>
+                    <span class="font-bold">2024.09.15</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Plan Info -->
+              <div class="p-4 bg-info-light rounded-xl">
+                <div class="flex gap-2">
+                  <span class="material-icons-round text-info text-lg">info</span>
+                  <div class="text-sm text-text-secondary">
+                    <p class="font-medium text-info mb-1">요금제 안내</p>
+                    <p>MAMA-ASST는 학생 수 기반 종량제 요금으로 운영됩니다. 등록된 학생 수에 따라 자동 계산됩니다.</p>
+                    <ul class="list-disc list-inside mt-2 space-y-1 text-text-tertiary">
+                      <li>1~50명: 학생당 월 6,000원</li>
+                      <li>51~100명: 학생당 월 5,500원</li>
+                      <li>101명 이상: 학생당 월 5,000원</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Billing History -->
+              <div class="pt-6 border-t border-border-light">
+                <h4 class="font-bold text-text-primary mb-4">결제 내역</h4>
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                    <div>
+                      <p class="font-medium text-text-primary">2025년 1월</p>
+                      <p class="text-xs text-text-tertiary">127명 × 5,000원</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="font-bold text-text-primary">635,000원</p>
+                      <span class="text-xs text-success">결제 완료</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                    <div>
+                      <p class="font-medium text-text-primary">2024년 12월</p>
+                      <p class="text-xs text-text-tertiary">125명 × 5,000원</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="font-bold text-text-primary">625,000원</p>
+                      <span class="text-xs text-success">결제 완료</span>
+                    </div>
+                  </div>
+                </div>
+                <button class="mt-3 text-sm text-primary hover:underline">전체 내역 보기</button>
+              </div>
+              
+              <!-- Payment Method -->
+              <div class="pt-6 border-t border-border-light">
+                <h4 class="font-bold text-text-primary mb-4">결제 수단</h4>
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">BC</div>
+                    <div>
+                      <p class="font-medium text-text-primary">BC카드 **** 1234</p>
+                      <p class="text-xs text-text-tertiary">만료일: 12/27</p>
+                    </div>
+                  </div>
+                  <button class="text-sm text-primary hover:underline">변경</button>
+                </div>
+              </div>
+              
+              <!-- Cancel Subscription -->
+              <div class="pt-6 border-t border-border-light">
+                <button class="text-sm text-text-tertiary hover:text-error transition-colors">구독 해지 신청</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tab Content: Notification -->
+          <div id="tab-notification" class="tab-content p-6">
+            <div class="max-w-2xl space-y-6">
+              <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+                <span class="material-icons-round text-primary">notifications</span>
+                알림 설정
+              </h3>
+              
+              <!-- NCP SENS Status -->
+              <div class="bg-info-light border border-info/20 rounded-xl p-4 flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-info/20 flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-info text-2xl">sms</span>
+                </div>
+                <div class="flex-1">
+                  <p class="font-bold text-info mb-1">NCP SENS 연동</p>
+                  <p class="text-sm text-info/80">카카오 알림톡 및 SMS 발송이 가능합니다.</p>
+                  <div class="mt-2 text-sm">
+                    <span class="text-text-tertiary">이번 달 발송량:</span>
+                    <span class="font-medium text-text-primary ml-1">1,245건</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="space-y-4">
+                <h4 class="font-bold text-text-primary">알림 유형별 설정</h4>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div class="flex items-center gap-3">
+                    <span class="material-icons-round text-success">login</span>
+                    <div>
+                      <p class="font-medium text-text-primary">등/하원 알림</p>
+                      <p class="text-sm text-text-tertiary">학부모에게 출결 알림 발송</p>
+                    </div>
+                  </div>
+                  <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-7 bg-gray-300 rounded-full relative">
+                    <span class="toggle-dot absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow"></span>
+                  </button>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div class="flex items-center gap-3">
+                    <span class="material-icons-round text-korean">assignment</span>
+                    <div>
+                      <p class="font-medium text-text-primary">숙제 알림</p>
+                      <p class="text-sm text-text-tertiary">숙제 배정/마감 알림 발송</p>
+                    </div>
+                  </div>
+                  <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-7 bg-gray-300 rounded-full relative">
+                    <span class="toggle-dot absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow"></span>
+                  </button>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div class="flex items-center gap-3">
+                    <span class="material-icons-round text-planner">event</span>
+                    <div>
+                      <p class="font-medium text-text-primary">상담 일정 알림</p>
+                      <p class="text-sm text-text-tertiary">상담 예약/리마인더 발송</p>
+                    </div>
+                  </div>
+                  <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-7 bg-gray-300 rounded-full relative">
+                    <span class="toggle-dot absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow"></span>
+                  </button>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div class="flex items-center gap-3">
+                    <span class="material-icons-round text-error">payments</span>
+                    <div>
+                      <p class="font-medium text-text-primary">결제 알림</p>
+                      <p class="text-sm text-text-tertiary">청구서 발행/결제 완료 알림</p>
+                    </div>
+                  </div>
+                  <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-7 bg-gray-300 rounded-full relative">
+                    <span class="toggle-dot absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow"></span>
+                  </button>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div class="flex items-center gap-3">
+                    <span class="material-icons-round text-math">description</span>
+                    <div>
+                      <p class="font-medium text-text-primary">리포트 공유 알림</p>
+                      <p class="text-sm text-text-tertiary">학습/상담 리포트 공유 알림</p>
+                    </div>
+                  </div>
+                  <button onclick="toggleSwitch(this)" class="toggle-switch w-12 h-7 bg-gray-300 rounded-full relative">
+                    <span class="toggle-dot absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tab Content: Security -->
+          <div id="tab-security" class="tab-content p-6">
+            <div class="max-w-2xl space-y-6">
+              <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+                <span class="material-icons-round text-primary">security</span>
+                보안 설정
+              </h3>
+              
+              <!-- Admin Account Management -->
+              <div class="space-y-4">
+                <h4 class="font-bold text-text-primary">관리자 계정 관리</h4>
+                
+                <div class="space-y-2">
+                  <!-- Owner Account -->
+                  <div class="flex items-center justify-between p-4 bg-primary-light/30 border border-primary/20 rounded-xl">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">원</div>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <p class="font-medium text-text-primary">홍길동</p>
+                          <span class="px-2 py-0.5 bg-primary text-white text-xs rounded-full">원장</span>
+                        </div>
+                        <p class="text-xs text-text-tertiary"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="157a627b7067557476747170786c3b767a3b7e67">[email&#160;protected]</a></p>
+                      </div>
+                    </div>
+                    <span class="text-xs text-text-tertiary">본인</span>
+                  </div>
+                  
+                  <!-- General Admin Accounts -->
+                  <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-navy-medium flex items-center justify-center text-white font-bold">관</div>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <p class="font-medium text-text-primary">김관리</p>
+                          <span class="px-2 py-0.5 bg-navy-medium text-white text-xs rounded-full">일반 관리자</span>
+                        </div>
+                        <p class="text-xs text-text-tertiary"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="91f0f5fcf8ffa0d1f0f2f0f5f4fce8bff2febffae3">[email&#160;protected]</a> · 마지막 로그인: 2시간 전</p>
+                      </div>
+                    </div>
+                    <button class="text-sm text-primary hover:underline">수정</button>
+                  </div>
+                  
+                  <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-navy-medium flex items-center justify-center text-white font-bold">관</div>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <p class="font-medium text-text-primary">이관리</p>
+                          <span class="px-2 py-0.5 bg-navy-medium text-white text-xs rounded-full">일반 관리자</span>
+                        </div>
+                        <p class="text-xs text-text-tertiary"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="28494c4541461a68494b494c4d4551064b4706435a">[email&#160;protected]</a> · 마지막 로그인: 1일 전</p>
+                      </div>
+                    </div>
+                    <button class="text-sm text-primary hover:underline">수정</button>
+                  </div>
+                </div>
+                
+                <button onclick="openAddAdminModal()" class="flex items-center gap-2 px-4 py-2 border border-dashed border-border-medium rounded-xl text-text-secondary hover:border-primary hover:text-primary transition-colors">
+                  <span class="material-icons-round text-lg">person_add</span>
+                  관리자 계정 추가
+                </button>
+                
+                <p class="text-xs text-text-tertiary">
+                  * 일반 관리자는 학원 설정(기본 정보, 구독 관리)을 수정할 수 없습니다.
+                </p>
+              </div>
+              
+              <div class="pt-6 border-t border-border-light space-y-4">
+                <h4 class="font-bold text-text-primary">내 비밀번호 변경</h4>
+                
+                <div>
+                  <label class="block text-sm font-medium text-text-primary mb-2">현재 비밀번호</label>
+                  <input type="password" placeholder="현재 비밀번호 입력" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-text-primary mb-2">새 비밀번호</label>
+                  <input type="password" placeholder="새 비밀번호 입력" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                  <p class="text-xs text-text-tertiary mt-1">영문, 숫자 포함 6자 이상</p>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-text-primary mb-2">새 비밀번호 확인</label>
+                  <input type="password" placeholder="새 비밀번호 다시 입력" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+                </div>
+                
+                <button class="px-6 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors">
+                  비밀번호 변경
+                </button>
+              </div>
+              
+              <div class="pt-6 border-t border-border-light space-y-4">
+                <h4 class="font-bold text-text-primary">접근 권한</h4>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div>
+                    <p class="font-medium text-text-primary">로그인 실패 잠금</p>
+                    <p class="text-sm text-text-tertiary">5회 실패 시 10분 계정 잠금</p>
+                  </div>
+                  <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-7 bg-gray-300 rounded-full relative">
+                    <span class="toggle-dot absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow"></span>
+                  </button>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div>
+                    <p class="font-medium text-text-primary">자동 로그아웃</p>
+                    <p class="text-sm text-text-tertiary">30분 비활동 시 자동 로그아웃</p>
+                  </div>
+                  <button onclick="toggleSwitch(this)" class="toggle-switch active w-12 h-7 bg-gray-300 rounded-full relative">
+                    <span class="toggle-dot absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tab Content: Data -->
+          <div id="tab-data" class="tab-content p-6">
+            <div class="max-w-2xl space-y-6">
+              <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+                <span class="material-icons-round text-primary">storage</span>
+                데이터 관리
+              </h3>
+              
+              <!-- Export -->
+              <div class="space-y-4">
+                <h4 class="font-bold text-text-primary">데이터 내보내기</h4>
+                
+                <div class="grid lg:grid-cols-2 gap-3">
+                  <button class="p-4 border border-border-light rounded-xl hover:border-primary/30 hover:bg-primary-light/30 transition-all text-left">
+                    <div class="flex items-center gap-3 mb-2">
+                      <span class="material-icons-round text-info">groups</span>
+                      <span class="font-medium text-text-primary">학생 목록</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary">학생 정보 CSV 다운로드</p>
+                  </button>
+                  
+                  <button class="p-4 border border-border-light rounded-xl hover:border-primary/30 hover:bg-primary-light/30 transition-all text-left">
+                    <div class="flex items-center gap-3 mb-2">
+                      <span class="material-icons-round text-success">fact_check</span>
+                      <span class="font-medium text-text-primary">출결 기록</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary">출결 데이터 CSV 다운로드</p>
+                  </button>
+                  
+                  <button class="p-4 border border-border-light rounded-xl hover:border-primary/30 hover:bg-primary-light/30 transition-all text-left">
+                    <div class="flex items-center gap-3 mb-2">
+                      <span class="material-icons-round text-korean">school</span>
+                      <span class="font-medium text-text-primary">학습 기록</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary">학습 데이터 CSV 다운로드</p>
+                  </button>
+                  
+                  <button class="p-4 border border-border-light rounded-xl hover:border-primary/30 hover:bg-primary-light/30 transition-all text-left">
+                    <div class="flex items-center gap-3 mb-2">
+                      <span class="material-icons-round text-warning">payments</span>
+                      <span class="font-medium text-text-primary">결제 내역</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary">결제 데이터 CSV 다운로드</p>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="pt-6 border-t border-border-light space-y-4">
+                <h4 class="font-bold text-text-primary">저장 공간</h4>
+                
+                <div class="bg-gray-50 rounded-xl p-4">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm text-text-secondary">사용량</span>
+                    <span class="text-sm font-bold text-text-primary">2.4 GB / 10 GB</span>
+                  </div>
+                  <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary rounded-full" style="width: 24%"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="pt-6 border-t border-border-light">
+                <h4 class="font-bold text-error mb-4">위험 구역</h4>
+                
+                <div class="bg-error-light border border-error/20 rounded-xl p-4">
+                  <div class="flex items-start gap-3">
+                    <span class="material-icons-round text-error">warning</span>
+                    <div class="flex-1">
+                      <p class="font-medium text-error mb-1">학원 데이터 초기화</p>
+                      <p class="text-sm text-error/80 mb-3">모든 학생, 학습 기록, 결제 내역이 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</p>
+                      <button onclick="openResetStep1()" class="px-4 py-2 bg-error text-white rounded-lg text-sm hover:bg-error/90 transition-colors">
+                        데이터 초기화
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+    </main>
+    
+  </div>
+  
+  <!-- Reset Step 1 Modal (Warning) -->
+  <div id="resetStep1Modal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl max-w-md w-full">
+      <div class="p-6 text-center">
+        <div class="w-16 h-16 rounded-full bg-error-light flex items-center justify-center mx-auto mb-4">
+          <span class="material-icons-round text-error text-3xl">warning</span>
+        </div>
+        <h3 class="text-lg font-bold text-error mb-2">⚠️ 주의: 데이터 초기화</h3>
+        <div class="text-sm text-text-secondary mb-6 text-left space-y-2">
+          <p>다음 데이터가 <strong class="text-error">영구 삭제</strong>됩니다:</p>
+          <ul class="list-disc list-inside text-text-tertiary space-y-1">
+            <li>학생 및 학부모 계정 (127명)</li>
+            <li>모든 학습 기록 및 성향검사 결과</li>
+            <li>상담 기록 및 일일평가</li>
+            <li>결제 내역 및 청구서</li>
+            <li>출결 기록</li>
+          </ul>
+          <p class="text-error font-medium">이 작업은 되돌릴 수 없습니다!</p>
+        </div>
+        
+        <div class="flex gap-3">
+          <button onclick="closeResetModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl text-text-secondary hover:bg-gray-50 transition-colors">
+            취소
+          </button>
+          <button onclick="openResetStep2()" class="flex-1 px-4 py-2.5 bg-error text-white rounded-xl hover:bg-error/90 transition-colors">
+            계속 진행
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Reset Step 2 Modal (Password) -->
+  <div id="resetStep2Modal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl max-w-md w-full">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="material-icons-round text-error text-2xl">lock</span>
+          <h3 class="text-lg font-bold text-text-primary">비밀번호 확인</h3>
+        </div>
+        
+        <p class="text-sm text-text-secondary mb-4">계속 진행하려면 관리자 비밀번호를 입력하세요.</p>
+        
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-text-primary mb-2">비밀번호</label>
+          <input type="password" id="resetPassword" placeholder="비밀번호 입력" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-error/30 focus:border-error transition-all">
+        </div>
+        
+        <div class="flex gap-3">
+          <button onclick="closeResetModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl text-text-secondary hover:bg-gray-50 transition-colors">
+            취소
+          </button>
+          <button onclick="openResetStep3()" class="flex-1 px-4 py-2.5 bg-error text-white rounded-xl hover:bg-error/90 transition-colors">
+            확인
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Reset Step 3 Modal (Final Confirm) -->
+  <div id="resetStep3Modal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl max-w-md w-full">
+      <div class="p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="material-icons-round text-error text-2xl">delete_forever</span>
+          <h3 class="text-lg font-bold text-error">최종 확인</h3>
+        </div>
+        
+        <p class="text-sm text-text-secondary mb-4">
+          정말로 모든 데이터를 삭제하시겠습니까?<br>
+          확인을 위해 아래에 <strong class="text-error">"초기화"</strong>를 입력하세요.
+        </p>
+        
+        <div class="mb-6">
+          <input type="text" id="resetConfirmText" placeholder="초기화" class="w-full px-4 py-3 border border-error rounded-xl focus:outline-none focus:ring-2 focus:ring-error/30 text-center text-lg font-bold">
+        </div>
+        
+        <div class="flex gap-3">
+          <button onclick="closeResetModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl text-text-secondary hover:bg-gray-50 transition-colors">
+            취소
+          </button>
+          <button onclick="executeReset()" class="flex-1 px-4 py-2.5 bg-error text-white rounded-xl hover:bg-error/90 transition-colors">
+            데이터 삭제
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Add Admin Modal -->
+  <div id="addAdminModal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-border-light flex items-center justify-between">
+        <h3 class="text-lg font-bold text-text-primary">관리자 계정 추가</h3>
+        <button onclick="closeAddAdminModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      
+      <form class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">이름 <span class="text-error">*</span></label>
+          <input type="text" required placeholder="관리자 이름" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">이메일 (로그인 ID) <span class="text-error">*</span></label>
+          <input type="email" required placeholder="admin@academy.co.kr" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">역할</label>
+          <select class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+            <option value="general">일반 관리자</option>
+          </select>
+          <p class="text-xs text-text-tertiary mt-1">일반 관리자는 학원 설정을 수정할 수 없습니다.</p>
+        </div>
+        
+        <div class="p-3 bg-info-light rounded-xl">
+          <div class="flex gap-2">
+            <span class="material-icons-round text-info text-lg">info</span>
+            <p class="text-sm text-text-secondary">초기 비밀번호 <strong>0000</strong>이 설정됩니다. 첫 로그인 시 변경됩니다.</p>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeAddAdminModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl text-text-secondary hover:bg-gray-50 transition-colors">
+            취소
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors">
+            추가
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    function openMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.getElementById('mobileMenu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function switchTab(tabId, clickedBtn) {
+      // Update tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'text-primary', 'border-primary');
+        btn.classList.add('text-text-secondary', 'border-transparent');
+      });
+      clickedBtn.classList.add('active', 'text-primary', 'border-primary');
+      clickedBtn.classList.remove('text-text-secondary', 'border-transparent');
+      
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+    
+    function toggleSwitch(btn) {
+      btn.classList.toggle('active');
+    }
+    
+    // Reset modals
+    function openResetStep1() {
+      const modal = document.getElementById('resetStep1Modal');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function openResetStep2() {
+      const modal1 = document.getElementById('resetStep1Modal');
+      const modal2 = document.getElementById('resetStep2Modal');
+      modal1.classList.remove('open');
+      modal2.classList.add('open');
+    }
+    
+    function openResetStep3() {
+      const password = document.getElementById('resetPassword').value;
+      if (!password) {
+        alert('비밀번호를 입력하세요.');
+        return;
+      }
+      const modal2 = document.getElementById('resetStep2Modal');
+      const modal3 = document.getElementById('resetStep3Modal');
+      modal2.classList.remove('open');
+      modal3.classList.add('open');
+    }
+    
+    function executeReset() {
+      const confirmText = document.getElementById('resetConfirmText').value;
+      if (confirmText !== '초기화') {
+        alert('"초기화"를 정확히 입력하세요.');
+        return;
+      }
+      closeResetModal();
+      alert('데이터 초기화가 완료되었습니다.');
+    }
+    
+    function closeResetModal() {
+      const modals = ['resetStep1Modal', 'resetStep2Modal', 'resetStep3Modal'];
+      modals.forEach(id => {
+        const modal = document.getElementById(id);
+        modal.classList.remove('open');
+      });
+      document.body.style.overflow = '';
+      document.getElementById('resetPassword').value = '';
+      document.getElementById('resetConfirmText').value = '';
+    }
+    
+    // Admin modal
+    function openAddAdminModal() {
+      const modal = document.getElementById('addAdminModal');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAddAdminModal() {
+      document.getElementById('addAdminModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  </script>
+  
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+</body>
+</html>

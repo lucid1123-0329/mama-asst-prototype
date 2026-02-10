@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그/감사 | MAMA-ASST 슈퍼관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'super': '#6366F1',
+            'super-dark': '#4F46E5',
+            'super-light': '#EEF2FF',
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { 
+      background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); 
+      color: white; 
+    }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    
+    /* Modal Styles */
+    .modal-overlay { opacity: 0; visibility: hidden; transition: all 0.3s; }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-content { transform: scale(0.95) translateY(10px); transition: all 0.3s; }
+    .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+    
+    .gradient-super { background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); }
+    .log-tab { transition: all 0.2s ease; }
+    .log-tab.active { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); color: #6366F1; }
+    .status-badge { padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+    .log-row { transition: background 0.15s; cursor: pointer; }
+    .log-row:hover { background-color: #F9FAFB; }
+    .log-level-error { border-left: 3px solid #EF4444; }
+    .log-level-warning { border-left: 3px solid #F59E0B; }
+    .log-level-info { border-left: 3px solid #3B82F6; }
+    .log-level-success { border-left: 3px solid #22C55E; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .live-indicator { animation: pulse 2s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-72 bg-gradient-to-b from-slate-900 to-slate-800 text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-super-light">Super Admin</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">비즈니스</p>
+          <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">apartment</span>
+            <span class="font-medium">학원 관리</span>
+          </a>
+          <a href="super-inquiries.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">support_agent</span>
+            <span class="font-medium">도입 문의</span>
+          </a>
+          <a href="super-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">account_balance</span>
+            <span class="font-medium">결제/정산</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">콘텐츠</p>
+          <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">library_books</span>
+            <span class="font-medium">콘텐츠 마스터</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">운영</p>
+          <a href="super-users.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">groups</span>
+            <span class="font-medium">사용자 관리</span>
+          </a>
+          <a href="super-ai-usage.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">smart_toy</span>
+            <span class="font-medium">AI 모니터링</span>
+          </a>
+          <a href="super-notices.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">campaign</span>
+            <span class="font-medium">공지사항</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">시스템</p>
+          <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">tune</span>
+            <span class="font-medium">시스템 설정</span>
+          </a>
+          <a href="super-logs.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+            <span class="material-icons-round text-xl">history</span>
+            <span class="font-medium">로그/감사</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full gradient-super flex items-center justify-center text-white font-bold">
+            <span class="material-icons-round text-xl">admin_panel_settings</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">Super Admin</p>
+            <p class="text-xs text-white/60">MAMA-ASST Platform</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <span class="font-bold text-lg">Super Admin</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">apartment</span>
+          <span class="font-medium">학원 관리</span>
+        </a>
+        <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">library_books</span>
+          <span class="font-medium">콘텐츠 마스터</span>
+        </a>
+        <a href="super-logs.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl">
+          <span class="material-icons-round text-xl">history</span>
+          <span class="font-medium">로그/감사</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-72">
+      <!-- Top Header -->
+      <header class="bg-white border-b border-border-light sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 lg:px-8 py-4">
+          <div class="flex items-center gap-4">
+            <button onclick="openMobileMenu()" class="lg:hidden p-2 hover:bg-gray-100 rounded-xl">
+              <span class="material-icons-round">menu</span>
+            </button>
+            <div>
+              <h1 class="text-xl font-bold text-navy">로그/감사</h1>
+              <p class="text-sm text-text-secondary">시스템 활동 및 감사 추적</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <div class="hidden sm:flex items-center gap-2 px-3 py-2 bg-success-light rounded-xl cursor-pointer" onclick="openRealtimeModal()">
+              <span class="w-2 h-2 rounded-full bg-success live-indicator"></span>
+              <span class="text-sm font-medium text-success">실시간</span>
+            </div>
+            <button onclick="openFilterSaveModal()" class="p-2 hover:bg-gray-100 rounded-xl hidden sm:block" title="필터 저장">
+              <span class="material-icons-round text-text-secondary">bookmark</span>
+            </button>
+            <button onclick="openLogSettingsModal()" class="p-2 hover:bg-gray-100 rounded-xl hidden sm:block" title="로그 설정">
+              <span class="material-icons-round text-text-secondary">settings</span>
+            </button>
+            <button onclick="refreshLogs()" class="p-2 hover:bg-gray-100 rounded-xl" title="새로고침">
+              <span class="material-icons-round text-text-secondary">refresh</span>
+            </button>
+            <button onclick="openExportLogModal()" class="p-2 hover:bg-gray-100 rounded-xl" title="내보내기">
+              <span class="material-icons-round text-text-secondary">file_download</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- 로그 탭 -->
+        <div class="px-4 lg:px-8 pb-0">
+          <div class="flex gap-1 p-1 bg-gray-100 rounded-xl max-w-2xl overflow-x-auto">
+            <button class="log-tab active flex-1 min-w-[100px] px-4 py-2 rounded-lg text-sm font-medium" onclick="switchLogTab('activity')">활동 로그</button>
+            <button class="log-tab flex-1 min-w-[100px] px-4 py-2 rounded-lg text-sm font-medium text-text-secondary" onclick="switchLogTab('api')">API 로그</button>
+            <button class="log-tab flex-1 min-w-[100px] px-4 py-2 rounded-lg text-sm font-medium text-text-secondary" onclick="switchLogTab('error')">오류 로그</button>
+            <button class="log-tab flex-1 min-w-[100px] px-4 py-2 rounded-lg text-sm font-medium text-text-secondary" onclick="switchLogTab('security')">보안 로그</button>
+          </div>
+        </div>
+      </header>
+      
+      <div class="p-4 lg:p-8">
+        <!-- 통계 카드 -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer hover:shadow-md transition-shadow" onclick="filterByType('all')">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-xl gradient-super flex items-center justify-center">
+                <span class="material-icons-round text-white">timeline</span>
+              </div>
+            </div>
+            <p class="text-sm text-text-secondary">오늘 로그</p>
+            <p class="text-2xl font-bold text-navy">45,230</p>
+          </div>
+          
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer hover:shadow-md transition-shadow" onclick="filterByLevel('ERROR')">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-error to-rose-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">error</span>
+              </div>
+            </div>
+            <p class="text-sm text-text-secondary">오류</p>
+            <p class="text-2xl font-bold text-error">23</p>
+          </div>
+          
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer hover:shadow-md transition-shadow" onclick="filterByLevel('WARNING')">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-warning to-amber-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">warning</span>
+              </div>
+            </div>
+            <p class="text-sm text-text-secondary">경고</p>
+            <p class="text-2xl font-bold text-warning">156</p>
+          </div>
+          
+          <div class="bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer hover:shadow-md transition-shadow" onclick="switchLogTab('security'); document.querySelector('[onclick*=\"security\"]').click();">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-info to-blue-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">security</span>
+              </div>
+            </div>
+            <p class="text-sm text-text-secondary">보안 이벤트</p>
+            <p class="text-2xl font-bold text-info">8</p>
+          </div>
+        </div>
+        
+        <!-- 필터 영역 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-border-light mb-6">
+          <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex-1 relative">
+              <span class="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-text-tertiary">search</span>
+              <input type="text" placeholder="사용자, IP, 이벤트 검색..." 
+                     class="w-full pl-12 pr-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+            
+            <div class="flex flex-wrap gap-3">
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none text-sm">
+                <option>전체 레벨</option>
+                <option>ERROR</option>
+                <option>WARNING</option>
+                <option>INFO</option>
+                <option>DEBUG</option>
+              </select>
+              
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none text-sm">
+                <option>전체 학원</option>
+                <option>명불허전학원</option>
+                <option>강남수학학원</option>
+                <option>분당영재학원</option>
+              </select>
+              
+              <input type="date" class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none text-sm">
+            </div>
+          </div>
+        </div>
+        
+        <!-- 활동 로그 탭 -->
+        <div id="tab-activity" class="log-content">
+          <div class="bg-white rounded-2xl shadow-sm border border-border-light overflow-hidden">
+            <div class="divide-y divide-border-light">
+              <!-- 로그인 로그 -->
+              <div class="log-row log-level-success px-6 py-4 cursor-pointer hover:bg-gray-50" onclick="openLogDetailModal('LOG-20250112-001', 'INFO', '인증', 'kim@academy.com', '10:32:45')">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-xl bg-success-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-success">login</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="status-badge bg-success-light text-success">INFO</span>
+                      <span class="font-medium text-navy">사용자 로그인</span>
+                    </div>
+                    <p class="text-sm text-text-secondary mb-2">김관리 (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f5e5b5256517f525d57115c5052">[email&#160;protected]</a>)님이 로그인했습니다.</p>
+                    <div class="flex flex-wrap gap-4 text-xs text-text-tertiary">
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">apartment</span>
+                        명불허전학원
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">computer</span>
+                        Chrome / Windows
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">location_on</span>
+                        192.168.1.100
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-xs text-text-tertiary whitespace-nowrap">10:32:45</span>
+                </div>
+              </div>
+              
+              <!-- 학생 등록 -->
+              <div class="log-row log-level-info px-6 py-4 cursor-pointer hover:bg-gray-50" onclick="openLogDetailModal('LOG-20250112-002', 'INFO', '시스템', '김관리', '10:28:12')">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-xl bg-info-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-info">person_add</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="status-badge bg-info-light text-info">INFO</span>
+                      <span class="font-medium text-navy">학생 등록</span>
+                    </div>
+                    <p class="text-sm text-text-secondary mb-2">새 학생 '이민준'이 등록되었습니다. (user_id: USR-4824)</p>
+                    <div class="flex flex-wrap gap-4 text-xs text-text-tertiary">
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">apartment</span>
+                        명불허전학원
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">person</span>
+                        김관리
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-xs text-text-tertiary whitespace-nowrap">10:28:12</span>
+                </div>
+              </div>
+              
+              <!-- API 오류 -->
+              <div class="log-row log-level-error px-6 py-4 cursor-pointer hover:bg-gray-50" onclick="openLogDetailModal('LOG-20250112-003', 'ERROR', 'API', 'System', '10:15:33')">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-xl bg-error-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-error">error</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="status-badge bg-error-light text-error">ERROR</span>
+                      <span class="font-medium text-navy">API 호출 실패</span>
+                    </div>
+                    <p class="text-sm text-text-secondary mb-2">Gemini API Rate Limit 초과 (429 Too Many Requests)</p>
+                    <div class="flex flex-wrap gap-4 text-xs text-text-tertiary">
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">api</span>
+                        MATH-01
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">code</span>
+                        429
+                      </span>
+                      <span class="font-mono">retry_count: 3</span>
+                    </div>
+                  </div>
+                  <span class="text-xs text-text-tertiary whitespace-nowrap">10:15:33</span>
+                </div>
+              </div>
+              
+              <!-- 결제 완료 -->
+              <div class="log-row log-level-success px-6 py-4 cursor-pointer hover:bg-gray-50" onclick="openLogDetailModal('LOG-20250112-004', 'INFO', '결제', '명불허전학원', '10:05:22')">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-xl bg-success-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-success">payment</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="status-badge bg-success-light text-success">INFO</span>
+                      <span class="font-medium text-navy">결제 완료</span>
+                    </div>
+                    <p class="text-sm text-text-secondary mb-2">명불허전학원 1월 이용료 결제가 완료되었습니다. (₩635,000)</p>
+                    <div class="flex flex-wrap gap-4 text-xs text-text-tertiary">
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">receipt</span>
+                        PAY-20250108-001
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">credit_card</span>
+                        카드 (국민)
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-xs text-text-tertiary whitespace-nowrap">09:45:22</span>
+                </div>
+              </div>
+              
+              <!-- 보안 경고 -->
+              <div class="log-row log-level-warning px-6 py-4 cursor-pointer hover:bg-gray-50" onclick="openLogDetailModal('LOG-20250112-005', 'WARNING', '보안', 'unknown', '09:30:11')">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-xl bg-warning-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-warning">gpp_maybe</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="status-badge bg-warning-light text-warning">WARNING</span>
+                      <span class="font-medium text-navy">로그인 실패 (3회)</span>
+                    </div>
+                    <p class="text-sm text-text-secondary mb-2"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c3b7a6b0b783b7a6b0b7eda0acae">[email&#160;protected]</a> 계정에서 연속 3회 로그인 실패가 발생했습니다.</p>
+                    <div class="flex flex-wrap gap-4 text-xs text-text-tertiary">
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">location_on</span>
+                        203.245.123.45
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">computer</span>
+                        Safari / macOS
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-xs text-text-tertiary whitespace-nowrap">09:12:08</span>
+                </div>
+              </div>
+              
+              <!-- 콘텐츠 업로드 -->
+              <div class="log-row log-level-info px-6 py-4 cursor-pointer hover:bg-gray-50" onclick="openLogDetailModal('LOG-20250112-006', 'INFO', '콘텐츠', 'Super Admin', '08:30:15')">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-xl bg-info-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-info">cloud_upload</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="status-badge bg-info-light text-info">INFO</span>
+                      <span class="font-medium text-navy">콘텐츠 업로드</span>
+                    </div>
+                    <p class="text-sm text-text-secondary mb-2">국어 지문 CSV 업로드 완료 (5개 지문, AI 처리 대기중)</p>
+                    <div class="flex flex-wrap gap-4 text-xs text-text-tertiary">
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">description</span>
+                        korean_contents_20250108.csv
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">person</span>
+                        Super Admin
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-xs text-text-tertiary whitespace-nowrap">08:30:15</span>
+                </div>
+              </div>
+              
+              <!-- 배치 작업 -->
+              <div class="log-row log-level-success px-6 py-4 cursor-pointer hover:bg-gray-50" onclick="openLogDetailModal('LOG-20250112-007', 'INFO', '배치', 'System', '00:05:23')">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-xl bg-success-light flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-success">schedule</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="status-badge bg-success-light text-success">INFO</span>
+                      <span class="font-medium text-navy">배치 작업 완료</span>
+                    </div>
+                    <p class="text-sm text-text-secondary mb-2">영어 일일 테스트 슬롯 생성 완료 (4,823명 학생 대상)</p>
+                    <div class="flex flex-wrap gap-4 text-xs text-text-tertiary">
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">timer</span>
+                        소요시간: 2분 34초
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">check_circle</span>
+                        성공: 4,820
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">error</span>
+                        실패: 3
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-xs text-text-tertiary whitespace-nowrap">00:05:23</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 더보기 -->
+            <div class="px-6 py-4 border-t border-border-light text-center">
+              <button class="px-6 py-2 text-super hover:bg-super-light rounded-xl transition-colors flex items-center gap-2 mx-auto">
+                <span>더 보기</span>
+                <span class="material-icons-round text-sm">expand_more</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- API 로그 탭 -->
+        <div id="tab-api" class="log-content hidden">
+          <div class="bg-white rounded-2xl shadow-sm border border-border-light p-8 text-center">
+            <span class="material-icons-round text-6xl text-text-tertiary mb-4">api</span>
+            <p class="text-text-secondary">API 로그 탭 내용</p>
+          </div>
+        </div>
+        
+        <!-- 오류 로그 탭 -->
+        <div id="tab-error" class="log-content hidden">
+          <div class="bg-white rounded-2xl shadow-sm border border-border-light p-8 text-center">
+            <span class="material-icons-round text-6xl text-text-tertiary mb-4">bug_report</span>
+            <p class="text-text-secondary">오류 로그 탭 내용</p>
+          </div>
+        </div>
+        
+        <!-- 보안 로그 탭 -->
+        <div id="tab-security" class="log-content hidden">
+          <div class="bg-white rounded-2xl shadow-sm border border-border-light p-8 text-center">
+            <span class="material-icons-round text-6xl text-text-tertiary mb-4">security</span>
+            <p class="text-text-secondary">보안 로그 탭 내용</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- 로그 상세 모달 -->
+  <div id="logDetailModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeLogDetailModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="logDetailIcon" class="w-10 h-10 rounded-xl bg-info-light flex items-center justify-center">
+            <span class="material-icons-round text-info">info</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">로그 상세</h2>
+            <p class="text-sm text-text-secondary" id="logDetailTime">2025.01.12 14:32:15</p>
+          </div>
+        </div>
+        <button onclick="closeLogDetailModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <!-- 기본 정보 -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">로그 ID</p>
+            <p class="font-mono text-sm" id="logDetailId">LOG-20250112-001234</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">레벨</p>
+            <span id="logDetailLevel" class="status-badge bg-info-light text-info">INFO</span>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">카테고리</p>
+            <p class="font-medium" id="logDetailCategory">시스템</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-tertiary mb-1">IP 주소</p>
+            <p class="font-mono text-sm" id="logDetailIp">192.168.1.100</p>
+          </div>
+        </div>
+        
+        <!-- 사용자/학원 정보 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy mb-3">요청 정보</h3>
+          <div class="bg-gray-50 rounded-xl p-4 grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-xs text-text-tertiary mb-1">사용자</p>
+              <p class="font-medium" id="logDetailUser">김관리</p>
+            </div>
+            <div>
+              <p class="text-xs text-text-tertiary mb-1">역할</p>
+              <p class="font-medium" id="logDetailRole">슈퍼 관리자</p>
+            </div>
+            <div>
+              <p class="text-xs text-text-tertiary mb-1">학원</p>
+              <p class="font-medium" id="logDetailAcademy">-</p>
+            </div>
+            <div>
+              <p class="text-xs text-text-tertiary mb-1">User Agent</p>
+              <p class="text-xs truncate" id="logDetailAgent">Chrome/120.0.0.0</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 상세 메시지 -->
+        <div>
+          <h3 class="font-bold text-navy mb-3">상세 내용</h3>
+          <div class="bg-gray-900 text-gray-100 rounded-xl p-4 font-mono text-xs overflow-x-auto">
+            <pre id="logDetailContent" class="whitespace-pre-wrap">{
+  "action": "login",
+  "status": "success",
+  "duration_ms": 125,
+  "metadata": {
+    "method": "email",
+    "device": "desktop"
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="copyLogId()" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2">
+          <span class="material-icons-round text-sm">content_copy</span>
+          ID 복사
+        </button>
+        <button onclick="closeLogDetailModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 로그 내보내기 모달 -->
+  <div id="exportLogModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeExportLogModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">download</span>
+          로그 내보내기
+        </h2>
+        <button onclick="closeExportLogModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <!-- 기간 선택 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">내보내기 기간</label>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-text-secondary">시작일</label>
+              <input type="date" id="exportStartDate" class="w-full px-3 py-2 border border-border-light rounded-lg text-sm">
+            </div>
+            <div>
+              <label class="text-xs text-text-secondary">종료일</label>
+              <input type="date" id="exportEndDate" class="w-full px-3 py-2 border border-border-light rounded-lg text-sm">
+            </div>
+          </div>
+        </div>
+        
+        <!-- 로그 유형 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">로그 유형</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" checked class="w-4 h-4 accent-super">
+              <span class="text-sm">시스템 로그</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" checked class="w-4 h-4 accent-super">
+              <span class="text-sm">접속 로그</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 accent-super">
+              <span class="text-sm">에러 로그</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 accent-super">
+              <span class="text-sm">보안 로그</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 파일 형식 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">파일 형식</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="flex items-center justify-center p-3 border-2 border-super bg-super-light rounded-xl cursor-pointer">
+              <input type="radio" name="exportFormat" value="csv" class="hidden" checked>
+              <span class="text-sm font-medium text-super">CSV</span>
+            </label>
+            <label class="flex items-center justify-center p-3 border border-border-light rounded-xl cursor-pointer hover:border-super">
+              <input type="radio" name="exportFormat" value="json" class="hidden">
+              <span class="text-sm">JSON</span>
+            </label>
+            <label class="flex items-center justify-center p-3 border border-border-light rounded-xl cursor-pointer hover:border-super">
+              <input type="radio" name="exportFormat" value="xlsx" class="hidden">
+              <span class="text-sm">Excel</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeExportLogModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmExportLog()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90 flex items-center gap-2">
+          <span class="material-icons-round text-sm">download</span>
+          내보내기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 토스트 컨테이너 -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-3"></div>
+  
+  <!-- 실시간 모니터링 모달 -->
+  <div id="realtimeModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeRealtimeModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl gradient-super flex items-center justify-center">
+            <span class="material-icons-round text-white">monitoring</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">실시간 로그 모니터링</h2>
+            <p class="text-sm text-text-secondary">모든 시스템 로그를 실시간으로 확인</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 px-3 py-1.5 bg-success-light rounded-lg">
+            <span class="w-2 h-2 rounded-full bg-success live-indicator"></span>
+            <span class="text-sm text-success font-medium">실시간</span>
+          </div>
+          <button onclick="closeRealtimeModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+            <span class="material-icons-round">close</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <!-- 실시간 통계 -->
+        <div class="grid grid-cols-4 gap-4 mb-6">
+          <div class="bg-gray-50 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-navy" id="realtimeTotal">1,247</p>
+            <p class="text-xs text-text-secondary">최근 1분</p>
+          </div>
+          <div class="bg-error-light/50 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-error" id="realtimeErrors">3</p>
+            <p class="text-xs text-text-secondary">오류</p>
+          </div>
+          <div class="bg-warning-light/50 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-warning" id="realtimeWarnings">12</p>
+            <p class="text-xs text-text-secondary">경고</p>
+          </div>
+          <div class="bg-info-light/50 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-info" id="realtimeApi">89</p>
+            <p class="text-xs text-text-secondary">API 호출</p>
+          </div>
+        </div>
+        
+        <!-- 실시간 로그 스트림 -->
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-bold text-navy">로그 스트림</h3>
+          <label class="flex items-center gap-2 text-sm">
+            <input type="checkbox" id="realtimeAutoScroll" checked class="accent-super">
+            <span class="text-text-secondary">자동 스크롤</span>
+          </label>
+        </div>
+        <div id="realtimeLogStream" class="bg-gray-900 rounded-xl p-4 h-64 overflow-y-auto font-mono text-xs">
+          <div class="text-gray-400">[10:45:32.123] <span class="text-success">INFO</span> 사용자 로그인 성공 - kim@academy.com</div>
+          <div class="text-gray-400">[10:45:31.892] <span class="text-info">DEBUG</span> API 요청 시작 - /api/v1/students</div>
+          <div class="text-gray-400">[10:45:31.456] <span class="text-warning">WARN</span> Rate limit 80% 도달 - Gemini API</div>
+          <div class="text-gray-400">[10:45:30.789] <span class="text-success">INFO</span> 학습 세션 완료 - session_id: SES-4821</div>
+          <div class="text-gray-400">[10:45:30.234] <span class="text-error">ERROR</span> API 호출 실패 - 429 Too Many Requests</div>
+          <div class="text-gray-400">[10:45:29.567] <span class="text-success">INFO</span> 배치 작업 시작 - 영어 슬롯 생성</div>
+          <div class="text-gray-400">[10:45:28.901] <span class="text-info">DEBUG</span> DB 쿼리 실행 - 23ms</div>
+          <div class="text-gray-400">[10:45:28.345] <span class="text-success">INFO</span> 결제 처리 완료 - PAY-20250112-045</div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="clearRealtimeLogs()" class="px-4 py-2 text-text-secondary hover:bg-gray-100 rounded-xl flex items-center gap-2">
+          <span class="material-icons-round text-sm">delete_sweep</span>
+          로그 지우기
+        </button>
+        <div class="flex gap-3">
+          <button onclick="toggleRealtimePause()" id="realtimePauseBtn" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2">
+            <span class="material-icons-round text-sm">pause</span>
+            일시정지
+          </button>
+          <button onclick="closeRealtimeModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 필터 저장 모달 -->
+  <div id="filterSaveModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeFilterSaveModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">bookmark</span>
+          필터 프리셋
+        </h2>
+        <button onclick="closeFilterSaveModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <!-- 저장된 프리셋 -->
+        <div class="mb-6">
+          <h3 class="text-sm font-medium text-navy mb-3">저장된 프리셋</h3>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 cursor-pointer" onclick="applyFilterPreset('errors')">
+              <div class="flex items-center gap-3">
+                <span class="material-icons-round text-error text-sm">error</span>
+                <span class="font-medium text-sm">오류만 보기</span>
+              </div>
+              <button onclick="event.stopPropagation(); deleteFilterPreset('errors')" class="p-1 hover:bg-gray-200 rounded">
+                <span class="material-icons-round text-text-tertiary text-sm">close</span>
+              </button>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 cursor-pointer" onclick="applyFilterPreset('api')">
+              <div class="flex items-center gap-3">
+                <span class="material-icons-round text-info text-sm">api</span>
+                <span class="font-medium text-sm">API 호출 로그</span>
+              </div>
+              <button onclick="event.stopPropagation(); deleteFilterPreset('api')" class="p-1 hover:bg-gray-200 rounded">
+                <span class="material-icons-round text-text-tertiary text-sm">close</span>
+              </button>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 cursor-pointer" onclick="applyFilterPreset('security')">
+              <div class="flex items-center gap-3">
+                <span class="material-icons-round text-warning text-sm">security</span>
+                <span class="font-medium text-sm">보안 이벤트</span>
+              </div>
+              <button onclick="event.stopPropagation(); deleteFilterPreset('security')" class="p-1 hover:bg-gray-200 rounded">
+                <span class="material-icons-round text-text-tertiary text-sm">close</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 새 프리셋 저장 -->
+        <div class="border-t border-border-light pt-6">
+          <h3 class="text-sm font-medium text-navy mb-3">현재 필터 저장</h3>
+          <div class="flex gap-2">
+            <input type="text" id="newPresetName" placeholder="프리셋 이름" class="flex-1 px-4 py-2.5 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            <button onclick="saveFilterPreset()" class="px-4 py-2.5 gradient-super text-white rounded-xl hover:opacity-90">
+              저장
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 로그 설정 모달 -->
+  <div id="logSettingsModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeLogSettingsModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">settings</span>
+          로그 설정
+        </h2>
+        <button onclick="closeLogSettingsModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-6">
+        <!-- 보존 기간 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">로그 보존 기간</label>
+          <select id="logRetentionPeriod" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+            <option value="7">7일</option>
+            <option value="30" selected>30일</option>
+            <option value="90">90일</option>
+            <option value="180">180일</option>
+            <option value="365">1년</option>
+          </select>
+          <p class="text-xs text-text-tertiary mt-1">보존 기간이 지난 로그는 자동 삭제됩니다.</p>
+        </div>
+        
+        <!-- 로그 레벨 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">기록할 로그 레벨</label>
+          <div class="space-y-2">
+            <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-error"></span>
+                <span class="text-sm">ERROR</span>
+              </div>
+              <input type="checkbox" checked disabled class="accent-super">
+            </label>
+            <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-warning"></span>
+                <span class="text-sm">WARNING</span>
+              </div>
+              <input type="checkbox" checked class="accent-super">
+            </label>
+            <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-info"></span>
+                <span class="text-sm">INFO</span>
+              </div>
+              <input type="checkbox" checked class="accent-super">
+            </label>
+            <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-gray-400"></span>
+                <span class="text-sm">DEBUG</span>
+              </div>
+              <input type="checkbox" class="accent-super">
+            </label>
+          </div>
+        </div>
+        
+        <!-- 알림 설정 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">오류 알림</label>
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+            <div>
+              <p class="font-medium text-sm">ERROR 발생 시 알림</p>
+              <p class="text-xs text-text-tertiary">Slack/이메일로 즉시 알림</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" checked class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-super"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeLogSettingsModal()" class="px-4 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="saveLogSettings()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90">
+          저장
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // ========================================
+    // 토스트 알림 시스템
+    // ========================================
+    // [MIGRATED TO MODULE] showToast - now using toast.js module
+    
+    // ========================================
+    // Mobile Menu
+    // ========================================
+    function openMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // ========================================
+    // Log Tab Switching
+    // ========================================
+    function switchLogTab(tabName) {
+      document.querySelectorAll('.log-content').forEach(tab => tab.classList.add('hidden'));
+      document.querySelectorAll('.log-tab').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.add('text-text-secondary');
+      });
+      
+      document.getElementById('tab-' + tabName).classList.remove('hidden');
+      event.target.classList.add('active');
+      event.target.classList.remove('text-text-secondary');
+    }
+    
+    // ========================================
+    // Log Detail Modal
+    // ========================================
+    let currentLogId = '';
+    
+    function openLogDetailModal(logId, level, category, user, time) {
+      currentLogId = logId || 'LOG-20250112-001234';
+      document.getElementById('logDetailId').textContent = currentLogId;
+      document.getElementById('logDetailTime').textContent = time || '2025.01.12 14:32:15';
+      document.getElementById('logDetailCategory').textContent = category || '시스템';
+      document.getElementById('logDetailUser').textContent = user || '김관리';
+      
+      // 레벨별 스타일
+      const levelEl = document.getElementById('logDetailLevel');
+      const iconEl = document.getElementById('logDetailIcon');
+      
+      const levelStyles = {
+        INFO: { badge: 'bg-info-light text-info', icon: 'bg-info-light', iconColor: 'text-info', iconName: 'info' },
+        WARN: { badge: 'bg-warning-light text-warning', icon: 'bg-warning-light', iconColor: 'text-warning', iconName: 'warning' },
+        ERROR: { badge: 'bg-error-light text-error', icon: 'bg-error-light', iconColor: 'text-error', iconName: 'error' },
+        DEBUG: { badge: 'bg-gray-200 text-text-secondary', icon: 'bg-gray-100', iconColor: 'text-text-secondary', iconName: 'bug_report' }
+      };
+      
+      const style = levelStyles[level] || levelStyles.INFO;
+      levelEl.className = `status-badge ${style.badge}`;
+      levelEl.textContent = level || 'INFO';
+      iconEl.className = `w-10 h-10 rounded-xl ${style.icon} flex items-center justify-center`;
+      iconEl.innerHTML = `<span class="material-icons-round ${style.iconColor}">${style.iconName}</span>`;
+      
+      document.getElementById('logDetailModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeLogDetailModal() {
+      document.getElementById('logDetailModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function copyLogId() {
+      navigator.clipboard.writeText(currentLogId);
+      showToast('로그 ID가 복사되었습니다.', 'success');
+    }
+    
+    // ========================================
+    // Export Log Modal
+    // ========================================
+    function openExportLogModal() {
+      // 기본 날짜 설정 (최근 7일)
+      const today = new Date();
+      const weekAgo = new Date(today);
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      
+      document.getElementById('exportEndDate').value = today.toISOString().split('T')[0];
+      document.getElementById('exportStartDate').value = weekAgo.toISOString().split('T')[0];
+      
+      document.getElementById('exportLogModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeExportLogModal() {
+      document.getElementById('exportLogModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmExportLog() {
+      const format = document.querySelector('input[name="exportFormat"]:checked').value;
+      closeExportLogModal();
+      showToast(`로그를 ${format.toUpperCase()} 형식으로 내보내는 중...`, 'info');
+      
+      setTimeout(() => {
+        showToast(`system_logs_202501.${format} 다운로드 완료`, 'success');
+      }, 1500);
+    }
+    
+    // ========================================
+    // Quick Actions
+    // ========================================
+    function refreshLogs() {
+      showToast('로그를 새로고침합니다...', 'info');
+      setTimeout(() => {
+        showToast('로그가 업데이트되었습니다.', 'success');
+      }, 1000);
+    }
+    
+    function filterLogs() {
+      showToast('필터가 적용되었습니다.', 'info');
+    }
+    
+    function filterByLevel(level) {
+      showToast(`${level} 레벨 로그만 필터링합니다.`, 'info');
+      // 실제 구현 시 필터 드롭다운 값 변경 및 목록 필터링
+    }
+    
+    function filterByType(type) {
+      if (type === 'all') {
+        showToast('모든 로그를 표시합니다.', 'info');
+      } else {
+        showToast(`${type} 로그만 필터링합니다.`, 'info');
+      }
+    }
+    
+    // ========================================
+    // Realtime Modal
+    // ========================================
+    let realtimeInterval = null;
+    let realtimePaused = false;
+    
+    function openRealtimeModal() {
+      document.getElementById('realtimeModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      startRealtimeUpdates();
+    }
+    
+    function closeRealtimeModal() {
+      document.getElementById('realtimeModal').classList.remove('open');
+      document.body.style.overflow = '';
+      stopRealtimeUpdates();
+    }
+    
+    function startRealtimeUpdates() {
+      if (realtimeInterval) return;
+      
+      realtimeInterval = setInterval(() => {
+        if (realtimePaused) return;
+        
+        // 통계 업데이트 (시뮬레이션)
+        document.getElementById('realtimeTotal').textContent = (parseInt(document.getElementById('realtimeTotal').textContent) + Math.floor(Math.random() * 5)).toLocaleString();
+        
+        // 새 로그 추가
+        const stream = document.getElementById('realtimeLogStream');
+        const now = new Date();
+        const time = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
+        
+        const types = [
+          { level: 'INFO', color: 'text-success', msg: '사용자 로그인 성공' },
+          { level: 'DEBUG', color: 'text-info', msg: 'API 요청 처리 완료' },
+          { level: 'INFO', color: 'text-success', msg: '학습 세션 시작' },
+          { level: 'WARN', color: 'text-warning', msg: 'API 응답 지연 감지' },
+          { level: 'INFO', color: 'text-success', msg: '데이터 동기화 완료' }
+        ];
+        
+        const log = types[Math.floor(Math.random() * types.length)];
+        const newLine = document.createElement('div');
+        newLine.className = 'text-gray-400';
+        newLine.innerHTML = `[${time}] <span class="${log.color}">${log.level}</span> ${log.msg}`;
+        stream.appendChild(newLine);
+        
+        // 자동 스크롤
+        if (document.getElementById('realtimeAutoScroll').checked) {
+          stream.scrollTop = stream.scrollHeight;
+        }
+        
+        // 최대 100줄 유지
+        while (stream.children.length > 100) {
+          stream.removeChild(stream.firstChild);
+        }
+      }, 2000);
+    }
+    
+    function stopRealtimeUpdates() {
+      if (realtimeInterval) {
+        clearInterval(realtimeInterval);
+        realtimeInterval = null;
+      }
+    }
+    
+    function toggleRealtimePause() {
+      realtimePaused = !realtimePaused;
+      const btn = document.getElementById('realtimePauseBtn');
+      if (realtimePaused) {
+        btn.innerHTML = '<span class="material-icons-round text-sm">play_arrow</span> 재개';
+      } else {
+        btn.innerHTML = '<span class="material-icons-round text-sm">pause</span> 일시정지';
+      }
+    }
+    
+    function clearRealtimeLogs() {
+      document.getElementById('realtimeLogStream').innerHTML = '<div class="text-gray-500 text-center py-4">로그가 지워졌습니다.</div>';
+    }
+    
+    // ========================================
+    // Filter Save Modal
+    // ========================================
+    function openFilterSaveModal() {
+      document.getElementById('filterSaveModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeFilterSaveModal() {
+      document.getElementById('filterSaveModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveFilterPreset() {
+      const name = document.getElementById('newPresetName').value;
+      if (!name) {
+        showToast('프리셋 이름을 입력하세요.', 'warning');
+        return;
+      }
+      
+      closeFilterSaveModal();
+      showToast(`'${name}' 프리셋이 저장되었습니다.`, 'success');
+      document.getElementById('newPresetName').value = '';
+    }
+    
+    function applyFilterPreset(presetId) {
+      closeFilterSaveModal();
+      showToast(`'${presetId}' 필터가 적용되었습니다.`, 'info');
+    }
+    
+    function deleteFilterPreset(presetId) {
+      if (confirm('이 프리셋을 삭제하시겠습니까?')) {
+        showToast('프리셋이 삭제되었습니다.', 'success');
+      }
+    }
+    
+    // ========================================
+    // Log Settings Modal
+    // ========================================
+    function openLogSettingsModal() {
+      document.getElementById('logSettingsModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeLogSettingsModal() {
+      document.getElementById('logSettingsModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveLogSettings() {
+      closeLogSettingsModal();
+      showToast('로그 설정이 저장되었습니다.', 'success');
+    }
+    
+    // ========================================
+    // Format Radio Selection
+    // ========================================
+    document.querySelectorAll('input[name="exportFormat"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('input[name="exportFormat"]').forEach(r => {
+          r.closest('label').classList.remove('border-2', 'border-super', 'bg-super-light');
+          r.closest('label').classList.add('border', 'border-border-light');
+          r.closest('label').querySelector('span').classList.remove('font-medium', 'text-super');
+        });
+        this.closest('label').classList.remove('border', 'border-border-light');
+        this.closest('label').classList.add('border-2', 'border-super', 'bg-super-light');
+        this.closest('label').querySelector('span').classList.add('font-medium', 'text-super');
+      });
+    });
+    
+    // ========================================
+    // Keyboard Shortcuts
+    // ========================================
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeLogDetailModal();
+        closeExportLogModal();
+        closeRealtimeModal();
+        closeFilterSaveModal();
+        closeLogSettingsModal();
+        closeMobileMenu();
+      }
+      
+      // Ctrl+R 새로고침
+      if (e.ctrlKey && e.key === 'r') {
+        e.preventDefault();
+        refreshLogs();
+      }
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

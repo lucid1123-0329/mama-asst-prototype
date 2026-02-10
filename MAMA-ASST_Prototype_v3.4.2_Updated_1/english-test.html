@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7초 발화 테스트 | MAMA-ASST</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3C',
+            'primary-light': '#FFF0ED',
+            secondary: '#1A2E4D',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            'english-dark': '#2D9248',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#10B981',
+            'success-light': '#D1FAE5',
+            error: '#F43F5E',
+            'error-light': '#FFE4E6',
+            warning: '#F59E0B',
+            'warning-light': '#FEF3C7',
+          },
+          fontFamily: {
+            display: ['Lexend', 'sans-serif'],
+            body: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'],
+          },
+          borderRadius: {
+            'xl': '1rem',
+            '2xl': '1.5rem',
+            '3xl': '2rem',
+            '4xl': '2.5rem',
+          },
+          animation: {
+            'wave': 'wave 1.2s ease-in-out infinite',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+          },
+          keyframes: {
+            wave: {
+              '0%, 100%': { height: '20%' },
+              '50%': { height: '100%' },
+            }
+          }
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    .filled {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    
+    /* Circular progress */
+    .circular-timer {
+      transform: rotate(-90deg);
+    }
+    .timer-bg {
+      fill: none;
+      stroke: #E5E7EB;
+      stroke-width: 4;
+    }
+    .timer-progress {
+      fill: none;
+      stroke: #34A853;
+      stroke-width: 4;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.1s linear;
+    }
+    .timer-progress.warning {
+      stroke: #F59E0B;
+    }
+    .timer-progress.danger {
+      stroke: #F43F5E;
+    }
+    
+    /* Waveform bars */
+    .wave-bar {
+      animation: wave 1s ease-in-out infinite;
+    }
+    .wave-bar:nth-child(1) { animation-delay: 0s; }
+    .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+    .wave-bar:nth-child(6) { animation-delay: 0.5s; }
+    .wave-bar:nth-child(7) { animation-delay: 0.4s; }
+    .wave-bar:nth-child(8) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(9) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(10) { animation-delay: 0.1s; }
+    
+    @keyframes wave {
+      0%, 100% { height: 12px; }
+      50% { height: 40px; }
+    }
+    
+    /* Shake animation */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    .shake {
+      animation: shake 0.5s ease-in-out;
+    }
+    
+    /* Bounce animation */
+    @keyframes bounce-in {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .bounce-in {
+      animation: bounce-in 0.5s ease-out;
+    }
+    
+    /* Countdown */
+    @keyframes countdown-pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 0.8; }
+    }
+    .countdown-pulse {
+      animation: countdown-pulse 1s ease-in-out;
+    }
+    
+    /* Modal backdrop */
+    .modal-backdrop {
+      backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body class="bg-background font-body text-secondary antialiased min-h-screen flex flex-col">
+  
+  <!-- Header -->
+  <header class="w-full bg-surface border-b border-border-light px-6 py-4 sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <!-- Logo & Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-english-light rounded-xl flex items-center justify-center text-english">
+          <span class="material-symbols-outlined text-2xl">graphic_eq</span>
+        </div>
+        <h1 class="text-secondary text-lg md:text-xl font-bold tracking-tight">7초 발화 테스트</h1>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="hidden md:flex flex-col gap-1.5 w-1/3 max-w-xs">
+        <div class="flex justify-between text-xs font-bold text-text-secondary">
+          <span>Question <span id="currentQ">1</span> of <span id="totalQ">10</span></span>
+          <span class="text-english" id="progressPercent">10%</span>
+        </div>
+        <div class="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden">
+          <div class="h-full bg-english rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(52,168,83,0.4)]" style="width: 10%;" id="progressBar"></div>
+        </div>
+      </div>
+      
+      <!-- Quit Button -->
+      <button onclick="confirmQuit()" class="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all text-text-secondary font-medium text-sm" aria-label="테스트 종료">
+        <span class="material-symbols-outlined text-xl" aria-hidden="true">logout</span>
+        <span class="hidden md:inline">Quit</span>
+      </button>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
+  <main class="flex-1 flex items-center justify-center p-6 relative">
+    <!-- Background Decoration -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      <div class="absolute top-[-10%] left-[-5%] w-[40vw] h-[40vw] bg-english/5 rounded-full blur-[100px]"></div>
+      <div class="absolute bottom-[-10%] right-[-5%] w-[35vw] h-[35vw] bg-secondary/5 rounded-full blur-[100px]"></div>
+    </div>
+    
+    <div class="w-full max-w-4xl relative z-10">
+      
+      <!-- Question Card -->
+      <div class="bg-surface rounded-4xl shadow-xl shadow-gray-200/50 overflow-hidden flex flex-col items-center text-center p-8 md:p-12 lg:p-16 border border-white/50" id="questionCard">
+        
+        <!-- Phase Indicator -->
+        <div class="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider" id="phaseIndicator" aria-live="polite">
+          <span class="material-symbols-outlined text-lg" id="phaseIcon" aria-hidden="true">record_voice_over</span>
+          <span id="phaseText">준비하세요</span>
+        </div>
+        
+        <!-- Korean Meaning -->
+        <p class="text-2xl md:text-3xl text-text-secondary font-medium mb-4" id="meaningText">예약하다</p>
+        
+        <!-- Main Sentence with Blank -->
+        <h2 class="text-secondary text-2xl md:text-4xl font-bold leading-tight mb-8" id="sentenceText">
+          "I would like to <span class="relative inline-block text-english border-b-4 border-english/30 px-2 min-w-[80px]" id="blankWord">____</span> a table for two."
+        </h2>
+        
+        <!-- Instruction -->
+        <p class="text-text-tertiary text-base mb-10 max-w-xl mx-auto" id="instructionText">
+          뜻을 보고 빈칸에 들어갈 영어 단어를 말하세요
+        </p>
+        
+        <!-- Interactive Recording Area -->
+        <div class="relative w-full flex flex-col items-center justify-center min-h-[280px]" id="recordingArea">
+          
+          <!-- Waveform Left -->
+          <div class="absolute left-4 md:left-16 lg:left-24 h-16 flex items-center gap-1 opacity-0 transition-opacity" id="waveLeft">
+            <div class="wave-bar w-1.5 bg-english rounded-full h-3"></div>
+            <div class="wave-bar w-1.5 bg-english rounded-full h-6"></div>
+            <div class="wave-bar w-1.5 bg-english rounded-full h-4"></div>
+            <div class="wave-bar w-1.5 bg-english rounded-full h-8"></div>
+            <div class="wave-bar w-1.5 bg-english rounded-full h-5"></div>
+          </div>
+          
+          <!-- Waveform Right -->
+          <div class="absolute right-4 md:right-16 lg:right-24 h-16 flex items-center gap-1 opacity-0 transition-opacity" id="waveRight">
+            <div class="wave-bar w-1.5 bg-english rounded-full h-5"></div>
+            <div class="wave-bar w-1.5 bg-english rounded-full h-8"></div>
+            <div class="wave-bar w-1.5 bg-english rounded-full h-4"></div>
+            <div class="wave-bar w-1.5 bg-english rounded-full h-6"></div>
+            <div class="wave-bar w-1.5 bg-english rounded-full h-3"></div>
+          </div>
+          
+          <!-- Circular Timer & Mic Button -->
+          <div class="relative w-52 h-52 flex items-center justify-center">
+            <!-- SVG Ring -->
+            <svg class="absolute inset-0 w-full h-full circular-timer" viewBox="0 0 100 100" id="timerSvg">
+              <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="timer-progress" cx="50" cy="50" r="45" 
+                      stroke-dasharray="0 283" id="timerProgress"></circle>
+            </svg>
+            
+            <!-- Mic Button -->
+            <button class="relative z-10 w-32 h-32 rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95 group cursor-pointer" id="micBtn" onclick="toggleRecording()" aria-label="녹음 시작">
+              <span class="material-symbols-outlined text-5xl text-white group-hover:scale-110 transition-transform" id="micIcon" aria-hidden="true">mic</span>
+              <!-- Pulse Effect -->
+              <div class="absolute inset-0 rounded-full opacity-0 animate-ping-slow" id="micPulse"></div>
+            </button>
+          </div>
+          
+          <!-- Timer Text -->
+          <div class="mt-6 flex flex-col items-center">
+            <span class="text-4xl font-bold text-secondary tabular-nums tracking-tight" id="timerText">7.0</span>
+            <span class="text-sm font-medium text-text-tertiary uppercase tracking-widest mt-1" id="timerLabel" aria-live="polite">대기 중</span>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+      <!-- Score Summary (Bottom) -->
+      <div class="mt-6 flex items-center justify-center gap-4">
+        <div class="flex items-center gap-2 px-4 py-2 bg-success-light rounded-full" role="status" aria-label="통과">
+          <span class="material-symbols-outlined text-success filled" aria-hidden="true">check_circle</span>
+          <span class="font-bold text-success" id="passCount">0</span>
+        </div>
+        <div class="flex items-center gap-2 px-4 py-2 bg-warning-light rounded-full" role="status" aria-label="불안정">
+          <span class="material-symbols-outlined text-warning" aria-hidden="true">warning</span>
+          <span class="font-bold text-warning" id="unstableCount">0</span>
+        </div>
+        <div class="flex items-center gap-2 px-4 py-2 bg-error-light rounded-full" role="status" aria-label="실패">
+          <span class="material-symbols-outlined text-error" aria-hidden="true">cancel</span>
+          <span class="font-bold text-error" id="failCount">0</span>
+        </div>
+      </div>
+      
+    </div>
+  </main>
+  
+  <!-- Feedback Modal -->
+  <div class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden" id="feedbackModal" role="dialog" aria-modal="true" aria-label="결과 피드백">
+    <div class="bg-surface rounded-3xl shadow-2xl max-w-md w-full p-8 bounce-in" id="feedbackContent">
+      <!-- Content will be dynamically inserted -->
+    </div>
+  </div>
+  
+  <!-- Thinking Phase Overlay -->
+  <div class="fixed inset-0 bg-secondary/90 z-40 flex items-center justify-center hidden" id="thinkingOverlay" role="dialog" aria-modal="true" aria-label="AI 분석 중">
+    <div class="text-center text-white">
+      <div class="text-9xl font-display font-bold countdown-pulse" id="countdownNumber">2</div>
+      <p class="text-xl mt-4 opacity-80">단어를 생각하세요...</p>
+    </div>
+  </div>
+  
+  <!-- Quit Confirmation Modal -->
+  <div class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden" id="quitModal" role="dialog" aria-modal="true" aria-label="종료 확인">
+    <div class="bg-surface rounded-3xl shadow-2xl max-w-sm w-full p-6">
+      <h3 class="text-xl font-bold text-secondary mb-2">테스트를 종료할까요?</h3>
+      <p class="text-text-secondary mb-6">진행 상황이 저장되지 않습니다.</p>
+      <div class="flex gap-3">
+        <button onclick="closeQuitModal()" class="flex-1 py-3 px-4 bg-gray-100 hover:bg-gray-200 text-secondary font-bold rounded-xl transition-all">
+          계속하기
+        </button>
+        <a href="subject-english.html" class="flex-1 py-3 px-4 bg-error hover:bg-error/90 text-white font-bold rounded-xl transition-all text-center">
+          종료하기
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Test Data
+    const questions = [
+      { word: 'book', meaning: '예약하다', sentence: 'I would like to ____ a table for two.', translation: '2인용 테이블을 예약하고 싶습니다.' },
+      { word: 'apply', meaning: '지원하다', sentence: 'She decided to ____ for the scholarship.', translation: '그녀는 장학금에 지원하기로 결정했습니다.' },
+      { word: 'consider', meaning: '고려하다', sentence: 'Please ____ my proposal carefully.', translation: '제 제안을 신중히 고려해 주세요.' },
+      { word: 'determine', meaning: '결정하다', sentence: 'We need to ____ the cause of the problem.', translation: '우리는 문제의 원인을 파악해야 합니다.' },
+      { word: 'establish', meaning: '설립하다', sentence: 'They plan to ____ a new company.', translation: '그들은 새 회사를 설립할 계획입니다.' },
+      { word: 'evidence', meaning: '증거', sentence: 'There is no ____ to support his claim.', translation: '그의 주장을 뒷받침할 증거가 없습니다.' },
+      { word: 'function', meaning: '기능하다', sentence: 'This button ____ as a power switch.', translation: '이 버튼은 전원 스위치 역할을 합니다.' },
+      { word: 'indicate', meaning: '나타내다', sentence: 'The signs ____ that rain is coming.', translation: '징후들이 비가 올 것을 나타내고 있습니다.' },
+      { word: 'maintain', meaning: '유지하다', sentence: 'It is important to ____ good health.', translation: '건강을 유지하는 것은 중요합니다.' },
+      { word: 'obtain', meaning: '얻다', sentence: 'You can ____ a visa at the embassy.', translation: '대사관에서 비자를 얻을 수 있습니다.' }
+    ];
+    
+    // State
+    let currentIndex = 0;
+    let phase = 'ready'; // ready, thinking, recording, result
+    let timer = null;
+    let timeLeft = 7;
+    let recordingTimeout = null;
+    let results = { pass: 0, unstable: 0, fail: 0 };
+    let questionResults = [];
+    
+    // Update question display
+    function updateQuestion() {
+      const q = questions[currentIndex];
+      
+      document.getElementById('meaningText').textContent = q.meaning;
+      document.getElementById('sentenceText').innerHTML = `"${q.sentence.replace('____', '<span class="relative inline-block text-english border-b-4 border-english/30 px-2 min-w-[80px]" id="blankWord">____</span>')}"`;
+      document.getElementById('currentQ').textContent = currentIndex + 1;
+      document.getElementById('progressPercent').textContent = `${Math.round(((currentIndex + 1) / questions.length) * 100)}%`;
+      document.getElementById('progressBar').style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
+      
+      // Reset UI
+      setPhase('ready');
+    }
+    
+    // Set phase
+    function setPhase(newPhase) {
+      phase = newPhase;
+      const indicator = document.getElementById('phaseIndicator');
+      const phaseIcon = document.getElementById('phaseIcon');
+      const phaseText = document.getElementById('phaseText');
+      const micBtn = document.getElementById('micBtn');
+      const micIcon = document.getElementById('micIcon');
+      const micPulse = document.getElementById('micPulse');
+      const waveLeft = document.getElementById('waveLeft');
+      const waveRight = document.getElementById('waveRight');
+      const timerLabel = document.getElementById('timerLabel');
+      const timerProgress = document.getElementById('timerProgress');
+      
+      switch(newPhase) {
+        case 'ready':
+          indicator.className = 'mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-text-secondary text-sm font-bold uppercase tracking-wider';
+          phaseIcon.textContent = 'touch_app';
+          phaseText.textContent = '마이크를 클릭하세요';
+          micBtn.className = 'relative z-10 w-32 h-32 bg-english hover:bg-english-dark rounded-full flex items-center justify-center shadow-lg shadow-english/30 transition-all active:scale-95 group cursor-pointer';
+          micIcon.textContent = 'mic';
+          micPulse.className = 'absolute inset-0 rounded-full bg-english opacity-20 animate-ping-slow';
+          waveLeft.style.opacity = '0';
+          waveRight.style.opacity = '0';
+          timerLabel.textContent = '준비';
+          document.getElementById('timerText').textContent = '7.0';
+          timerProgress.setAttribute('stroke-dasharray', '0 283');
+          timerProgress.classList.remove('warning', 'danger');
+          break;
+          
+        case 'thinking':
+          indicator.className = 'mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-warning-light text-warning text-sm font-bold uppercase tracking-wider';
+          phaseIcon.textContent = 'psychology';
+          phaseText.textContent = '생각 중...';
+          micBtn.className = 'relative z-10 w-32 h-32 bg-gray-300 rounded-full flex items-center justify-center shadow-lg transition-all cursor-not-allowed';
+          micIcon.textContent = 'mic_off';
+          micPulse.className = 'absolute inset-0 rounded-full opacity-0';
+          timerLabel.textContent = '대기';
+          break;
+          
+        case 'recording':
+          indicator.className = 'mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-error-light text-error text-sm font-bold uppercase tracking-wider';
+          phaseIcon.textContent = 'mic';
+          phaseText.textContent = '녹음 중';
+          micBtn.className = 'relative z-10 w-32 h-32 bg-error hover:bg-error/90 rounded-full flex items-center justify-center shadow-lg shadow-error/30 transition-all cursor-pointer';
+          micIcon.textContent = 'stop';
+          micPulse.className = 'absolute inset-0 rounded-full bg-error opacity-20 animate-ping';
+          waveLeft.style.opacity = '0.5';
+          waveRight.style.opacity = '0.5';
+          timerLabel.textContent = '녹음 중';
+          break;
+      }
+    }
+    
+    // Toggle recording
+    function toggleRecording() {
+      if (phase === 'ready') {
+        startThinkingPhase();
+      } else if (phase === 'recording') {
+        // User stopped early - generate dummy result
+        clearInterval(timer);
+        clearTimeout(recordingTimeout);
+        generateDummyResult();
+      }
+    }
+    
+    // Thinking phase (2 seconds countdown)
+    function startThinkingPhase() {
+      setPhase('thinking');
+      
+      const overlay = document.getElementById('thinkingOverlay');
+      const countdownNum = document.getElementById('countdownNumber');
+      overlay.classList.remove('hidden');
+      
+      let count = 2;
+      countdownNum.textContent = count;
+      
+      const countInterval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          countdownNum.textContent = count;
+          countdownNum.classList.remove('countdown-pulse');
+          void countdownNum.offsetWidth;
+          countdownNum.classList.add('countdown-pulse');
+        } else {
+          clearInterval(countInterval);
+          overlay.classList.add('hidden');
+          startRecording();
+        }
+      }, 1000);
+    }
+    
+    // Start recording phase
+    function startRecording() {
+      setPhase('recording');
+      timeLeft = 7;
+
+      // Simulate speech detection after random delay (1.5~4.5s)
+      const delay = Math.random() * 3000 + 1500;
+      recordingTimeout = setTimeout(() => {
+        if (phase === 'recording') {
+          clearInterval(timer);
+          generateDummyResult();
+        }
+      }, delay);
+
+      // Start timer
+      const timerText = document.getElementById('timerText');
+      const timerProgress = document.getElementById('timerProgress');
+      const circumference = 2 * Math.PI * 45; // 283
+      
+      timer = setInterval(() => {
+        timeLeft -= 0.1;
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          handleTimeout();
+          return;
+        }
+        
+        // Update display
+        timerText.textContent = timeLeft.toFixed(1);
+        
+        // Update progress ring
+        const progress = ((7 - timeLeft) / 7) * circumference;
+        timerProgress.setAttribute('stroke-dasharray', `${progress} ${circumference}`);
+        
+        // Color changes
+        if (timeLeft <= 2) {
+          timerProgress.classList.add('danger');
+          timerProgress.classList.remove('warning');
+        } else if (timeLeft <= 4) {
+          timerProgress.classList.add('warning');
+        }
+        
+      }, 100);
+    }
+    
+    // Generate dummy result (prototype - no real STT)
+    function generateDummyResult() {
+      phase = 'result';
+
+      const correctWord = questions[currentIndex].word.toLowerCase();
+      const dummyScore = Math.floor(Math.random() * 26) + 70; // 70~95
+      const responseTime = 7 - timeLeft;
+
+      let result;
+      if (dummyScore >= 80) {
+        result = 'pass';
+        results.pass++;
+      } else {
+        result = 'unstable';
+        results.unstable++;
+      }
+
+      questionResults.push({
+        word: correctWord,
+        userAnswer: correctWord,
+        result: result,
+        score: dummyScore,
+        time: responseTime
+      });
+
+      updateScoreSummary();
+      showFeedback(result, correctWord, correctWord, dummyScore);
+    }
+    
+    // Handle timeout
+    function handleTimeout() {
+      clearInterval(timer);
+      clearTimeout(recordingTimeout);
+      phase = 'result';
+      
+      const correctWord = questions[currentIndex].word.toLowerCase();
+      
+      results.fail++;
+      questionResults.push({
+        word: correctWord,
+        userAnswer: '',
+        result: 'timeout',
+        score: 0,
+        time: 7
+      });
+      
+      updateScoreSummary();
+      showFeedback('timeout', correctWord, '', 0);
+    }
+    
+    // Update score summary
+    function updateScoreSummary() {
+      document.getElementById('passCount').textContent = results.pass;
+      document.getElementById('unstableCount').textContent = results.unstable;
+      document.getElementById('failCount').textContent = results.fail;
+    }
+    
+    // Show feedback modal
+    function showFeedback(result, correctWord, userWord, score) {
+      const modal = document.getElementById('feedbackModal');
+      const content = document.getElementById('feedbackContent');
+      
+      let html = '';
+      
+      switch(result) {
+        case 'pass':
+          html = `
+            <div class="text-center">
+              <div class="w-20 h-20 bg-success-light rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-success text-5xl filled">check_circle</span>
+              </div>
+              <h3 class="text-2xl font-bold text-success mb-2">Perfect! 🎉</h3>
+              <p class="text-text-secondary mb-4">발음이 정확해요!</p>
+              
+              <div class="bg-gray-50 rounded-2xl p-4 mb-6">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm text-text-secondary">발음 정확도</span>
+                  <span class="font-bold text-success">${score}%</span>
+                </div>
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: ${score}%"></div>
+                </div>
+              </div>
+              
+              <button onclick="nextQuestion()" class="w-full py-4 bg-success hover:bg-success/90 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                다음 문제
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          `;
+          break;
+          
+        case 'unstable':
+          html = `
+            <div class="text-center">
+              <div class="w-20 h-20 bg-warning-light rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-warning text-5xl">warning</span>
+              </div>
+              <h3 class="text-2xl font-bold text-warning mb-2">Almost! 💪</h3>
+              <p class="text-text-secondary mb-4">발음을 조금 더 연습해봐요</p>
+              
+              <div class="bg-gray-50 rounded-2xl p-4 mb-6">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm text-text-secondary">발음 정확도</span>
+                  <span class="font-bold text-warning">${score}%</span>
+                </div>
+                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full" style="width: ${score}%"></div>
+                </div>
+                <p class="text-xs text-text-tertiary mt-2">80% 이상이면 PASS!</p>
+              </div>
+              
+              <div class="flex gap-3">
+                <button onclick="listenCorrect('${correctWord}')" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-secondary font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined">volume_up</span>
+                  정답 듣기
+                </button>
+                <button onclick="nextQuestion()" class="flex-1 py-3 bg-warning hover:bg-warning/90 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                  다음
+                  <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'fail':
+          html = `
+            <div class="text-center">
+              <div class="w-20 h-20 bg-error-light rounded-full flex items-center justify-center mx-auto mb-4 shake">
+                <span class="material-symbols-outlined text-error text-5xl">cancel</span>
+              </div>
+              <h3 class="text-2xl font-bold text-error mb-2">Oops!</h3>
+              <p class="text-text-secondary mb-4">다시 한번 도전해봐요</p>
+              
+              <div class="bg-gray-50 rounded-2xl p-4 mb-6 text-left">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm text-text-secondary">내 답변</span>
+                  <span class="font-bold text-error">${userWord || '(없음)'}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-text-secondary">정답</span>
+                  <span class="font-bold text-success">${correctWord}</span>
+                </div>
+              </div>
+              
+              <div class="flex gap-3">
+                <button onclick="listenCorrect('${correctWord}')" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-secondary font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined">volume_up</span>
+                  정답 듣기
+                </button>
+                <button onclick="nextQuestion()" class="flex-1 py-3 bg-error hover:bg-error/90 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                  다음
+                  <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'timeout':
+          html = `
+            <div class="text-center">
+              <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-text-tertiary text-5xl">timer_off</span>
+              </div>
+              <h3 class="text-2xl font-bold text-text-primary mb-2">시간 초과 ⏰</h3>
+              <p class="text-text-secondary mb-4">7초 안에 답해야 해요!</p>
+              
+              <div class="bg-gray-50 rounded-2xl p-4 mb-6">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-text-secondary">정답</span>
+                  <span class="font-bold text-success">${correctWord}</span>
+                </div>
+              </div>
+              
+              <div class="flex gap-3">
+                <button onclick="listenCorrect('${correctWord}')" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-secondary font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined">volume_up</span>
+                  정답 듣기
+                </button>
+                <button onclick="nextQuestion()" class="flex-1 py-3 bg-secondary hover:bg-secondary/90 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                  다음
+                  <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+          `;
+          break;
+      }
+      
+      content.innerHTML = html;
+      modal.classList.remove('hidden');
+    }
+    
+    // Listen to correct pronunciation
+    function listenCorrect(word) {
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      speechSynthesis.speak(utterance);
+    }
+    
+    // Next question
+    function nextQuestion() {
+      document.getElementById('feedbackModal').classList.add('hidden');
+      
+      currentIndex++;
+      
+      if (currentIndex >= questions.length) {
+        // Save results and go to result page
+        localStorage.setItem('englishTestResults', JSON.stringify({
+          results: results,
+          details: questionResults,
+          date: new Date().toISOString()
+        }));
+        window.location.href = 'english-daily-result.html';
+      } else {
+        updateQuestion();
+      }
+    }
+    
+    // Quit confirmation
+    function confirmQuit() {
+      document.getElementById('quitModal').classList.remove('hidden');
+    }
+    
+    function closeQuitModal() {
+      document.getElementById('quitModal').classList.add('hidden');
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      updateQuestion();
+    });
+    
+    // Keyboard shortcut
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && phase === 'ready') {
+        e.preventDefault();
+        toggleRecording();
+      }
+    });
+  </script>
+  
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

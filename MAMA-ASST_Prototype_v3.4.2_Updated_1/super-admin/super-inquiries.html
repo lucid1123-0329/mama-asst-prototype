@@ -1,0 +1,2649 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>도입 문의 관리 | MAMA-ASST 슈퍼관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'super': '#6366F1',
+            'super-dark': '#4F46E5',
+            'super-light': '#EEF2FF',
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { 
+      background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); 
+      color: white; 
+    }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .gradient-super { background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); }
+    .modal-overlay { opacity: 0; visibility: hidden; transition: all 0.3s; }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-content { transform: scale(0.95) translateY(10px); transition: all 0.3s; }
+    .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+    .pipeline-card { transition: all 0.2s ease; }
+    .pipeline-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .pipeline-card.dragging { opacity: 0.5; transform: rotate(3deg); }
+    .status-badge { padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+    .inquiry-row:hover { background-color: #F9FAFB; }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    /* 드롭다운 애니메이션 */
+    #inquiryDropdown { 
+      opacity: 0;
+      transform: translateY(-5px);
+      transition: all 0.2s ease;
+    }
+    #inquiryDropdown:not(.hidden) {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* 상태 변경 버튼 효과 */
+    .status-change-btn { transition: all 0.2s ease; }
+    .status-change-btn:hover { transform: translateY(-1px); }
+    /* 히스토리 타임라인 */
+    #historyContainer > div { animation: fadeInUp 0.3s ease; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* 채널 선택 스타일 */
+    input[name="messageChannel"]:checked + span,
+    input[name="messageChannel"]:checked ~ span { color: #3B82F6 !important; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-72 bg-gradient-to-b from-slate-900 to-slate-800 text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-super-light">Super Admin</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">비즈니스</p>
+          <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">apartment</span>
+            <span class="font-medium">학원 관리</span>
+            <span class="ml-auto px-2 py-0.5 bg-super/50 text-white text-xs rounded-full">127</span>
+          </a>
+          <a href="super-inquiries.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+            <span class="material-icons-round text-xl">support_agent</span>
+            <span class="font-medium">도입 문의</span>
+            <span class="ml-auto px-2 py-0.5 bg-white/20 text-white text-xs rounded-full">12</span>
+          </a>
+          <a href="super-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">account_balance</span>
+            <span class="font-medium">결제/정산</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">콘텐츠</p>
+          <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">library_books</span>
+            <span class="font-medium">콘텐츠 마스터</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">운영</p>
+          <a href="super-users.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">groups</span>
+            <span class="font-medium">사용자 관리</span>
+          </a>
+          <a href="super-ai-usage.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">smart_toy</span>
+            <span class="font-medium">AI 모니터링</span>
+          </a>
+          <a href="super-notices.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">campaign</span>
+            <span class="font-medium">공지사항</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">시스템</p>
+          <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">tune</span>
+            <span class="font-medium">시스템 설정</span>
+          </a>
+          <a href="super-logs.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">history</span>
+            <span class="font-medium">로그/감사</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full gradient-super flex items-center justify-center text-white font-bold">
+            <span class="material-icons-round text-xl">admin_panel_settings</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">Super Admin</p>
+            <p class="text-xs text-white/60">MAMA-ASST Platform</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <span class="font-bold text-lg">Super Admin</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">apartment</span>
+          <span class="font-medium">학원 관리</span>
+        </a>
+        <a href="super-inquiries.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">support_agent</span>
+          <span class="font-medium">도입 문의</span>
+        </a>
+        <a href="super-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">account_balance</span>
+          <span class="font-medium">결제/정산</span>
+        </a>
+        <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">library_books</span>
+          <span class="font-medium">콘텐츠 마스터</span>
+        </a>
+        <a href="super-users.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">사용자 관리</span>
+        </a>
+        <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">tune</span>
+          <span class="font-medium">시스템 설정</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-72">
+      <!-- Top Header -->
+      <header class="bg-white border-b border-border-light sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 lg:px-8 py-4">
+          <div class="flex items-center gap-4">
+            <button onclick="openMobileMenu()" class="lg:hidden p-2 hover:bg-gray-100 rounded-xl">
+              <span class="material-icons-round">menu</span>
+            </button>
+            <div>
+              <h1 class="text-xl font-bold text-navy">도입 문의 관리</h1>
+              <p class="text-sm text-text-secondary">B2B 영업 파이프라인 및 CRM</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <div class="hidden sm:flex items-center gap-2 px-3 py-2 bg-success-light text-success rounded-xl">
+              <span class="material-icons-round text-sm">trending_up</span>
+              <span class="text-sm font-medium">이번 달 전환율 25%</span>
+            </div>
+            <button onclick="openAddInquiryModal()" class="px-4 py-2 gradient-super text-white rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2">
+              <span class="material-icons-round text-sm">add</span>
+              <span class="hidden sm:inline">문의 등록</span>
+            </button>
+            <button onclick="exportInquiries()" class="p-2 hover:bg-gray-100 rounded-xl" title="내보내기">
+              <span class="material-icons-round text-text-secondary">file_download</span>
+            </button>
+          </div>
+        </div>
+      </header>
+      
+      <div class="p-4 lg:p-8">
+        <!-- 파이프라인 요약 카드 -->
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-border-light cursor-pointer hover:border-warning transition-colors" onclick="filterByStatus('all')">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                <span class="material-icons-round text-text-secondary">inbox</span>
+              </div>
+              <div>
+                <p class="text-xs text-text-secondary">전체</p>
+                <p class="text-xl font-bold text-navy">47</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl p-4 shadow-sm border-2 border-warning cursor-pointer" onclick="filterByStatus('pending')">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-warning-light flex items-center justify-center">
+                <span class="material-icons-round text-warning">priority_high</span>
+              </div>
+              <div>
+                <p class="text-xs text-text-secondary">신규</p>
+                <p class="text-xl font-bold text-warning">12</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-border-light cursor-pointer hover:border-info transition-colors" onclick="filterByStatus('contacted')">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-info-light flex items-center justify-center">
+                <span class="material-icons-round text-info">phone_in_talk</span>
+              </div>
+              <div>
+                <p class="text-xs text-text-secondary">연락 중</p>
+                <p class="text-xl font-bold text-info">8</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-border-light cursor-pointer hover:border-super transition-colors" onclick="filterByStatus('demo')">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-super-light flex items-center justify-center">
+                <span class="material-icons-round text-super">present_to_all</span>
+              </div>
+              <div>
+                <p class="text-xs text-text-secondary">데모</p>
+                <p class="text-xl font-bold text-super">5</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-border-light cursor-pointer hover:border-planner transition-colors" onclick="filterByStatus('negotiating')">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-planner-light flex items-center justify-center">
+                <span class="material-icons-round text-planner">handshake</span>
+              </div>
+              <div>
+                <p class="text-xs text-text-secondary">협상 중</p>
+                <p class="text-xl font-bold text-planner">3</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-border-light cursor-pointer hover:border-success transition-colors" onclick="filterByStatus('converted')">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-success-light flex items-center justify-center">
+                <span class="material-icons-round text-success">check_circle</span>
+              </div>
+              <div>
+                <p class="text-xs text-text-secondary">계약 완료</p>
+                <p class="text-xl font-bold text-success">19</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 검색 및 필터 -->
+        <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-border-light mb-6">
+          <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex-1 relative">
+              <span class="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-text-tertiary">search</span>
+              <input type="text" placeholder="학원명, 담당자명, 연락처, 이메일 검색" 
+                     class="w-full pl-12 pr-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+            
+            <div class="flex flex-wrap gap-3">
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 text-sm min-w-[120px]">
+                <option>전체 상태</option>
+                <option>신규 (PENDING)</option>
+                <option>연락 중 (CONTACTED)</option>
+                <option>데모 예정</option>
+                <option>데모 완료</option>
+                <option>협상 중</option>
+                <option>계약 완료</option>
+                <option>종료</option>
+              </select>
+              
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 text-sm min-w-[120px]">
+                <option>전체 담당자</option>
+                <option>박영업</option>
+                <option>김세일즈</option>
+                <option>이매니저</option>
+                <option>미배정</option>
+              </select>
+              
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 text-sm min-w-[130px]">
+                <option>최근 문의순</option>
+                <option>오래된 문의순</option>
+                <option>학생 수 많은순</option>
+                <option>마지막 연락순</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 문의 목록 테이블 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-border-light overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 border-b border-border-light">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">문의일</th>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">학원 정보</th>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">연락처</th>
+                  <th class="px-6 py-4 text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">예상 학생수</th>
+                  <th class="px-6 py-4 text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">관심 과목</th>
+                  <th class="px-6 py-4 text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">상태</th>
+                  <th class="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">담당자</th>
+                  <th class="px-6 py-4 text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">관리</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-light">
+                <!-- 문의 1 - 신규 (긴급) -->
+                <tr class="inquiry-row cursor-pointer bg-warning-light/30" onclick="openDetailModal('INQ001')">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <span class="material-icons-round text-warning text-sm pulse-dot">fiber_new</span>
+                      <div>
+                        <p class="font-medium text-navy">오늘</p>
+                        <p class="text-xs text-text-secondary">10:32 AM</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-warning-light flex items-center justify-center">
+                        <span class="font-bold text-warning">청</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-navy">청담영어학원</p>
+                        <p class="text-xs text-text-secondary">서울 강남구</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p class="text-sm">김원장</p>
+                    <p class="text-xs text-text-tertiary">010-1234-5678</p>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="px-2 py-1 bg-primary-light text-primary text-xs font-medium rounded-lg">51-100명</span>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex justify-center gap-1">
+                      <span class="w-6 h-6 rounded-full bg-english-light flex items-center justify-center" title="영어">
+                        <span class="text-english text-xs font-bold">E</span>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="status-badge bg-warning text-white">신규</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="text-sm text-text-tertiary">미배정</span>
+                  </td>
+                  <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" onclick="openDetailModal('INQ001')" title="상세보기">
+                        <span class="material-icons-round text-text-secondary text-lg">visibility</span>
+                      </button>
+                      <button class="p-2 hover:bg-success-light rounded-lg" title="전화하기" onclick="openCallModal('INQ001')">
+                        <span class="material-icons-round text-success text-lg">call</span>
+                      </button>
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" title="더보기" onclick="toggleInquiryDropdown(event, 'INQ001')">
+                        <span class="material-icons-round text-text-secondary text-lg">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 문의 2 - 연락 중 -->
+                <tr class="inquiry-row cursor-pointer" onclick="openDetailModal('INQ002')">
+                  <td class="px-6 py-4">
+                    <div>
+                      <p class="font-medium text-navy">어제</p>
+                      <p class="text-xs text-text-secondary">14:20 PM</p>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-info-light flex items-center justify-center">
+                        <span class="font-bold text-info">서</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-navy">서초수학전문학원</p>
+                        <p class="text-xs text-text-secondary">서울 서초구</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p class="text-sm">이대표</p>
+                    <p class="text-xs text-text-tertiary">010-2345-6789</p>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="px-2 py-1 bg-gray-100 text-text-secondary text-xs font-medium rounded-lg">21-50명</span>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex justify-center gap-1">
+                      <span class="w-6 h-6 rounded-full bg-math-light flex items-center justify-center" title="수학">
+                        <span class="text-math text-xs font-bold">M</span>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="status-badge bg-info text-white">연락 중</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full bg-super-light flex items-center justify-center">
+                        <span class="text-super text-xs font-bold">박</span>
+                      </div>
+                      <span class="text-sm">박영업</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" onclick="openDetailModal('INQ002')" title="상세보기">
+                        <span class="material-icons-round text-text-secondary text-lg">visibility</span>
+                      </button>
+                      <button class="p-2 hover:bg-success-light rounded-lg" title="전화하기" onclick="openCallModal('INQ002')">
+                        <span class="material-icons-round text-success text-lg">call</span>
+                      </button>
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" title="더보기" onclick="toggleInquiryDropdown(event, 'INQ002')">
+                        <span class="material-icons-round text-text-secondary text-lg">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="inquiry-row cursor-pointer" onclick="openDetailModal('INQ003')">
+                  <td class="px-6 py-4">
+                    <div>
+                      <p class="font-medium text-navy">01.06</p>
+                      <p class="text-xs text-text-secondary">09:15 AM</p>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-super-light flex items-center justify-center">
+                        <span class="font-bold text-super">강</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-navy">강남스터디학원</p>
+                        <p class="text-xs text-text-secondary">서울 강남구</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p class="text-sm">박관장</p>
+                    <p class="text-xs text-text-tertiary">010-3456-7890</p>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="px-2 py-1 bg-primary-light text-primary text-xs font-medium rounded-lg">101-200명</span>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex justify-center gap-1">
+                      <span class="w-6 h-6 rounded-full bg-korean-light flex items-center justify-center" title="국어">
+                        <span class="text-korean text-xs font-bold">K</span>
+                      </span>
+                      <span class="w-6 h-6 rounded-full bg-english-light flex items-center justify-center" title="영어">
+                        <span class="text-english text-xs font-bold">E</span>
+                      </span>
+                      <span class="w-6 h-6 rounded-full bg-math-light flex items-center justify-center" title="수학">
+                        <span class="text-math text-xs font-bold">M</span>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div>
+                      <span class="status-badge bg-super text-white">데모 예정</span>
+                      <p class="text-xs text-super mt-1">01.15 14:00</p>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full bg-korean-light flex items-center justify-center">
+                        <span class="text-korean text-xs font-bold">김</span>
+                      </div>
+                      <span class="text-sm">김세일즈</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" onclick="openDetailModal('INQ003')" title="상세보기">
+                        <span class="material-icons-round text-text-secondary text-lg">visibility</span>
+                      </button>
+                      <button class="p-2 hover:bg-super-light rounded-lg" title="데모 일정" onclick="openDemoScheduleModal('INQ003')">
+                        <span class="material-icons-round text-super text-lg">event</span>
+                      </button>
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" title="더보기" onclick="toggleInquiryDropdown(event, 'INQ003')">
+                        <span class="material-icons-round text-text-secondary text-lg">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 문의 4 - 협상 중 -->
+                <tr class="inquiry-row cursor-pointer" onclick="openDetailModal('INQ004')">
+                  <td class="px-6 py-4">
+                    <div>
+                      <p class="font-medium text-navy">01.03</p>
+                      <p class="text-xs text-text-secondary">11:45 AM</p>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-planner-light flex items-center justify-center">
+                        <span class="font-bold text-planner">분</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-navy">분당종합학원</p>
+                        <p class="text-xs text-text-secondary">경기 성남시</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p class="text-sm">최관장</p>
+                    <p class="text-xs text-text-tertiary">010-4567-8901</p>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="px-2 py-1 bg-primary-light text-primary text-xs font-medium rounded-lg">200명+</span>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex justify-center gap-1">
+                      <span class="w-6 h-6 rounded-full bg-korean-light flex items-center justify-center" title="국어">
+                        <span class="text-korean text-xs font-bold">K</span>
+                      </span>
+                      <span class="w-6 h-6 rounded-full bg-math-light flex items-center justify-center" title="수학">
+                        <span class="text-math text-xs font-bold">M</span>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="status-badge bg-planner text-white">협상 중</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full bg-super-light flex items-center justify-center">
+                        <span class="text-super text-xs font-bold">박</span>
+                      </div>
+                      <span class="text-sm">박영업</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" onclick="openDetailModal('INQ004')" title="상세보기">
+                        <span class="material-icons-round text-text-secondary text-lg">visibility</span>
+                      </button>
+                      <button class="p-2 hover:bg-success-light rounded-lg" title="계약 전환" onclick="quickContract('INQ004')">
+                        <span class="material-icons-round text-success text-lg">task_alt</span>
+                      </button>
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" title="더보기" onclick="toggleInquiryDropdown(event, 'INQ004')">
+                        <span class="material-icons-round text-text-secondary text-lg">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 문의 5 - 계약 완료 -->
+                <tr class="inquiry-row cursor-pointer" onclick="openDetailModal('INQ005')">
+                  <td class="px-6 py-4">
+                    <div>
+                      <p class="font-medium text-navy">12.28</p>
+                      <p class="text-xs text-text-secondary">16:30 PM</p>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-success-light flex items-center justify-center">
+                        <span class="font-bold text-success">일</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-navy">일산영재학원</p>
+                        <p class="text-xs text-text-secondary">경기 고양시</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p class="text-sm">정원장</p>
+                    <p class="text-xs text-text-tertiary">010-5678-9012</p>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="px-2 py-1 bg-gray-100 text-text-secondary text-xs font-medium rounded-lg">51-100명</span>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex justify-center gap-1">
+                      <span class="w-6 h-6 rounded-full bg-korean-light flex items-center justify-center" title="국어">
+                        <span class="text-korean text-xs font-bold">K</span>
+                      </span>
+                      <span class="w-6 h-6 rounded-full bg-english-light flex items-center justify-center" title="영어">
+                        <span class="text-english text-xs font-bold">E</span>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div>
+                      <span class="status-badge bg-success text-white">계약 완료</span>
+                      <p class="text-xs text-success mt-1">Pro 플랜</p>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full bg-korean-light flex items-center justify-center">
+                        <span class="text-korean text-xs font-bold">김</span>
+                      </div>
+                      <span class="text-sm">김세일즈</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" onclick="openDetailModal('INQ005')" title="상세보기">
+                        <span class="material-icons-round text-text-secondary text-lg">visibility</span>
+                      </button>
+                      <button class="p-2 hover:bg-super-light rounded-lg" title="학원 관리" onclick="goToAcademy('INQ005')">
+                        <span class="material-icons-round text-super text-lg">open_in_new</span>
+                      </button>
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" title="더보기" onclick="toggleInquiryDropdown(event, 'INQ005')">
+                        <span class="material-icons-round text-text-secondary text-lg">more_vert</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 문의 6 - 종료 -->
+                <tr class="inquiry-row cursor-pointer opacity-60" onclick="openDetailModal('INQ006')">
+                  <td class="px-6 py-4">
+                    <div>
+                      <p class="font-medium text-navy">12.20</p>
+                      <p class="text-xs text-text-secondary">10:00 AM</p>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                        <span class="font-bold text-text-tertiary">목</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-text-secondary">목동학습관</p>
+                        <p class="text-xs text-text-tertiary">서울 양천구</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p class="text-sm text-text-secondary">한관장</p>
+                    <p class="text-xs text-text-tertiary">010-6789-0123</p>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="px-2 py-1 bg-gray-100 text-text-tertiary text-xs font-medium rounded-lg">1-20명</span>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex justify-center gap-1">
+                      <span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center" title="수학">
+                        <span class="text-text-tertiary text-xs font-bold">M</span>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span class="status-badge bg-gray-200 text-text-tertiary">종료</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+                        <span class="text-text-tertiary text-xs font-bold">이</span>
+                      </div>
+                      <span class="text-sm text-text-tertiary">이매니저</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button class="p-2 hover:bg-gray-100 rounded-lg" onclick="openDetailModal('INQ006')" title="상세보기">
+                        <span class="material-icons-round text-text-tertiary text-lg">visibility</span>
+                      </button>
+                      <button class="p-2 hover:bg-warning-light rounded-lg" title="재연락" onclick="reopenInquiry('INQ006')">
+                        <span class="material-icons-round text-warning text-lg">refresh</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- 페이지네이션 -->
+          <div class="px-6 py-4 border-t border-border-light flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-text-secondary">총 <span class="font-bold text-navy">47개</span> 문의 중 1-10 표시</p>
+            <div class="flex items-center gap-2">
+              <button class="p-2 border border-border-light rounded-lg hover:bg-gray-50 disabled:opacity-50" disabled>
+                <span class="material-icons-round text-sm">chevron_left</span>
+              </button>
+              <button class="w-10 h-10 gradient-super text-white rounded-lg font-medium">1</button>
+              <button class="w-10 h-10 border border-border-light rounded-lg hover:bg-gray-50 font-medium">2</button>
+              <button class="w-10 h-10 border border-border-light rounded-lg hover:bg-gray-50 font-medium">3</button>
+              <span class="px-2 text-text-tertiary">...</span>
+              <button class="w-10 h-10 border border-border-light rounded-lg hover:bg-gray-50 font-medium">5</button>
+              <button class="p-2 border border-border-light rounded-lg hover:bg-gray-50">
+                <span class="material-icons-round text-sm">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- 문의 상세 모달 -->
+  <div id="detailModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeDetailModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <!-- 모달 헤더 -->
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-warning-light flex items-center justify-center">
+            <span class="font-bold text-warning text-lg">청</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-lg font-bold text-navy">청담영어학원</h2>
+              <span class="status-badge bg-warning text-white">신규</span>
+            </div>
+            <p class="text-sm text-text-secondary">INQ-2025-0108-001 · 서울 강남구</p>
+          </div>
+        </div>
+        <button onclick="closeDetailModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="flex flex-col lg:flex-row">
+        <!-- 왼쪽: 문의 정보 -->
+        <div class="flex-1 p-6 border-r border-border-light overflow-y-auto max-h-[70vh]">
+          <!-- 기본 정보 -->
+          <div class="mb-6">
+            <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+              <span class="material-icons-round text-super">info</span>
+              문의 정보
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-gray-50 rounded-xl p-4">
+                <p class="text-xs text-text-secondary mb-1">담당자</p>
+                <p class="font-medium">김원장</p>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-4">
+                <p class="text-xs text-text-secondary mb-1">연락처</p>
+                <p class="font-medium">010-1234-5678</p>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-4">
+                <p class="text-xs text-text-secondary mb-1">이메일</p>
+                <p class="font-medium">admin@cheongdam.com</p>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-4">
+                <p class="text-xs text-text-secondary mb-1">예상 학생 수</p>
+                <p class="font-medium text-primary">51-100명</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 관심 과목 -->
+          <div class="mb-6">
+            <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+              <span class="material-icons-round text-super">school</span>
+              관심 과목
+            </h3>
+            <div class="flex gap-2">
+              <span class="px-4 py-2 bg-english-light text-english rounded-xl font-medium">영어</span>
+            </div>
+          </div>
+          
+          <!-- 문의 내용 -->
+          <div class="mb-6">
+            <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+              <span class="material-icons-round text-super">chat</span>
+              문의 내용
+            </h3>
+            <div class="bg-gray-50 rounded-xl p-4">
+              <p class="text-sm text-text-primary leading-relaxed">
+                영어 학원을 운영 중인데, 7초 발화 시스템이 학생들의 단어 암기에 효과적일 것 같아 관심이 있습니다. 
+                현재 약 70명의 학생을 운영 중이며, 데모를 진행해보고 싶습니다. 
+                가능하면 다음 주 중으로 방문 상담 부탁드립니다.
+              </p>
+            </div>
+          </div>
+          
+          <!-- 상태 변경 -->
+          <div class="mb-6">
+            <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+              <span class="material-icons-round text-super">swap_horiz</span>
+              상태 변경
+            </h3>
+            <div class="grid grid-cols-3 lg:grid-cols-6 gap-2">
+              <button class="status-change-btn p-2 bg-warning text-white rounded-xl text-xs font-medium" onclick="changeStatus('new')">신규</button>
+              <button class="status-change-btn p-2 border border-info text-info rounded-xl text-xs font-medium hover:bg-info-light" onclick="changeStatus('contacting')">연락 중</button>
+              <button class="status-change-btn p-2 border border-super text-super rounded-xl text-xs font-medium hover:bg-super-light" onclick="changeStatus('demo')">데모</button>
+              <button class="status-change-btn p-2 border border-planner text-planner rounded-xl text-xs font-medium hover:bg-planner-light" onclick="changeStatus('negotiating')">협상</button>
+              <button class="status-change-btn p-2 border border-success text-success rounded-xl text-xs font-medium hover:bg-success-light" onclick="changeStatus('contracted')">계약</button>
+              <button class="status-change-btn p-2 border border-gray-300 text-text-tertiary rounded-xl text-xs font-medium hover:bg-gray-50" onclick="changeStatus('closed')">종료</button>
+            </div>
+          </div>
+          
+          <!-- 담당자 배정 -->
+          <div class="mb-6">
+            <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+              <span class="material-icons-round text-super">person_add</span>
+              담당자 배정
+            </h3>
+            <select onchange="assignManager(this)" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+              <option value="">담당자 선택</option>
+              <option value="박영업">박영업</option>
+              <option value="김세일즈">김세일즈</option>
+              <option value="이매니저">이매니저</option>
+            </select>
+          </div>
+          
+          <!-- 데모 일정 -->
+          <div class="mb-6">
+            <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+              <span class="material-icons-round text-super">event</span>
+              데모 일정 예약
+            </h3>
+            <div class="grid grid-cols-2 gap-4">
+              <input type="date" id="demoDate" class="px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+              <input type="time" id="demoTime" class="px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+            <button onclick="setDemoSchedule()" class="w-full mt-3 px-4 py-2 bg-super text-white rounded-xl text-sm hover:bg-super-dark transition-colors">
+              일정 저장
+            </button>
+          </div>
+        </div>
+        
+        <!-- 오른쪽: 상담 히스토리 -->
+        <div class="w-full lg:w-96 bg-gray-50 p-6 overflow-y-auto max-h-[70vh]">
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-super">history</span>
+            상담 히스토리
+          </h3>
+          
+          <!-- 메모 입력 -->
+          <div class="mb-6">
+            <textarea id="memoInput" placeholder="상담 메모를 입력하세요..." 
+                      class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super resize-none h-24"></textarea>
+            <div class="flex justify-end mt-2">
+              <button onclick="addMemo()" class="px-4 py-2 gradient-super text-white rounded-xl text-sm hover:opacity-90">메모 추가</button>
+            </div>
+          </div>
+          
+          <!-- 히스토리 타임라인 -->
+          <div id="historyContainer" class="space-y-4">
+            <div class="relative pl-6 pb-4 border-l-2 border-warning">
+              <div class="absolute left-0 top-0 w-4 h-4 -translate-x-1/2 rounded-full bg-warning"></div>
+              <div class="bg-white rounded-xl p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-warning">문의 접수</span>
+                  <span class="text-xs text-text-tertiary">오늘 10:32</span>
+                </div>
+                <p class="text-sm text-text-primary">웹사이트를 통해 도입 문의가 접수되었습니다.</p>
+              </div>
+            </div>
+            
+            <div class="relative pl-6 pb-4 border-l-2 border-border-light">
+              <div class="absolute left-0 top-0 w-4 h-4 -translate-x-1/2 rounded-full bg-gray-300"></div>
+              <div class="bg-white rounded-xl p-4 shadow-sm opacity-50">
+                <p class="text-sm text-text-tertiary text-center">아직 상담 기록이 없습니다</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 모달 푸터 -->
+      <div class="px-6 py-4 border-t border-border-light flex flex-wrap gap-3 justify-between">
+        <div class="flex gap-3">
+          <button class="px-4 py-2 bg-success text-white rounded-xl hover:bg-success/90 transition-colors flex items-center gap-2" onclick="showToast('010-1234-5678로 전화 연결 중...', 'info')">
+            <span class="material-icons-round text-sm">call</span>
+            전화하기
+          </button>
+          <button class="px-4 py-2 bg-info text-white rounded-xl hover:bg-info/90 transition-colors flex items-center gap-2" onclick="showToast('이메일 작성 창이 열렸습니다.', 'info')">
+            <span class="material-icons-round text-sm">email</span>
+            이메일
+          </button>
+        </div>
+        <div class="flex gap-3">
+          <button onclick="closeDetailModal()" class="px-6 py-2 border border-border-light rounded-xl hover:bg-gray-50 transition-colors">
+            닫기
+          </button>
+          <button onclick="openConvertModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2" id="convertToAcademyBtn">
+            <span class="material-icons-round text-sm">apartment</span>
+            학원 등록으로 전환
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 학원 등록 전환 모달 -->
+  <div id="convertModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeConvertModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-lg overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light bg-success-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-success flex items-center gap-2">
+          <span class="material-icons-round">celebration</span>
+          학원 등록 전환
+        </h2>
+        <button onclick="closeConvertModal()" class="p-2 hover:bg-white/50 rounded-lg">
+          <span class="material-icons-round text-success">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <div class="bg-success-light rounded-xl p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center">
+            <span class="material-icons-round text-success text-2xl">check_circle</span>
+          </div>
+          <div>
+            <p class="font-bold text-navy">계약 완료!</p>
+            <p class="text-sm text-text-secondary">이제 학원 계정을 생성할 수 있습니다.</p>
+          </div>
+        </div>
+        
+        <!-- 자동 채움 정보 -->
+        <div class="space-y-3">
+          <h3 class="font-medium text-navy text-sm">학원 기본 정보 (자동 채움)</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-gray-50 rounded-xl p-3">
+              <p class="text-xs text-text-tertiary">학원명</p>
+              <p class="font-medium text-sm" id="convertAcademyName">청담영어학원</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-3">
+              <p class="text-xs text-text-tertiary">대표자</p>
+              <p class="font-medium text-sm" id="convertOwnerName">김원장</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-3">
+              <p class="text-xs text-text-tertiary">연락처</p>
+              <p class="font-medium text-sm" id="convertPhone">010-1234-5678</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-3">
+              <p class="text-xs text-text-tertiary">이메일</p>
+              <p class="font-medium text-sm" id="convertEmail">admin@cheongdam.com</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 추가 설정 -->
+        <div class="space-y-3">
+          <h3 class="font-medium text-navy text-sm">플랜 선택</h3>
+          <div class="grid grid-cols-3 gap-3">
+            <label class="flex flex-col items-center p-3 border border-border-light rounded-xl cursor-pointer hover:border-super transition-colors">
+              <input type="radio" name="convertPlan" value="basic" class="mb-2 accent-super">
+              <span class="text-sm font-medium">Basic</span>
+              <span class="text-xs text-text-tertiary">₩3,000/월</span>
+            </label>
+            <label class="flex flex-col items-center p-3 border-2 border-super rounded-xl bg-super-light cursor-pointer">
+              <input type="radio" name="convertPlan" value="pro" class="mb-2 accent-super" checked>
+              <span class="text-sm font-medium text-super">Pro</span>
+              <span class="text-xs text-text-tertiary">₩5,000/월</span>
+            </label>
+            <label class="flex flex-col items-center p-3 border border-border-light rounded-xl cursor-pointer hover:border-primary transition-colors">
+              <input type="radio" name="convertPlan" value="enterprise" class="mb-2 accent-primary">
+              <span class="text-sm font-medium">Enterprise</span>
+              <span class="text-xs text-text-tertiary">₩6,000/월</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 안내 -->
+        <div class="bg-info-light rounded-xl p-4">
+          <p class="text-sm text-info flex items-start gap-2">
+            <span class="material-icons-round text-lg">info</span>
+            <span>학원 등록 완료 시 대표자 이메일로 초기 비밀번호(0000)가 발송됩니다.</span>
+          </p>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeConvertModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50 transition-colors">
+          취소
+        </button>
+        <button onclick="confirmConvert()" class="px-6 py-2.5 bg-success text-white rounded-xl hover:bg-success/90 transition-colors flex items-center gap-2">
+          <span class="material-icons-round text-sm">check</span>
+          학원 등록 완료
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 문의 수동 등록 모달 -->
+  <div id="addInquiryModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeAddInquiryModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">add_business</span>
+          문의 수동 등록
+        </h2>
+        <button onclick="closeAddInquiryModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4 overflow-y-auto max-h-[60vh]">
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">학원명 *</label>
+          <input type="text" id="newInquiryAcademyName" placeholder="학원명을 입력하세요" 
+                 class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">담당자명 *</label>
+            <input type="text" id="newInquiryOwnerName" placeholder="담당자명" 
+                   class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">연락처 *</label>
+            <input type="tel" id="newInquiryPhone" placeholder="010-0000-0000" 
+                   class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">이메일</label>
+          <input type="email" id="newInquiryEmail" placeholder="email@example.com" 
+                 class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">지역</label>
+          <input type="text" id="newInquiryRegion" placeholder="예: 서울 강남구" 
+                 class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">예상 학생 수</label>
+            <select id="newInquiryStudentCount" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+              <option value="">선택</option>
+              <option value="1-20">1-20명</option>
+              <option value="21-50">21-50명</option>
+              <option value="51-100">51-100명</option>
+              <option value="101-200">101-200명</option>
+              <option value="200+">200명 이상</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">문의 경로</label>
+            <select id="newInquirySource" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+              <option value="direct">직접 전화</option>
+              <option value="website">웹사이트</option>
+              <option value="referral">지인 소개</option>
+              <option value="ad">광고</option>
+              <option value="exhibition">박람회</option>
+              <option value="other">기타</option>
+            </select>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">관심 과목</label>
+          <div class="flex flex-wrap gap-2">
+            <label class="flex items-center gap-2 px-4 py-2 border border-border-light rounded-xl cursor-pointer hover:border-korean transition-colors">
+              <input type="checkbox" name="subjects" value="korean" class="accent-korean">
+              <span class="text-sm">국어</span>
+            </label>
+            <label class="flex items-center gap-2 px-4 py-2 border border-border-light rounded-xl cursor-pointer hover:border-english transition-colors">
+              <input type="checkbox" name="subjects" value="english" class="accent-english">
+              <span class="text-sm">영어</span>
+            </label>
+            <label class="flex items-center gap-2 px-4 py-2 border border-border-light rounded-xl cursor-pointer hover:border-math transition-colors">
+              <input type="checkbox" name="subjects" value="math" class="accent-math">
+              <span class="text-sm">수학</span>
+            </label>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">문의 내용</label>
+          <textarea id="newInquiryContent" rows="3" placeholder="문의 내용을 입력하세요" 
+                    class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super resize-none"></textarea>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">담당자 배정</label>
+          <select id="newInquiryAssignee" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            <option value="">미배정</option>
+            <option value="박영업">박영업</option>
+            <option value="김세일즈">김세일즈</option>
+            <option value="이매니저">이매니저</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeAddInquiryModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50 transition-colors">
+          취소
+        </button>
+        <button onclick="submitNewInquiry()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2">
+          <span class="material-icons-round text-sm">add</span>
+          등록
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 전화 기록 모달 -->
+  <div id="callModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeCallModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-success">call</span>
+          전화 연결
+        </h2>
+        <button onclick="closeCallModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <!-- 연락처 정보 -->
+        <div class="bg-success-light rounded-xl p-4 text-center">
+          <p class="text-sm text-text-secondary mb-1" id="callAcademyName">청담영어학원</p>
+          <p class="text-2xl font-bold text-success" id="callPhoneNumber">010-1234-5678</p>
+          <p class="text-sm text-text-tertiary mt-1" id="callOwnerName">김원장</p>
+        </div>
+        
+        <!-- 빠른 액션 -->
+        <div class="grid grid-cols-2 gap-3">
+          <a href="tel:01012345678" id="callLink" class="flex items-center justify-center gap-2 px-4 py-3 bg-success text-white rounded-xl hover:bg-success/90 transition-colors">
+            <span class="material-icons-round">call</span>
+            <span class="font-medium">전화 걸기</span>
+          </a>
+          <button onclick="copyPhoneNumber()" class="flex items-center justify-center gap-2 px-4 py-3 border border-border-light rounded-xl hover:bg-gray-50 transition-colors">
+            <span class="material-icons-round text-text-secondary">content_copy</span>
+            <span class="font-medium">번호 복사</span>
+          </button>
+        </div>
+        
+        <!-- 통화 기록 -->
+        <div class="border-t border-border-light pt-4">
+          <p class="text-sm font-medium text-navy mb-3">통화 기록 남기기</p>
+          <div class="space-y-3">
+            <div class="flex gap-2">
+              <select id="callResult" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-success/20 text-sm">
+                <option value="">통화 결과 선택</option>
+                <option value="connected">통화 완료</option>
+                <option value="no_answer">부재중</option>
+                <option value="callback">콜백 요청</option>
+                <option value="wrong_number">잘못된 번호</option>
+              </select>
+            </div>
+            <textarea id="callMemo" rows="2" placeholder="통화 내용 메모..." 
+                      class="w-full px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-success/20 text-sm resize-none"></textarea>
+            <button onclick="saveCallRecord()" class="w-full px-4 py-2.5 bg-gray-100 text-text-primary rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium">
+              통화 기록 저장
+            </button>
+          </div>
+        </div>
+        
+        <!-- 최근 통화 이력 -->
+        <div class="border-t border-border-light pt-4">
+          <p class="text-sm font-medium text-navy mb-3">최근 통화 이력</p>
+          <div class="space-y-2 text-sm" id="recentCallHistory">
+            <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-success text-sm">call_made</span>
+                <span>통화 완료</span>
+              </div>
+              <span class="text-text-tertiary text-xs">어제 14:30</span>
+            </div>
+            <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-warning text-sm">call_missed</span>
+                <span>부재중</span>
+              </div>
+              <span class="text-text-tertiary text-xs">01.06 10:15</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 데모 일정 모달 -->
+  <div id="demoScheduleModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeDemoScheduleModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">event</span>
+          데모 일정 관리
+        </h2>
+        <button onclick="closeDemoScheduleModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <!-- 학원 정보 -->
+        <div class="bg-super-light rounded-xl p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center">
+            <span class="font-bold text-super text-lg" id="demoAcademyInitial">강</span>
+          </div>
+          <div>
+            <p class="font-bold text-navy" id="demoAcademyName">강남스터디학원</p>
+            <p class="text-sm text-text-secondary" id="demoOwnerInfo">박관장 · 010-3456-7890</p>
+          </div>
+        </div>
+        
+        <!-- 현재 일정 -->
+        <div id="currentDemoSchedule" class="bg-gray-50 rounded-xl p-4">
+          <p class="text-sm text-text-secondary mb-1">현재 예약된 일정</p>
+          <p class="font-bold text-super text-lg">2025.01.15 (수) 14:00</p>
+          <p class="text-sm text-text-tertiary">D-7</p>
+        </div>
+        
+        <!-- 일정 변경 -->
+        <div>
+          <p class="text-sm font-medium text-navy mb-3">일정 변경</p>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-text-secondary mb-1">날짜</label>
+              <input type="date" id="newDemoDate" 
+                     class="w-full px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+            <div>
+              <label class="block text-xs text-text-secondary mb-1">시간</label>
+              <input type="time" id="newDemoTime" 
+                     class="w-full px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+          </div>
+        </div>
+        
+        <!-- 데모 유형 -->
+        <div>
+          <p class="text-sm font-medium text-navy mb-3">데모 유형</p>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center gap-2 p-3 border border-border-light rounded-xl cursor-pointer hover:border-super transition-colors">
+              <input type="radio" name="demoType" value="visit" class="accent-super" checked>
+              <div>
+                <p class="text-sm font-medium">방문 데모</p>
+                <p class="text-xs text-text-tertiary">학원 방문</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-2 p-3 border border-border-light rounded-xl cursor-pointer hover:border-super transition-colors">
+              <input type="radio" name="demoType" value="online" class="accent-super">
+              <div>
+                <p class="text-sm font-medium">온라인 데모</p>
+                <p class="text-xs text-text-tertiary">화상 회의</p>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 담당자 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">데모 담당자</label>
+          <select id="demoPresentor" class="w-full px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            <option value="김세일즈">김세일즈</option>
+            <option value="박영업">박영업</option>
+            <option value="이매니저">이매니저</option>
+          </select>
+        </div>
+        
+        <!-- 알림 옵션 -->
+        <div class="bg-info-light rounded-xl p-4 space-y-2">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" id="sendDemoReminder" class="accent-info" checked>
+            <span class="text-sm text-text-secondary">D-1 리마인더 SMS 발송</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" id="addToCalendar" class="accent-info" checked>
+            <span class="text-sm text-text-secondary">캘린더에 일정 추가</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="cancelDemo()" class="px-4 py-2.5 text-error hover:bg-error-light rounded-xl transition-colors text-sm">
+          일정 취소
+        </button>
+        <div class="flex gap-3">
+          <button onclick="closeDemoScheduleModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50 transition-colors">
+            닫기
+          </button>
+          <button onclick="saveDemoSchedule()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2">
+            <span class="material-icons-round text-sm">save</span>
+            저장
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- SMS/이메일 발송 모달 -->
+  <div id="sendMessageModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeSendMessageModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-lg overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-info">send</span>
+          메시지 발송
+        </h2>
+        <button onclick="closeSendMessageModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <!-- 수신자 정보 -->
+        <div class="bg-gray-50 rounded-xl p-4">
+          <p class="text-sm text-text-secondary mb-1">수신자</p>
+          <p class="font-medium" id="messageRecipient">청담영어학원 - 김원장</p>
+          <p class="text-sm text-text-tertiary" id="messageContact">010-1234-5678 / admin@cheongdam.com</p>
+        </div>
+        
+        <!-- 발송 채널 -->
+        <div>
+          <p class="text-sm font-medium text-navy mb-3">발송 채널</p>
+          <div class="flex gap-3">
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 border-2 border-info rounded-xl bg-info-light cursor-pointer">
+              <input type="radio" name="messageChannel" value="sms" class="hidden" checked>
+              <span class="material-icons-round text-info">sms</span>
+              <span class="font-medium text-info">SMS</span>
+            </label>
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 border border-border-light rounded-xl cursor-pointer hover:border-super transition-colors">
+              <input type="radio" name="messageChannel" value="email" class="hidden">
+              <span class="material-icons-round text-text-secondary">email</span>
+              <span class="font-medium">이메일</span>
+            </label>
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 border border-border-light rounded-xl cursor-pointer hover:border-warning transition-colors">
+              <input type="radio" name="messageChannel" value="kakao" class="hidden">
+              <span class="material-icons-round text-text-secondary">chat</span>
+              <span class="font-medium">카카오톡</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 템플릿 선택 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">템플릿 선택</label>
+          <select id="messageTemplate" onchange="loadMessageTemplate()" class="w-full px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-info/20 focus:border-info">
+            <option value="">직접 작성</option>
+            <option value="intro">서비스 소개</option>
+            <option value="demo_invite">데모 초대</option>
+            <option value="demo_reminder">데모 리마인더</option>
+            <option value="followup">팔로업</option>
+            <option value="proposal">제안서 발송</option>
+          </select>
+        </div>
+        
+        <!-- 제목 (이메일용) -->
+        <div id="emailSubjectField" class="hidden">
+          <label class="block text-sm font-medium text-navy mb-2">제목</label>
+          <input type="text" id="messageSubject" placeholder="이메일 제목" 
+                 class="w-full px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-info/20 focus:border-info">
+        </div>
+        
+        <!-- 메시지 내용 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">메시지 내용</label>
+          <textarea id="messageContent" rows="5" placeholder="메시지 내용을 입력하세요..." 
+                    class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-info/20 focus:border-info resize-none"></textarea>
+          <p class="text-xs text-text-tertiary mt-1">SMS: <span id="smsCharCount">0</span>/90자</p>
+        </div>
+        
+        <!-- 예약 발송 -->
+        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+          <input type="checkbox" id="scheduleMessage" class="accent-info" onchange="toggleScheduleOptions()">
+          <span class="text-sm text-text-secondary">예약 발송</span>
+        </label>
+        <div id="scheduleOptions" class="hidden grid grid-cols-2 gap-3">
+          <input type="date" id="scheduleDate" class="px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-info/20">
+          <input type="time" id="scheduleTime" class="px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-info/20">
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeSendMessageModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50 transition-colors">
+          취소
+        </button>
+        <button onclick="sendMessage()" class="px-6 py-2.5 bg-info text-white rounded-xl hover:bg-info/90 transition-colors flex items-center gap-2">
+          <span class="material-icons-round text-sm">send</span>
+          발송
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 문의 종료 모달 -->
+  <div id="closeInquiryModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeCloseInquiryModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-text-tertiary">block</span>
+          문의 종료
+        </h2>
+        <button onclick="closeCloseInquiryModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <!-- 대상 문의 -->
+        <div class="bg-gray-50 rounded-xl p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-gray-200 flex items-center justify-center">
+            <span class="font-bold text-text-tertiary text-lg" id="closeInquiryInitial">청</span>
+          </div>
+          <div>
+            <p class="font-bold text-navy" id="closeInquiryName">청담영어학원</p>
+            <p class="text-sm text-text-secondary" id="closeInquiryInfo">김원장 · 010-1234-5678</p>
+          </div>
+        </div>
+        
+        <!-- 종료 사유 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-3">종료 사유 *</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:border-gray-300 transition-colors">
+              <input type="radio" name="closeReason" value="not_interested" class="accent-gray-500">
+              <span class="text-sm">관심 없음 / 필요 없음</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:border-gray-300 transition-colors">
+              <input type="radio" name="closeReason" value="competitor" class="accent-gray-500">
+              <span class="text-sm">경쟁사 선택</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:border-gray-300 transition-colors">
+              <input type="radio" name="closeReason" value="budget" class="accent-gray-500">
+              <span class="text-sm">예산 부족</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:border-gray-300 transition-colors">
+              <input type="radio" name="closeReason" value="timing" class="accent-gray-500">
+              <span class="text-sm">시기 부적절</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:border-gray-300 transition-colors">
+              <input type="radio" name="closeReason" value="no_response" class="accent-gray-500">
+              <span class="text-sm">연락 두절</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:border-gray-300 transition-colors">
+              <input type="radio" name="closeReason" value="other" class="accent-gray-500">
+              <span class="text-sm">기타</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 추가 메모 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">추가 메모</label>
+          <textarea id="closeInquiryMemo" rows="2" placeholder="종료 관련 메모..." 
+                    class="w-full px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 resize-none text-sm"></textarea>
+        </div>
+        
+        <!-- 재연락 옵션 -->
+        <label class="flex items-center gap-3 p-3 bg-warning-light rounded-xl cursor-pointer">
+          <input type="checkbox" id="scheduleRecontact" class="accent-warning">
+          <div>
+            <span class="text-sm text-text-secondary">추후 재연락 예정</span>
+            <p class="text-xs text-text-tertiary">3개월 후 자동 리마인더</p>
+          </div>
+        </label>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeCloseInquiryModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50 transition-colors">
+          취소
+        </button>
+        <button onclick="confirmCloseInquiry()" class="px-6 py-2.5 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-colors flex items-center gap-2">
+          <span class="material-icons-round text-sm">check</span>
+          종료 처리
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 더보기 드롭다운 메뉴 -->
+  <div id="inquiryDropdown" class="fixed bg-white rounded-xl shadow-xl border border-border-light py-2 z-50 hidden min-w-[200px]">
+    <button onclick="openCallModal(currentInquiry.id)" class="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
+      <span class="material-icons-round text-success text-lg">call</span>
+      <span>전화 연결</span>
+    </button>
+    <button onclick="openSendMessageModal()" class="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
+      <span class="material-icons-round text-info text-lg">send</span>
+      <span>SMS/이메일 발송</span>
+    </button>
+    <div class="border-t border-border-light my-2"></div>
+    <button onclick="openDemoScheduleModal()" class="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
+      <span class="material-icons-round text-super text-lg">event</span>
+      <span>데모 일정 설정</span>
+    </button>
+    <button onclick="openAssignManagerModal()" class="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
+      <span class="material-icons-round text-planner text-lg">person_add</span>
+      <span>담당자 배정</span>
+    </button>
+    <button onclick="openQuickMemoModal()" class="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
+      <span class="material-icons-round text-warning text-lg">note_add</span>
+      <span>빠른 메모</span>
+    </button>
+    <div class="border-t border-border-light my-2"></div>
+    <button onclick="openCloseInquiryModal()" class="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 text-text-tertiary flex items-center gap-3">
+      <span class="material-icons-round text-lg">block</span>
+      <span>문의 종료</span>
+    </button>
+  </div>
+  
+  <!-- 담당자 배정 모달 -->
+  <div id="assignManagerModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeAssignManagerModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-planner">person_add</span>
+          담당자 배정
+        </h2>
+        <button onclick="closeAssignManagerModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <!-- 대상 문의 -->
+        <div class="bg-planner-light rounded-xl p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center">
+            <span class="font-bold text-planner text-lg" id="assignInquiryInitial">청</span>
+          </div>
+          <div>
+            <p class="font-bold text-navy" id="assignInquiryName">청담영어학원</p>
+            <p class="text-sm text-text-secondary" id="assignInquiryInfo">김원장 · 010-1234-5678</p>
+          </div>
+        </div>
+        
+        <!-- 현재 담당자 -->
+        <div class="bg-gray-50 rounded-xl p-4">
+          <p class="text-sm text-text-secondary mb-1">현재 담당자</p>
+          <p class="font-medium" id="currentAssignee">미배정</p>
+        </div>
+        
+        <!-- 담당자 선택 -->
+        <div>
+          <p class="text-sm font-medium text-navy mb-3">담당자 선택</p>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:border-planner transition-colors manager-option">
+              <input type="radio" name="assignManager" value="박영업" class="accent-planner">
+              <div class="w-8 h-8 rounded-full bg-super-light flex items-center justify-center">
+                <span class="text-super text-sm font-bold">박</span>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium text-sm">박영업</p>
+                <p class="text-xs text-text-tertiary">현재 담당: 8건</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:border-planner transition-colors manager-option">
+              <input type="radio" name="assignManager" value="김세일즈" class="accent-planner">
+              <div class="w-8 h-8 rounded-full bg-korean-light flex items-center justify-center">
+                <span class="text-korean text-sm font-bold">김</span>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium text-sm">김세일즈</p>
+                <p class="text-xs text-text-tertiary">현재 담당: 5건</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:border-planner transition-colors manager-option">
+              <input type="radio" name="assignManager" value="이매니저" class="accent-planner">
+              <div class="w-8 h-8 rounded-full bg-english-light flex items-center justify-center">
+                <span class="text-english text-sm font-bold">이</span>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium text-sm">이매니저</p>
+                <p class="text-xs text-text-tertiary">현재 담당: 6건</p>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 알림 옵션 -->
+        <label class="flex items-center gap-3 p-3 bg-info-light rounded-xl cursor-pointer">
+          <input type="checkbox" id="notifyManager" class="accent-info" checked>
+          <span class="text-sm text-text-secondary">담당자에게 알림 발송</span>
+        </label>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeAssignManagerModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50 transition-colors">
+          취소
+        </button>
+        <button onclick="confirmAssignManager()" class="px-6 py-2.5 bg-planner text-white rounded-xl hover:bg-planner/90 transition-colors flex items-center gap-2">
+          <span class="material-icons-round text-sm">check</span>
+          배정
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 빠른 메모 모달 -->
+  <div id="quickMemoModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeQuickMemoModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-warning">note_add</span>
+          빠른 메모
+        </h2>
+        <button onclick="closeQuickMemoModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <!-- 대상 문의 -->
+        <div class="bg-warning-light rounded-xl p-4 flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center">
+            <span class="font-bold text-warning text-lg" id="memoInquiryInitial">청</span>
+          </div>
+          <div>
+            <p class="font-bold text-navy" id="memoInquiryName">청담영어학원</p>
+            <p class="text-sm text-text-secondary" id="memoInquiryInfo">김원장 · 010-1234-5678</p>
+          </div>
+        </div>
+        
+        <!-- 메모 유형 -->
+        <div>
+          <p class="text-sm font-medium text-navy mb-3">메모 유형</p>
+          <div class="flex gap-2">
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 border-2 border-warning rounded-xl bg-warning-light cursor-pointer">
+              <input type="radio" name="memoType" value="general" class="hidden" checked>
+              <span class="material-icons-round text-warning text-sm">chat</span>
+              <span class="text-sm font-medium text-warning">일반</span>
+            </label>
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 border border-border-light rounded-xl cursor-pointer hover:border-info transition-colors">
+              <input type="radio" name="memoType" value="important" class="hidden">
+              <span class="material-icons-round text-text-secondary text-sm">priority_high</span>
+              <span class="text-sm font-medium">중요</span>
+            </label>
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 border border-border-light rounded-xl cursor-pointer hover:border-error transition-colors">
+              <input type="radio" name="memoType" value="warning" class="hidden">
+              <span class="material-icons-round text-text-secondary text-sm">warning</span>
+              <span class="text-sm font-medium">주의</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 메모 내용 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-2">메모 내용 *</label>
+          <textarea id="quickMemoContent" rows="4" placeholder="메모 내용을 입력하세요..." 
+                    class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-warning/20 focus:border-warning resize-none"></textarea>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeQuickMemoModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50 transition-colors">
+          취소
+        </button>
+        <button onclick="saveQuickMemo()" class="px-6 py-2.5 bg-warning text-white rounded-xl hover:bg-warning/90 transition-colors flex items-center gap-2">
+          <span class="material-icons-round text-sm">save</span>
+          저장
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 토스트 컨테이너 -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-3"></div>
+  
+  <script>
+    // ========================================
+    // 토스트 알림 시스템
+    // ========================================
+    // [MIGRATED TO MODULE] showToast - now using toast.js module
+    
+    // ========================================
+    // 현재 문의 정보
+    // ========================================
+    let currentInquiry = {
+      id: 'INQ001',
+      academyName: '청담영어학원',
+      ownerName: '김원장',
+      phone: '010-1234-5678',
+      email: 'admin@cheongdam.com',
+      status: 'new',
+      assignee: null
+    };
+    
+    // ========================================
+    // Mobile Menu Functions
+    // ========================================
+    function openMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // ========================================
+    // 상세 모달
+    // ========================================
+    function openDetailModal(id) {
+      currentInquiry.id = id;
+      document.getElementById('detailModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // ========================================
+    // 상태 변경
+    // ========================================
+    function changeStatus(newStatus) {
+      const statusNames = {
+        'new': '신규',
+        'contacting': '연락 중',
+        'demo': '데모 예정',
+        'negotiating': '협상 중',
+        'contracted': '계약',
+        'closed': '종료'
+      };
+      
+      const statusColors = {
+        'new': 'bg-warning',
+        'contacting': 'bg-info',
+        'demo': 'bg-super',
+        'negotiating': 'bg-planner',
+        'contracted': 'bg-success',
+        'closed': 'bg-gray-400'
+      };
+      
+      // 버튼 스타일 업데이트
+      document.querySelectorAll('.status-change-btn').forEach(btn => {
+        btn.classList.remove('bg-warning', 'bg-info', 'bg-super', 'bg-planner', 'bg-success', 'bg-gray-400', 'text-white');
+        btn.classList.add('border', 'border-current');
+      });
+      
+      event.target.classList.remove('border', 'border-current');
+      event.target.classList.add(statusColors[newStatus], 'text-white');
+      
+      currentInquiry.status = newStatus;
+      
+      // 히스토리에 추가
+      addHistoryItem('상태 변경', `상태가 '${statusNames[newStatus]}'(으)로 변경되었습니다.`);
+      
+      showToast(`상태가 '${statusNames[newStatus]}'(으)로 변경되었습니다.`, 'success');
+      
+      // 계약 상태일 때만 학원 전환 버튼 활성화
+      const convertBtn = document.getElementById('convertToAcademyBtn');
+      if (newStatus === 'contracted') {
+        convertBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        convertBtn.disabled = false;
+      } else {
+        convertBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        convertBtn.disabled = true;
+      }
+    }
+    
+    // ========================================
+    // 담당자 배정
+    // ========================================
+    function assignManager(selectElement) {
+      const assignee = selectElement.value;
+      if (assignee) {
+        currentInquiry.assignee = assignee;
+        addHistoryItem('담당자 배정', `담당자가 '${assignee}'(으)로 배정되었습니다.`);
+        showToast(`담당자가 '${assignee}'(으)로 배정되었습니다.`, 'success');
+      }
+    }
+    
+    // ========================================
+    // 데모 일정 설정
+    // ========================================
+    function setDemoSchedule() {
+      const dateInput = document.getElementById('demoDate');
+      const timeInput = document.getElementById('demoTime');
+      
+      if (dateInput.value && timeInput.value) {
+        const formattedDate = new Date(dateInput.value).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+        addHistoryItem('데모 일정 설정', `데모 일정이 ${formattedDate} ${timeInput.value}로 설정되었습니다.`);
+        showToast(`데모 일정이 설정되었습니다.`, 'success');
+        
+        // 상태를 데모 예정으로 변경
+        document.querySelectorAll('.status-change-btn')[2].click();
+      } else {
+        showToast('날짜와 시간을 모두 선택해주세요.', 'warning');
+      }
+    }
+    
+    // ========================================
+    // 상담 히스토리 추가
+    // ========================================
+    function addMemo() {
+      const memoInput = document.getElementById('memoInput');
+      const memo = memoInput.value.trim();
+      
+      if (memo) {
+        addHistoryItem('상담 메모', memo);
+        memoInput.value = '';
+        showToast('상담 메모가 추가되었습니다.', 'success');
+      } else {
+        showToast('메모 내용을 입력해주세요.', 'warning');
+      }
+    }
+    
+    function addHistoryItem(type, content) {
+      const historyContainer = document.getElementById('historyContainer');
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+      
+      const typeColors = {
+        '문의 접수': 'border-warning',
+        '상태 변경': 'border-info',
+        '담당자 배정': 'border-super',
+        '데모 일정 설정': 'border-planner',
+        '상담 메모': 'border-success'
+      };
+      
+      const typeIcons = {
+        '문의 접수': 'inbox',
+        '상태 변경': 'swap_horiz',
+        '담당자 배정': 'person_add',
+        '데모 일정 설정': 'event',
+        '상담 메모': 'chat'
+      };
+      
+      const historyItem = document.createElement('div');
+      historyItem.className = `relative pl-6 pb-4 ${typeColors[type] || 'border-gray-300'} border-l-2`;
+      historyItem.innerHTML = `
+        <div class="absolute left-0 top-0 w-4 h-4 -translate-x-1/2 rounded-full ${typeColors[type]?.replace('border-', 'bg-') || 'bg-gray-300'}"></div>
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium flex items-center gap-1" style="color: inherit">
+              <span class="material-icons-round text-sm">${typeIcons[type] || 'note'}</span>
+              ${type}
+            </span>
+            <span class="text-xs text-text-tertiary">방금 전 ${timeStr}</span>
+          </div>
+          <p class="text-sm text-text-primary">${content}</p>
+        </div>
+      `;
+      
+      // 첫 번째 항목 앞에 추가
+      historyContainer.insertBefore(historyItem, historyContainer.firstChild);
+    }
+    
+    // ========================================
+    // 학원 등록 전환 모달
+    // ========================================
+    function openConvertModal() {
+      // 계약 상태인지 확인
+      if (currentInquiry.status !== 'contracted') {
+        showToast('계약 완료 상태에서만 학원 등록이 가능합니다.', 'warning');
+        return;
+      }
+      
+      // 정보 채우기
+      document.getElementById('convertAcademyName').textContent = currentInquiry.academyName;
+      document.getElementById('convertOwnerName').textContent = currentInquiry.ownerName;
+      document.getElementById('convertPhone').textContent = currentInquiry.phone;
+      document.getElementById('convertEmail').textContent = currentInquiry.email;
+      
+      document.getElementById('convertModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeConvertModal() {
+      document.getElementById('convertModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmConvert() {
+      const plan = document.querySelector('input[name="convertPlan"]:checked').value;
+      const planNames = { basic: 'Basic', pro: 'Pro', enterprise: 'Enterprise' };
+      
+      closeConvertModal();
+      closeDetailModal();
+      showToast(`${currentInquiry.academyName}이(가) ${planNames[plan]} 플랜으로 등록되었습니다!`, 'success');
+    }
+    
+    // ========================================
+    // 필터 기능
+    // ========================================
+    function filterByStatus(status) {
+      const statusNames = {
+        'all': '전체',
+        'new': '신규',
+        'contacting': '연락 중',
+        'demo': '데모 예정',
+        'negotiating': '협상 중',
+        'contracted': '계약',
+        'closed': '종료'
+      };
+      
+      showToast(`'${statusNames[status]}' 문의만 표시합니다.`, 'info');
+      // 실제 구현에서는 테이블 필터링 로직 추가
+    }
+    
+    // ========================================
+    // 더보기 드롭다운
+    // ========================================
+    function toggleInquiryDropdown(event, inquiryId) {
+      event.stopPropagation();
+      
+      // 문의 데이터 설정
+      const inquiryData = {
+        'INQ001': { id: 'INQ001', academyName: '청담영어학원', initial: '청', ownerName: '김원장', phone: '010-1234-5678', email: 'admin@cheongdam.com', status: 'new' },
+        'INQ002': { id: 'INQ002', academyName: '서초수학전문학원', initial: '서', ownerName: '이대표', phone: '010-2345-6789', email: 'admin@seocho.com', status: 'contacting' },
+        'INQ003': { id: 'INQ003', academyName: '강남스터디학원', initial: '강', ownerName: '박관장', phone: '010-3456-7890', email: 'admin@gangnam.com', status: 'demo' },
+        'INQ004': { id: 'INQ004', academyName: '분당영재교실', initial: '분', ownerName: '최원장', phone: '010-4567-8901', email: 'admin@bundang.com', status: 'negotiating' },
+        'INQ005': { id: 'INQ005', academyName: '일산종합학원', initial: '일', ownerName: '정대표', phone: '010-5678-9012', email: 'admin@ilsan.com', status: 'contracted' },
+        'INQ006': { id: 'INQ006', academyName: '인천국제학원', initial: '인', ownerName: '한원장', phone: '010-6789-0123', email: 'admin@incheon.com', status: 'closed' }
+      };
+      
+      currentInquiry = inquiryData[inquiryId] || currentInquiry;
+      
+      const dropdown = document.getElementById('inquiryDropdown');
+      const rect = event.target.getBoundingClientRect();
+      
+      dropdown.style.top = `${rect.bottom + 5}px`;
+      dropdown.style.left = `${rect.right - 180}px`;
+      dropdown.classList.toggle('hidden');
+    }
+    
+    function closeInquiryDropdown() {
+      document.getElementById('inquiryDropdown').classList.add('hidden');
+    }
+    
+    // 클릭 외부 영역 클릭 시 드롭다운 닫기
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#inquiryDropdown') && !e.target.closest('[onclick*="toggleInquiryDropdown"]')) {
+        closeInquiryDropdown();
+      }
+    });
+    
+    // ========================================
+    // 전화 모달
+    // ========================================
+    function openCallModal(inquiryId) {
+      closeInquiryDropdown();
+      
+      // 문의 데이터로 모달 업데이트
+      const inquiryData = {
+        'INQ001': { academyName: '청담영어학원', ownerName: '김원장', phone: '010-1234-5678' },
+        'INQ002': { academyName: '서초수학전문학원', ownerName: '이대표', phone: '010-2345-6789' },
+        'INQ003': { academyName: '강남스터디학원', ownerName: '박관장', phone: '010-3456-7890' },
+        'INQ004': { academyName: '분당영재교실', ownerName: '최원장', phone: '010-4567-8901' },
+        'INQ005': { academyName: '일산종합학원', ownerName: '정대표', phone: '010-5678-9012' },
+        'INQ006': { academyName: '인천국제학원', ownerName: '한원장', phone: '010-6789-0123' }
+      };
+      
+      const data = inquiryData[inquiryId] || { academyName: currentInquiry.academyName, ownerName: currentInquiry.ownerName, phone: currentInquiry.phone };
+      
+      document.getElementById('callAcademyName').textContent = data.academyName;
+      document.getElementById('callPhoneNumber').textContent = data.phone;
+      document.getElementById('callOwnerName').textContent = data.ownerName;
+      document.getElementById('callLink').href = `tel:${data.phone.replace(/-/g, '')}`;
+      
+      // 폼 초기화
+      document.getElementById('callResult').value = '';
+      document.getElementById('callMemo').value = '';
+      
+      document.getElementById('callModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeCallModal() {
+      document.getElementById('callModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function copyPhoneNumber() {
+      const phone = document.getElementById('callPhoneNumber').textContent;
+      navigator.clipboard.writeText(phone.replace(/-/g, '')).then(() => {
+        showToast('전화번호가 복사되었습니다.', 'success');
+      });
+    }
+    
+    function saveCallRecord() {
+      const result = document.getElementById('callResult').value;
+      const memo = document.getElementById('callMemo').value;
+      
+      if (!result) {
+        showToast('통화 결과를 선택해주세요.', 'warning');
+        return;
+      }
+      
+      const resultNames = {
+        'connected': '통화 완료',
+        'no_answer': '부재중',
+        'callback': '콜백 요청',
+        'wrong_number': '잘못된 번호'
+      };
+      
+      // 통화 이력에 추가
+      const historyContainer = document.getElementById('recentCallHistory');
+      const now = new Date();
+      const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      
+      const iconClasses = {
+        'connected': 'text-success',
+        'no_answer': 'text-warning',
+        'callback': 'text-info',
+        'wrong_number': 'text-error'
+      };
+      
+      const newItem = document.createElement('div');
+      newItem.className = 'flex items-center justify-between p-2 bg-gray-50 rounded-lg';
+      newItem.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="material-icons-round ${iconClasses[result]} text-sm">call_made</span>
+          <span>${resultNames[result]}</span>
+        </div>
+        <span class="text-text-tertiary text-xs">${timeStr}</span>
+      `;
+      historyContainer.insertBefore(newItem, historyContainer.firstChild);
+      
+      closeCallModal();
+      showToast('통화 기록이 저장되었습니다.', 'success');
+      
+      // 상세 모달의 히스토리에도 추가
+      if (memo) {
+        addHistoryItem('상담 메모', `[통화] ${resultNames[result]} - ${memo}`);
+      } else {
+        addHistoryItem('상담 메모', `[통화] ${resultNames[result]}`);
+      }
+    }
+    
+    // ========================================
+    // SMS/이메일 발송 모달
+    // ========================================
+    function openSendMessageModal() {
+      closeInquiryDropdown();
+      
+      document.getElementById('messageRecipient').textContent = `${currentInquiry.academyName} - ${currentInquiry.ownerName}`;
+      document.getElementById('messageContact').textContent = `${currentInquiry.phone} / ${currentInquiry.email}`;
+      
+      // 폼 초기화
+      document.getElementById('messageTemplate').value = '';
+      document.getElementById('messageContent').value = '';
+      document.getElementById('scheduleMessage').checked = false;
+      document.getElementById('scheduleOptions').classList.add('hidden');
+      updateSmsCharCount();
+      
+      document.getElementById('sendMessageModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSendMessageModal() {
+      document.getElementById('sendMessageModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function loadMessageTemplate() {
+      const templateId = document.getElementById('messageTemplate').value;
+      const templates = {
+        'intro': `안녕하세요, ${currentInquiry.ownerName}님!\n\nMAMA-ASST 서비스에 관심 가져주셔서 감사합니다. AI 기반 학원 관리 솔루션으로 학생 맞춤 학습과 효율적인 운영을 도와드립니다.\n\n상담 연락 드려도 될까요?`,
+        'demo_invite': `안녕하세요, ${currentInquiry.ownerName}님!\n\nMAMA-ASST 데모 시연을 안내드립니다.\n\n방문 또는 온라인으로 진행 가능하며, 원하시는 일정을 알려주세요.\n\n감사합니다.`,
+        'demo_reminder': `안녕하세요, ${currentInquiry.ownerName}님!\n\n내일 예정된 MAMA-ASST 데모 일정을 안내드립니다.\n\n일시: [날짜] [시간]\n방식: [방문/온라인]\n\n변경이 필요하시면 연락 주세요.`,
+        'followup': `안녕하세요, ${currentInquiry.ownerName}님!\n\n지난번 상담 후 추가 문의사항이 있으신지 확인드립니다.\n\n언제든 편하게 연락 주세요!\n\n감사합니다.`,
+        'proposal': `안녕하세요, ${currentInquiry.ownerName}님!\n\n요청하신 MAMA-ASST 도입 제안서를 발송드립니다.\n\n검토 후 문의사항 있으시면 연락 부탁드립니다.\n\n감사합니다.`
+      };
+      
+      document.getElementById('messageContent').value = templates[templateId] || '';
+      updateSmsCharCount();
+    }
+    
+    function updateSmsCharCount() {
+      const content = document.getElementById('messageContent').value;
+      document.getElementById('smsCharCount').textContent = content.length;
+    }
+    
+    document.getElementById('messageContent')?.addEventListener('input', updateSmsCharCount);
+    
+    function toggleScheduleOptions() {
+      const isChecked = document.getElementById('scheduleMessage').checked;
+      document.getElementById('scheduleOptions').classList.toggle('hidden', !isChecked);
+    }
+    
+    // 채널 선택 스타일 업데이트
+    document.querySelectorAll('input[name="messageChannel"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('input[name="messageChannel"]').forEach(r => {
+          const label = r.closest('label');
+          if (r.checked) {
+            label.classList.add('border-2', 'border-info', 'bg-info-light');
+            label.classList.remove('border', 'border-border-light');
+            label.querySelectorAll('span').forEach(span => span.classList.add('text-info'));
+          } else {
+            label.classList.remove('border-2', 'border-info', 'bg-info-light');
+            label.classList.add('border', 'border-border-light');
+            label.querySelectorAll('span').forEach(span => span.classList.remove('text-info'));
+          }
+        });
+        
+        // 이메일 선택시 제목 필드 표시
+        document.getElementById('emailSubjectField').classList.toggle('hidden', this.value !== 'email');
+      });
+    });
+    
+    function sendMessage() {
+      const channel = document.querySelector('input[name="messageChannel"]:checked').value;
+      const content = document.getElementById('messageContent').value.trim();
+      
+      if (!content) {
+        showToast('메시지 내용을 입력해주세요.', 'warning');
+        return;
+      }
+      
+      const channelNames = { 'sms': 'SMS', 'email': '이메일', 'kakao': '카카오톡' };
+      const isScheduled = document.getElementById('scheduleMessage').checked;
+      
+      closeSendMessageModal();
+      
+      if (isScheduled) {
+        const date = document.getElementById('scheduleDate').value;
+        const time = document.getElementById('scheduleTime').value;
+        showToast(`${channelNames[channel]}이(가) ${date} ${time}에 예약 발송됩니다.`, 'success');
+      } else {
+        showToast(`${channelNames[channel]}이(가) 발송되었습니다.`, 'success');
+      }
+      
+      addHistoryItem('상담 메모', `[${channelNames[channel]} 발송] ${content.substring(0, 50)}...`);
+    }
+    
+    // ========================================
+    // 데모 일정 모달
+    // ========================================
+    function openDemoScheduleModal(inquiryId) {
+      closeInquiryDropdown();
+      if (event) event.stopPropagation();
+      
+      // 문의 ID로 데이터 조회
+      const inquiryData = {
+        'INQ001': { academyName: '청담영어학원', initial: '청', ownerName: '김원장', phone: '010-1234-5678' },
+        'INQ002': { academyName: '서초수학전문학원', initial: '서', ownerName: '이대표', phone: '010-2345-6789' },
+        'INQ003': { academyName: '강남스터디학원', initial: '강', ownerName: '박관장', phone: '010-3456-7890', demoDate: '2025.01.15 (수) 14:00', dDay: 'D-7' },
+        'INQ004': { academyName: '분당종합학원', initial: '분', ownerName: '최관장', phone: '010-4567-8901' },
+        'INQ005': { academyName: '일산영재학원', initial: '일', ownerName: '정원장', phone: '010-5678-9012' },
+        'INQ006': { academyName: '목동학습관', initial: '목', ownerName: '한관장', phone: '010-6789-0123' }
+      };
+      
+      const data = inquiryId ? inquiryData[inquiryId] : {
+        academyName: currentInquiry.academyName,
+        initial: currentInquiry.initial || currentInquiry.academyName.charAt(0),
+        ownerName: currentInquiry.ownerName,
+        phone: currentInquiry.phone
+      };
+      
+      document.getElementById('demoAcademyInitial').textContent = data.initial || data.academyName.charAt(0);
+      document.getElementById('demoAcademyName').textContent = data.academyName;
+      document.getElementById('demoOwnerInfo').textContent = `${data.ownerName} · ${data.phone}`;
+      
+      // 현재 일정 표시 (데모 예정 상태인 경우)
+      if (data.demoDate) {
+        document.getElementById('currentDemoSchedule').innerHTML = `
+          <p class="text-sm text-text-secondary mb-1">현재 예약된 일정</p>
+          <p class="font-bold text-super text-lg">${data.demoDate}</p>
+          <p class="text-sm text-text-tertiary">${data.dDay}</p>
+        `;
+        document.getElementById('currentDemoSchedule').classList.remove('hidden');
+      } else {
+        document.getElementById('currentDemoSchedule').innerHTML = `
+          <p class="text-sm text-text-secondary mb-1">예약된 일정</p>
+          <p class="text-text-tertiary">아직 일정이 없습니다</p>
+        `;
+      }
+      
+      document.getElementById('demoScheduleModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDemoScheduleModal() {
+      document.getElementById('demoScheduleModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveDemoSchedule() {
+      const date = document.getElementById('newDemoDate').value;
+      const time = document.getElementById('newDemoTime').value;
+      
+      if (!date || !time) {
+        showToast('날짜와 시간을 선택해주세요.', 'warning');
+        return;
+      }
+      
+      const formattedDate = new Date(date).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' });
+      
+      // 현재 일정 표시 업데이트
+      document.getElementById('currentDemoSchedule').innerHTML = `
+        <p class="text-sm text-text-secondary mb-1">예약된 일정</p>
+        <p class="font-bold text-super text-lg">${formattedDate} ${time}</p>
+        <p class="text-sm text-text-tertiary">방금 설정됨</p>
+      `;
+      
+      closeDemoScheduleModal();
+      showToast('데모 일정이 저장되었습니다.', 'success');
+      addHistoryItem('데모 일정 설정', `${formattedDate} ${time}로 데모 일정이 설정되었습니다.`);
+    }
+    
+    function cancelDemo() {
+      if (confirm('데모 일정을 취소하시겠습니까?')) {
+        closeDemoScheduleModal();
+        showToast('데모 일정이 취소되었습니다.', 'warning');
+        addHistoryItem('상태 변경', '데모 일정이 취소되었습니다.');
+      }
+    }
+    
+    // ========================================
+    // 담당자 배정 (드롭다운)
+    // ========================================
+    function assignManagerFromDropdown() {
+      closeInquiryDropdown();
+      openAssignManagerModal();
+    }
+    
+    // ========================================
+    // 담당자 배정 모달
+    // ========================================
+    function openAssignManagerModal() {
+      closeInquiryDropdown();
+      
+      document.getElementById('assignInquiryInitial').textContent = currentInquiry.initial || currentInquiry.academyName.charAt(0);
+      document.getElementById('assignInquiryName').textContent = currentInquiry.academyName;
+      document.getElementById('assignInquiryInfo').textContent = `${currentInquiry.ownerName} · ${currentInquiry.phone}`;
+      document.getElementById('currentAssignee').textContent = currentInquiry.assignee || '미배정';
+      
+      // 라디오 버튼 초기화
+      document.querySelectorAll('input[name="assignManager"]').forEach(radio => {
+        radio.checked = false;
+        if (radio.value === currentInquiry.assignee) {
+          radio.checked = true;
+        }
+      });
+      
+      document.getElementById('assignManagerModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAssignManagerModal() {
+      document.getElementById('assignManagerModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmAssignManager() {
+      const selectedManager = document.querySelector('input[name="assignManager"]:checked');
+      if (!selectedManager) {
+        showToast('담당자를 선택해주세요.', 'warning');
+        return;
+      }
+      
+      const managerName = selectedManager.value;
+      const notifyManager = document.getElementById('notifyManager').checked;
+      
+      currentInquiry.assignee = managerName;
+      
+      closeAssignManagerModal();
+      
+      let message = `담당자가 '${managerName}'(으)로 배정되었습니다.`;
+      if (notifyManager) {
+        message += ' 담당자에게 알림이 발송되었습니다.';
+      }
+      
+      showToast(message, 'success');
+      addHistoryItem('담당자 배정', `담당자가 '${managerName}'(으)로 배정되었습니다.`);
+    }
+    
+    // 담당자 선택 스타일 업데이트
+    document.querySelectorAll('input[name="assignManager"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('.manager-option').forEach(opt => {
+          opt.classList.remove('border-planner', 'bg-planner-light');
+          opt.classList.add('border-border-light');
+        });
+        if (this.checked) {
+          this.closest('.manager-option').classList.remove('border-border-light');
+          this.closest('.manager-option').classList.add('border-planner', 'bg-planner-light');
+        }
+      });
+    });
+    
+    // ========================================
+    // 빠른 메모 모달
+    // ========================================
+    function openQuickMemoModal() {
+      closeInquiryDropdown();
+      
+      document.getElementById('memoInquiryInitial').textContent = currentInquiry.initial || currentInquiry.academyName.charAt(0);
+      document.getElementById('memoInquiryName').textContent = currentInquiry.academyName;
+      document.getElementById('memoInquiryInfo').textContent = `${currentInquiry.ownerName} · ${currentInquiry.phone}`;
+      
+      // 폼 초기화
+      document.getElementById('quickMemoContent').value = '';
+      document.querySelectorAll('input[name="memoType"]').forEach((radio, idx) => {
+        radio.checked = idx === 0; // 첫 번째 선택
+      });
+      
+      document.getElementById('quickMemoModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeQuickMemoModal() {
+      document.getElementById('quickMemoModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveQuickMemo() {
+      const content = document.getElementById('quickMemoContent').value.trim();
+      if (!content) {
+        showToast('메모 내용을 입력해주세요.', 'warning');
+        return;
+      }
+      
+      const memoType = document.querySelector('input[name="memoType"]:checked').value;
+      const typeLabels = { general: '일반', important: '중요', warning: '주의' };
+      
+      closeQuickMemoModal();
+      showToast('메모가 추가되었습니다.', 'success');
+      addHistoryItem('상담 메모', `[${typeLabels[memoType]}] ${content}`);
+    }
+    
+    // 메모 유형 선택 스타일 업데이트
+    document.querySelectorAll('input[name="memoType"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const colorMap = {
+          'general': { border: 'border-warning', bg: 'bg-warning-light', text: 'text-warning' },
+          'important': { border: 'border-info', bg: 'bg-info-light', text: 'text-info' },
+          'warning': { border: 'border-error', bg: 'bg-error-light', text: 'text-error' }
+        };
+        
+        document.querySelectorAll('input[name="memoType"]').forEach(r => {
+          const label = r.closest('label');
+          label.classList.remove('border-2', 'border-warning', 'border-info', 'border-error', 
+                                 'bg-warning-light', 'bg-info-light', 'bg-error-light');
+          label.classList.add('border', 'border-border-light');
+          label.querySelectorAll('span').forEach(span => {
+            span.classList.remove('text-warning', 'text-info', 'text-error');
+            span.classList.add('text-text-secondary');
+          });
+        });
+        
+        const label = this.closest('label');
+        const colors = colorMap[this.value];
+        label.classList.remove('border', 'border-border-light');
+        label.classList.add('border-2', colors.border, colors.bg);
+        label.querySelectorAll('span').forEach(span => {
+          span.classList.remove('text-text-secondary');
+          span.classList.add(colors.text);
+        });
+      });
+    });
+    
+    // ========================================
+    // 빠른 메모 (레거시 - prompt 사용)
+    // ========================================
+    function addQuickMemo() {
+      closeInquiryDropdown();
+      openQuickMemoModal();
+    }
+    
+    // ========================================
+    // 빠른 계약 전환 (협상 중 → 계약)
+    // ========================================
+    function quickContract(inquiryId) {
+      event.stopPropagation();
+      
+      const inquiryData = {
+        'INQ004': { academyName: '분당종합학원', ownerName: '최관장', phone: '010-4567-8901' }
+      };
+      
+      const data = inquiryData[inquiryId];
+      if (!data) return;
+      
+      if (confirm(`'${data.academyName}'을(를) 계약 완료 상태로 변경하시겠습니까?`)) {
+        showToast(`${data.academyName}이(가) 계약 완료로 변경되었습니다!`, 'success');
+        
+        // 테이블 행 업데이트 (실제 구현에서는 DB 업데이트)
+        const row = document.querySelector(`tr[onclick*="INQ004"]`);
+        if (row) {
+          const statusCell = row.querySelector('.status-badge');
+          if (statusCell) {
+            statusCell.className = 'status-badge bg-success text-white';
+            statusCell.textContent = '계약 완료';
+          }
+        }
+      }
+    }
+    
+    // ========================================
+    // 학원 관리 페이지 이동
+    // ========================================
+    function goToAcademy(inquiryId) {
+      event.stopPropagation();
+      
+      const inquiryData = {
+        'INQ005': { academyCode: 'ILS001', academyName: '일산영재학원' }
+      };
+      
+      const data = inquiryData[inquiryId];
+      if (data) {
+        showToast(`${data.academyName} 관리 페이지로 이동합니다.`, 'info');
+        // 실제 구현에서는 페이지 이동
+        setTimeout(() => {
+          window.location.href = `super-academies.html?code=${data.academyCode}`;
+        }, 1000);
+      }
+    }
+    
+    // ========================================
+    // 문의 재오픈
+    // ========================================
+    function reopenInquiry(inquiryId) {
+      event.stopPropagation();
+      
+      const inquiryData = {
+        'INQ006': { academyName: '목동학습관' }
+      };
+      
+      const data = inquiryData[inquiryId];
+      if (!data) return;
+      
+      if (confirm(`'${data.academyName}' 문의를 다시 오픈하시겠습니까?`)) {
+        showToast(`${data.academyName} 문의가 '연락 중' 상태로 변경되었습니다.`, 'success');
+        
+        // 테이블 행 업데이트
+        const row = document.querySelector(`tr[onclick*="INQ006"]`);
+        if (row) {
+          row.classList.remove('opacity-60');
+          const statusCell = row.querySelector('.status-badge');
+          if (statusCell) {
+            statusCell.className = 'status-badge bg-info text-white';
+            statusCell.textContent = '연락 중';
+          }
+        }
+      }
+    }
+    
+    // ========================================
+    // 문의 종료 모달
+    // ========================================
+    function openCloseInquiryModal() {
+      closeInquiryDropdown();
+      
+      document.getElementById('closeInquiryInitial').textContent = currentInquiry.initial || currentInquiry.academyName.charAt(0);
+      document.getElementById('closeInquiryName').textContent = currentInquiry.academyName;
+      document.getElementById('closeInquiryInfo').textContent = `${currentInquiry.ownerName} · ${currentInquiry.phone}`;
+      
+      // 폼 초기화
+      document.querySelectorAll('input[name="closeReason"]').forEach(radio => radio.checked = false);
+      document.getElementById('closeInquiryMemo').value = '';
+      document.getElementById('scheduleRecontact').checked = false;
+      
+      document.getElementById('closeInquiryModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeCloseInquiryModal() {
+      document.getElementById('closeInquiryModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmCloseInquiry() {
+      const reasonRadio = document.querySelector('input[name="closeReason"]:checked');
+      if (!reasonRadio) {
+        showToast('종료 사유를 선택해주세요.', 'warning');
+        return;
+      }
+      
+      const reasonNames = {
+        'not_interested': '관심 없음',
+        'competitor': '경쟁사 선택',
+        'budget': '예산 부족',
+        'timing': '시기 부적절',
+        'no_response': '연락 두절',
+        'other': '기타'
+      };
+      
+      const memo = document.getElementById('closeInquiryMemo').value;
+      const scheduleRecontact = document.getElementById('scheduleRecontact').checked;
+      
+      closeCloseInquiryModal();
+      closeDetailModal();
+      
+      let message = `문의가 종료 처리되었습니다. (사유: ${reasonNames[reasonRadio.value]})`;
+      if (scheduleRecontact) {
+        message += ' 3개월 후 재연락 예정';
+      }
+      
+      showToast(message, 'info');
+    }
+    
+    // ========================================
+    // 문의 수동 등록 모달
+    // ========================================
+    function openAddInquiryModal() {
+      // 폼 초기화
+      document.getElementById('newInquiryAcademyName').value = '';
+      document.getElementById('newInquiryOwnerName').value = '';
+      document.getElementById('newInquiryPhone').value = '';
+      document.getElementById('newInquiryEmail').value = '';
+      document.getElementById('newInquiryRegion').value = '';
+      
+      document.getElementById('addInquiryModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAddInquiryModal() {
+      document.getElementById('addInquiryModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function submitNewInquiry() {
+      const academyName = document.getElementById('newInquiryAcademyName').value.trim();
+      const ownerName = document.getElementById('newInquiryOwnerName').value.trim();
+      const phone = document.getElementById('newInquiryPhone').value.trim();
+      
+      if (!academyName || !ownerName || !phone) {
+        showToast('필수 항목을 모두 입력해주세요.', 'warning');
+        return;
+      }
+      
+      closeAddInquiryModal();
+      showToast(`'${academyName}' 문의가 등록되었습니다.`, 'success');
+    }
+    
+    // ========================================
+    // 키보드 단축키
+    // ========================================
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeDetailModal();
+        closeConvertModal();
+        closeCallModal();
+        closeSendMessageModal();
+        closeDemoScheduleModal();
+        closeCloseInquiryModal();
+        closeAddInquiryModal();
+        closeAssignManagerModal();
+        closeQuickMemoModal();
+        closeInquiryDropdown();
+      }
+    });
+    
+    // ========================================
+    // 초기화
+    // ========================================
+    document.addEventListener('DOMContentLoaded', function() {
+      // SMS 글자수 카운트 이벤트 리스너
+      const messageContent = document.getElementById('messageContent');
+      if (messageContent) {
+        messageContent.addEventListener('input', updateSmsCharCount);
+      }
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

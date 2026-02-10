@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>월말 평가 | MAMA-ASST</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3C',
+            'primary-light': '#FFF0ED',
+            secondary: '#1A2E4D',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#10B981',
+            'success-light': '#D1FAE5',
+            error: '#F43F5E',
+            'error-light': '#FFE4E6',
+            warning: '#F59E0B',
+            'warning-light': '#FEF3C7',
+            gold: '#FFD700',
+            silver: '#C0C0C0',
+            bronze: '#CD7F32',
+          },
+          fontFamily: {
+            display: ['Lexend', 'sans-serif'],
+            body: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'],
+          },
+          borderRadius: {
+            'xl': '1rem',
+            '2xl': '1.5rem',
+            '3xl': '2rem',
+          },
+          boxShadow: {
+            'soft': '0 10px 40px -10px rgba(26, 46, 77, 0.08)',
+            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
+            'gold': '0 0 30px rgba(255, 215, 0, 0.3)',
+          }
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    .filled {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    
+    /* Shimmer effect */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .shimmer {
+      background: linear-gradient(90deg, #FFD700 25%, #FFF8DC 50%, #FFD700 75%);
+      background-size: 200% 100%;
+      animation: shimmer 3s infinite;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    /* Trophy glow */
+    @keyframes trophy-glow {
+      0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); }
+      50% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); }
+    }
+    .trophy-glow {
+      animation: trophy-glow 2s ease-in-out infinite;
+    }
+    
+    /* Pulse ring */
+    @keyframes pulse-ring {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="bg-background font-body text-secondary antialiased min-h-screen flex flex-col">
+  
+  <!-- Header -->
+  <header class="w-full bg-surface border-b border-border-light px-6 py-4 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl flex items-center justify-center text-amber-600 border border-amber-200">
+          <span class="material-symbols-outlined text-2xl filled">emoji_events</span>
+        </div>
+        <div>
+          <h1 class="text-secondary text-lg font-bold tracking-tight">월말 평가</h1>
+          <p class="text-xs text-text-tertiary" id="monthText">12월 월말 고사</p>
+        </div>
+      </div>
+      <a href="subject-english.html" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-gray-100 transition-all text-text-secondary font-medium text-sm">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </a>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
+  <main class="flex-1 max-w-4xl mx-auto p-6 pb-32">
+    
+    <!-- Hero Section -->
+    <div class="relative bg-gradient-to-br from-secondary via-secondary to-slate-800 rounded-3xl p-8 md:p-12 text-white text-center mb-8 overflow-hidden">
+      <!-- Background decoration -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute -top-20 -right-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+      </div>
+      
+      <!-- Trophy -->
+      <div class="relative z-10 mb-6">
+        <div class="inline-flex items-center justify-center">
+          <span class="material-symbols-outlined text-8xl text-amber-400 trophy-glow filled">emoji_events</span>
+        </div>
+      </div>
+      
+      <h2 class="relative z-10 text-3xl md:text-4xl font-bold mb-3">
+        <span class="shimmer">12월 월말 평가</span>
+      </h2>
+      <p class="relative z-10 text-lg opacity-80 mb-6">이번 달 학습한 단어들을 총 정리합니다</p>
+      
+      <!-- Stats Preview -->
+      <div class="relative z-10 flex justify-center gap-6 md:gap-10">
+        <div class="text-center">
+          <p class="text-3xl font-display font-bold text-amber-400" id="graduatedCount">42</p>
+          <p class="text-sm opacity-70">Graduated 단어</p>
+        </div>
+        <div class="w-px bg-white/20"></div>
+        <div class="text-center">
+          <p class="text-3xl font-display font-bold text-primary-light" id="monthlyCount">18</p>
+          <p class="text-sm opacity-70">이번 달 학습</p>
+        </div>
+        <div class="w-px bg-white/20"></div>
+        <div class="text-center">
+          <p class="text-3xl font-display font-bold text-white" id="totalExamCount">60</p>
+          <p class="text-sm opacity-70">총 문항</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Exam Info Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      
+      <!-- Time Limit -->
+      <div class="bg-surface rounded-2xl p-6 shadow-card border border-border-light">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500">
+            <span class="material-symbols-outlined text-2xl">timer</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-text-primary mb-1">제한 시간</h3>
+            <p class="text-2xl font-display font-bold text-secondary">문항당 7초</p>
+            <p class="text-sm text-text-tertiary mt-1">총 예상 시간: 약 7분</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pass Criteria -->
+      <div class="bg-surface rounded-2xl p-6 shadow-card border border-border-light">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-english-light rounded-xl flex items-center justify-center text-english">
+            <span class="material-symbols-outlined text-2xl">verified</span>
+          </div>
+          <div>
+            <h3 class="font-bold text-text-primary mb-1">통과 기준</h3>
+            <p class="text-2xl font-display font-bold text-english">정답률 90% 이상</p>
+            <p class="text-sm text-text-tertiary mt-1">54문항 이상 정답</p>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Result Preview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      
+      <!-- Pass Preview -->
+      <div class="bg-gradient-to-br from-success-light to-green-50 rounded-2xl p-6 border border-success/20">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-success rounded-full flex items-center justify-center text-white">
+            <span class="material-symbols-outlined filled">check_circle</span>
+          </div>
+          <h3 class="font-bold text-success">통과 시</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-text-secondary">
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-success text-lg">star</span>
+            <span><strong class="text-success">명예의 전당</strong> 등재</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-success text-lg">military_tech</span>
+            <span>월간 마스터 뱃지 획득</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-success text-lg">add</span>
+            <span>보너스 XP +100</span>
+          </li>
+        </ul>
+      </div>
+      
+      <!-- Fail Preview -->
+      <div class="bg-gradient-to-br from-error-light to-red-50 rounded-2xl p-6 border border-error/20">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-error rounded-full flex items-center justify-center text-white">
+            <span class="material-symbols-outlined">refresh</span>
+          </div>
+          <h3 class="font-bold text-error">미통과 시</h3>
+        </div>
+        <ul class="space-y-2 text-sm text-text-secondary">
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-error text-lg">replay</span>
+            <span>오답 단어 <strong class="text-error">재학습</strong> 필요</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-error text-lg">event</span>
+            <span>다음 주말 클리닉에 추가</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-error text-lg">calendar_month</span>
+            <span>다음 달 재시험 기회</span>
+          </li>
+        </ul>
+      </div>
+      
+    </div>
+    
+    <!-- Hall of Fame Preview -->
+    <div class="bg-surface rounded-2xl shadow-card border border-border-light overflow-hidden mb-8">
+      <div class="px-6 py-4 bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100 flex items-center gap-3">
+        <span class="material-symbols-outlined text-amber-500 text-2xl filled">workspace_premium</span>
+        <h3 class="font-bold text-amber-900">이달의 명예의 전당</h3>
+      </div>
+      
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- 1st Place -->
+          <div class="relative bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-5 border border-amber-200 shadow-gold text-center">
+            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <span class="material-symbols-outlined text-4xl text-amber-500 filled">trophy</span>
+            </div>
+            <div class="mt-6 mb-3">
+              <div class="w-16 h-16 bg-amber-100 rounded-full mx-auto flex items-center justify-center text-2xl font-bold text-amber-700">
+                김
+              </div>
+            </div>
+            <p class="font-bold text-secondary">김민준</p>
+            <p class="text-sm text-amber-600 font-bold">98점</p>
+            <span class="inline-block mt-2 px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">🥇 1위</span>
+          </div>
+          
+          <!-- 2nd Place -->
+          <div class="bg-gradient-to-br from-gray-50 to-slate-50 rounded-2xl p-5 border border-gray-200 text-center">
+            <div class="mb-3">
+              <div class="w-14 h-14 bg-gray-200 rounded-full mx-auto flex items-center justify-center text-xl font-bold text-gray-600">
+                이
+              </div>
+            </div>
+            <p class="font-bold text-secondary">이서연</p>
+            <p class="text-sm text-gray-500 font-bold">95점</p>
+            <span class="inline-block mt-2 px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full">🥈 2위</span>
+          </div>
+          
+          <!-- 3rd Place -->
+          <div class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-5 border border-orange-200 text-center">
+            <div class="mb-3">
+              <div class="w-14 h-14 bg-orange-100 rounded-full mx-auto flex items-center justify-center text-xl font-bold text-orange-700">
+                박
+              </div>
+            </div>
+            <p class="font-bold text-secondary">박지호</p>
+            <p class="text-sm text-orange-600 font-bold">93점</p>
+            <span class="inline-block mt-2 px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">🥉 3위</span>
+          </div>
+          
+        </div>
+        
+        <p class="text-center text-sm text-text-tertiary mt-4">
+          90점 이상 통과하면 명예의 전당에 이름이 올라가요!
+        </p>
+      </div>
+    </div>
+    
+    <!-- Tips -->
+    <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100 mb-6">
+      <h4 class="font-bold text-blue-900 mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined">lightbulb</span>
+        시험 팁
+      </h4>
+      <ul class="space-y-2 text-sm text-blue-800">
+        <li class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-blue-500 text-lg mt-0.5">check</span>
+          <span>뜻을 보고 빠르게 영어 단어를 떠올리세요</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-blue-500 text-lg mt-0.5">check</span>
+          <span>발음은 정확하게! 85% 이상이어야 PASS</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-blue-500 text-lg mt-0.5">check</span>
+          <span>7초가 지나면 자동으로 다음 문제로 넘어가요</span>
+        </li>
+      </ul>
+    </div>
+    
+  </main>
+  
+  <!-- Bottom Action -->
+  <div class="fixed bottom-0 left-0 w-full z-40 px-6 py-6 bg-gradient-to-t from-background via-background/95 to-transparent">
+    <div class="max-w-4xl mx-auto">
+      <button onclick="startExam()" class="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-lg rounded-2xl shadow-lg shadow-amber-500/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined filled">play_arrow</span>
+        월말 평가 시작하기
+      </button>
+      <p class="text-center text-xs text-text-tertiary mt-3">
+        시작하면 중단할 수 없어요. 준비되셨나요?
+      </p>
+    </div>
+  </div>
+  
+  <script>
+    // Exam data (would come from backend)
+    const examData = {
+      month: '12월',
+      graduatedWords: 42,
+      monthlyWords: 18,
+      totalWords: 60,
+      passCriteria: 90,
+      timePerQuestion: 7
+    };
+    
+    // Initialize page
+    function initPage() {
+      document.getElementById('monthText').textContent = `${examData.month} 월말 고사`;
+      document.getElementById('graduatedCount').textContent = examData.graduatedWords;
+      document.getElementById('monthlyCount').textContent = examData.monthlyWords;
+      document.getElementById('totalExamCount').textContent = examData.totalWords;
+    }
+    
+    // Start exam
+    function startExam() {
+      if (confirm('월말 평가를 시작하시겠습니까?\n시작하면 중단할 수 없습니다.')) {
+        localStorage.setItem('examMode', 'monthly');
+        window.location.href = 'english-test.html?mode=monthly';
+      }
+    }
+    
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initPage);
+  </script>
+  
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

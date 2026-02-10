@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>결제 관리 | MAMA-ASST 관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            'deep-navy': '#1A2E4D',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'border-medium': '#D1D5DB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%); color: white; }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .table-row { transition: background-color 0.15s ease; }
+    .table-row:hover { background-color: #F9FAFB; }
+    .modal-overlay { 
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .tab-btn.active { color: #FF6D4D; border-color: #FF6D4D; background: #FFF0ED; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-deep-navy flex-col fixed h-full z-40">
+      <div class="p-4 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">M</span>
+          </div>
+          <span class="text-white font-bold">MAMA-ASST</span>
+          <span class="ml-auto px-2 py-0.5 bg-primary/20 text-primary text-xs rounded-full">Admin</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+        <a href="admin-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        
+        <div class="pt-2">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">사용자 관리</p>
+          <a href="admin-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">school</span>
+            <span class="font-medium">학생 관리</span>
+          </a>
+          <a href="admin-temp-accounts.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">person_add</span>
+            <span class="font-medium">임시 계정</span>
+          </a>
+          <a href="admin-parents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">family_restroom</span>
+            <span class="font-medium">학부모 관리</span>
+          </a>
+          <a href="admin-instructors.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">person</span>
+            <span class="font-medium">강사 관리</span>
+          </a>
+        </div>
+        
+        <div class="pt-2">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">학원 운영</p>
+          <a href="admin-classes.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">class</span>
+            <span class="font-medium">반 관리</span>
+          </a>
+          <a href="admin-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">fact_check</span>
+            <span class="font-medium">출결 관리</span>
+          </a>
+          <a href="admin-homework.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">assignment</span>
+            <span class="font-medium">숙제 관리</span>
+          </a>
+          <a href="admin-daily-evaluations.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">rate_review</span>
+            <span class="font-medium">일일 평가</span>
+          </a>
+          <a href="admin-counseling.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">record_voice_over</span>
+            <span class="font-medium">2주 상담</span>
+          </a>
+          <a href="admin-learning-status.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">insights</span>
+            <span class="font-medium">학습 현황</span>
+          </a>
+          <a href="admin-payments.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+            <span class="material-icons-round text-xl">payments</span>
+            <span class="font-medium">결제 관리</span>
+          </a>
+          <a href="admin-content-request.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">upload_file</span>
+            <span class="font-medium">콘텐츠 요청</span>
+          </a>
+        </div>
+        
+        <div class="pt-2">
+          <a href="admin-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">settings</span>
+            <span class="font-medium">학원 설정</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">관</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">명불허전 학원</p>
+            <p class="text-xs text-white/60">관리자</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-navy text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="font-bold text-lg">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="admin-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="admin-payments.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">payments</span>
+          <span class="font-medium">결제 관리</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64">
+      
+      <!-- Mobile Header -->
+      <header class="lg:hidden h-14 bg-navy text-white flex items-center justify-between px-4 sticky top-0 z-30">
+        <button onclick="openMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">menu</span>
+        </button>
+        <h1 class="font-bold">결제 관리</h1>
+        <button onclick="openInvoiceModal()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">add</span>
+        </button>
+      </header>
+      
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-30">
+        <div>
+          <h1 class="text-xl font-bold text-text-primary">결제 관리</h1>
+          <p class="text-sm text-text-tertiary">2025년 1월 청구서 관리</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <a href="admin-revenue-report.html" class="px-4 py-2 border border-border-light text-text-secondary rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-2">
+            <span class="material-icons-round text-lg">bar_chart</span>
+            <span>매출 리포트</span>
+          </a>
+          <button class="px-4 py-2 border border-border-light text-text-secondary rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-2">
+            <span class="material-icons-round text-lg">download</span>
+            <span>내보내기</span>
+          </button>
+          <button onclick="openInvoiceModal()" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors flex items-center gap-2">
+            <span class="material-icons-round text-lg">add</span>
+            <span>청구서 발행</span>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-4">
+        
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+          <div class="bg-surface rounded-xl border border-border-light p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center">
+                <span class="material-icons-round text-primary">receipt_long</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-text-primary">127</p>
+                <p class="text-xs text-text-tertiary">이번 달 청구</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-xl border border-border-light p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-success-light flex items-center justify-center">
+                <span class="material-icons-round text-success">check_circle</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-success">98</p>
+                <p class="text-xs text-text-tertiary">결제 완료</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-xl border border-border-light p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-warning-light flex items-center justify-center">
+                <span class="material-icons-round text-warning">pending</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-warning">17</p>
+                <p class="text-xs text-text-tertiary">대기 중</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-xl border border-border-light p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-error-light flex items-center justify-center">
+                <span class="material-icons-round text-error">warning</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-error">12</p>
+                <p class="text-xs text-text-tertiary">연체</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Revenue Summary -->
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2 bg-surface rounded-xl border border-border-light p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-text-primary">월간 매출 현황</h3>
+              <select class="px-3 py-1.5 border border-border-light rounded-lg text-sm">
+                <option>2025년 1월</option>
+                <option>2024년 12월</option>
+                <option>2024년 11월</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mb-4">
+              <div class="text-center p-4 bg-gray-50 rounded-xl">
+                <p class="text-2xl font-bold text-text-primary">12,700,000</p>
+                <p class="text-sm text-text-tertiary">청구 금액</p>
+              </div>
+              <div class="text-center p-4 bg-success-light rounded-xl">
+                <p class="text-2xl font-bold text-success">9,800,000</p>
+                <p class="text-sm text-text-tertiary">수금 완료</p>
+              </div>
+              <div class="text-center p-4 bg-error-light rounded-xl">
+                <p class="text-2xl font-bold text-error">2,900,000</p>
+                <p class="text-sm text-text-tertiary">미수금</p>
+              </div>
+            </div>
+            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-success to-success/80 rounded-full" style="width: 77%"></div>
+            </div>
+            <p class="text-xs text-text-tertiary mt-2 text-right">수금률 77.2%</p>
+          </div>
+          
+          <div class="bg-surface rounded-xl border border-border-light p-5">
+            <h3 class="font-bold text-text-primary mb-4">결제선생 연동</h3>
+            <div class="flex items-center gap-3 p-3 bg-success-light rounded-xl mb-4">
+              <span class="material-icons-round text-success">check_circle</span>
+              <div>
+                <p class="font-medium text-success text-sm">연동 완료</p>
+                <p class="text-xs text-success/70">심사 승인됨</p>
+              </div>
+            </div>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between">
+                <span class="text-text-tertiary">가맹점 ID</span>
+                <span class="text-text-primary font-medium">MBH-2024-001</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-text-tertiary">등록일</span>
+                <span class="text-text-primary">2024.11.15</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-text-tertiary">정산 주기</span>
+                <span class="text-text-primary">D+1</span>
+              </div>
+            </div>
+            <a href="admin-settings.html" class="block mt-4 text-center text-sm text-primary hover:underline">설정 변경 →</a>
+          </div>
+        </div>
+        
+        <!-- Tabs & Filters -->
+        <div class="bg-surface rounded-xl border border-border-light overflow-hidden">
+          <!-- Tabs -->
+          <div class="border-b border-border-light flex overflow-x-auto">
+            <button class="tab-btn active px-4 py-3 text-sm font-medium border-b-2 border-transparent whitespace-nowrap rounded-tl-xl">
+              전체 (127)
+            </button>
+            <button class="tab-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-text-secondary whitespace-nowrap">
+              결제 완료 (98)
+            </button>
+            <button class="tab-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-text-secondary whitespace-nowrap">
+              대기 중 (17)
+            </button>
+            <button class="tab-btn px-4 py-3 text-sm font-medium border-b-2 border-transparent text-text-secondary whitespace-nowrap">
+              연체 (12)
+            </button>
+          </div>
+          
+          <!-- Filters -->
+          <div class="p-4 border-b border-border-light">
+            <div class="flex flex-col lg:flex-row gap-3">
+              <div class="relative flex-1">
+                <span class="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary">search</span>
+                <input type="text" placeholder="학생명, 학부모명으로 검색..." class="w-full pl-10 pr-4 py-2.5 border border-border-light rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+              </div>
+              
+              <div class="flex flex-wrap gap-2">
+                <input type="month" value="2025-01" class="px-3 py-2.5 border border-border-light rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                
+                <select class="px-3 py-2.5 border border-border-light rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                  <option value="">전체 반</option>
+                  <option value="a">A반</option>
+                  <option value="b">B반</option>
+                  <option value="c">C반</option>
+                </select>
+                
+                <button class="px-3 py-2.5 border border-border-light rounded-xl text-sm text-text-secondary hover:bg-gray-50 flex items-center gap-1">
+                  <span class="material-icons-round text-lg">send</span>
+                  일괄 알림
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Table -->
+          <div class="hidden lg:block overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 border-b border-border-light">
+                <tr>
+                  <th class="w-12 px-4 py-3">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-medium">
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">청구번호</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">학생 / 학부모</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">청구 금액</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">청구일</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">마감일</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">상태</th>
+                  <th class="w-24 px-4 py-3"></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-light">
+                <tr class="table-row">
+                  <td class="px-4 py-4">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-medium">
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="font-medium text-text-primary">INV-2501-001</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div>
+                      <p class="font-medium text-text-primary">김민준</p>
+                      <p class="text-xs text-text-tertiary">김민수 (어머니)</p>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="font-semibold text-text-primary">100,000원</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="text-sm text-text-secondary">2025.01.01</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="text-sm text-text-secondary">2025.01.10</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="px-2.5 py-1 bg-success-light text-success text-xs font-medium rounded-full">결제 완료</span>
+                  </td>
+                  <td class="px-4 py-4 relative">
+                    <button onclick="togglePaymentMenu(this)" class="p-2 hover:bg-gray-100 rounded-lg">
+                      <span class="material-icons-round text-text-tertiary">more_vert</span>
+                    </button>
+                    <div class="payment-menu hidden absolute right-4 top-full mt-1 w-44 bg-surface border border-border-light rounded-xl shadow-lg py-1 z-20">
+                      <button onclick="openPaymentDetail('INV-2501-001')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                        <span class="material-icons-round text-lg text-text-tertiary">visibility</span>
+                        상세보기
+                      </button>
+                      <button onclick="reissueReceipt('INV-2501-001')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                        <span class="material-icons-round text-lg text-text-tertiary">receipt</span>
+                        영수증 재발행
+                      </button>
+                      <button onclick="addPaymentMemo('INV-2501-001')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                        <span class="material-icons-round text-lg text-text-tertiary">sticky_note_2</span>
+                        메모 추가
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <tr class="table-row">
+                  <td class="px-4 py-4">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-medium">
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="font-medium text-text-primary">INV-2501-002</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div>
+                      <p class="font-medium text-text-primary">이서연</p>
+                      <p class="text-xs text-text-tertiary">이정호 (아버지)</p>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="font-semibold text-text-primary">150,000원</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="text-sm text-text-secondary">2025.01.01</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="text-sm text-text-secondary">2025.01.10</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="px-2.5 py-1 bg-warning-light text-warning text-xs font-medium rounded-full">대기 중</span>
+                  </td>
+                  <td class="px-4 py-4 relative">
+                    <div class="flex gap-1">
+                      <button onclick="openNotifyConfirm('INV-2501-002', '이정호', 'remind')" class="px-2 py-1 text-xs text-info hover:bg-info-light rounded-lg">알림</button>
+                      <button onclick="togglePaymentMenu(this)" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <span class="material-icons-round text-text-tertiary text-lg">more_vert</span>
+                      </button>
+                    </div>
+                    <div class="payment-menu hidden absolute right-4 top-full mt-1 w-44 bg-surface border border-border-light rounded-xl shadow-lg py-1 z-20">
+                      <button onclick="openPaymentDetail('INV-2501-002')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                        <span class="material-icons-round text-lg text-text-tertiary">visibility</span>
+                        상세보기
+                      </button>
+                      <button onclick="cancelPayment('INV-2501-002')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-error hover:bg-error-light">
+                        <span class="material-icons-round text-lg">cancel</span>
+                        결제 취소
+                      </button>
+                      <button onclick="addPaymentMemo('INV-2501-002')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                        <span class="material-icons-round text-lg text-text-tertiary">sticky_note_2</span>
+                        메모 추가
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <tr class="table-row bg-error-light/30">
+                  <td class="px-4 py-4">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-medium">
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="font-medium text-text-primary">INV-2412-098</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div>
+                      <p class="font-medium text-text-primary">박지우</p>
+                      <p class="text-xs text-text-tertiary">박영희 (어머니)</p>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="font-semibold text-error">100,000원</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="text-sm text-text-secondary">2024.12.01</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="text-sm text-error">2024.12.10</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="px-2.5 py-1 bg-error-light text-error text-xs font-medium rounded-full">연체 28일</span>
+                  </td>
+                  <td class="px-4 py-4 relative">
+                    <div class="flex gap-1">
+                      <button onclick="openNotifyConfirm('INV-2412-098', '박영희', 'urge')" class="px-2 py-1 text-xs text-error hover:bg-error-light rounded-lg">독촉</button>
+                      <button onclick="togglePaymentMenu(this)" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <span class="material-icons-round text-text-tertiary text-lg">more_vert</span>
+                      </button>
+                    </div>
+                    <div class="payment-menu hidden absolute right-4 top-full mt-1 w-44 bg-surface border border-border-light rounded-xl shadow-lg py-1 z-20">
+                      <button onclick="openPaymentDetail('INV-2412-098')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                        <span class="material-icons-round text-lg text-text-tertiary">visibility</span>
+                        상세보기
+                      </button>
+                      <button onclick="cancelPayment('INV-2412-098')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-error hover:bg-error-light">
+                        <span class="material-icons-round text-lg">cancel</span>
+                        결제 취소
+                      </button>
+                      <button onclick="addPaymentMemo('INV-2412-098')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                        <span class="material-icons-round text-lg text-text-tertiary">sticky_note_2</span>
+                        메모 추가
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <tr class="table-row">
+                  <td class="px-4 py-4">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-medium">
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="font-medium text-text-primary">INV-2501-003</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <div>
+                      <p class="font-medium text-text-primary">최예린</p>
+                      <p class="text-xs text-text-tertiary">최수진 (어머니)</p>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="font-semibold text-text-primary">200,000원</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="text-sm text-text-secondary">2025.01.01</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="text-sm text-text-secondary">2025.01.10</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span class="px-2.5 py-1 bg-success-light text-success text-xs font-medium rounded-full">결제 완료</span>
+                  </td>
+                  <td class="px-4 py-4 relative">
+                    <button onclick="togglePaymentMenu(this)" class="p-2 hover:bg-gray-100 rounded-lg">
+                      <span class="material-icons-round text-text-tertiary">more_vert</span>
+                    </button>
+                    <div class="payment-menu hidden absolute right-4 top-full mt-1 w-44 bg-surface border border-border-light rounded-xl shadow-lg py-1 z-20">
+                      <button onclick="openPaymentDetail('INV-2501-003')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                        <span class="material-icons-round text-lg text-text-tertiary">visibility</span>
+                        상세보기
+                      </button>
+                      <button onclick="reissueReceipt('INV-2501-003')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                        <span class="material-icons-round text-lg text-text-tertiary">receipt</span>
+                        영수증 재발행
+                      </button>
+                      <button onclick="addPaymentMemo('INV-2501-003')" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-primary hover:bg-gray-50">
+                        <span class="material-icons-round text-lg text-text-tertiary">sticky_note_2</span>
+                        메모 추가
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Mobile Card List -->
+          <div class="lg:hidden divide-y divide-border-light">
+            <div class="p-4">
+              <div class="flex items-start justify-between mb-2">
+                <div>
+                  <p class="font-medium text-text-primary">김민준</p>
+                  <p class="text-xs text-text-tertiary">INV-2501-001 · 김민수 (어머니)</p>
+                </div>
+                <span class="px-2 py-0.5 bg-success-light text-success text-xs rounded-full">결제 완료</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-text-primary">100,000원</span>
+                <span class="text-xs text-text-tertiary">2025.01.01 청구</span>
+              </div>
+            </div>
+            
+            <div class="p-4">
+              <div class="flex items-start justify-between mb-2">
+                <div>
+                  <p class="font-medium text-text-primary">이서연</p>
+                  <p class="text-xs text-text-tertiary">INV-2501-002 · 이정호 (아버지)</p>
+                </div>
+                <span class="px-2 py-0.5 bg-warning-light text-warning text-xs rounded-full">대기 중</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-text-primary">150,000원</span>
+                <button class="text-xs text-info">알림 발송</button>
+              </div>
+            </div>
+            
+            <div class="p-4 bg-error-light/30">
+              <div class="flex items-start justify-between mb-2">
+                <div>
+                  <p class="font-medium text-text-primary">박지우</p>
+                  <p class="text-xs text-text-tertiary">INV-2412-098 · 박영희 (어머니)</p>
+                </div>
+                <span class="px-2 py-0.5 bg-error-light text-error text-xs rounded-full">연체 28일</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-error">100,000원</span>
+                <button class="text-xs text-error">독촉 발송</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Pagination -->
+          <div class="p-4 border-t border-border-light flex items-center justify-between">
+            <p class="text-sm text-text-secondary">1-20 / 127</p>
+            <div class="flex items-center gap-1">
+              <button class="p-2 hover:bg-gray-100 rounded-lg disabled:opacity-50" disabled>
+                <span class="material-icons-round text-text-tertiary">chevron_left</span>
+              </button>
+              <button class="w-8 h-8 bg-primary text-white rounded-lg text-sm font-medium">1</button>
+              <button class="w-8 h-8 hover:bg-gray-100 rounded-lg text-sm text-text-secondary">2</button>
+              <button class="w-8 h-8 hover:bg-gray-100 rounded-lg text-sm text-text-secondary">3</button>
+              <span class="text-text-tertiary">...</span>
+              <button class="w-8 h-8 hover:bg-gray-100 rounded-lg text-sm text-text-secondary">7</button>
+              <button class="p-2 hover:bg-gray-100 rounded-lg">
+                <span class="material-icons-round text-text-tertiary">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </main>
+    
+  </div>
+  
+  <!-- Invoice Modal -->
+  <div id="invoiceModal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-border-light flex items-center justify-between">
+        <h3 class="text-lg font-bold text-text-primary">추가 청구서 발행</h3>
+        <button onclick="closeInvoiceModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      
+      <form class="p-6 space-y-4">
+        <!-- 안내 문구 -->
+        <div class="p-3 bg-info-light rounded-xl">
+          <div class="flex gap-2">
+            <span class="material-icons-round text-info text-lg">info</span>
+            <div class="text-sm text-text-secondary">
+              <p class="font-medium text-info mb-1">추가 비용 청구용</p>
+              <p>정기 수강료는 매월 자동 생성됩니다. 이 기능은 <strong>교재비, 특강비, 재료비</strong> 등 예외적인 비용을 청구할 때 사용하세요.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">
+            발행 대상 <span class="text-error">*</span>
+          </label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="target" value="individual" checked class="w-4 h-4 text-primary" onchange="updateTargetUI()">
+              <span class="text-sm">개별 학생</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="target" value="class" class="w-4 h-4 text-primary" onchange="updateTargetUI()">
+              <span class="text-sm">반 전체</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="target" value="all" class="w-4 h-4 text-primary" onchange="updateTargetUI()">
+              <span class="text-sm">전체 학생</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 개별 학생 선택 -->
+        <div id="studentSelect">
+          <label class="block text-sm font-medium text-text-primary mb-2">학생 선택</label>
+          <select class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+            <option value="">학생을 선택하세요</option>
+            <option value="1">김민준 (A반)</option>
+            <option value="2">이서연 (A반)</option>
+            <option value="3">박지우 (B반)</option>
+            <option value="4">최예린 (C반)</option>
+          </select>
+        </div>
+        
+        <!-- 반 선택 -->
+        <div id="classSelect" class="hidden">
+          <label class="block text-sm font-medium text-text-primary mb-2">반 선택</label>
+          <select class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+            <option value="">반을 선택하세요</option>
+            <option value="A">A반 (15명)</option>
+            <option value="B">B반 (18명)</option>
+            <option value="C">C반 (12명)</option>
+          </select>
+        </div>
+        
+        <!-- 전체 학생 안내 -->
+        <div id="allStudentsInfo" class="hidden p-3 bg-gray-50 rounded-xl text-sm text-text-secondary">
+          <span class="material-icons-round text-lg align-middle mr-1">groups</span>
+          전체 학생 127명에게 발행됩니다.
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">
+            청구 항목 <span class="text-error">*</span>
+          </label>
+          <select id="invoiceType" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all mb-2">
+            <option value="">청구 유형 선택</option>
+            <option value="교재비">교재비</option>
+            <option value="특강비">특강비</option>
+            <option value="재료비">재료비</option>
+            <option value="기타">기타</option>
+          </select>
+          <input type="text" required placeholder="상세 내용 (예: 2025년 봄학기 수학 교재)" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">
+            청구 금액 <span class="text-error">*</span>
+          </label>
+          <div class="relative">
+            <input type="number" required placeholder="50000" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all pr-12">
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-text-tertiary">원</span>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">
+            결제 마감일 <span class="text-error">*</span>
+          </label>
+          <input type="date" required class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all">
+        </div>
+        
+        <div>
+          <label class="flex items-center gap-2">
+            <input type="checkbox" checked class="w-4 h-4 rounded text-primary">
+            <span class="text-sm text-text-secondary">발행 즉시 카카오 알림톡 발송</span>
+          </label>
+        </div>
+        
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeInvoiceModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl text-text-secondary hover:bg-gray-50 transition-colors">
+            취소
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors">
+            발행
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Notification Confirm Modal -->
+  <div id="notifyConfirmModal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl max-w-md w-full">
+      <div class="p-6">
+        <div id="notifyIcon" class="w-12 h-12 rounded-full bg-info-light flex items-center justify-center mx-auto mb-4">
+          <span class="material-icons-round text-info text-2xl">notifications_active</span>
+        </div>
+        <h3 id="notifyTitle" class="text-lg font-bold text-text-primary text-center mb-2">결제 알림 발송</h3>
+        <p id="notifyDesc" class="text-sm text-text-secondary text-center mb-6"></p>
+        
+        <div class="flex gap-3">
+          <button onclick="closeNotifyConfirmModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl text-text-secondary hover:bg-gray-50 transition-colors">
+            취소
+          </button>
+          <button id="notifyConfirmBtn" onclick="sendNotification()" class="flex-1 px-4 py-2.5 bg-info text-white rounded-xl hover:bg-info/90 transition-colors">
+            발송하기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Payment Detail Modal -->
+  <div id="paymentDetailModal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-border-light flex items-center justify-between">
+        <h3 class="text-lg font-bold text-text-primary">청구서 상세</h3>
+        <button onclick="closePaymentDetailModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+          <div>
+            <p class="text-xs text-text-tertiary mb-1">청구번호</p>
+            <p id="detailInvoiceId" class="font-bold text-text-primary">INV-2501-001</p>
+          </div>
+          <span id="detailStatus" class="px-3 py-1 bg-success-light text-success text-sm font-medium rounded-full">결제 완료</span>
+        </div>
+        
+        <div class="space-y-3">
+          <div class="flex justify-between py-2 border-b border-border-light">
+            <span class="text-sm text-text-secondary">학생</span>
+            <span class="text-sm font-medium text-text-primary">김민준</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-border-light">
+            <span class="text-sm text-text-secondary">학부모</span>
+            <span class="text-sm font-medium text-text-primary">김민수 (어머니)</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-border-light">
+            <span class="text-sm text-text-secondary">청구 항목</span>
+            <span class="text-sm font-medium text-text-primary">2025년 1월 수강료</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-border-light">
+            <span class="text-sm text-text-secondary">청구 금액</span>
+            <span class="text-sm font-bold text-primary">100,000원</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-border-light">
+            <span class="text-sm text-text-secondary">청구일</span>
+            <span class="text-sm text-text-primary">2025.01.01</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-border-light">
+            <span class="text-sm text-text-secondary">결제 마감일</span>
+            <span class="text-sm text-text-primary">2025.01.10</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-border-light">
+            <span class="text-sm text-text-secondary">결제일</span>
+            <span class="text-sm text-text-primary">2025.01.05 14:32</span>
+          </div>
+          <div class="flex justify-between py-2">
+            <span class="text-sm text-text-secondary">결제 수단</span>
+            <span class="text-sm text-text-primary">카카오페이</span>
+          </div>
+        </div>
+        
+        <div class="p-3 bg-gray-50 rounded-xl">
+          <p class="text-xs text-text-tertiary mb-1">메모</p>
+          <p class="text-sm text-text-secondary">등록된 메모가 없습니다.</p>
+        </div>
+        
+        <div class="flex gap-3 pt-2">
+          <button onclick="closePaymentDetailModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl text-text-secondary hover:bg-gray-50 transition-colors">
+            닫기
+          </button>
+          <button onclick="reissueReceipt()" class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors flex items-center justify-center gap-2">
+            <span class="material-icons-round text-lg">receipt</span>
+            영수증 발행
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Memo Modal -->
+  <div id="memoModal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl max-w-md w-full">
+      <div class="p-6 border-b border-border-light flex items-center justify-between">
+        <h3 class="text-lg font-bold text-text-primary">메모 추가</h3>
+        <button onclick="closeMemoModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">청구번호</label>
+          <p id="memoInvoiceId" class="text-sm text-text-secondary">INV-2501-001</p>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">메모 내용</label>
+          <textarea rows="4" placeholder="결제 관련 메모를 입력하세요" class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"></textarea>
+        </div>
+        
+        <div class="flex gap-3">
+          <button onclick="closeMemoModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl text-text-secondary hover:bg-gray-50 transition-colors">
+            취소
+          </button>
+          <button onclick="saveMemo()" class="flex-1 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors">
+            저장
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function openMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.getElementById('mobileMenu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function openInvoiceModal() {
+      document.getElementById('invoiceModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeInvoiceModal() {
+      document.getElementById('invoiceModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function updateTargetUI() {
+      const target = document.querySelector('input[name="target"]:checked').value;
+      document.getElementById('studentSelect').classList.toggle('hidden', target !== 'individual');
+      document.getElementById('classSelect').classList.toggle('hidden', target !== 'class');
+      document.getElementById('allStudentsInfo').classList.toggle('hidden', target !== 'all');
+    }
+    
+    // Payment menu functions
+    function togglePaymentMenu(btn) {
+      document.querySelectorAll('.payment-menu').forEach(menu => {
+        if (menu !== btn.nextElementSibling && menu !== btn.parentElement.querySelector('.payment-menu')) {
+          menu.classList.add('hidden');
+        }
+      });
+      const menu = btn.parentElement.querySelector('.payment-menu') || btn.nextElementSibling;
+      if (menu) menu.classList.toggle('hidden');
+    }
+    
+    function openPaymentDetail(invoiceId) {
+      document.querySelectorAll('.payment-menu').forEach(m => m.classList.add('hidden'));
+      document.getElementById('detailInvoiceId').textContent = invoiceId;
+      document.getElementById('paymentDetailModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closePaymentDetailModal() {
+      document.getElementById('paymentDetailModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function reissueReceipt(invoiceId) {
+      document.querySelectorAll('.payment-menu').forEach(m => m.classList.add('hidden'));
+      alert('영수증이 학부모에게 재발송되었습니다.');
+    }
+    
+    function cancelPayment(invoiceId) {
+      document.querySelectorAll('.payment-menu').forEach(m => m.classList.add('hidden'));
+      if (confirm('정말 이 청구서를 취소하시겠습니까?\n\n취소된 청구서는 복구할 수 없습니다.')) {
+        alert('청구서가 취소되었습니다.');
+      }
+    }
+    
+    function addPaymentMemo(invoiceId) {
+      document.querySelectorAll('.payment-menu').forEach(m => m.classList.add('hidden'));
+      document.getElementById('memoInvoiceId').textContent = invoiceId;
+      document.getElementById('memoModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMemoModal() {
+      document.getElementById('memoModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveMemo() {
+      alert('메모가 저장되었습니다.');
+      closeMemoModal();
+    }
+    
+    // Notification confirm
+    let currentNotifyInvoice = '';
+    let currentNotifyType = '';
+    
+    function openNotifyConfirm(invoiceId, parentName, type) {
+      currentNotifyInvoice = invoiceId;
+      currentNotifyType = type;
+      
+      const modal = document.getElementById('notifyConfirmModal');
+      const icon = document.getElementById('notifyIcon');
+      const title = document.getElementById('notifyTitle');
+      const desc = document.getElementById('notifyDesc');
+      const btn = document.getElementById('notifyConfirmBtn');
+      
+      if (type === 'urge') {
+        icon.className = 'w-12 h-12 rounded-full bg-error-light flex items-center justify-center mx-auto mb-4';
+        icon.querySelector('span').className = 'material-icons-round text-error text-2xl';
+        title.textContent = '연체 독촉 발송';
+        desc.innerHTML = `<strong>${parentName}</strong> 학부모님에게<br>연체 안내 메시지를 발송하시겠습니까?`;
+        btn.className = 'flex-1 px-4 py-2.5 bg-error text-white rounded-xl hover:bg-error/90 transition-colors';
+        btn.textContent = '독촉 발송';
+      } else {
+        icon.className = 'w-12 h-12 rounded-full bg-info-light flex items-center justify-center mx-auto mb-4';
+        icon.querySelector('span').className = 'material-icons-round text-info text-2xl';
+        title.textContent = '결제 알림 발송';
+        desc.innerHTML = `<strong>${parentName}</strong> 학부모님에게<br>결제 안내 알림을 발송하시겠습니까?`;
+        btn.className = 'flex-1 px-4 py-2.5 bg-info text-white rounded-xl hover:bg-info/90 transition-colors';
+        btn.textContent = '알림 발송';
+      }
+      
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeNotifyConfirmModal() {
+      document.getElementById('notifyConfirmModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function sendNotification() {
+      closeNotifyConfirmModal();
+      const msg = currentNotifyType === 'urge' ? '연체 독촉' : '결제 알림';
+      alert(`${msg}이 발송되었습니다.`);
+    }
+    
+    // Close menus when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.payment-menu') && !e.target.closest('[onclick*="togglePaymentMenu"]')) {
+        document.querySelectorAll('.payment-menu').forEach(menu => menu.classList.add('hidden'));
+      }
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

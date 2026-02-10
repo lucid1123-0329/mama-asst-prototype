@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신규 상담 시작 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+          boxShadow: {
+            'card': '0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)',
+            'card-hover': '0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.08)',
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .consultation-card {
+      transition: all 0.2s ease;
+    }
+    .consultation-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    
+    .step-icon {
+      transition: all 0.3s ease;
+    }
+    .step-item:hover .step-icon {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased min-h-screen">
+  
+  <!-- Header -->
+  <header class="h-14 sm:h-16 bg-navy text-white flex items-center justify-between px-4 sm:px-6 sticky top-0 z-50">
+    <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+      <a href="consultation-dashboard.html" class="flex items-center gap-2 sm:gap-3">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
+          <span class="text-white font-bold text-sm sm:text-lg">M</span>
+        </div>
+        <div class="min-w-0">
+          <span class="font-bold text-sm sm:text-lg">MAMA-ASST</span>
+          <span class="text-white/50 text-xs ml-1 sm:ml-2 hidden sm:inline">관리자</span>
+        </div>
+      </a>
+    </div>
+    <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+      <span class="text-xs sm:text-sm text-white/70 hidden sm:inline">수학의정석 학원</span>
+      <div class="w-px h-6 bg-white/20 hidden sm:block"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+          <span class="material-icons-round text-sm">person</span>
+        </div>
+        <span class="text-sm hidden sm:inline">김원장</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    
+    <!-- Page Header -->
+    <div class="mb-6 sm:mb-8">
+      <div class="flex items-center gap-2 text-sm text-text-tertiary mb-2">
+        <a href="consultation-dashboard.html" class="hover:text-primary">상담 관리</a>
+        <span class="material-icons-round text-sm">chevron_right</span>
+        <span class="text-text-primary">신규 상담 시작</span>
+      </div>
+      <h1 class="text-xl sm:text-2xl font-bold text-text-primary">신규 원생 상담 시작</h1>
+      <p class="text-sm sm:text-base text-text-secondary mt-1">새로운 상담 세션을 생성하고 게스트 모드로 진입합니다.</p>
+    </div>
+    
+    <!-- Process Overview -->
+    <div class="bg-surface rounded-2xl shadow-card p-4 sm:p-6 mb-6 sm:mb-8">
+      <h2 class="font-bold text-base sm:text-lg text-text-primary mb-4 flex items-center gap-2">
+        <span class="material-icons-round text-primary">route</span>
+        상담 프로세스 안내
+      </h2>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div class="step-item text-center">
+          <div class="step-icon w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-2xl bg-info-light flex items-center justify-center mb-2 sm:mb-3">
+            <span class="material-icons-round text-info text-xl sm:text-2xl">edit_note</span>
+          </div>
+          <div class="text-xs text-info font-bold mb-1">STEP 1</div>
+          <p class="font-medium text-xs sm:text-sm text-text-primary">기본 정보 입력</p>
+          <p class="text-xs text-text-tertiary mt-1 hidden sm:block">학생/학부모 정보</p>
+        </div>
+
+        <div class="step-item text-center">
+          <div class="step-icon w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-2xl bg-primary-light flex items-center justify-center mb-2 sm:mb-3">
+            <span class="material-icons-round text-primary text-xl sm:text-2xl">groups</span>
+          </div>
+          <div class="text-xs text-primary font-bold mb-1">STEP 2</div>
+          <p class="font-medium text-xs sm:text-sm text-text-primary">대면 상담</p>
+          <p class="text-xs text-text-tertiary mt-1 hidden sm:block">커리큘럼/목표 안내</p>
+        </div>
+
+        <div class="step-item text-center">
+          <div class="step-icon w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-2xl bg-warning-light flex items-center justify-center mb-2 sm:mb-3">
+            <span class="material-icons-round text-warning text-xl sm:text-2xl">quiz</span>
+          </div>
+          <div class="text-xs text-warning font-bold mb-1">STEP 3</div>
+          <p class="font-medium text-xs sm:text-sm text-text-primary">레벨/성향 검사</p>
+          <p class="text-xs text-text-tertiary mt-1 hidden sm:block">진단 테스트 진행</p>
+        </div>
+
+        <div class="step-item text-center">
+          <div class="step-icon w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-2xl bg-success-light flex items-center justify-center mb-2 sm:mb-3">
+            <span class="material-icons-round text-success text-xl sm:text-2xl">assignment_turned_in</span>
+          </div>
+          <div class="text-xs text-success font-bold mb-1">STEP 4</div>
+          <p class="font-medium text-xs sm:text-sm text-text-primary">결과 상담</p>
+          <p class="text-xs text-text-tertiary mt-1 hidden sm:block">분석 결과 전달</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Session Options -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+      
+      <!-- New Session Card -->
+      <div class="consultation-card bg-surface rounded-2xl shadow-card p-6 border-2 border-transparent hover:border-primary/30 cursor-pointer" onclick="openNewSessionModal()">
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-white text-2xl">person_add</span>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-bold text-lg text-text-primary mb-1">새 상담 세션 시작</h3>
+            <p class="text-sm text-text-secondary mb-4">신규 원생 등록을 위한 상담 세션을 생성합니다.</p>
+            <div class="flex items-center gap-2 text-primary font-medium text-sm">
+              <span>세션 생성하기</span>
+              <span class="material-icons-round text-lg">arrow_forward</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Resume Session Card -->
+      <div class="consultation-card bg-surface rounded-2xl shadow-card p-6 border-2 border-transparent hover:border-warning/30 cursor-pointer" onclick="location.href='consultation-dashboard.html'">
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-warning to-amber-400 flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-white text-2xl">history</span>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-bold text-lg text-text-primary mb-1">진행 중인 상담</h3>
+            <p class="text-sm text-text-secondary mb-4">미완료된 상담 세션을 이어서 진행합니다.</p>
+            <div class="flex items-center gap-4">
+              <div class="flex items-center gap-1 text-warning font-medium text-sm">
+                <span class="material-icons-round text-lg">pending</span>
+                <span id="inProgressCount">3건 진행 중</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary">arrow_forward</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Quick Guide -->
+    <div class="bg-info-light border border-info/20 rounded-2xl p-4 sm:p-5">
+      <div class="flex items-start gap-3 sm:gap-4">
+        <div class="w-10 h-10 rounded-xl bg-info/10 flex items-center justify-center flex-shrink-0">
+          <span class="material-icons-round text-info">tips_and_updates</span>
+        </div>
+        <div>
+          <h3 class="font-bold text-text-primary mb-2">게스트 모드 안내</h3>
+          <ul class="text-sm text-text-secondary space-y-1">
+            <li class="flex items-start gap-2">
+              <span class="material-icons-round text-info text-sm mt-0.5">check_circle</span>
+              게스트 모드에서는 학생이 직접 태블릿/PC로 정보를 입력합니다.
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="material-icons-round text-info text-sm mt-0.5">check_circle</span>
+              검사 중 임시저장이 자동으로 되며, 중단 후 이어서 진행할 수 있습니다.
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="material-icons-round text-info text-sm mt-0.5">check_circle</span>
+              검사 완료 후 관리자 화면에서 결과를 확인하고 분석할 수 있습니다.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+  </main>
+  
+  <!-- New Session Modal -->
+  <div id="newSessionModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden">
+      <div class="p-6 border-b border-border-light">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold text-text-primary">새 상담 세션</h2>
+          <button onclick="closeNewSessionModal()" class="p-2 text-text-tertiary hover:text-text-primary hover:bg-gray-100 rounded-lg transition-colors">
+            <span class="material-icons-round">close</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-6">
+        <p class="text-text-secondary mb-6">상담 세션 정보를 입력해주세요. 이후 학생이 직접 정보를 입력하게 됩니다.</p>
+        
+        <div class="space-y-4">
+          <!-- Session Name (Optional) -->
+          <div>
+            <label class="block text-sm font-medium text-text-primary mb-2">세션명 (선택)</label>
+            <input type="text" id="sessionName" placeholder="예: 홍길동 학생 상담" class="w-full px-4 py-3 border border-border-light rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+            <p class="text-xs text-text-tertiary mt-1">비워두면 자동으로 생성됩니다.</p>
+          </div>
+          
+          <!-- Consultation Type -->
+          <div>
+            <label class="block text-sm font-medium text-text-primary mb-2">상담 유형</label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="relative">
+                <input type="radio" name="consultType" value="full" checked class="peer sr-only">
+                <div class="p-4 border-2 border-border-light rounded-xl cursor-pointer peer-checked:border-primary peer-checked:bg-primary-light transition-all">
+                  <div class="flex items-center gap-3">
+                    <span class="material-icons-round text-text-tertiary peer-checked:text-primary">assignment</span>
+                    <div>
+                      <p class="font-medium text-text-primary">전체 진행</p>
+                      <p class="text-xs text-text-tertiary">레벨테스트 + 성향검사</p>
+                    </div>
+                  </div>
+                </div>
+              </label>
+              <label class="relative">
+                <input type="radio" name="consultType" value="tendency" class="peer sr-only">
+                <div class="p-4 border-2 border-border-light rounded-xl cursor-pointer peer-checked:border-primary peer-checked:bg-primary-light transition-all">
+                  <div class="flex items-center gap-3">
+                    <span class="material-icons-round text-text-tertiary peer-checked:text-primary">psychology</span>
+                    <div>
+                      <p class="font-medium text-text-primary">성향검사만</p>
+                      <p class="text-xs text-text-tertiary">약 20분 소요</p>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Assigned Staff -->
+          <div>
+            <label class="block text-sm font-medium text-text-primary mb-2">담당자</label>
+            <select class="w-full px-4 py-3 border border-border-light rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white">
+              <option value="kim">김원장</option>
+              <option value="lee">이상담 선생님</option>
+              <option value="park">박담당 선생님</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-6 bg-gray-50 border-t border-border-light flex items-center justify-end gap-3">
+        <button onclick="closeNewSessionModal()" class="px-5 py-2.5 text-text-secondary hover:bg-gray-200 rounded-xl font-medium transition-colors">
+          취소
+        </button>
+        <button onclick="startGuestMode()" class="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl font-medium transition-colors flex items-center gap-2">
+          <span class="material-icons-round text-lg">play_arrow</span>
+          게스트 모드 시작
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-white/90 flex flex-col items-center justify-center z-50 hidden">
+    <div class="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+    <p class="text-lg font-medium text-text-primary">게스트 모드 준비 중...</p>
+    <p class="text-sm text-text-secondary mt-1">잠시만 기다려주세요.</p>
+  </div>
+  
+  <script>
+    function openNewSessionModal() {
+      document.getElementById('newSessionModal').classList.remove('hidden');
+    }
+    
+    function closeNewSessionModal() {
+      document.getElementById('newSessionModal').classList.add('hidden');
+    }
+    
+    function startGuestMode() {
+      // Close modal
+      closeNewSessionModal();
+      
+      // Show loading
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+      
+      // Generate session ID
+      const sessionId = 'CS' + Date.now().toString(36).toUpperCase();
+      const sessionName = document.getElementById('sessionName').value || '신규 상담 ' + sessionId;
+      
+      // Save to localStorage for demo
+      const session = {
+        id: sessionId,
+        name: sessionName,
+        status: 'info_pending',
+        createdAt: new Date().toISOString(),
+        type: document.querySelector('input[name="consultType"]:checked').value
+      };
+      
+      let sessions = JSON.parse(localStorage.getItem('consultationSessions') || '[]');
+      sessions.push(session);
+      localStorage.setItem('consultationSessions', JSON.stringify(sessions));
+      localStorage.setItem('currentSession', JSON.stringify(session));
+      
+      // Redirect to guest info page
+      setTimeout(() => {
+        window.location.href = 'guest-info.html';
+      }, 1500);
+    }
+    
+    // Close modal on outside click
+    document.getElementById('newSessionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeNewSessionModal();
+      }
+    });
+
+    // Update in-progress count from localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+      let count = 0;
+      try {
+        const sessions = JSON.parse(localStorage.getItem('consultationSessions') || '[]');
+        count = sessions.filter(function(s) { return s.status !== 'completed'; }).length;
+      } catch (e) { /* ignore */ }
+
+      // Check tendency test in progress
+      const tendency = localStorage.getItem('mama_tendency_progress');
+      if (tendency) {
+        try {
+          const answered = JSON.parse(tendency).filter(function(r) { return r !== null; }).length;
+          if (answered > 0 && answered < 150 && count === 0) count = 1;
+        } catch (e) { /* ignore */ }
+      }
+
+      const el = document.getElementById('inProgressCount');
+      if (el) {
+        el.textContent = count > 0 ? count + '건 진행 중' : '진행 중 없음';
+      }
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

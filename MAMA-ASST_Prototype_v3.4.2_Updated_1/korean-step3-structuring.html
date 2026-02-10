@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3단계: 구조화 | 국어 학습 | MAMA-ASST</title>
+  <meta name="description" content="MAMA-ASST 국어 5단계 학습 - 3단계 구조화">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            'korean-dark': '#3367D6',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            warning: '#F59E0B',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    
+    .step-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .step-circle.active { background: linear-gradient(135deg, #4285F4 0%, #5A95F5 100%); color: white; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4); }
+    .step-circle.completed { background: #22C55E; color: white; }
+    .step-circle.pending { background: #F3F4F6; color: #9CA3AF; }
+    .step-connector { position: absolute; top: 20px; left: 40px; width: calc(100% - 40px); height: 3px; background: #E5E7EB; z-index: 0; }
+    .step-connector.completed { background: #22C55E; }
+    .step-connector.active { background: linear-gradient(90deg, #22C55E 0%, #4285F4 100%); }
+    
+    /* Paragraph selection */
+    .para-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .para-card:hover { 
+      border-color: #4285F4;
+      box-shadow: 0 4px 15px rgba(66, 133, 244, 0.15);
+    }
+    .para-card.selected {
+      border-color: #4285F4;
+      background: linear-gradient(135deg, #E8F0FE 0%, #DBEAFE 100%);
+    }
+    .para-card.correct {
+      border-color: #22C55E;
+      background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+    }
+    .para-card.incorrect {
+      border-color: #EF4444;
+      background: #FEF2F2;
+    }
+    
+    /* Structure diagram */
+    .structure-node {
+      animation: fadeInUp 0.5s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .structure-line {
+      background: linear-gradient(180deg, #4285F4 0%, #34A853 100%);
+      animation: growLine 0.8s ease-out;
+    }
+    @keyframes growLine {
+      from { height: 0; }
+      to { height: 100%; }
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.4s ease-in-out; }
+    
+    @keyframes pulse-success {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+    }
+    .pulse-success { animation: pulse-success 1s; }
+    
+    .bottom-nav-mobile { box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08); }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <!-- Desktop Layout -->
+  <div class="hidden lg:flex h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-20 bg-navy flex flex-col items-center py-6 flex-shrink-0">
+      <a href="student-dashboard.html" class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg mb-8">
+        <span class="text-white font-bold text-xl">M</span>
+      </a>
+      <nav class="flex flex-col items-center gap-4 flex-1">
+        <a href="student-dashboard.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors"><span class="material-icons-round">home</span></a>
+        <a href="subject-korean.html" class="w-12 h-12 rounded-xl flex items-center justify-center bg-korean text-white shadow-lg"><span class="material-icons-round">menu_book</span></a>
+        <a href="subject-english.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors"><span class="material-icons-round">translate</span></a>
+        <a href="subject-math.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors"><span class="material-icons-round">calculate</span></a>
+      </nav>
+      <a href="subject-korean.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-red-400 transition-colors"><span class="material-icons-round">close</span></a>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- Header -->
+      <header class="bg-surface border-b border-border-light px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <a href="korean-step2-bridging.html" class="w-10 h-10 rounded-xl bg-background hover:bg-border-light flex items-center justify-center transition-colors">
+              <span class="material-icons-round text-text-secondary">arrow_back</span>
+            </a>
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 bg-korean-light text-korean text-xs font-bold rounded">비문학</span>
+                <span class="text-xs text-text-tertiary">과학/기술</span>
+              </div>
+              <h1 class="text-xl font-bold text-text-primary">인공지능과 미래 사회</h1>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-6">
+            <div class="flex items-center gap-3 px-4 py-2 bg-korean-light rounded-xl">
+              <span class="material-icons-round text-korean">psychology</span>
+              <div>
+                <p class="text-xs text-korean font-medium">핵심 문단 찾기</p>
+                <p class="text-lg font-bold text-korean" id="questionStatus">1 / 1</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 bg-primary-light rounded-xl">
+              <span class="material-icons-round text-primary">star</span>
+              <p class="text-lg font-bold text-primary">+30 XP</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step Indicator -->
+        <div class="mt-6">
+          <div class="flex items-center">
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle completed"><span class="material-icons-round text-lg">check</span></div>
+                <span class="text-xs font-medium text-success mt-2">읽기</span>
+              </div>
+              <div class="step-connector completed"></div>
+            </div>
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle completed"><span class="material-icons-round text-lg">check</span></div>
+                <span class="text-xs font-medium text-success mt-2">어휘</span>
+              </div>
+              <div class="step-connector completed"></div>
+            </div>
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle active"><span class="material-icons-round text-lg">account_tree</span></div>
+                <span class="text-xs font-semibold text-korean mt-2">구조화</span>
+              </div>
+              <div class="step-connector active"></div>
+            </div>
+            <div class="step-item flex items-center relative" style="flex: 1;">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle pending"><span class="material-icons-round text-lg">quiz</span></div>
+                <span class="text-xs font-medium text-text-tertiary mt-2">검증</span>
+              </div>
+              <div class="step-connector"></div>
+            </div>
+            <div class="step-item flex items-center">
+              <div class="flex flex-col items-center z-10">
+                <div class="step-circle pending"><span class="material-icons-round text-lg">summarize</span></div>
+                <span class="text-xs font-medium text-text-tertiary mt-2">요약</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="flex-1 overflow-hidden flex">
+        
+        <!-- Left: Question & Selection -->
+        <div class="flex-1 overflow-y-auto p-8">
+          <div class="max-w-2xl mx-auto">
+            
+            <!-- Question Card -->
+            <div class="bg-gradient-to-r from-korean to-korean-dark rounded-2xl p-6 mb-6 text-white">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-white text-2xl">help</span>
+                </div>
+                <div>
+                  <span class="px-2 py-0.5 bg-white/20 text-white text-xs font-bold rounded mb-2 inline-block">핵심 문단 찾기</span>
+                  <h2 class="text-xl font-bold mb-2">이 글의 핵심 주장이 담긴 문단은?</h2>
+                  <p class="text-white/80 text-sm">글 전체의 중심 생각을 담고 있는 문단을 선택하세요. 보통 결론부에 위치합니다.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Paragraph Selection -->
+            <div class="space-y-3" id="paragraphList">
+              
+              <div class="para-card bg-surface rounded-xl p-5 border-2 border-border-light" onclick="selectParagraph(this, 1)">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-lg bg-korean-light flex items-center justify-center flex-shrink-0">
+                    <span class="text-korean font-bold">1</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm text-text-primary leading-relaxed">인공지능(AI)은 인간의 학습능력, 추론능력, 지각능력을 인공적으로 구현한 컴퓨터 프로그램 또는 이를 포함한 컴퓨터 시스템을 의미한다...</p>
+                    <span class="inline-block mt-2 px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded">서론 - 개념 정의</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="para-card bg-surface rounded-xl p-5 border-2 border-border-light" onclick="selectParagraph(this, 2)">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-lg bg-korean-light flex items-center justify-center flex-shrink-0">
+                    <span class="text-korean font-bold">2</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm text-text-primary leading-relaxed">AI의 발전은 우리 사회에 큰 변화를 가져올 것으로 예상된다. 노동 시장에서 큰 변화가 일어날 것이다...</p>
+                    <span class="inline-block mt-2 px-2 py-0.5 bg-orange-100 text-orange-600 text-[10px] font-bold rounded">본론 - 부정적 영향</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="para-card bg-surface rounded-xl p-5 border-2 border-border-light" onclick="selectParagraph(this, 3)">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-lg bg-korean-light flex items-center justify-center flex-shrink-0">
+                    <span class="text-korean font-bold">3</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm text-text-primary leading-relaxed">한편, AI는 의료, 교육, 환경 등 다양한 분야에서 긍정적인 역할을 할 것으로 기대된다...</p>
+                    <span class="inline-block mt-2 px-2 py-0.5 bg-green-100 text-green-600 text-[10px] font-bold rounded">본론 - 긍정적 영향</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="para-card bg-surface rounded-xl p-5 border-2 border-border-light" onclick="selectParagraph(this, 4)">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-lg bg-korean-light flex items-center justify-center flex-shrink-0">
+                    <span class="text-korean font-bold">4</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm text-text-primary leading-relaxed">그러나 AI의 발전이 가져올 부정적인 측면도 간과해서는 안 된다. AI 시스템의 편향성 문제...</p>
+                    <span class="inline-block mt-2 px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded">본론 - 우려사항</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="para-card bg-surface rounded-xl p-5 border-2 border-border-light" onclick="selectParagraph(this, 5)" data-correct="true">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-lg bg-korean-light flex items-center justify-center flex-shrink-0">
+                    <span class="text-korean font-bold">5</span>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-sm text-text-primary leading-relaxed">따라서 AI 기술의 발전과 함께 이에 대한 사회적 논의와 제도적 장치 마련이 필요하다. 인간 중심의 AI 윤리 원칙 수립이 시급하다.</p>
+                    <span class="inline-block mt-2 px-2 py-0.5 bg-purple-100 text-purple-600 text-[10px] font-bold rounded">결론 - 주장/제안</span>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+            
+            <!-- Result (Hidden initially) -->
+            <div id="resultCard" class="hidden mt-6 bg-success-light rounded-2xl p-6 border border-success/30">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-success flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-white text-2xl">check_circle</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-success text-lg mb-2">정답이에요! 🎉</h3>
+                  <p class="text-sm text-text-secondary">5번 문단은 '따라서'로 시작하며 글 전체의 결론을 제시하고 있어요. 핵심 주장인 "인간 중심의 AI 윤리 원칙 수립"이 담겨있습니다.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="mt-8 flex items-center justify-between">
+              <a href="korean-step2-bridging.html" class="px-6 py-3 bg-background hover:bg-border-light text-text-secondary font-medium rounded-xl transition-colors flex items-center gap-2">
+                <span class="material-icons-round">arrow_back</span>
+                이전 단계
+              </a>
+              <a href="korean-step4-verifying.html" id="nextButton" class="px-8 py-4 bg-korean hover:bg-korean-dark text-white font-bold rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-korean/30 opacity-50 pointer-events-none">
+                다음 단계로
+                <span class="material-icons-round">arrow_forward</span>
+              </a>
+            </div>
+            
+          </div>
+        </div>
+        
+        <!-- Right: AI Structure Analysis -->
+        <aside class="w-96 bg-surface border-l border-border-light p-6 overflow-y-auto">
+          
+          <div class="flex items-center gap-2 mb-6">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-korean flex items-center justify-center">
+              <span class="material-icons-round text-white text-sm">auto_awesome</span>
+            </div>
+            <h3 class="font-bold text-text-primary">AI 구조 분석</h3>
+          </div>
+          
+          <!-- Structure Diagram -->
+          <div class="bg-gradient-to-br from-slate-50 to-korean-light/30 rounded-2xl p-6 border border-border-light">
+            
+            <!-- Title -->
+            <div class="structure-node bg-gradient-to-r from-korean to-korean-dark text-white rounded-xl p-4 text-center mb-4" style="animation-delay: 0s">
+              <span class="text-xs font-medium opacity-80">주제</span>
+              <h4 class="font-bold">인공지능과 미래 사회</h4>
+            </div>
+            
+            <div class="flex justify-center mb-4">
+              <div class="w-0.5 h-6 structure-line"></div>
+            </div>
+            
+            <!-- Structure Flow -->
+            <div class="space-y-3">
+              
+              <!-- 서론 -->
+              <div class="structure-node bg-white rounded-xl p-4 border border-border-light" style="animation-delay: 0.1s">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <span class="text-blue-600 font-bold text-sm">1</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">서론</span>
+                    <p class="text-xs text-text-secondary mt-1">AI 개념 정의</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex justify-center">
+                <div class="w-0.5 h-4 bg-border-light"></div>
+              </div>
+              
+              <!-- 본론 -->
+              <div class="structure-node bg-white rounded-xl p-4 border border-border-light" style="animation-delay: 0.2s">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+                    <span class="text-orange-600 font-bold text-sm">2-4</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-bold text-orange-600 bg-orange-100 px-2 py-0.5 rounded">본론</span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-xs text-center">
+                  <div class="bg-orange-50 rounded-lg p-2">
+                    <span class="text-orange-600">②</span>
+                    <p class="text-text-tertiary">노동시장 변화</p>
+                  </div>
+                  <div class="bg-green-50 rounded-lg p-2">
+                    <span class="text-green-600">③</span>
+                    <p class="text-text-tertiary">긍정적 활용</p>
+                  </div>
+                  <div class="bg-red-50 rounded-lg p-2">
+                    <span class="text-red-600">④</span>
+                    <p class="text-text-tertiary">윤리적 문제</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex justify-center">
+                <div class="w-0.5 h-4 bg-border-light"></div>
+              </div>
+              
+              <!-- 결론 -->
+              <div class="structure-node bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-4 border-2 border-purple-300" style="animation-delay: 0.3s">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-purple-200 flex items-center justify-center flex-shrink-0">
+                    <span class="text-purple-700 font-bold text-sm">5</span>
+                  </div>
+                  <div>
+                    <span class="text-[10px] font-bold text-purple-700 bg-purple-200 px-2 py-0.5 rounded">결론 ⭐</span>
+                    <p class="text-xs text-purple-700 mt-1 font-medium">인간 중심 AI 윤리 원칙 필요</p>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+            
+          </div>
+          
+          <!-- Tip -->
+          <div class="mt-6 bg-background rounded-xl p-4">
+            <h4 class="font-bold text-text-primary text-sm mb-2 flex items-center gap-2">
+              <span class="material-icons-round text-korean text-lg">tips_and_updates</span>
+              구조 파악 TIP
+            </h4>
+            <ul class="text-xs text-text-secondary space-y-2">
+              <li class="flex items-start gap-2">
+                <span class="text-korean">•</span>
+                '따라서', '그러므로' 등의 접속어가 있는 문단에 주목하세요
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-korean">•</span>
+                글쓴이의 의견이나 주장이 명시된 부분을 찾으세요
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-korean">•</span>
+                보통 마지막 문단에 핵심 주장이 담깁니다
+              </li>
+            </ul>
+          </div>
+          
+        </aside>
+        
+      </div>
+      
+    </main>
+  </div>
+  
+  <!-- Mobile Layout -->
+  <div class="lg:hidden min-h-screen flex flex-col">
+    
+    <!-- Mobile Header -->
+    <header class="bg-surface border-b border-border-light px-4 py-3 sticky top-0 z-30">
+      <div class="flex items-center justify-between mb-3">
+        <a href="korean-step2-bridging.html" class="w-10 h-10 rounded-xl bg-background flex items-center justify-center">
+          <span class="material-icons-round text-text-secondary">arrow_back</span>
+        </a>
+        <div class="text-center">
+          <span class="px-2 py-0.5 bg-korean-light text-korean text-[10px] font-bold rounded">STEP 3</span>
+          <h1 class="text-sm font-bold text-text-primary">구조화 (Structuring)</h1>
+        </div>
+        <div class="w-10"></div>
+      </div>
+      <div class="flex items-center gap-1">
+        <div class="flex-1 h-1.5 bg-success rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-success rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-korean rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-border-light rounded-full"></div>
+        <div class="flex-1 h-1.5 bg-border-light rounded-full"></div>
+      </div>
+    </header>
+    
+    <!-- Mobile Content -->
+    <main class="flex-1 overflow-y-auto p-4 pb-24">
+      
+      <!-- Question -->
+      <div class="bg-korean rounded-xl p-4 mb-4 text-white">
+        <h2 class="font-bold mb-1">핵심 문단을 찾아보세요!</h2>
+        <p class="text-sm text-white/80">글의 중심 생각이 담긴 문단은?</p>
+      </div>
+      
+      <!-- Mobile Paragraph List -->
+      <div class="space-y-3" id="mobileParagraphList">
+        
+        <div class="para-card bg-surface rounded-xl p-4 border-2 border-border-light" onclick="selectParagraphMobile(this, 1)">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-korean-light flex items-center justify-center text-korean font-bold">1</span>
+            <div class="flex-1">
+              <p class="text-sm text-text-primary line-clamp-2">인공지능(AI)은 인간의 학습능력...</p>
+              <span class="text-[10px] text-blue-600">서론</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="para-card bg-surface rounded-xl p-4 border-2 border-border-light" onclick="selectParagraphMobile(this, 2)">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-korean-light flex items-center justify-center text-korean font-bold">2</span>
+            <div class="flex-1">
+              <p class="text-sm text-text-primary line-clamp-2">AI의 발전은 노동 시장에...</p>
+              <span class="text-[10px] text-orange-600">본론</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="para-card bg-surface rounded-xl p-4 border-2 border-border-light" onclick="selectParagraphMobile(this, 3)">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-korean-light flex items-center justify-center text-korean font-bold">3</span>
+            <div class="flex-1">
+              <p class="text-sm text-text-primary line-clamp-2">한편, AI는 의료, 교육 등에서...</p>
+              <span class="text-[10px] text-green-600">본론</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="para-card bg-surface rounded-xl p-4 border-2 border-border-light" onclick="selectParagraphMobile(this, 4)">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-korean-light flex items-center justify-center text-korean font-bold">4</span>
+            <div class="flex-1">
+              <p class="text-sm text-text-primary line-clamp-2">그러나 AI의 부정적인 측면도...</p>
+              <span class="text-[10px] text-red-600">본론</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="para-card bg-surface rounded-xl p-4 border-2 border-border-light" onclick="selectParagraphMobile(this, 5)" data-correct="true">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-korean-light flex items-center justify-center text-korean font-bold">5</span>
+            <div class="flex-1">
+              <p class="text-sm text-text-primary line-clamp-2">따라서 인간 중심의 AI 윤리 원칙...</p>
+              <span class="text-[10px] text-purple-600">결론</span>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+      <!-- Mobile Result -->
+      <div id="mobileResultCard" class="hidden mt-4 bg-success-light rounded-xl p-4 border border-success/30">
+        <div class="flex items-center gap-3">
+          <span class="material-icons-round text-success text-2xl">check_circle</span>
+          <div>
+            <h3 class="font-bold text-success">정답! 🎉</h3>
+            <p class="text-xs text-text-secondary">5번 문단이 핵심 주장을 담고 있어요.</p>
+          </div>
+        </div>
+      </div>
+      
+    </main>
+    
+    <!-- Mobile Bottom Nav -->
+    <div class="fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light p-4 bottom-nav-mobile">
+      <a href="korean-step4-verifying.html" id="mobileNextButton" class="w-full py-4 bg-korean text-white font-bold rounded-xl flex items-center justify-center gap-2 opacity-50 pointer-events-none">
+        다음 단계로
+        <span class="material-icons-round">arrow_forward</span>
+      </a>
+    </div>
+    
+  </div>
+  
+  <script>
+    let answered = false;
+    
+    function selectParagraph(card, num) {
+      if (answered) return;
+      
+      const isCorrect = card.dataset.correct === 'true';
+      const allCards = document.querySelectorAll('#paragraphList .para-card');
+      
+      allCards.forEach(c => {
+        c.classList.remove('selected');
+        c.onclick = null;
+      });
+      
+      card.classList.add('selected');
+      
+      setTimeout(() => {
+        if (isCorrect) {
+          card.classList.remove('selected');
+          card.classList.add('correct', 'pulse-success');
+          document.getElementById('resultCard').classList.remove('hidden');
+          document.getElementById('nextButton').classList.remove('opacity-50', 'pointer-events-none');
+        } else {
+          card.classList.remove('selected');
+          card.classList.add('incorrect', 'shake');
+          setTimeout(() => {
+            card.classList.remove('incorrect', 'shake');
+            allCards.forEach(c => {
+              if (!c.classList.contains('correct')) {
+                c.onclick = () => selectParagraph(c, parseInt(c.querySelector('.text-korean').textContent));
+              }
+            });
+          }, 1000);
+          return;
+        }
+        answered = true;
+      }, 500);
+    }
+    
+    function selectParagraphMobile(card, num) {
+      if (answered) return;
+      
+      const isCorrect = card.dataset.correct === 'true';
+      
+      card.classList.add('selected');
+      card.style.borderColor = '#4285F4';
+      
+      setTimeout(() => {
+        if (isCorrect) {
+          card.style.borderColor = '#22C55E';
+          card.style.background = 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)';
+          document.getElementById('mobileResultCard').classList.remove('hidden');
+          document.getElementById('mobileNextButton').classList.remove('opacity-50', 'pointer-events-none');
+          answered = true;
+        } else {
+          card.classList.add('shake');
+          card.style.borderColor = '#EF4444';
+          card.style.background = '#FEF2F2';
+          setTimeout(() => {
+            card.classList.remove('shake');
+            card.style.borderColor = '#E5E7EB';
+            card.style.background = '';
+          }, 1000);
+        }
+      }, 300);
+    }
+  </script>
+  
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

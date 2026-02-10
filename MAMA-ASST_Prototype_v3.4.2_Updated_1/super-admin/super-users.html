@@ -1,0 +1,2683 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사용자 관리 | MAMA-ASST 슈퍼관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'super': '#6366F1',
+            'super-dark': '#4F46E5',
+            'super-light': '#EEF2FF',
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { 
+      background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); 
+      color: white; 
+    }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .gradient-super { background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); }
+    .modal-overlay { opacity: 0; visibility: hidden; transition: all 0.3s; }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-content { transform: scale(0.95) translateY(10px); transition: all 0.3s; }
+    .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+    .role-tab { transition: all 0.2s ease; border-bottom: 3px solid transparent; }
+    .role-tab.active { border-color: #6366F1; background: #EEF2FF; color: #6366F1; }
+    .status-badge { padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+    .table-row:hover { background-color: #F9FAFB; }
+    .stat-card { transition: all 0.2s ease; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15); }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-72 bg-gradient-to-b from-slate-900 to-slate-800 text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-super-light">Super Admin</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">비즈니스</p>
+          <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">apartment</span>
+            <span class="font-medium">학원 관리</span>
+            <span class="ml-auto px-2 py-0.5 bg-super/50 text-white text-xs rounded-full">127</span>
+          </a>
+          <a href="super-inquiries.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">support_agent</span>
+            <span class="font-medium">도입 문의</span>
+            <span class="ml-auto px-2 py-0.5 bg-warning text-white text-xs rounded-full">12</span>
+          </a>
+          <a href="super-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">account_balance</span>
+            <span class="font-medium">결제/정산</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">콘텐츠</p>
+          <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">library_books</span>
+            <span class="font-medium">콘텐츠 마스터</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">운영</p>
+          <a href="super-users.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+            <span class="material-icons-round text-xl">groups</span>
+            <span class="font-medium">사용자 관리</span>
+          </a>
+          <a href="super-ai-usage.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">smart_toy</span>
+            <span class="font-medium">AI 모니터링</span>
+          </a>
+          <a href="super-notices.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">campaign</span>
+            <span class="font-medium">공지사항</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">시스템</p>
+          <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">tune</span>
+            <span class="font-medium">시스템 설정</span>
+          </a>
+          <a href="super-logs.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">history</span>
+            <span class="font-medium">로그/감사</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full gradient-super flex items-center justify-center text-white font-bold">
+            <span class="material-icons-round text-xl">admin_panel_settings</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">Super Admin</p>
+            <p class="text-xs text-white/60">MAMA-ASST Platform</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <span class="font-bold text-lg">Super Admin</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">apartment</span>
+          <span class="font-medium">학원 관리</span>
+        </a>
+        <a href="super-inquiries.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">support_agent</span>
+          <span class="font-medium">도입 문의</span>
+        </a>
+        <a href="super-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">account_balance</span>
+          <span class="font-medium">결제/정산</span>
+        </a>
+        <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">library_books</span>
+          <span class="font-medium">콘텐츠 마스터</span>
+        </a>
+        <a href="super-users.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">사용자 관리</span>
+        </a>
+        <a href="super-ai-usage.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">smart_toy</span>
+          <span class="font-medium">AI 모니터링</span>
+        </a>
+        <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">tune</span>
+          <span class="font-medium">시스템 설정</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-72">
+      <!-- Top Header -->
+      <header class="bg-white border-b border-border-light sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 lg:px-8 py-4">
+          <div class="flex items-center gap-4">
+            <button onclick="openMobileMenu()" class="lg:hidden p-2 hover:bg-gray-100 rounded-xl">
+              <span class="material-icons-round">menu</span>
+            </button>
+            <div>
+              <h1 class="text-xl font-bold text-navy">사용자 관리</h1>
+              <p class="text-sm text-text-secondary">전체 플랫폼 사용자 통합 관리</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <button onclick="openExportUsersModal()" class="p-2 hover:bg-gray-100 rounded-xl" title="내보내기">
+              <span class="material-icons-round text-text-secondary">file_download</span>
+            </button>
+          </div>
+        </div>
+      </header>
+      
+      <div class="p-4 lg:p-8">
+        <!-- 사용자 통계 카드 -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 mb-6">
+          <!-- 전체 사용자 -->
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-border-light">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-12 h-12 rounded-xl gradient-super flex items-center justify-center">
+                <span class="material-icons-round text-white text-2xl">groups</span>
+              </div>
+              <span class="px-2 py-1 bg-success-light text-success text-xs font-medium rounded-lg">+128</span>
+            </div>
+            <p class="text-sm text-text-secondary mb-1">전체 사용자</p>
+            <p class="text-2xl font-bold text-navy">5,847</p>
+          </div>
+          
+          <!-- 학생 -->
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer" onclick="filterByRole('student')">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-korean to-blue-400 flex items-center justify-center">
+                <span class="material-icons-round text-white text-2xl">school</span>
+              </div>
+              <span class="px-2 py-1 bg-korean-light text-korean text-xs font-medium rounded-lg">학생</span>
+            </div>
+            <p class="text-sm text-text-secondary mb-1">학생</p>
+            <p class="text-2xl font-bold text-korean">4,823</p>
+          </div>
+          
+          <!-- 학부모 -->
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer" onclick="filterByRole('parent')">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-english to-emerald-400 flex items-center justify-center">
+                <span class="material-icons-round text-white text-2xl">family_restroom</span>
+              </div>
+              <span class="px-2 py-1 bg-english-light text-english text-xs font-medium rounded-lg">학부모</span>
+            </div>
+            <p class="text-sm text-text-secondary mb-1">학부모</p>
+            <p class="text-2xl font-bold text-english">612</p>
+          </div>
+          
+          <!-- 강사 -->
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer" onclick="filterByRole('instructor')">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-planner to-purple-400 flex items-center justify-center">
+                <span class="material-icons-round text-white text-2xl">person</span>
+              </div>
+              <span class="px-2 py-1 bg-planner-light text-planner text-xs font-medium rounded-lg">강사</span>
+            </div>
+            <p class="text-sm text-text-secondary mb-1">강사</p>
+            <p class="text-2xl font-bold text-planner">285</p>
+          </div>
+          
+          <!-- 학원관리자 -->
+          <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-border-light cursor-pointer" onclick="filterByRole('admin')">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center">
+                <span class="material-icons-round text-white text-2xl">manage_accounts</span>
+              </div>
+              <span class="px-2 py-1 bg-primary-light text-primary text-xs font-medium rounded-lg">관리자</span>
+            </div>
+            <p class="text-sm text-text-secondary mb-1">학원 관리자</p>
+            <p class="text-2xl font-bold text-primary">127</p>
+          </div>
+        </div>
+        
+        <!-- 검색 및 필터 -->
+        <div class="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-border-light mb-6">
+          <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex-1 relative">
+              <span class="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-text-tertiary">search</span>
+              <input type="text" placeholder="이름, 이메일, 연락처, 학원 검색" 
+                     class="w-full pl-12 pr-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+            
+            <div class="flex flex-wrap gap-3">
+              <select id="roleFilter" class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 text-sm min-w-[120px]">
+                <option value="all">전체 역할</option>
+                <option value="student">학생</option>
+                <option value="parent">학부모</option>
+                <option value="instructor">강사</option>
+                <option value="admin">학원 관리자</option>
+              </select>
+              
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 text-sm min-w-[120px]">
+                <option>전체 상태</option>
+                <option>활성</option>
+                <option>비활성</option>
+                <option>정지</option>
+              </select>
+              
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 text-sm min-w-[120px]">
+                <option>전체 학원</option>
+                <option>명불허전학원</option>
+                <option>강남수학학원</option>
+                <option>분당영재학원</option>
+              </select>
+              
+              <select class="px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 text-sm min-w-[130px]">
+                <option>최근 가입순</option>
+                <option>이름순</option>
+                <option>최근 접속순</option>
+                <option>학원순</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 사용자 목록 테이블 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-border-light overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 border-b border-border-light">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                    <input type="checkbox" class="w-4 h-4 rounded border-border-light">
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">사용자</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">역할</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">소속 학원</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">상태</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">최근 접속</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">가입일</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary uppercase tracking-wider">관리</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-light">
+                <!-- 학원 관리자 -->
+                <tr class="table-row cursor-pointer" onclick="openUserModal('admin', 'USR001')">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="user-checkbox w-4 h-4 rounded border-border-light" data-id="USR001" data-name="김관리" onchange="updateBulkSelection()">
+                  </td>
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center">
+                        <span class="font-bold text-primary">김</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-navy">김관리</p>
+                        <p class="text-xs text-text-tertiary">admin@mbh.com</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-primary-light text-primary">관리자</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <p class="text-sm font-medium">명불허전학원</p>
+                    <p class="text-xs text-text-tertiary">MBH001</p>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-success text-white">활성</span>
+                  </td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">오늘 10:32</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">2024.08.15</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openUserModal('admin', 'USR001')" class="p-2 hover:bg-gray-100 rounded-lg" title="상세">
+                        <span class="material-icons-round text-text-secondary text-lg">visibility</span>
+                      </button>
+                      <button onclick="openEditUserModal('admin', 'USR001')" class="p-2 hover:bg-gray-100 rounded-lg" title="수정">
+                        <span class="material-icons-round text-text-secondary text-lg">edit</span>
+                      </button>
+                      <button onclick="openUserActivityModal('admin', 'USR001')" class="p-2 hover:bg-gray-100 rounded-lg" title="활동로그">
+                        <span class="material-icons-round text-text-secondary text-lg">history</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 강사 -->
+                <tr class="table-row cursor-pointer" onclick="openUserModal('instructor', 'USR002')">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="user-checkbox w-4 h-4 rounded border-border-light" data-id="USR002" data-name="박선생" onchange="updateBulkSelection()">
+                  </td>
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-planner-light flex items-center justify-center">
+                        <span class="font-bold text-planner">박</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-navy">박선생</p>
+                        <p class="text-xs text-text-tertiary">teacher.park@mbh.com</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-planner-light text-planner">강사</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <p class="text-sm font-medium">명불허전학원</p>
+                    <p class="text-xs text-text-tertiary">MBH001</p>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-success text-white">활성</span>
+                  </td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">어제 18:45</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">2024.09.01</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openUserModal('instructor', 'USR002')" class="p-2 hover:bg-gray-100 rounded-lg" title="상세">
+                        <span class="material-icons-round text-text-secondary text-lg">visibility</span>
+                      </button>
+                      <button onclick="openEditUserModal('instructor', 'USR002')" class="p-2 hover:bg-gray-100 rounded-lg" title="수정">
+                        <span class="material-icons-round text-text-secondary text-lg">edit</span>
+                      </button>
+                      <button onclick="openUserActivityModal('instructor', 'USR002')" class="p-2 hover:bg-gray-100 rounded-lg" title="활동로그">
+                        <span class="material-icons-round text-text-secondary text-lg">history</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 학생 -->
+                <tr class="table-row cursor-pointer" onclick="openUserModal('student', 'USR003')">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="user-checkbox w-4 h-4 rounded border-border-light" data-id="USR003" data-name="이민준" onchange="updateBulkSelection()">
+                  </td>
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-korean-light flex items-center justify-center">
+                        <span class="font-bold text-korean">이</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-navy">이민준</p>
+                        <p class="text-xs text-text-tertiary">010-1234-5678</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-korean-light text-korean">학생</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <p class="text-sm font-medium">명불허전학원</p>
+                    <p class="text-xs text-text-tertiary">중2 · A반</p>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-success text-white">활성</span>
+                  </td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">오늘 09:15</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">2024.09.10</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openUserModal('student', 'USR003')" class="p-2 hover:bg-gray-100 rounded-lg" title="상세">
+                        <span class="material-icons-round text-text-secondary text-lg">visibility</span>
+                      </button>
+                      <button onclick="openEditUserModal('student', 'USR003')" class="p-2 hover:bg-gray-100 rounded-lg" title="수정">
+                        <span class="material-icons-round text-text-secondary text-lg">edit</span>
+                      </button>
+                      <button onclick="openUserActivityModal('student', 'USR003')" class="p-2 hover:bg-gray-100 rounded-lg" title="활동로그">
+                        <span class="material-icons-round text-text-secondary text-lg">history</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 학부모 -->
+                <tr class="table-row cursor-pointer" onclick="openUserModal('parent', 'USR004')">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="user-checkbox w-4 h-4 rounded border-border-light" data-id="USR004" data-name="최학부모" onchange="updateBulkSelection()">
+                  </td>
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-english-light flex items-center justify-center">
+                        <span class="font-bold text-english">최</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-navy">최학부모</p>
+                        <p class="text-xs text-text-tertiary">010-9876-5432</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-english-light text-english">학부모</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <p class="text-sm font-medium">명불허전학원</p>
+                    <p class="text-xs text-text-tertiary">자녀: 이민준</p>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-success text-white">활성</span>
+                  </td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">01.05</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">2024.09.10</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openUserModal('parent', 'USR004')" class="p-2 hover:bg-gray-100 rounded-lg" title="상세">
+                        <span class="material-icons-round text-text-secondary text-lg">visibility</span>
+                      </button>
+                      <button onclick="openEditUserModal('parent', 'USR004')" class="p-2 hover:bg-gray-100 rounded-lg" title="수정">
+                        <span class="material-icons-round text-text-secondary text-lg">edit</span>
+                      </button>
+                      <button onclick="openUserActivityModal('parent', 'USR004')" class="p-2 hover:bg-gray-100 rounded-lg" title="활동로그">
+                        <span class="material-icons-round text-text-secondary text-lg">history</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 비활성 사용자 -->
+                <tr class="table-row cursor-pointer opacity-60" onclick="openUserModal('student', 'USR005')">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="user-checkbox w-4 h-4 rounded border-border-light" data-id="USR005" data-name="정휴학" onchange="updateBulkSelection()">
+                  </td>
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                        <span class="font-bold text-text-tertiary">정</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-text-secondary">정휴학</p>
+                        <p class="text-xs text-text-tertiary">010-5555-6666</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-gray-100 text-text-tertiary">학생</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <p class="text-sm text-text-secondary">강남수학학원</p>
+                    <p class="text-xs text-text-tertiary">중3 · B반</p>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-gray-200 text-text-tertiary">비활성</span>
+                  </td>
+                  <td class="px-4 py-4 text-center text-sm text-text-tertiary">30일 전</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-tertiary">2024.06.01</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openUserModal('student', 'USR005')" class="p-2 hover:bg-gray-100 rounded-lg" title="상세">
+                        <span class="material-icons-round text-text-tertiary text-lg">visibility</span>
+                      </button>
+                      <button onclick="openActivateUserModal('USR005', '정휴학', '학생', '강남수학학원')" class="p-2 hover:bg-success-light rounded-lg" title="활성화">
+                        <span class="material-icons-round text-success text-lg">check_circle</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                
+                <!-- 정지된 사용자 -->
+                <tr class="table-row cursor-pointer bg-error-light/20" onclick="openUserModal('student', 'USR006')">
+                  <td class="px-4 py-4" onclick="event.stopPropagation()">
+                    <input type="checkbox" class="user-checkbox w-4 h-4 rounded border-border-light" data-id="USR006" data-name="한문제" onchange="updateBulkSelection()">
+                  </td>
+                  <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-error-light flex items-center justify-center">
+                        <span class="font-bold text-error">한</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-navy">한문제</p>
+                        <p class="text-xs text-text-tertiary">010-7777-8888</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-korean-light text-korean">학생</span>
+                  </td>
+                  <td class="px-4 py-4">
+                    <p class="text-sm font-medium">분당영재학원</p>
+                    <p class="text-xs text-text-tertiary">고1 · C반</p>
+                  </td>
+                  <td class="px-4 py-4 text-center">
+                    <span class="status-badge bg-error text-white">정지</span>
+                  </td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">01.02</td>
+                  <td class="px-4 py-4 text-center text-sm text-text-secondary">2024.03.15</td>
+                  <td class="px-4 py-4 text-center" onclick="event.stopPropagation()">
+                    <div class="flex items-center justify-center gap-1">
+                      <button onclick="openUserModal('student', 'USR006')" class="p-2 hover:bg-gray-100 rounded-lg" title="상세">
+                        <span class="material-icons-round text-text-secondary text-lg">visibility</span>
+                      </button>
+                      <button onclick="openUnsuspendUserModal('USR006', '한문제', '학생', '분당영재학원')" class="p-2 hover:bg-success-light rounded-lg" title="정지 해제">
+                        <span class="material-icons-round text-success text-lg">lock_open</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- 페이지네이션 -->
+          <div class="px-6 py-4 border-t border-border-light flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-text-secondary">총 <span class="font-bold text-navy">5,847명</span> 중 1-20 표시</p>
+            <div class="flex items-center gap-2">
+              <button class="p-2 border border-border-light rounded-lg hover:bg-gray-50 disabled:opacity-50" disabled>
+                <span class="material-icons-round text-sm">chevron_left</span>
+              </button>
+              <button class="w-10 h-10 gradient-super text-white rounded-lg font-medium">1</button>
+              <button class="w-10 h-10 border border-border-light rounded-lg hover:bg-gray-50 font-medium">2</button>
+              <button class="w-10 h-10 border border-border-light rounded-lg hover:bg-gray-50 font-medium">3</button>
+              <span class="px-2 text-text-tertiary">...</span>
+              <button class="w-10 h-10 border border-border-light rounded-lg hover:bg-gray-50 font-medium">293</button>
+              <button class="p-2 border border-border-light rounded-lg hover:bg-gray-50">
+                <span class="material-icons-round text-sm">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- 사용자 상세 모달 -->
+  <div id="userModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeUserModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <!-- 모달 헤더 -->
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-korean-light flex items-center justify-center">
+            <span class="font-bold text-korean text-xl">이</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-lg font-bold text-navy">이민준</h2>
+              <span class="status-badge bg-korean-light text-korean">학생</span>
+              <span class="status-badge bg-success text-white">활성</span>
+            </div>
+            <p class="text-sm text-text-secondary">명불허전학원 · 중2 A반</p>
+          </div>
+        </div>
+        <button onclick="closeUserModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <!-- 기본 정보 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-super">person</span>
+            기본 정보
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-50 rounded-xl p-4">
+              <p class="text-xs text-text-secondary mb-1">이름</p>
+              <p class="font-medium">이민준</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+              <p class="text-xs text-text-secondary mb-1">연락처</p>
+              <p class="font-medium">010-1234-5678</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+              <p class="text-xs text-text-secondary mb-1">학교/학년</p>
+              <p class="font-medium">서울중학교 2학년</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+              <p class="text-xs text-text-secondary mb-1">학부모 연락처</p>
+              <p class="font-medium">010-9876-5432 (최학부모)</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 학습 현황 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-super">trending_up</span>
+            학습 현황
+          </h3>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-korean-light/50 rounded-xl p-4 text-center">
+              <p class="text-2xl font-bold text-korean">87%</p>
+              <p class="text-xs text-text-secondary">국어 정답률</p>
+            </div>
+            <div class="bg-english-light/50 rounded-xl p-4 text-center">
+              <p class="text-2xl font-bold text-english">1,250</p>
+              <p class="text-xs text-text-secondary">영어 단어</p>
+            </div>
+            <div class="bg-math-light/50 rounded-xl p-4 text-center">
+              <p class="text-2xl font-bold" style="color: #9A7B0A;">92%</p>
+              <p class="text-xs text-text-secondary">수학 정답률</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 계정 정보 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-super">security</span>
+            계정 정보
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-50 rounded-xl p-4">
+              <p class="text-xs text-text-secondary mb-1">가입일</p>
+              <p class="font-medium">2024.09.10</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+              <p class="text-xs text-text-secondary mb-1">최근 접속</p>
+              <p class="font-medium">오늘 09:15</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+              <p class="text-xs text-text-secondary mb-1">총 학습 시간</p>
+              <p class="font-medium">128시간 32분</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4">
+              <p class="text-xs text-text-secondary mb-1">연속 출석</p>
+              <p class="font-medium">15일 🔥</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 관리 액션 -->
+        <div>
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-super">settings</span>
+            계정 관리
+          </h3>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="openUserActivityFromDetail()" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2 text-sm">
+              <span class="material-icons-round text-sm">history</span>
+              활동 로그
+            </button>
+            <button onclick="openResetUserPwModal()" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2 text-sm">
+              <span class="material-icons-round text-sm">lock_reset</span>
+              비밀번호 초기화
+            </button>
+            <button onclick="openTransferUserModal()" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2 text-sm">
+              <span class="material-icons-round text-sm">swap_horiz</span>
+              학원 이동
+            </button>
+            <button onclick="openSuspendUserModal()" class="px-4 py-2 border border-warning text-warning rounded-xl hover:bg-warning-light flex items-center gap-2 text-sm">
+              <span class="material-icons-round text-sm">block</span>
+              계정 정지
+            </button>
+            <button onclick="openDeleteUserModal()" class="px-4 py-2 border border-error text-error rounded-xl hover:bg-error-light flex items-center gap-2 text-sm">
+              <span class="material-icons-round text-sm">delete</span>
+              계정 삭제
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 모달 푸터 -->
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeUserModal()" class="px-6 py-2 border border-border-light rounded-xl hover:bg-gray-50">
+          닫기
+        </button>
+        <button onclick="openEditUserFromDetail()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          정보 수정
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 계정 정지 모달 -->
+  <div id="suspendUserModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeSuspendUserModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-warning bg-warning-light flex items-center gap-3">
+        <span class="material-icons-round text-warning text-2xl">block</span>
+        <h2 class="text-lg font-bold text-warning">계정 정지</h2>
+      </div>
+      
+      <div class="p-6">
+        <!-- 사용자 정보 -->
+        <div class="bg-gray-50 rounded-xl p-4 mb-4 flex items-center gap-3">
+          <div id="suspendUserAvatar" class="w-12 h-12 rounded-full bg-super-light flex items-center justify-center">
+            <span class="font-bold text-super text-lg">김</span>
+          </div>
+          <div>
+            <p class="font-medium text-navy" id="suspendUserName">김관리</p>
+            <p class="text-sm text-text-secondary" id="suspendUserRole">관리자 · 명불허전학원</p>
+          </div>
+        </div>
+        
+        <!-- 정지 사유 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">정지 사유 <span class="text-error">*</span></label>
+          <select id="suspendUserReason" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-warning/20 focus:border-warning" onchange="checkSuspendUserForm()">
+            <option value="">사유를 선택하세요</option>
+            <option value="policy_violation">이용 정책 위반</option>
+            <option value="abuse">서비스 남용</option>
+            <option value="inactive">장기 미사용</option>
+            <option value="academy_request">학원 요청</option>
+            <option value="other">기타</option>
+          </select>
+        </div>
+        
+        <!-- 정지 기간 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">정지 기간</label>
+          <div class="grid grid-cols-4 gap-2">
+            <label class="flex items-center justify-center p-3 border-2 border-warning bg-warning-light rounded-xl cursor-pointer">
+              <input type="radio" name="suspendUserPeriod" value="7" class="hidden" checked>
+              <span class="text-sm font-medium text-warning">7일</span>
+            </label>
+            <label class="flex items-center justify-center p-3 border border-border-light rounded-xl cursor-pointer hover:border-warning">
+              <input type="radio" name="suspendUserPeriod" value="30" class="hidden">
+              <span class="text-sm">30일</span>
+            </label>
+            <label class="flex items-center justify-center p-3 border border-border-light rounded-xl cursor-pointer hover:border-warning">
+              <input type="radio" name="suspendUserPeriod" value="90" class="hidden">
+              <span class="text-sm">90일</span>
+            </label>
+            <label class="flex items-center justify-center p-3 border border-border-light rounded-xl cursor-pointer hover:border-warning">
+              <input type="radio" name="suspendUserPeriod" value="0" class="hidden">
+              <span class="text-sm">무기한</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 상세 사유 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">상세 내용</label>
+          <textarea id="suspendUserDetail" placeholder="정지 사유를 상세히 입력하세요..." 
+                    class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-warning/20 focus:border-warning resize-none h-20"></textarea>
+        </div>
+        
+        <!-- 확인 체크박스 -->
+        <label class="flex items-start gap-3 p-4 bg-warning-light rounded-xl cursor-pointer">
+          <input type="checkbox" id="suspendUserConfirm" class="mt-0.5 accent-warning" onchange="checkSuspendUserForm()">
+          <span class="text-sm text-warning">해당 사용자의 계정을 정지하며, 정지 기간 동안 서비스 이용이 불가함을 이해합니다.</span>
+        </label>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeSuspendUserModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button id="confirmSuspendUserBtn" onclick="confirmSuspendUser()" class="px-6 py-2.5 bg-warning text-white rounded-xl hover:bg-warning/90 disabled:opacity-50 flex items-center gap-2" disabled>
+          <span class="material-icons-round text-sm">block</span>
+          계정 정지
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 계정 삭제 모달 -->
+  <div id="deleteUserModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeDeleteUserModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-error bg-error-light flex items-center gap-3">
+        <span class="material-icons-round text-error text-2xl">delete_forever</span>
+        <h2 class="text-lg font-bold text-error">계정 삭제</h2>
+      </div>
+      
+      <div class="p-6">
+        <div class="bg-gray-50 rounded-xl p-4 mb-4 flex items-center gap-3">
+          <div id="deleteUserAvatar" class="w-12 h-12 rounded-full bg-super-light flex items-center justify-center">
+            <span class="font-bold text-super text-lg">김</span>
+          </div>
+          <div>
+            <p class="font-medium text-navy" id="deleteUserName">김관리</p>
+            <p class="text-sm text-text-secondary" id="deleteUserRole">관리자 · 명불허전학원</p>
+          </div>
+        </div>
+        
+        <div class="bg-error-light rounded-xl p-4 mb-4">
+          <p class="text-sm text-error flex items-start gap-2">
+            <span class="material-icons-round text-lg">warning</span>
+            <span>계정 삭제 시 해당 사용자의 모든 데이터(학습 기록, 상담 기록 등)가 영구 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</span>
+          </p>
+        </div>
+        
+        <!-- 삭제 사유 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">삭제 사유 <span class="text-error">*</span></label>
+          <select id="deleteUserReason" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-error/20 focus:border-error" onchange="checkDeleteUserForm()">
+            <option value="">사유를 선택하세요</option>
+            <option value="user_request">본인 요청</option>
+            <option value="academy_request">학원 요청</option>
+            <option value="policy_violation">심각한 정책 위반</option>
+            <option value="duplicate">중복 계정</option>
+            <option value="other">기타</option>
+          </select>
+        </div>
+        
+        <!-- 이름 입력 확인 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">확인을 위해 사용자 이름을 입력하세요</label>
+          <input type="text" id="deleteUserNameConfirm" placeholder="사용자 이름 입력" 
+                 class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-error/20 focus:border-error"
+                 oninput="checkDeleteUserForm()">
+        </div>
+        
+        <!-- 확인 체크박스 -->
+        <label class="flex items-start gap-3 p-4 bg-error-light rounded-xl cursor-pointer">
+          <input type="checkbox" id="deleteUserConfirm" class="mt-0.5 accent-error" onchange="checkDeleteUserForm()">
+          <span class="text-sm text-error">삭제에 동의하며, 이 작업은 되돌릴 수 없음을 이해합니다.</span>
+        </label>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeDeleteUserModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button id="confirmDeleteUserBtn" onclick="confirmDeleteUser()" class="px-6 py-2.5 bg-error text-white rounded-xl hover:bg-error/90 disabled:opacity-50 flex items-center gap-2" disabled>
+          <span class="material-icons-round text-sm">delete</span>
+          삭제
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 학원 이동 모달 -->
+  <div id="transferUserModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeTransferUserModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">swap_horiz</span>
+          학원 이동
+        </h2>
+        <button onclick="closeTransferUserModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <!-- 이동 대상 사용자 -->
+        <div class="bg-gray-50 rounded-xl p-4 mb-4 flex items-center gap-3">
+          <div id="transferUserAvatar" class="w-12 h-12 rounded-full bg-korean-light flex items-center justify-center">
+            <span class="font-bold text-korean text-lg">이</span>
+          </div>
+          <div class="flex-1">
+            <p class="font-medium text-navy" id="transferUserName">이민준</p>
+            <p class="text-sm text-text-secondary" id="transferUserInfo">학생 · 중2</p>
+          </div>
+        </div>
+        
+        <!-- 현재 학원 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">현재 학원</label>
+          <div class="px-4 py-3 bg-gray-100 rounded-xl text-text-secondary" id="currentAcademyDisplay">
+            명불허전학원 (MBH001)
+          </div>
+        </div>
+        
+        <!-- 이동할 학원 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">이동할 학원 <span class="text-error">*</span></label>
+          <select id="targetAcademy" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super" onchange="updateTransferPreview()">
+            <option value="">학원을 선택하세요</option>
+            <option value="GNM002" data-name="강남수학학원">강남수학학원 (GNM002)</option>
+            <option value="BDE004" data-name="분당영재학원">분당영재학원 (BDE004)</option>
+            <option value="ILS006" data-name="일산수학학원">일산수학학원 (ILS006)</option>
+          </select>
+        </div>
+        
+        <!-- 이동 옵션 -->
+        <div class="space-y-3 mb-4">
+          <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" id="transferWithData" class="accent-super" checked>
+            <div>
+              <p class="text-sm font-medium">학습 데이터 함께 이동</p>
+              <p class="text-xs text-text-tertiary">성향검사, 학습 기록 등</p>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" id="notifyUser" class="accent-super" checked>
+            <div>
+              <p class="text-sm font-medium">사용자에게 알림 발송</p>
+              <p class="text-xs text-text-tertiary">학원 변경 안내 SMS 발송</p>
+            </div>
+          </label>
+        </div>
+        
+        <!-- 이동 미리보기 -->
+        <div id="transferPreview" class="hidden bg-super-light rounded-xl p-4">
+          <div class="flex items-center justify-center gap-4">
+            <div class="text-center">
+              <p class="text-xs text-text-secondary mb-1">현재</p>
+              <p class="font-medium text-sm">명불허전학원</p>
+            </div>
+            <span class="material-icons-round text-super">arrow_forward</span>
+            <div class="text-center">
+              <p class="text-xs text-text-secondary mb-1">이동</p>
+              <p class="font-medium text-sm text-super" id="targetAcademyPreview">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeTransferUserModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button id="confirmTransferBtn" onclick="confirmTransferUser()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90 disabled:opacity-50 flex items-center gap-2" disabled>
+          <span class="material-icons-round text-sm">swap_horiz</span>
+          학원 이동
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 비밀번호 초기화 모달 -->
+  <div id="resetUserPwModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeResetUserPwModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-info">lock_reset</span>
+          비밀번호 초기화
+        </h2>
+        <button onclick="closeResetUserPwModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <div class="bg-gray-50 rounded-xl p-4 mb-4 flex items-center gap-3">
+          <div id="resetPwUserAvatar" class="w-12 h-12 rounded-full bg-super-light flex items-center justify-center">
+            <span class="font-bold text-super text-lg">김</span>
+          </div>
+          <div>
+            <p class="font-medium text-navy" id="resetPwUserName">김관리</p>
+            <p class="text-sm text-text-secondary" id="resetPwUserContact">admin.kim@mbh.com</p>
+          </div>
+        </div>
+        
+        <div class="bg-info-light rounded-xl p-4 mb-4">
+          <p class="text-sm text-info flex items-start gap-2">
+            <span class="material-icons-round text-lg">info</span>
+            <span>비밀번호가 초기화되면 임시 비밀번호가 사용자에게 SMS로 발송됩니다. 첫 로그인 시 비밀번호 변경이 필요합니다.</span>
+          </p>
+        </div>
+        
+        <!-- 발송 방법 -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">임시 비밀번호 발송 방법</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 border-2 border-super bg-super-light rounded-xl cursor-pointer">
+              <input type="radio" name="resetMethod" value="sms" class="accent-super" checked>
+              <div class="flex-1">
+                <p class="text-sm font-medium">SMS</p>
+                <p class="text-xs text-text-tertiary" id="resetPhonePreview">010-****-5678</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:border-super">
+              <input type="radio" name="resetMethod" value="email" class="accent-super">
+              <div class="flex-1">
+                <p class="text-sm font-medium">이메일</p>
+                <p class="text-xs text-text-tertiary" id="resetEmailPreview">admin.***@mbh.com</p>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 강제 로그아웃 옵션 -->
+        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+          <input type="checkbox" id="forceLogoutOnReset" class="accent-super" checked>
+          <span class="text-sm">현재 로그인된 세션 강제 로그아웃</span>
+        </label>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeResetUserPwModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmResetUserPw()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90 flex items-center gap-2">
+          <span class="material-icons-round text-sm">send</span>
+          초기화 및 발송
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 사용자 정보 편집 모달 -->
+  <div id="editUserModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeEditUserModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl gradient-super flex items-center justify-center">
+            <span class="material-icons-round text-white">edit</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">사용자 정보 편집</h2>
+            <p class="text-sm text-text-secondary" id="editUserSubtitle">이민준 · 학생</p>
+          </div>
+        </div>
+        <button onclick="closeEditUserModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <!-- 기본 정보 섹션 -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-super text-sm">person</span>
+            기본 정보
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">이름 <span class="text-error">*</span></label>
+              <input type="text" id="editUserName" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super" value="이민준">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">연락처 <span class="text-error">*</span></label>
+              <input type="tel" id="editUserPhone" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super" value="010-1234-5678">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">이메일</label>
+              <input type="email" id="editUserEmail" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super" placeholder="이메일 입력">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">상태</label>
+              <select id="editUserStatus" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+                <option value="active">활성</option>
+                <option value="inactive">비활성</option>
+                <option value="suspended">정지</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 학생 전용 섹션 -->
+        <div id="editStudentSection" class="mb-6">
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-korean text-sm">school</span>
+            학생 정보
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">학교</label>
+              <input type="text" id="editStudentSchool" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super" value="서울중학교">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">학년</label>
+              <select id="editStudentGrade" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+                <option>초등 1학년</option>
+                <option>초등 2학년</option>
+                <option>초등 3학년</option>
+                <option>초등 4학년</option>
+                <option>초등 5학년</option>
+                <option>초등 6학년</option>
+                <option>중등 1학년</option>
+                <option selected>중등 2학년</option>
+                <option>중등 3학년</option>
+                <option>고등 1학년</option>
+                <option>고등 2학년</option>
+                <option>고등 3학년</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">소속 반</label>
+              <select id="editStudentClass" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+                <option selected>A반</option>
+                <option>B반</option>
+                <option>C반</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">학부모 연락처</label>
+              <input type="tel" id="editStudentParentPhone" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super" value="010-9876-5432">
+            </div>
+          </div>
+        </div>
+        
+        <!-- 강사 전용 섹션 -->
+        <div id="editInstructorSection" class="mb-6 hidden">
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-planner text-sm">work</span>
+            강사 정보
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">담당 과목</label>
+              <div class="flex flex-wrap gap-2">
+                <label class="flex items-center gap-2 px-3 py-2 border border-border-light rounded-lg cursor-pointer hover:border-super">
+                  <input type="checkbox" class="accent-korean" checked>
+                  <span class="text-sm">국어</span>
+                </label>
+                <label class="flex items-center gap-2 px-3 py-2 border border-border-light rounded-lg cursor-pointer hover:border-super">
+                  <input type="checkbox" class="accent-english">
+                  <span class="text-sm">영어</span>
+                </label>
+                <label class="flex items-center gap-2 px-3 py-2 border border-border-light rounded-lg cursor-pointer hover:border-super">
+                  <input type="checkbox" class="accent-yellow-500" checked>
+                  <span class="text-sm">수학</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">담당 반</label>
+              <input type="text" id="editInstructorClasses" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super" value="A반, B반">
+            </div>
+            <div class="col-span-2">
+              <label class="block text-sm font-medium text-navy mb-2">소개</label>
+              <textarea id="editInstructorBio" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super resize-none h-20" placeholder="강사 소개를 입력하세요">10년 경력의 수학 전문 강사입니다.</textarea>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 학부모 전용 섹션 -->
+        <div id="editParentSection" class="mb-6 hidden">
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-english text-sm">family_restroom</span>
+            학부모 정보
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-2">
+              <label class="block text-sm font-medium text-navy mb-2">연결된 자녀</label>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-korean-light flex items-center justify-center">
+                      <span class="text-sm font-bold text-korean">이</span>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium">이민준</p>
+                      <p class="text-xs text-text-tertiary">중2 · A반</p>
+                    </div>
+                  </div>
+                  <button class="text-error hover:bg-error-light p-1 rounded">
+                    <span class="material-icons-round text-sm">close</span>
+                  </button>
+                </div>
+              </div>
+              <button class="mt-2 text-sm text-super flex items-center gap-1 hover:underline">
+                <span class="material-icons-round text-sm">add</span>
+                자녀 추가
+              </button>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-navy mb-2">알림 수신</label>
+              <div class="space-y-2">
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" class="accent-super" checked>
+                  <span class="text-sm">출결 알림</span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" class="accent-super" checked>
+                  <span class="text-sm">숙제 알림</span>
+                </label>
+                <label class="flex items-center gap-3">
+                  <input type="checkbox" class="accent-super">
+                  <span class="text-sm">마케팅 알림</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 관리자 전용 섹션 -->
+        <div id="editAdminSection" class="mb-6 hidden">
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-primary text-sm">admin_panel_settings</span>
+            관리자 권한
+          </h3>
+          <div class="space-y-3">
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" class="accent-super" checked>
+              <div>
+                <p class="text-sm font-medium">사용자 관리</p>
+                <p class="text-xs text-text-tertiary">학생, 강사, 학부모 계정 관리</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" class="accent-super" checked>
+              <div>
+                <p class="text-sm font-medium">반 관리</p>
+                <p class="text-xs text-text-tertiary">반 생성, 수정, 삭제</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" class="accent-super" checked>
+              <div>
+                <p class="text-sm font-medium">결제 관리</p>
+                <p class="text-xs text-text-tertiary">청구서 발행, 결제 현황 조회</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" class="accent-super">
+              <div>
+                <p class="text-sm font-medium">콘텐츠 관리</p>
+                <p class="text-xs text-text-tertiary">학습 콘텐츠 등록 및 수정</p>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 소속 학원 -->
+        <div>
+          <h3 class="font-bold text-navy flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-super text-sm">business</span>
+            소속 학원
+          </h3>
+          <div class="p-4 bg-super-light rounded-xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center">
+                <span class="material-icons-round text-super">apartment</span>
+              </div>
+              <div>
+                <p class="font-medium text-navy">명불허전학원</p>
+                <p class="text-xs text-text-secondary">MBH001</p>
+              </div>
+            </div>
+            <button onclick="openTransferFromEdit()" class="text-sm text-super hover:underline flex items-center gap-1">
+              <span class="material-icons-round text-sm">swap_horiz</span>
+              학원 변경
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="closeEditUserModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="saveEditUser()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90 flex items-center gap-2">
+          <span class="material-icons-round text-sm">save</span>
+          저장
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- CSV 내보내기 모달 -->
+  <div id="exportUsersModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeExportUsersModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-lg overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-success-light flex items-center justify-center">
+            <span class="material-icons-round text-success">file_download</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">사용자 내보내기</h2>
+            <p class="text-sm text-text-secondary">CSV 또는 Excel 형식</p>
+          </div>
+        </div>
+        <button onclick="closeExportUsersModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <!-- 파일 형식 -->
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-navy mb-2">파일 형식</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center justify-center gap-2 p-4 border-2 border-super bg-super-light rounded-xl cursor-pointer">
+              <input type="radio" name="exportFormat" value="csv" class="hidden" checked>
+              <span class="material-icons-round text-super">description</span>
+              <span class="font-medium text-super">CSV</span>
+            </label>
+            <label class="flex items-center justify-center gap-2 p-4 border border-border-light rounded-xl cursor-pointer hover:border-super" onclick="selectExportFormat(this)">
+              <input type="radio" name="exportFormat" value="xlsx" class="hidden">
+              <span class="material-icons-round text-text-secondary">table_chart</span>
+              <span class="font-medium">Excel</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 역할 필터 -->
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-navy mb-2">대상 역할</label>
+          <div class="flex flex-wrap gap-2">
+            <label class="flex items-center gap-2 px-3 py-2 border border-border-light rounded-lg cursor-pointer hover:border-super">
+              <input type="checkbox" class="accent-super" checked>
+              <span class="text-sm">전체</span>
+            </label>
+            <label class="flex items-center gap-2 px-3 py-2 border border-border-light rounded-lg cursor-pointer hover:border-korean">
+              <input type="checkbox" class="accent-korean">
+              <span class="text-sm">학생</span>
+            </label>
+            <label class="flex items-center gap-2 px-3 py-2 border border-border-light rounded-lg cursor-pointer hover:border-english">
+              <input type="checkbox" class="accent-english">
+              <span class="text-sm">학부모</span>
+            </label>
+            <label class="flex items-center gap-2 px-3 py-2 border border-border-light rounded-lg cursor-pointer hover:border-planner">
+              <input type="checkbox" class="accent-planner">
+              <span class="text-sm">강사</span>
+            </label>
+            <label class="flex items-center gap-2 px-3 py-2 border border-border-light rounded-lg cursor-pointer hover:border-primary">
+              <input type="checkbox" class="accent-primary">
+              <span class="text-sm">관리자</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 기간 필터 -->
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-navy mb-2">가입 기간</label>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-text-tertiary">시작일</label>
+              <input type="date" id="exportStartDate" class="w-full px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+            <div>
+              <label class="text-xs text-text-tertiary">종료일</label>
+              <input type="date" id="exportEndDate" class="w-full px-4 py-2.5 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+          </div>
+        </div>
+        
+        <!-- 포함 필드 -->
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-navy mb-2">포함 필드</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2">
+              <input type="checkbox" class="accent-super" checked disabled>
+              <span class="text-sm">이름</span>
+            </label>
+            <label class="flex items-center gap-2 p-2">
+              <input type="checkbox" class="accent-super" checked>
+              <span class="text-sm">역할</span>
+            </label>
+            <label class="flex items-center gap-2 p-2">
+              <input type="checkbox" class="accent-super" checked>
+              <span class="text-sm">연락처</span>
+            </label>
+            <label class="flex items-center gap-2 p-2">
+              <input type="checkbox" class="accent-super" checked>
+              <span class="text-sm">이메일</span>
+            </label>
+            <label class="flex items-center gap-2 p-2">
+              <input type="checkbox" class="accent-super" checked>
+              <span class="text-sm">소속 학원</span>
+            </label>
+            <label class="flex items-center gap-2 p-2">
+              <input type="checkbox" class="accent-super" checked>
+              <span class="text-sm">상태</span>
+            </label>
+            <label class="flex items-center gap-2 p-2">
+              <input type="checkbox" class="accent-super" checked>
+              <span class="text-sm">가입일</span>
+            </label>
+            <label class="flex items-center gap-2 p-2">
+              <input type="checkbox" class="accent-super">
+              <span class="text-sm">최근 접속</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 내보내기 미리보기 -->
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-text-secondary">예상 데이터</span>
+            <span class="font-bold text-navy" id="exportPreviewCount">5,847명</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeExportUsersModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmExportUsers()" class="px-6 py-2.5 bg-success text-white rounded-xl hover:bg-success/90 flex items-center gap-2">
+          <span class="material-icons-round text-sm">file_download</span>
+          내보내기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 사용자 활성화 모달 -->
+  <div id="activateUserModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeActivateUserModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-success bg-success-light flex items-center gap-3">
+        <span class="material-icons-round text-success text-2xl">check_circle</span>
+        <h2 class="text-lg font-bold text-success">계정 활성화</h2>
+      </div>
+      
+      <div class="p-6">
+        <div class="bg-gray-50 rounded-xl p-4 mb-4 flex items-center gap-3">
+          <div id="activateUserAvatar" class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+            <span class="font-bold text-text-tertiary text-lg">정</span>
+          </div>
+          <div>
+            <p class="font-medium text-navy" id="activateUserName">정휴학</p>
+            <p class="text-sm text-text-secondary" id="activateUserInfo">학생 · 강남수학학원</p>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 rounded-xl p-4 mb-4">
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-text-tertiary">비활성 기간</p>
+              <p class="font-medium text-navy" id="activateInactiveDays">30일</p>
+            </div>
+            <div>
+              <p class="text-text-tertiary">마지막 접속</p>
+              <p class="font-medium text-navy" id="activateLastAccess">2024.12.08</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-success-light rounded-xl p-4 mb-4">
+          <p class="text-sm text-success flex items-start gap-2">
+            <span class="material-icons-round text-lg">info</span>
+            <span>계정을 활성화하면 해당 사용자가 다시 서비스를 이용할 수 있습니다.</span>
+          </p>
+        </div>
+        
+        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+          <input type="checkbox" id="activateNotifyUser" class="accent-success" checked>
+          <span class="text-sm">사용자에게 활성화 알림 발송</span>
+        </label>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeActivateUserModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmActivateUser()" class="px-6 py-2.5 bg-success text-white rounded-xl hover:bg-success/90 flex items-center gap-2">
+          <span class="material-icons-round text-sm">check_circle</span>
+          활성화
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 정지 해제 모달 -->
+  <div id="unsuspendUserModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeUnsuspendUserModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-info bg-info-light flex items-center gap-3">
+        <span class="material-icons-round text-info text-2xl">lock_open</span>
+        <h2 class="text-lg font-bold text-info">정지 해제</h2>
+      </div>
+      
+      <div class="p-6">
+        <div class="bg-gray-50 rounded-xl p-4 mb-4 flex items-center gap-3">
+          <div id="unsuspendUserAvatar" class="w-12 h-12 rounded-full bg-error-light flex items-center justify-center">
+            <span class="font-bold text-error text-lg">한</span>
+          </div>
+          <div>
+            <p class="font-medium text-navy" id="unsuspendUserName">한문제</p>
+            <p class="text-sm text-text-secondary" id="unsuspendUserInfo">학생 · 분당영재학원</p>
+          </div>
+        </div>
+        
+        <div class="bg-error-light rounded-xl p-4 mb-4">
+          <h4 class="font-medium text-error mb-2">정지 정보</h4>
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            <div>
+              <p class="text-text-tertiary">정지 사유</p>
+              <p class="font-medium text-navy" id="unsuspendReason">이용 정책 위반</p>
+            </div>
+            <div>
+              <p class="text-text-tertiary">정지일</p>
+              <p class="font-medium text-navy" id="unsuspendDate">2025.01.02</p>
+            </div>
+            <div>
+              <p class="text-text-tertiary">정지 기간</p>
+              <p class="font-medium text-navy" id="unsuspendPeriod">30일</p>
+            </div>
+            <div>
+              <p class="text-text-tertiary">해제 예정일</p>
+              <p class="font-medium text-navy" id="unsuspendEndDate">2025.02.01</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">해제 사유</label>
+          <textarea id="unsuspendReasonInput" placeholder="정지 해제 사유를 입력하세요..." 
+                    class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-info/20 focus:border-info resize-none h-20"></textarea>
+        </div>
+        
+        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+          <input type="checkbox" id="unsuspendNotifyUser" class="accent-info" checked>
+          <span class="text-sm">사용자에게 정지 해제 알림 발송</span>
+        </label>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeUnsuspendUserModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmUnsuspendUser()" class="px-6 py-2.5 bg-info text-white rounded-xl hover:bg-info/90 flex items-center gap-2">
+          <span class="material-icons-round text-sm">lock_open</span>
+          정지 해제
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 사용자 활동 로그 모달 -->
+  <div id="userActivityModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeUserActivityModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between sticky top-0 bg-white z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-info-light flex items-center justify-center">
+            <span class="material-icons-round text-info">history</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">활동 로그</h2>
+            <p class="text-sm text-text-secondary" id="activityUserName">이민준 · 학생</p>
+          </div>
+        </div>
+        <button onclick="closeUserActivityModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[65vh]">
+        <!-- 필터 -->
+        <div class="flex gap-2 mb-4">
+          <button class="px-4 py-2 rounded-lg text-sm font-medium bg-super text-white">전체</button>
+          <button class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-text-secondary hover:bg-gray-200">로그인</button>
+          <button class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-text-secondary hover:bg-gray-200">학습</button>
+          <button class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-text-secondary hover:bg-gray-200">설정</button>
+        </div>
+        
+        <!-- 타임라인 -->
+        <div class="space-y-4">
+          <!-- 오늘 -->
+          <div>
+            <p class="text-xs font-medium text-text-tertiary mb-3">오늘</p>
+            <div class="space-y-3">
+              <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-success-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-success text-sm">login</span>
+                </div>
+                <div class="flex-1 bg-gray-50 rounded-xl p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-navy">로그인</p>
+                    <span class="text-xs text-text-tertiary">09:15</span>
+                  </div>
+                  <p class="text-xs text-text-secondary">IP: 211.xxx.xxx.123 · Chrome / Windows</p>
+                </div>
+              </div>
+              
+              <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-korean-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-korean text-sm">menu_book</span>
+                </div>
+                <div class="flex-1 bg-gray-50 rounded-xl p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-navy">국어 학습 완료</p>
+                    <span class="text-xs text-text-tertiary">09:42</span>
+                  </div>
+                  <p class="text-xs text-text-secondary">지문 3개 · O/X 퀴즈 15문항 · 정답률 93%</p>
+                </div>
+              </div>
+              
+              <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-english-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-english text-sm">translate</span>
+                </div>
+                <div class="flex-1 bg-gray-50 rounded-xl p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-navy">영어 7초 발화 테스트</p>
+                    <span class="text-xs text-text-tertiary">10:05</span>
+                  </div>
+                  <p class="text-xs text-text-secondary">단어 20개 · PASS 18개 · FAIL 2개</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 어제 -->
+          <div>
+            <p class="text-xs font-medium text-text-tertiary mb-3">어제</p>
+            <div class="space-y-3">
+              <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-success-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-success text-sm">login</span>
+                </div>
+                <div class="flex-1 bg-gray-50 rounded-xl p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-navy">로그인</p>
+                    <span class="text-xs text-text-tertiary">18:30</span>
+                  </div>
+                  <p class="text-xs text-text-secondary">IP: 211.xxx.xxx.123 · Chrome / Windows</p>
+                </div>
+              </div>
+              
+              <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-math-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-yellow-600 text-sm">calculate</span>
+                </div>
+                <div class="flex-1 bg-gray-50 rounded-xl p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-navy">수학 문제 풀이</p>
+                    <span class="text-xs text-text-tertiary">18:52</span>
+                  </div>
+                  <p class="text-xs text-text-secondary">이차방정식 · 문제 5개 · 정답률 80%</p>
+                </div>
+              </div>
+              
+              <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-planner-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-planner text-sm">event_note</span>
+                </div>
+                <div class="flex-1 bg-gray-50 rounded-xl p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-navy">플래너 작성</p>
+                    <span class="text-xs text-text-tertiary">19:10</span>
+                  </div>
+                  <p class="text-xs text-text-secondary">주간 학습 계획 등록</p>
+                </div>
+              </div>
+              
+              <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-text-tertiary text-sm">logout</span>
+                </div>
+                <div class="flex-1 bg-gray-50 rounded-xl p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-navy">로그아웃</p>
+                    <span class="text-xs text-text-tertiary">19:35</span>
+                  </div>
+                  <p class="text-xs text-text-secondary">세션 종료</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 1월 5일 -->
+          <div>
+            <p class="text-xs font-medium text-text-tertiary mb-3">2025.01.05</p>
+            <div class="space-y-3">
+              <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-info-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-info text-sm">quiz</span>
+                </div>
+                <div class="flex-1 bg-gray-50 rounded-xl p-3">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-medium text-navy">성향검사 완료</p>
+                    <span class="text-xs text-text-tertiary">16:20</span>
+                  </div>
+                  <p class="text-xs text-text-secondary">150문항 완료 · 신뢰도: HIGH</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between items-center">
+        <button class="text-sm text-super flex items-center gap-1 hover:underline">
+          <span class="material-icons-round text-sm">file_download</span>
+          로그 내보내기
+        </button>
+        <button onclick="closeUserActivityModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 일괄 작업 툴바 -->
+  <div id="bulkActionBar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl z-40 hidden">
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+          <span class="material-icons-round">check_circle</span>
+        </div>
+        <div>
+          <p class="text-sm text-white/70">선택됨</p>
+          <p class="font-bold text-xl" id="bulkSelectedCount">0명</p>
+        </div>
+      </div>
+      
+      <div class="w-px h-10 bg-white/20"></div>
+      
+      <div class="flex items-center gap-2">
+        <button onclick="bulkSendNotification()" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 rounded-xl flex items-center gap-2 transition-colors">
+          <span class="material-icons-round text-sm">notifications</span>
+          <span class="text-sm">알림 발송</span>
+        </button>
+        <button onclick="bulkChangeStatus()" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 rounded-xl flex items-center gap-2 transition-colors">
+          <span class="material-icons-round text-sm">toggle_on</span>
+          <span class="text-sm">상태 변경</span>
+        </button>
+        <button onclick="bulkTransferAcademy()" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 rounded-xl flex items-center gap-2 transition-colors">
+          <span class="material-icons-round text-sm">swap_horiz</span>
+          <span class="text-sm">학원 이동</span>
+        </button>
+        <button onclick="bulkDelete()" class="px-4 py-2.5 bg-error/80 hover:bg-error rounded-xl flex items-center gap-2 transition-colors">
+          <span class="material-icons-round text-sm">delete</span>
+          <span class="text-sm">삭제</span>
+        </button>
+      </div>
+      
+      <button onclick="clearBulkSelection()" class="p-2 hover:bg-white/10 rounded-lg transition-colors">
+        <span class="material-icons-round">close</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- 일괄 알림 발송 모달 -->
+  <div id="bulkNotificationModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeBulkNotificationModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-lg overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-info-light flex items-center justify-center">
+            <span class="material-icons-round text-info">notifications</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">일괄 알림 발송</h2>
+            <p class="text-sm text-text-secondary"><span id="bulkNotifCount">3</span>명에게 발송</p>
+          </div>
+        </div>
+        <button onclick="closeBulkNotificationModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">발송 채널</label>
+          <div class="flex gap-2">
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 border-2 border-super bg-super-light rounded-xl cursor-pointer">
+              <input type="radio" name="bulkNotifChannel" value="kakao" class="hidden" checked>
+              <span class="material-icons-round text-super text-sm">chat</span>
+              <span class="text-sm font-medium text-super">카카오톡</span>
+            </label>
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 border border-border-light rounded-xl cursor-pointer hover:border-super">
+              <input type="radio" name="bulkNotifChannel" value="sms" class="hidden">
+              <span class="material-icons-round text-text-secondary text-sm">sms</span>
+              <span class="text-sm">SMS</span>
+            </label>
+            <label class="flex-1 flex items-center justify-center gap-2 p-3 border border-border-light rounded-xl cursor-pointer hover:border-super">
+              <input type="radio" name="bulkNotifChannel" value="push" class="hidden">
+              <span class="material-icons-round text-text-secondary text-sm">phone_android</span>
+              <span class="text-sm">푸시</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">메시지 유형</label>
+          <select id="bulkNotifType" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            <option value="">직접 입력</option>
+            <option value="homework">숙제 알림</option>
+            <option value="attendance">출결 안내</option>
+            <option value="payment">결제 안내</option>
+            <option value="event">이벤트 안내</option>
+          </select>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">메시지 내용 <span class="text-error">*</span></label>
+          <textarea id="bulkNotifMessage" placeholder="발송할 메시지를 입력하세요..." 
+                    class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super resize-none h-28"></textarea>
+          <p class="text-xs text-text-tertiary mt-1 text-right"><span id="bulkNotifCharCount">0</span>/500자</p>
+        </div>
+        
+        <div class="bg-info-light rounded-xl p-3 text-sm text-info flex items-start gap-2">
+          <span class="material-icons-round text-lg">info</span>
+          <span>{{name}} 변수를 사용하면 수신자 이름으로 자동 치환됩니다.</span>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeBulkNotificationModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmBulkNotification()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90 flex items-center gap-2">
+          <span class="material-icons-round text-sm">send</span>
+          발송
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 일괄 상태 변경 모달 -->
+  <div id="bulkStatusModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeBulkStatusModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-warning-light flex items-center justify-center">
+            <span class="material-icons-round text-warning">toggle_on</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">일괄 상태 변경</h2>
+            <p class="text-sm text-text-secondary"><span id="bulkStatusCount">3</span>명 선택됨</p>
+          </div>
+        </div>
+        <button onclick="closeBulkStatusModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-3">변경할 상태</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-4 border-2 border-success bg-success-light rounded-xl cursor-pointer">
+              <input type="radio" name="bulkStatusChange" value="active" class="accent-success" checked>
+              <span class="material-icons-round text-success">check_circle</span>
+              <div>
+                <p class="font-medium text-success">활성</p>
+                <p class="text-xs text-text-secondary">서비스 이용 가능</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-4 border border-border-light rounded-xl cursor-pointer hover:border-gray-400">
+              <input type="radio" name="bulkStatusChange" value="inactive" class="accent-gray-500">
+              <span class="material-icons-round text-text-tertiary">remove_circle</span>
+              <div>
+                <p class="font-medium text-text-secondary">비활성</p>
+                <p class="text-xs text-text-tertiary">임시 비활성화</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-4 border border-border-light rounded-xl cursor-pointer hover:border-warning">
+              <input type="radio" name="bulkStatusChange" value="suspended" class="accent-warning">
+              <span class="material-icons-round text-warning">block</span>
+              <div>
+                <p class="font-medium text-warning">정지</p>
+                <p class="text-xs text-text-tertiary">계정 정지 처리</p>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+          <input type="checkbox" id="bulkStatusNotify" class="accent-super" checked>
+          <span class="text-sm">대상자에게 상태 변경 알림 발송</span>
+        </label>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeBulkStatusModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmBulkStatus()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90 flex items-center gap-2">
+          <span class="material-icons-round text-sm">check</span>
+          변경
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 일괄 삭제 확인 모달 -->
+  <div id="bulkDeleteModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeBulkDeleteModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-error bg-error-light flex items-center gap-3">
+        <span class="material-icons-round text-error text-2xl">delete_forever</span>
+        <h2 class="text-lg font-bold text-error">일괄 삭제</h2>
+      </div>
+      
+      <div class="p-6">
+        <div class="bg-error-light rounded-xl p-4 mb-4">
+          <p class="text-sm text-error flex items-start gap-2">
+            <span class="material-icons-round text-lg">warning</span>
+            <span><strong id="bulkDeleteCount">3</strong>명의 사용자를 삭제합니다. 모든 학습 기록, 상담 기록 등이 영구 삭제되며, 이 작업은 되돌릴 수 없습니다.</span>
+          </p>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">삭제 확인</label>
+          <p class="text-sm text-text-secondary mb-2">확인을 위해 <strong class="text-error">"삭제"</strong>를 입력하세요</p>
+          <input type="text" id="bulkDeleteConfirmInput" placeholder="삭제" 
+                 class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-error/20 focus:border-error"
+                 oninput="checkBulkDeleteForm()">
+        </div>
+        
+        <label class="flex items-start gap-3 p-4 bg-error-light rounded-xl cursor-pointer">
+          <input type="checkbox" id="bulkDeleteConfirmCheck" class="mt-0.5 accent-error" onchange="checkBulkDeleteForm()">
+          <span class="text-sm text-error">선택한 모든 사용자의 데이터가 영구 삭제됨을 이해하고 동의합니다.</span>
+        </label>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeBulkDeleteModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button id="confirmBulkDeleteBtn" onclick="confirmBulkDelete()" class="px-6 py-2.5 bg-error text-white rounded-xl hover:bg-error/90 disabled:opacity-50 flex items-center gap-2" disabled>
+          <span class="material-icons-round text-sm">delete</span>
+          삭제
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 토스트 컨테이너 -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-3"></div>
+  
+  <script>
+    // ========================================
+    // 토스트 알림 시스템
+    // ========================================
+    // [MIGRATED TO MODULE] showToast - now using toast.js module
+    
+    // ========================================
+    // 현재 사용자 정보
+    // ========================================
+    let currentUser = {
+      name: '김관리',
+      initial: '김',
+      role: 'admin',
+      roleName: '관리자',
+      academy: '명불허전학원',
+      academyCode: 'MBH001',
+      email: 'admin.kim@mbh.com',
+      phone: '010-1234-5678'
+    };
+    
+    // ========================================
+    // Mobile Menu
+    // ========================================
+    function openMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // ========================================
+    // User Detail Modal
+    // ========================================
+    function openUserModal(role, userId) {
+      const user = usersData[userId] || usersData['USR003'];
+      currentUser = { ...user };
+      
+      // 모달 헤더 업데이트
+      const modalHeader = document.querySelector('#userModal .flex.items-center.gap-4');
+      const roleColors = {
+        admin: { bg: 'bg-primary-light', text: 'text-primary' },
+        instructor: { bg: 'bg-planner-light', text: 'text-planner' },
+        student: { bg: 'bg-korean-light', text: 'text-korean' },
+        parent: { bg: 'bg-english-light', text: 'text-english' }
+      };
+      const color = roleColors[role] || roleColors.student;
+      
+      // 아바타 색상 변경
+      const avatar = modalHeader.querySelector('.w-14.h-14');
+      avatar.className = `w-14 h-14 rounded-full ${color.bg} flex items-center justify-center`;
+      avatar.querySelector('span').className = `font-bold ${color.text} text-xl`;
+      avatar.querySelector('span').textContent = user.initial;
+      
+      // 이름과 역할 뱃지
+      const nameDiv = modalHeader.querySelector('.text-lg');
+      nameDiv.textContent = user.name;
+      
+      const roleBadge = modalHeader.querySelector('.status-badge');
+      roleBadge.className = `status-badge ${color.bg} ${color.text}`;
+      roleBadge.textContent = user.roleName;
+      
+      // 소속 정보
+      const academyInfo = modalHeader.querySelector('.text-sm.text-text-secondary');
+      if (role === 'student') {
+        academyInfo.textContent = `${user.academy} · ${user.grade?.replace('중등 ', '중').replace('고등 ', '고').replace('학년', '')} ${user.class || ''}`;
+      } else {
+        academyInfo.textContent = user.academy;
+      }
+      
+      // 기본 정보 업데이트
+      updateUserModalBasicInfo(user, role);
+      
+      // 학습 현황 (학생만 표시)
+      const learningSection = document.querySelector('#userModal .grid.grid-cols-3');
+      if (learningSection) {
+        learningSection.parentElement.style.display = role === 'student' ? 'block' : 'none';
+      }
+      
+      document.getElementById('userModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function updateUserModalBasicInfo(user, role) {
+      const infoGrid = document.querySelector('#userModal .grid.grid-cols-2');
+      if (!infoGrid) return;
+      
+      if (role === 'student') {
+        infoGrid.innerHTML = `
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">이름</p>
+            <p class="font-medium">${user.name}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">연락처</p>
+            <p class="font-medium">${user.phone}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">학교/학년</p>
+            <p class="font-medium">${user.school || ''} ${user.grade?.replace('중등 ', '중').replace('고등 ', '고') || ''}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">학부모 연락처</p>
+            <p class="font-medium">${user.parentPhone || '-'}</p>
+          </div>
+        `;
+      } else if (role === 'instructor') {
+        infoGrid.innerHTML = `
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">이름</p>
+            <p class="font-medium">${user.name}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">연락처</p>
+            <p class="font-medium">${user.phone}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">이메일</p>
+            <p class="font-medium">${user.email || '-'}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">담당 반</p>
+            <p class="font-medium">${user.classes || '-'}</p>
+          </div>
+        `;
+      } else if (role === 'parent') {
+        infoGrid.innerHTML = `
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">이름</p>
+            <p class="font-medium">${user.name}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">연락처</p>
+            <p class="font-medium">${user.phone}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">이메일</p>
+            <p class="font-medium">${user.email || '-'}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">연결된 자녀</p>
+            <p class="font-medium">${user.children?.join(', ') || '-'}</p>
+          </div>
+        `;
+      } else if (role === 'admin') {
+        infoGrid.innerHTML = `
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">이름</p>
+            <p class="font-medium">${user.name}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">연락처</p>
+            <p class="font-medium">${user.phone}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">이메일</p>
+            <p class="font-medium">${user.email || '-'}</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-xs text-text-secondary mb-1">학원 코드</p>
+            <p class="font-medium">${user.academyCode || '-'}</p>
+          </div>
+        `;
+      }
+    }
+    
+    function closeUserModal() {
+      document.getElementById('userModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function openEditUserFromDetail() {
+      // userModal에서 editUserModal로 이동
+      closeUserModal();
+      openEditUserModal(currentUser.role, currentUser.id);
+    }
+    
+    function saveUserInfo() {
+      closeUserModal();
+      showToast(`${currentUser.name} 정보가 수정되었습니다.`, 'success');
+    }
+    
+    // ========================================
+    // Suspend User Modal
+    // ========================================
+    function openSuspendUserModal() {
+      document.getElementById('suspendUserName').textContent = currentUser.name;
+      document.getElementById('suspendUserRole').textContent = `${currentUser.roleName} · ${currentUser.academy}`;
+      document.getElementById('suspendUserReason').value = '';
+      document.getElementById('suspendUserDetail').value = '';
+      document.getElementById('suspendUserConfirm').checked = false;
+      document.getElementById('confirmSuspendUserBtn').disabled = true;
+      
+      closeUserModal();
+      document.getElementById('suspendUserModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSuspendUserModal() {
+      document.getElementById('suspendUserModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function checkSuspendUserForm() {
+      const reason = document.getElementById('suspendUserReason').value;
+      const confirmed = document.getElementById('suspendUserConfirm').checked;
+      document.getElementById('confirmSuspendUserBtn').disabled = !(reason && confirmed);
+    }
+    
+    function confirmSuspendUser() {
+      const period = document.querySelector('input[name="suspendUserPeriod"]:checked').value;
+      const periodText = period === '0' ? '무기한' : `${period}일`;
+      closeSuspendUserModal();
+      showToast(`${currentUser.name} 계정이 ${periodText} 정지되었습니다.`, 'warning');
+    }
+    
+    // ========================================
+    // Delete User Modal
+    // ========================================
+    function openDeleteUserModal() {
+      document.getElementById('deleteUserName').textContent = currentUser.name;
+      document.getElementById('deleteUserRole').textContent = `${currentUser.roleName} · ${currentUser.academy}`;
+      document.getElementById('deleteUserReason').value = '';
+      document.getElementById('deleteUserNameConfirm').value = '';
+      document.getElementById('deleteUserConfirm').checked = false;
+      document.getElementById('confirmDeleteUserBtn').disabled = true;
+      
+      closeUserModal();
+      document.getElementById('deleteUserModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDeleteUserModal() {
+      document.getElementById('deleteUserModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function checkDeleteUserForm() {
+      const reason = document.getElementById('deleteUserReason').value;
+      const nameConfirm = document.getElementById('deleteUserNameConfirm').value;
+      const confirmed = document.getElementById('deleteUserConfirm').checked;
+      document.getElementById('confirmDeleteUserBtn').disabled = !(reason && nameConfirm === currentUser.name && confirmed);
+    }
+    
+    function confirmDeleteUser() {
+      closeDeleteUserModal();
+      showToast(`${currentUser.name} 계정이 삭제되었습니다.`, 'success');
+    }
+    
+    // ========================================
+    // Transfer User Modal
+    // ========================================
+    function openTransferUserModal() {
+      document.getElementById('transferUserName').textContent = currentUser.name;
+      document.getElementById('transferUserInfo').textContent = `${currentUser.roleName}`;
+      document.getElementById('currentAcademyDisplay').textContent = `${currentUser.academy} (${currentUser.academyCode})`;
+      document.getElementById('targetAcademy').value = '';
+      document.getElementById('transferPreview').classList.add('hidden');
+      document.getElementById('confirmTransferBtn').disabled = true;
+      
+      closeUserModal();
+      document.getElementById('transferUserModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeTransferUserModal() {
+      document.getElementById('transferUserModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function updateTransferPreview() {
+      const select = document.getElementById('targetAcademy');
+      const selectedOption = select.options[select.selectedIndex];
+      
+      if (select.value) {
+        document.getElementById('targetAcademyPreview').textContent = selectedOption.dataset.name;
+        document.getElementById('transferPreview').classList.remove('hidden');
+        document.getElementById('confirmTransferBtn').disabled = false;
+      } else {
+        document.getElementById('transferPreview').classList.add('hidden');
+        document.getElementById('confirmTransferBtn').disabled = true;
+      }
+    }
+    
+    function confirmTransferUser() {
+      const targetName = document.getElementById('targetAcademyPreview').textContent;
+      closeTransferUserModal();
+      showToast(`${currentUser.name}이(가) ${targetName}으로 이동되었습니다.`, 'success');
+    }
+    
+    // ========================================
+    // Reset Password Modal
+    // ========================================
+    function openResetUserPwModal() {
+      document.getElementById('resetPwUserName').textContent = currentUser.name;
+      document.getElementById('resetPwUserContact').textContent = currentUser.email || currentUser.phone;
+      
+      // 마스킹된 연락처
+      if (currentUser.phone) {
+        document.getElementById('resetPhonePreview').textContent = currentUser.phone.replace(/(\d{3})-(\d{2})(\d{2})-(\d{4})/, '$1-**$3-$4');
+      }
+      if (currentUser.email) {
+        const [localPart, domain] = currentUser.email.split('@');
+        document.getElementById('resetEmailPreview').textContent = `${localPart.slice(0,3)}***@${domain}`;
+      }
+      
+      closeUserModal();
+      document.getElementById('resetUserPwModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeResetUserPwModal() {
+      document.getElementById('resetUserPwModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmResetUserPw() {
+      const method = document.querySelector('input[name="resetMethod"]:checked').value;
+      const methodText = method === 'sms' ? 'SMS' : '이메일';
+      closeResetUserPwModal();
+      showToast(`${currentUser.name}에게 임시 비밀번호가 ${methodText}로 발송되었습니다.`, 'success');
+    }
+    
+    // ========================================
+    // Filter Functions
+    // ========================================
+    function filterByRole(role) {
+      document.getElementById('roleFilter').value = role;
+      showToast(`${getRoleName(role)} 필터가 적용되었습니다.`, 'info');
+    }
+    
+    function getRoleName(role) {
+      const names = { all: '전체', admin: '관리자', instructor: '강사', student: '학생', parent: '학부모' };
+      return names[role] || role;
+    }
+    
+    // ========================================
+    // Period Selection (Suspend Modal)
+    // ========================================
+    document.querySelectorAll('input[name="suspendUserPeriod"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('input[name="suspendUserPeriod"]').forEach(r => {
+          r.closest('label').classList.remove('border-2', 'border-warning', 'bg-warning-light');
+          r.closest('label').classList.add('border', 'border-border-light');
+          r.closest('label').querySelector('span').classList.remove('font-medium', 'text-warning');
+        });
+        this.closest('label').classList.remove('border', 'border-border-light');
+        this.closest('label').classList.add('border-2', 'border-warning', 'bg-warning-light');
+        this.closest('label').querySelector('span').classList.add('font-medium', 'text-warning');
+      });
+    });
+    
+    // ========================================
+    // Keyboard Shortcuts
+    // ========================================
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeUserModal();
+        closeSuspendUserModal();
+        closeDeleteUserModal();
+        closeTransferUserModal();
+        closeResetUserPwModal();
+        closeEditUserModal();
+        closeExportUsersModal();
+        closeActivateUserModal();
+        closeUnsuspendUserModal();
+        closeUserActivityModal();
+        closeBulkNotificationModal();
+        closeBulkStatusModal();
+        closeBulkDeleteModal();
+      }
+    });
+    
+    // ========================================
+    // 샘플 사용자 데이터
+    // ========================================
+    const usersData = {
+      'USR001': { id: 'USR001', name: '김관리', initial: '김', role: 'admin', roleName: '관리자', academy: '명불허전학원', academyCode: 'MBH001', email: 'admin@mbh.com', phone: '010-1234-5678', status: 'active' },
+      'USR002': { id: 'USR002', name: '박선생', initial: '박', role: 'instructor', roleName: '강사', academy: '명불허전학원', academyCode: 'MBH001', email: 'teacher.park@mbh.com', phone: '010-2345-6789', status: 'active', subjects: ['국어', '수학'], classes: 'A반, B반' },
+      'USR003': { id: 'USR003', name: '이민준', initial: '이', role: 'student', roleName: '학생', academy: '명불허전학원', academyCode: 'MBH001', phone: '010-3456-7890', status: 'active', school: '서울중학교', grade: '중등 2학년', class: 'A반', parentPhone: '010-9876-5432' },
+      'USR004': { id: 'USR004', name: '최학부모', initial: '최', role: 'parent', roleName: '학부모', academy: '명불허전학원', academyCode: 'MBH001', email: 'parent.choi@gmail.com', phone: '010-4567-8901', status: 'active', children: ['이민준'] },
+      'USR005': { id: 'USR005', name: '정휴학', initial: '정', role: 'student', roleName: '학생', academy: '강남수학학원', academyCode: 'GNM002', phone: '010-5555-6666', status: 'inactive', school: '강남중학교', grade: '중등 3학년', class: 'B반' },
+      'USR006': { id: 'USR006', name: '한문제', initial: '한', role: 'student', roleName: '학생', academy: '분당영재학원', academyCode: 'BDE004', phone: '010-7777-8888', status: 'suspended', school: '분당고등학교', grade: '고등 1학년', class: 'C반', suspendReason: '이용 정책 위반', suspendDate: '2025.01.02', suspendPeriod: '30일', suspendEndDate: '2025.02.01' }
+    };
+    
+    // ========================================
+    // Edit User Modal
+    // ========================================
+    function openEditUserModal(role, userId) {
+      const user = usersData[userId] || usersData['USR003'];
+      currentUser = { ...user };
+      
+      document.getElementById('editUserSubtitle').textContent = `${user.name} · ${user.roleName}`;
+      document.getElementById('editUserName').value = user.name;
+      document.getElementById('editUserPhone').value = user.phone;
+      document.getElementById('editUserEmail').value = user.email || '';
+      document.getElementById('editUserStatus').value = user.status;
+      
+      // 역할별 섹션 표시/숨김
+      document.getElementById('editStudentSection').classList.add('hidden');
+      document.getElementById('editInstructorSection').classList.add('hidden');
+      document.getElementById('editParentSection').classList.add('hidden');
+      document.getElementById('editAdminSection').classList.add('hidden');
+      
+      if (role === 'student') {
+        document.getElementById('editStudentSection').classList.remove('hidden');
+        document.getElementById('editStudentSchool').value = user.school || '';
+        document.getElementById('editStudentParentPhone').value = user.parentPhone || '';
+      } else if (role === 'instructor') {
+        document.getElementById('editInstructorSection').classList.remove('hidden');
+      } else if (role === 'parent') {
+        document.getElementById('editParentSection').classList.remove('hidden');
+      } else if (role === 'admin') {
+        document.getElementById('editAdminSection').classList.remove('hidden');
+      }
+      
+      document.getElementById('editUserModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeEditUserModal() {
+      document.getElementById('editUserModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveEditUser() {
+      closeEditUserModal();
+      showToast(`${currentUser.name} 정보가 저장되었습니다.`, 'success');
+    }
+    
+    function openTransferFromEdit() {
+      closeEditUserModal();
+      openTransferUserModal();
+    }
+    
+    // ========================================
+    // Export Users Modal
+    // ========================================
+    function openExportUsersModal() {
+      document.getElementById('exportUsersModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeExportUsersModal() {
+      document.getElementById('exportUsersModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function selectExportFormat(element) {
+      document.querySelectorAll('input[name="exportFormat"]').forEach(radio => {
+        const label = radio.closest('label');
+        if (radio.checked) {
+          label.classList.remove('border', 'border-border-light');
+          label.classList.add('border-2', 'border-super', 'bg-super-light');
+          label.querySelectorAll('span').forEach(s => s.classList.add('text-super'));
+        } else {
+          label.classList.remove('border-2', 'border-super', 'bg-super-light');
+          label.classList.add('border', 'border-border-light');
+          label.querySelectorAll('span').forEach(s => s.classList.remove('text-super'));
+        }
+      });
+    }
+    
+    function confirmExportUsers() {
+      const format = document.querySelector('input[name="exportFormat"]:checked').value;
+      closeExportUsersModal();
+      showToast(`사용자 목록이 ${format.toUpperCase()} 형식으로 내보내기 되었습니다.`, 'success');
+    }
+    
+    // ========================================
+    // Activate User Modal
+    // ========================================
+    function openActivateUserModal(userId, name, role, academy) {
+      document.getElementById('activateUserName').textContent = name;
+      document.getElementById('activateUserInfo').textContent = `${role} · ${academy}`;
+      document.getElementById('activateUserAvatar').querySelector('span').textContent = name.charAt(0);
+      
+      currentUser = { id: userId, name: name, role: role, academy: academy };
+      
+      document.getElementById('activateUserModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeActivateUserModal() {
+      document.getElementById('activateUserModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmActivateUser() {
+      closeActivateUserModal();
+      showToast(`${currentUser.name} 계정이 활성화되었습니다.`, 'success');
+    }
+    
+    // ========================================
+    // Unsuspend User Modal
+    // ========================================
+    function openUnsuspendUserModal(userId, name, role, academy) {
+      const user = usersData[userId] || {};
+      document.getElementById('unsuspendUserName').textContent = name;
+      document.getElementById('unsuspendUserInfo').textContent = `${role} · ${academy}`;
+      document.getElementById('unsuspendUserAvatar').querySelector('span').textContent = name.charAt(0);
+      document.getElementById('unsuspendReason').textContent = user.suspendReason || '이용 정책 위반';
+      document.getElementById('unsuspendDate').textContent = user.suspendDate || '2025.01.02';
+      document.getElementById('unsuspendPeriod').textContent = user.suspendPeriod || '30일';
+      document.getElementById('unsuspendEndDate').textContent = user.suspendEndDate || '2025.02.01';
+      document.getElementById('unsuspendReasonInput').value = '';
+      
+      currentUser = { id: userId, name: name, role: role, academy: academy };
+      
+      document.getElementById('unsuspendUserModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeUnsuspendUserModal() {
+      document.getElementById('unsuspendUserModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmUnsuspendUser() {
+      closeUnsuspendUserModal();
+      showToast(`${currentUser.name} 계정의 정지가 해제되었습니다.`, 'success');
+    }
+    
+    // ========================================
+    // User Activity Modal
+    // ========================================
+    function openUserActivityModal(role, userId) {
+      const user = usersData[userId] || usersData['USR003'];
+      document.getElementById('activityUserName').textContent = `${user.name} · ${user.roleName}`;
+      
+      currentUser = { ...user };
+      
+      document.getElementById('userActivityModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeUserActivityModal() {
+      document.getElementById('userActivityModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function openUserActivityFromDetail() {
+      closeUserModal();
+      openUserActivityModal(currentUser.role, currentUser.id);
+    }
+    
+    // ========================================
+    // Bulk Selection
+    // ========================================
+    let selectedUsers = [];
+    
+    function updateBulkSelection() {
+      const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+      selectedUsers = Array.from(checkboxes).map(cb => ({
+        id: cb.dataset.id,
+        name: cb.dataset.name
+      }));
+      
+      const bulkBar = document.getElementById('bulkActionBar');
+      if (selectedUsers.length > 0) {
+        bulkBar.classList.remove('hidden');
+        document.getElementById('bulkSelectedCount').textContent = `${selectedUsers.length}명`;
+      } else {
+        bulkBar.classList.add('hidden');
+      }
+    }
+    
+    function clearBulkSelection() {
+      document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = false);
+      selectedUsers = [];
+      document.getElementById('bulkActionBar').classList.add('hidden');
+    }
+    
+    // ========================================
+    // Bulk Actions
+    // ========================================
+    function bulkSendNotification() {
+      document.getElementById('bulkNotifCount').textContent = selectedUsers.length;
+      document.getElementById('bulkNotificationModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeBulkNotificationModal() {
+      document.getElementById('bulkNotificationModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmBulkNotification() {
+      closeBulkNotificationModal();
+      clearBulkSelection();
+      showToast(`${selectedUsers.length}명에게 알림이 발송되었습니다.`, 'success');
+    }
+    
+    function bulkChangeStatus() {
+      document.getElementById('bulkStatusCount').textContent = selectedUsers.length;
+      document.getElementById('bulkStatusModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeBulkStatusModal() {
+      document.getElementById('bulkStatusModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmBulkStatus() {
+      const status = document.querySelector('input[name="bulkStatusChange"]:checked').value;
+      const statusNames = { active: '활성', inactive: '비활성', suspended: '정지' };
+      closeBulkStatusModal();
+      clearBulkSelection();
+      showToast(`${selectedUsers.length}명의 상태가 '${statusNames[status]}'으로 변경되었습니다.`, 'success');
+    }
+    
+    function bulkTransferAcademy() {
+      closeBulkStatusModal();
+      // 일괄 학원 이동은 transferUserModal 재활용
+      document.getElementById('transferUserName').textContent = `${selectedUsers.length}명 선택됨`;
+      document.getElementById('transferUserInfo').textContent = '일괄 학원 이동';
+      document.getElementById('transferUserModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function bulkDelete() {
+      document.getElementById('bulkDeleteCount').textContent = selectedUsers.length;
+      document.getElementById('bulkDeleteConfirmInput').value = '';
+      document.getElementById('bulkDeleteConfirmCheck').checked = false;
+      document.getElementById('confirmBulkDeleteBtn').disabled = true;
+      document.getElementById('bulkDeleteModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeBulkDeleteModal() {
+      document.getElementById('bulkDeleteModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function checkBulkDeleteForm() {
+      const input = document.getElementById('bulkDeleteConfirmInput').value;
+      const confirmed = document.getElementById('bulkDeleteConfirmCheck').checked;
+      document.getElementById('confirmBulkDeleteBtn').disabled = !(input === '삭제' && confirmed);
+    }
+    
+    function confirmBulkDelete() {
+      closeBulkDeleteModal();
+      clearBulkSelection();
+      showToast(`${selectedUsers.length}명의 사용자가 삭제되었습니다.`, 'success');
+    }
+    
+    // ========================================
+    // Bulk Notification Character Counter
+    // ========================================
+    document.getElementById('bulkNotifMessage')?.addEventListener('input', function() {
+      document.getElementById('bulkNotifCharCount').textContent = this.value.length;
+    });
+    
+    // ========================================
+    // Header Checkbox (Select All)
+    // ========================================
+    document.querySelector('thead input[type="checkbox"]')?.addEventListener('change', function() {
+      document.querySelectorAll('.user-checkbox').forEach(cb => {
+        cb.checked = this.checked;
+      });
+      updateBulkSelection();
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

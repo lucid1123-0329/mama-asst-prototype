@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>일일 평가 | MAMA-ASST 관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            'deep-navy': '#1A2E4D',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'border-medium': '#D1D5DB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%); color: white; }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.open { display: flex; }
+    .star-rating .star { cursor: pointer; transition: all 0.15s ease; }
+    .star-rating .star:hover, .star-rating .star.active { color: #FBBC05; transform: scale(1.1); }
+    .evaluation-row { transition: background-color 0.15s ease; }
+    .evaluation-row:hover { background-color: #F9FAFB; }
+    .tag-item { cursor: pointer; transition: all 0.15s ease; }
+    .tag-item:hover { transform: scale(1.02); }
+    .dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .dropdown-content.open { max-height: 300px; overflow-y: auto; }
+    .instructor-card { transition: all 0.2s ease; }
+    .instructor-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .instructor-card.active { border-color: #FF6D4D; background: #FFF0ED; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-deep-navy flex-col fixed h-full z-40">
+      <div class="p-4 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">M</span>
+          </div>
+          <span class="text-white font-bold">MAMA-ASST</span>
+          <span class="ml-auto px-2 py-0.5 bg-primary/20 text-primary text-xs rounded-full">Admin</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+        <a href="admin-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+
+        <div class="pt-2">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">사용자 관리</p>
+          <a href="admin-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">school</span>
+            <span class="font-medium">학생 관리</span>
+          </a>
+          <a href="admin-temp-accounts.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">person_add</span>
+            <span class="font-medium">임시 계정</span>
+          </a>
+          <a href="admin-parents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">family_restroom</span>
+            <span class="font-medium">학부모 관리</span>
+          </a>
+          <a href="admin-instructors.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">person</span>
+            <span class="font-medium">강사 관리</span>
+          </a>
+        </div>
+
+        <div class="pt-2">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">학원 운영</p>
+          <a href="admin-classes.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">class</span>
+            <span class="font-medium">반 관리</span>
+          </a>
+          <a href="admin-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">fact_check</span>
+            <span class="font-medium">출결 관리</span>
+          </a>
+          <a href="admin-homework.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">assignment</span>
+            <span class="font-medium">숙제 관리</span>
+          </a>
+          <a href="admin-daily-evaluations.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+            <span class="material-icons-round text-xl">rate_review</span>
+            <span class="font-medium">일일 평가</span>
+          </a>
+          <a href="admin-counseling.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">record_voice_over</span>
+            <span class="font-medium">2주 상담</span>
+          </a>
+          <a href="admin-learning-status.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">insights</span>
+            <span class="font-medium">학습 현황</span>
+          </a>
+          <a href="admin-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">payments</span>
+            <span class="font-medium">결제 관리</span>
+          </a>
+          <a href="admin-content-request.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">upload_file</span>
+            <span class="font-medium">콘텐츠 요청</span>
+          </a>
+        </div>
+
+        <div class="pt-2">
+          <a href="admin-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">settings</span>
+            <span class="font-medium">학원 설정</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">관</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-white font-medium text-sm truncate">명불허전 학원</p>
+            <p class="text-white/50 text-xs truncate">관리자</p>
+          </div>
+        </div>
+        <a href="../login.html" class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-white/20 text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-lg">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-deep-navy text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="font-bold text-lg">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="admin-dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round">dashboard</span>
+          <span>대시보드</span>
+        </a>
+        <a href="admin-daily-evaluations.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white">
+          <span class="material-icons-round">rate_review</span>
+          <span>일일 평가</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64 pb-20 lg:pb-0">
+      
+      <!-- Mobile Header -->
+      <header class="lg:hidden h-14 bg-deep-navy text-white flex items-center justify-between px-4 sticky top-0 z-30">
+        <button onclick="openMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">menu</span>
+        </button>
+        <h1 class="font-bold">일일 평가</h1>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-sm">관</div>
+      </header>
+
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-30">
+        <div>
+          <h1 class="text-xl font-bold text-text-primary">일일 평가 관리</h1>
+          <p class="text-sm text-text-tertiary">강사별 학생 평가 현황을 확인하고 관리합니다</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <input type="date" id="evalDate" value="2025-01-08" class="px-4 py-2 border border-border-light rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+          <button onclick="exportEvaluations()" class="px-4 py-2 bg-surface border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2 text-sm">
+            <span class="material-icons-round text-lg">file_download</span>
+            내보내기
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-4 lg:space-y-6">
+        
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-surface rounded-2xl p-5 border border-border-light">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-info-light rounded-xl flex items-center justify-center">
+                <span class="material-icons-round text-info text-2xl">groups</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-text-primary">127</p>
+                <p class="text-sm text-text-secondary">전체 학생</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-2xl p-5 border border-border-light">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-success-light rounded-xl flex items-center justify-center">
+                <span class="material-icons-round text-success text-2xl">check_circle</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-success">98</p>
+                <p class="text-sm text-text-secondary">평가 완료</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-2xl p-5 border border-border-light">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-warning-light rounded-xl flex items-center justify-center">
+                <span class="material-icons-round text-warning text-2xl">pending</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-warning">29</p>
+                <p class="text-sm text-text-secondary">평가 대기</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-2xl p-5 border border-border-light">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center">
+                <span class="material-icons-round text-primary text-2xl">percent</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-text-primary">77%</p>
+                <p class="text-sm text-text-secondary">완료율</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Evaluation Guide -->
+        <div class="bg-info-light border border-info/20 rounded-2xl p-4">
+          <div class="flex items-start gap-3">
+            <span class="material-icons-round text-info">info</span>
+            <div class="text-sm text-text-secondary">
+              <strong class="text-text-primary">평가 항목 (8개):</strong><br>
+              <span class="text-info">⭐ 정성평가 (4개):</span> 집중도 · 참여도 · 이해도 · 태도 (5점 척도)<br>
+              <span class="text-planner">🏷️ 정량평가 (4개):</span> 학업약점 · 관리영역 · 긴급조치 · 성장포인트 (중복 선택)
+            </div>
+          </div>
+        </div>
+        
+        <!-- Instructor Cards -->
+        <div>
+          <h3 class="font-bold text-text-primary mb-4">강사별 평가 현황</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Instructor 1 -->
+            <div onclick="selectInstructor('김선생')" class="instructor-card bg-surface rounded-2xl border-2 border-border-light p-4 cursor-pointer" id="card-김선생">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-korean to-math flex items-center justify-center text-white font-bold text-lg">김</div>
+                <div class="flex-1">
+                  <p class="font-bold text-text-primary">김선생</p>
+                  <div class="flex gap-1 mt-1">
+                    <span class="px-2 py-0.5 bg-korean-light text-korean text-xs rounded-full">국어</span>
+                    <span class="px-2 py-0.5 bg-math-light text-math text-xs rounded-full">수학</span>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-success-light rounded-xl p-2">
+                  <p class="text-lg font-bold text-success">27</p>
+                  <p class="text-xs text-success">완료</p>
+                </div>
+                <div class="bg-warning-light rounded-xl p-2">
+                  <p class="text-lg font-bold text-warning">8</p>
+                  <p class="text-xs text-warning">대기</p>
+                </div>
+                <div class="bg-gray-100 rounded-xl p-2">
+                  <p class="text-lg font-bold text-text-primary">77%</p>
+                  <p class="text-xs text-text-tertiary">완료율</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Instructor 2 -->
+            <div onclick="selectInstructor('박선생')" class="instructor-card bg-surface rounded-2xl border-2 border-border-light p-4 cursor-pointer" id="card-박선생">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-english to-teal-400 flex items-center justify-center text-white font-bold text-lg">박</div>
+                <div class="flex-1">
+                  <p class="font-bold text-text-primary">박선생</p>
+                  <div class="flex gap-1 mt-1">
+                    <span class="px-2 py-0.5 bg-english-light text-english text-xs rounded-full">영어</span>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-success-light rounded-xl p-2">
+                  <p class="text-lg font-bold text-success">35</p>
+                  <p class="text-xs text-success">완료</p>
+                </div>
+                <div class="bg-warning-light rounded-xl p-2">
+                  <p class="text-lg font-bold text-warning">12</p>
+                  <p class="text-xs text-warning">대기</p>
+                </div>
+                <div class="bg-gray-100 rounded-xl p-2">
+                  <p class="text-lg font-bold text-text-primary">74%</p>
+                  <p class="text-xs text-text-tertiary">완료율</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Instructor 3 -->
+            <div onclick="selectInstructor('이선생')" class="instructor-card bg-surface rounded-2xl border-2 border-border-light p-4 cursor-pointer" id="card-이선생">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-math to-orange-400 flex items-center justify-center text-white font-bold text-lg">이</div>
+                <div class="flex-1">
+                  <p class="font-bold text-text-primary">이선생</p>
+                  <div class="flex gap-1 mt-1">
+                    <span class="px-2 py-0.5 bg-math-light text-math text-xs rounded-full">수학</span>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-success-light rounded-xl p-2">
+                  <p class="text-lg font-bold text-success">18</p>
+                  <p class="text-xs text-success">완료</p>
+                </div>
+                <div class="bg-success-light rounded-xl p-2">
+                  <p class="text-lg font-bold text-success">0</p>
+                  <p class="text-xs text-success">대기</p>
+                </div>
+                <div class="bg-success-light rounded-xl p-2">
+                  <p class="text-lg font-bold text-success">100%</p>
+                  <p class="text-xs text-success">완료율</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Instructor 4 -->
+            <div onclick="selectInstructor('최선생')" class="instructor-card bg-surface rounded-2xl border-2 border-border-light p-4 cursor-pointer" id="card-최선생">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-korean to-blue-400 flex items-center justify-center text-white font-bold text-lg">최</div>
+                <div class="flex-1">
+                  <p class="font-bold text-text-primary">최선생</p>
+                  <div class="flex gap-1 mt-1">
+                    <span class="px-2 py-0.5 bg-korean-light text-korean text-xs rounded-full">국어</span>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-success-light rounded-xl p-2">
+                  <p class="text-lg font-bold text-success">18</p>
+                  <p class="text-xs text-success">완료</p>
+                </div>
+                <div class="bg-warning-light rounded-xl p-2">
+                  <p class="text-lg font-bold text-warning">9</p>
+                  <p class="text-xs text-warning">대기</p>
+                </div>
+                <div class="bg-gray-100 rounded-xl p-2">
+                  <p class="text-lg font-bold text-text-primary">67%</p>
+                  <p class="text-xs text-text-tertiary">완료율</p>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+        <!-- Student Evaluation List -->
+        <div class="bg-surface rounded-2xl border border-border-light overflow-hidden">
+          <div class="p-4 bg-gray-50 border-b border-border-light">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <h3 class="font-bold text-text-primary">학생 평가 목록</h3>
+                <span id="selectedInstructor" class="px-2 py-1 bg-primary-light text-primary text-xs rounded-full hidden">김선생</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <select id="classFilter" onchange="filterStudents()" class="px-3 py-2 border border-border-medium rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                  <option value="">전체 반</option>
+                  <option value="중2A반">중2A반 국어</option>
+                  <option value="중2B반">중2B반 수학</option>
+                  <option value="고1B반">고1B반 수학</option>
+                </select>
+                <select id="statusFilter" onchange="filterStudents()" class="px-3 py-2 border border-border-medium rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                  <option value="">전체 상태</option>
+                  <option value="completed">완료</option>
+                  <option value="pending">대기</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Student List -->
+          <div id="studentsList" class="divide-y divide-border-light">
+            
+            <!-- Completed Student 1 -->
+            <div class="evaluation-row p-4 cursor-pointer" onclick="openEvalDetail('김지민', 'completed')">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">김</div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="font-bold text-text-primary">김지민</p>
+                    <span class="px-2 py-0.5 bg-success-light text-success text-xs rounded-full">완료</span>
+                  </div>
+                  <p class="text-sm text-text-tertiary">중2A반 국어 · 김선생</p>
+                </div>
+                <div class="hidden lg:flex items-center gap-6">
+                  <div class="text-center">
+                    <div class="flex items-center gap-0.5">
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-gray-300 text-sm">star</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary mt-0.5">집중도</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="flex items-center gap-0.5">
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary mt-0.5">참여도</p>
+                  </div>
+                  <div class="flex gap-1">
+                    <span class="px-2 py-0.5 bg-error-light text-error text-xs rounded-full">단순실수</span>
+                    <span class="px-2 py-0.5 bg-success-light text-success text-xs rounded-full">질문하기</span>
+                  </div>
+                </div>
+                <span class="material-icons-round text-text-tertiary">chevron_right</span>
+              </div>
+            </div>
+            
+            <!-- Completed Student 2 -->
+            <div class="evaluation-row p-4 cursor-pointer" onclick="openEvalDetail('이준호', 'completed')">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold">이</div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="font-bold text-text-primary">이준호</p>
+                    <span class="px-2 py-0.5 bg-success-light text-success text-xs rounded-full">완료</span>
+                  </div>
+                  <p class="text-sm text-text-tertiary">중2B반 수학 · 김선생</p>
+                </div>
+                <div class="hidden lg:flex items-center gap-6">
+                  <div class="text-center">
+                    <div class="flex items-center gap-0.5">
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-gray-300 text-sm">star</span>
+                      <span class="material-icons-round text-gray-300 text-sm">star</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary mt-0.5">집중도</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="flex items-center gap-0.5">
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-gray-300 text-sm">star</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary mt-0.5">참여도</p>
+                  </div>
+                  <div class="flex gap-1">
+                    <span class="px-2 py-0.5 bg-warning-light text-warning text-xs rounded-full">집중력 관리</span>
+                  </div>
+                </div>
+                <span class="material-icons-round text-text-tertiary">chevron_right</span>
+              </div>
+            </div>
+            
+            <!-- Pending Student -->
+            <div class="evaluation-row p-4 cursor-pointer bg-warning-light/30" onclick="openEvalDetail('박서연', 'pending')">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">박</div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="font-bold text-text-primary">박서연</p>
+                    <span class="px-2 py-0.5 bg-warning-light text-warning text-xs rounded-full">대기</span>
+                  </div>
+                  <p class="text-sm text-text-tertiary">중2B반 수학 · 김선생</p>
+                </div>
+                <div class="hidden lg:flex items-center gap-6">
+                  <p class="text-sm text-text-tertiary">평가 미완료</p>
+                </div>
+                <span class="material-icons-round text-text-tertiary">chevron_right</span>
+              </div>
+            </div>
+            
+            <!-- Completed Student 3 -->
+            <div class="evaluation-row p-4 cursor-pointer" onclick="openEvalDetail('최수현', 'completed')">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold">최</div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="font-bold text-text-primary">최수현</p>
+                    <span class="px-2 py-0.5 bg-success-light text-success text-xs rounded-full">완료</span>
+                  </div>
+                  <p class="text-sm text-text-tertiary">고1B반 수학 · 이선생</p>
+                </div>
+                <div class="hidden lg:flex items-center gap-6">
+                  <div class="text-center">
+                    <div class="flex items-center gap-0.5">
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary mt-0.5">집중도</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="flex items-center gap-0.5">
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary mt-0.5">참여도</p>
+                  </div>
+                  <div class="flex gap-1">
+                    <span class="px-2 py-0.5 bg-success-light text-success text-xs rounded-full">스스로풀기</span>
+                    <span class="px-2 py-0.5 bg-success-light text-success text-xs rounded-full">긍정적태도</span>
+                  </div>
+                </div>
+                <span class="material-icons-round text-text-tertiary">chevron_right</span>
+              </div>
+            </div>
+            
+            <!-- More students -->
+            <div class="evaluation-row p-4 cursor-pointer" onclick="openEvalDetail('한지훈', 'completed')">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white font-bold">한</div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="font-bold text-text-primary">한지훈</p>
+                    <span class="px-2 py-0.5 bg-success-light text-success text-xs rounded-full">완료</span>
+                  </div>
+                  <p class="text-sm text-text-tertiary">중2A반 국어 · 최선생</p>
+                </div>
+                <div class="hidden lg:flex items-center gap-6">
+                  <div class="text-center">
+                    <div class="flex items-center gap-0.5">
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-gray-300 text-sm">star</span>
+                      <span class="material-icons-round text-gray-300 text-sm">star</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary mt-0.5">집중도</p>
+                  </div>
+                  <div class="text-center">
+                    <div class="flex items-center gap-0.5">
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-warning text-sm">star</span>
+                      <span class="material-icons-round text-gray-300 text-sm">star</span>
+                    </div>
+                    <p class="text-xs text-text-tertiary mt-0.5">참여도</p>
+                  </div>
+                  <div class="flex gap-1">
+                    <span class="px-2 py-0.5 bg-error-light text-error text-xs rounded-full">독해력부족</span>
+                  </div>
+                </div>
+                <span class="material-icons-round text-text-tertiary">chevron_right</span>
+              </div>
+            </div>
+            
+          </div>
+          
+          <!-- Pagination -->
+          <div class="p-4 border-t border-border-light flex items-center justify-between">
+            <p class="text-sm text-text-tertiary">1-10 / 127명</p>
+            <div class="flex items-center gap-1">
+              <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100">
+                <span class="material-icons-round text-text-tertiary">chevron_left</span>
+              </button>
+              <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white">1</button>
+              <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-text-secondary">2</button>
+              <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-text-secondary">3</button>
+              <span class="text-text-tertiary">...</span>
+              <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-text-secondary">13</button>
+              <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100">
+                <span class="material-icons-round text-text-tertiary">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </main>
+  </div>
+  
+  <!-- Evaluation Detail Modal -->
+  <div id="evalDetailModal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
+      <div class="p-5 border-b border-border-light flex items-center justify-between sticky top-0 bg-surface z-10">
+        <div class="flex items-center gap-3">
+          <div id="modalAvatar" class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-lg">김</div>
+          <div>
+            <h3 id="modalStudentName" class="font-bold text-lg text-text-primary">김지민</h3>
+            <p id="modalStudentInfo" class="text-sm text-text-secondary">중2A반 국어 · 김선생</p>
+          </div>
+        </div>
+        <button onclick="closeEvalDetail()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      
+      <div class="p-5 overflow-y-auto max-h-[65vh] space-y-6">
+        
+        <!-- Section 1: 정성평가 (별점) -->
+        <div>
+          <h4 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-info">star</span>
+            정성평가 (5점 척도)
+          </h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 bg-gray-50 rounded-xl">
+              <label class="block text-sm font-medium text-text-secondary mb-2">집중도</label>
+              <div class="flex items-center gap-2">
+                <div class="flex gap-0.5">
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-gray-300 text-2xl">star</span>
+                </div>
+                <span class="text-lg font-bold text-text-primary">4/5</span>
+              </div>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-xl">
+              <label class="block text-sm font-medium text-text-secondary mb-2">참여도</label>
+              <div class="flex items-center gap-2">
+                <div class="flex gap-0.5">
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                </div>
+                <span class="text-lg font-bold text-text-primary">5/5</span>
+              </div>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-xl">
+              <label class="block text-sm font-medium text-text-secondary mb-2">이해도</label>
+              <div class="flex items-center gap-2">
+                <div class="flex gap-0.5">
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-gray-300 text-2xl">star</span>
+                  <span class="material-icons-round text-gray-300 text-2xl">star</span>
+                </div>
+                <span class="text-lg font-bold text-text-primary">3/5</span>
+              </div>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-xl">
+              <label class="block text-sm font-medium text-text-secondary mb-2">태도</label>
+              <div class="flex items-center gap-2">
+                <div class="flex gap-0.5">
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-warning text-2xl">star</span>
+                  <span class="material-icons-round text-gray-300 text-2xl">star</span>
+                </div>
+                <span class="text-lg font-bold text-text-primary">4/5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section 2: 정량평가 (태그) -->
+        <div>
+          <h4 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-planner">label</span>
+            정량평가 (태그)
+          </h4>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <span class="w-2 h-2 bg-error rounded-full mt-2"></span>
+              <div>
+                <p class="text-sm font-medium text-text-secondary mb-1">학업 약점</p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="px-3 py-1.5 bg-error-light text-error text-sm rounded-full">단순실수</span>
+                  <span class="px-3 py-1.5 bg-error-light text-error text-sm rounded-full">풀이속도</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="w-2 h-2 bg-warning rounded-full mt-2"></span>
+              <div>
+                <p class="text-sm font-medium text-text-secondary mb-1">관리 영역</p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="px-3 py-1.5 bg-warning-light text-warning text-sm rounded-full">과제(숙제)미흡</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="w-2 h-2 bg-primary rounded-full mt-2"></span>
+              <div>
+                <p class="text-sm font-medium text-text-secondary mb-1">긴급 조치</p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="px-3 py-1.5 bg-primary-light text-primary text-sm rounded-full">격려/즉각칭찬</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="w-2 h-2 bg-success rounded-full mt-2"></span>
+              <div>
+                <p class="text-sm font-medium text-text-secondary mb-1">성장 포인트</p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="px-3 py-1.5 bg-success-light text-success text-sm rounded-full">질문하기</span>
+                  <span class="px-3 py-1.5 bg-success-light text-success text-sm rounded-full">끈기/재시도</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Comment -->
+        <div>
+          <h4 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-info">comment</span>
+            강사 코멘트
+          </h4>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <p class="text-text-primary leading-relaxed">오늘 수업에서 적극적으로 참여했으나 계산 실수가 많았습니다. 풀이 과정을 꼼꼼히 검토하는 습관이 필요합니다. 질문을 많이 해서 좋았어요!</p>
+          </div>
+        </div>
+        
+        <!-- AI Transformed Comment -->
+        <div class="bg-planner-light rounded-xl p-4 border border-planner/20">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-icons-round text-planner">auto_awesome</span>
+            <p class="text-sm font-medium text-planner">AI 변환 피드백 (학부모용)</p>
+          </div>
+          <p class="text-text-primary leading-relaxed">지민이가 오늘 수업에 열심히 참여했어요! 😊 계산할 때 조금 더 꼼꼼히 확인하는 연습을 하면 더 좋은 결과가 있을 거예요. 풀이 과정을 한 번 더 체크하는 습관을 길러볼까요? 질문도 많이 해서 정말 대견해요! 💪</p>
+        </div>
+        
+      </div>
+      
+      <div class="p-5 border-t border-border-light flex justify-end gap-3">
+        <button onclick="sendToParent()" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2">
+          <span class="material-icons-round text-lg">send</span>
+          학부모에게 전송
+        </button>
+        <button onclick="closeEvalDetail()" class="px-4 py-2 border border-border-light text-text-secondary rounded-xl hover:bg-gray-50">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-navy text-white px-6 py-3 rounded-xl shadow-lg z-50 hidden flex items-center gap-2">
+    <span class="material-icons-round">check_circle</span>
+    <span id="toastMessage">저장되었습니다.</span>
+  </div>
+  
+  <script>
+    let selectedInstructor = null;
+    
+    function openMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.getElementById('mobileMenu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function selectInstructor(name) {
+      // Remove active from all cards
+      document.querySelectorAll('.instructor-card').forEach(card => {
+        card.classList.remove('active');
+      });
+      
+      if (selectedInstructor === name) {
+        selectedInstructor = null;
+        document.getElementById('selectedInstructor').classList.add('hidden');
+      } else {
+        selectedInstructor = name;
+        document.getElementById('card-' + name).classList.add('active');
+        document.getElementById('selectedInstructor').textContent = name;
+        document.getElementById('selectedInstructor').classList.remove('hidden');
+      }
+      
+      filterStudents();
+    }
+    
+    function filterStudents() {
+      // In real implementation, filter based on selectedInstructor and other filters
+      console.log('Filtering by instructor:', selectedInstructor);
+      console.log('Class filter:', document.getElementById('classFilter').value);
+      console.log('Status filter:', document.getElementById('statusFilter').value);
+    }
+    
+    function openEvalDetail(studentName, status) {
+      document.getElementById('modalStudentName').textContent = studentName;
+      document.getElementById('modalAvatar').textContent = studentName.charAt(0);
+      document.getElementById('evalDetailModal').classList.add('open');
+    }
+    
+    function closeEvalDetail() {
+      document.getElementById('evalDetailModal').classList.remove('open');
+    }
+    
+    function sendToParent() {
+      showToast('학부모에게 평가가 전송되었습니다.');
+      closeEvalDetail();
+    }
+    
+    function exportEvaluations() {
+      showToast('평가 내역을 내보내는 중...');
+    }
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+    
+    // Modal outside click to close
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('open');
+        }
+      });
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

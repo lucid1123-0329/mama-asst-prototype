@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>수학 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            'math-dark': '#E5A800',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+          boxShadow: {
+            'card': '0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)',
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    
+    .card-hover { transition: all 0.2s ease-out; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    
+    .nav-active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 70%;
+      background: #FF6D4D;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 1; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+    .pulse-ring { animation: pulse-ring 1.5s ease-out infinite; }
+    
+    .badge-direct {
+      background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+      color: white;
+    }
+    .badge-step {
+      background: linear-gradient(135deg, #FBBC05 0%, #F59E0B 100%);
+      color: #1F2937;
+    }
+    
+    @keyframes slide-up {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .slide-up { animation: slide-up 0.3s ease-out; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <!-- Desktop Layout -->
+  <div class="hidden lg:flex h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-navy flex flex-col flex-shrink-0">
+      <div class="p-5 border-b border-white/10">
+        <a href="student-dashboard.html" class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="text-white font-bold text-lg tracking-tight">MAMA-ASST</span>
+            <span class="block text-white/50 text-[10px] tracking-wider">MATCHING & MANAGEMENT</span>
+          </div>
+        </a>
+      </div>
+      
+      <a href="mypage.html" class="p-5 border-b border-white/10 flex items-center gap-3 hover:bg-white/5 transition-colors">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-300 p-0.5">
+          <div class="w-full h-full rounded-full bg-navy overflow-hidden">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=jimin&backgroundColor=ffdfbf" alt="프로필" class="w-full h-full object-cover">
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-white font-semibold truncate">김지민</p>
+          <p class="text-white/50 text-xs">중학교 2학년</p>
+        </div>
+      </a>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="student-dashboard.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">home</span>
+          <span>홈</span>
+        </a>
+        <a href="subjects.html" class="nav-active relative flex items-center gap-3 px-4 py-3 bg-white/10 text-white rounded-xl font-medium">
+          <span class="material-icons-round text-math">auto_stories</span>
+          <span>과목</span>
+        </a>
+        <a href="report.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">insights</span>
+          <span>리포트</span>
+        </a>
+        <a href="planner.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">calendar_month</span>
+          <span>일정</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <a href="settings.html" class="flex items-center gap-3 px-4 py-3 text-white/60 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+          <span class="material-icons-round">settings</span>
+          <span>설정</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <!-- Top Bar -->
+      <header class="h-16 bg-surface border-b border-border-light flex items-center justify-between px-6 flex-shrink-0">
+        <div class="flex items-center gap-2 text-sm">
+          <a href="student-dashboard.html" class="text-text-tertiary hover:text-primary transition-colors">홈</a>
+          <span class="material-icons-round text-text-tertiary text-sm">chevron_right</span>
+          <a href="subjects.html" class="text-text-tertiary hover:text-primary transition-colors">과목</a>
+          <span class="material-icons-round text-text-tertiary text-sm">chevron_right</span>
+          <span class="text-math font-medium">수학</span>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <button onclick="openSystemModal()" class="p-2 text-text-secondary hover:text-math hover:bg-math-light rounded-lg transition-colors" title="학습 시스템 안내">
+            <span class="material-icons-round">help_outline</span>
+          </button>
+          <a href="notifications.html" class="relative p-2 text-text-secondary hover:text-text-primary hover:bg-background rounded-lg transition-colors">
+            <span class="material-icons-round">notifications</span>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full pulse-dot"></span>
+          </a>
+        </div>
+      </header>
+      
+      <!-- Content Area -->
+      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        
+        <!-- Instructor Comment Section -->
+        <section id="instructorComment" class="bg-surface rounded-2xl shadow-card border-l-4 border-math p-5 mb-6">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-math to-yellow-300 p-0.5 flex-shrink-0">
+              <div class="w-full h-full rounded-full bg-surface overflow-hidden">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=teacher1&backgroundColor=ffd5dc" alt="강사" class="w-full h-full object-cover">
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-bold text-text-primary">김수학 선생님</span>
+                <span class="text-xs text-text-tertiary">· 2시간 전</span>
+              </div>
+              <p class="text-sm text-text-secondary leading-relaxed">
+                지민아, 일차방정식 진도가 잘 나가고 있어요! 👏 
+                다만 <strong class="text-math-dark">이항할 때 부호 실수</strong>가 자주 보여서 
+                해당 유형 문제를 조금 더 연습하도록 설정해뒀어요. 
+                어렵지 않으니 천천히 풀어보자!
+              </p>
+              <div class="flex items-center gap-3 mt-3">
+                <span class="inline-flex items-center gap-1 px-2 py-1 bg-math-light text-math-dark text-xs font-medium rounded-lg">
+                  <span class="material-icons-round text-sm">school</span>
+                  강화 학습 지정됨
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Reinforcement Learning Section (강사 지정 시에만 표시) -->
+        <section id="reinforcementSection" class="bg-gradient-to-r from-warning/10 to-orange-100 rounded-2xl border border-warning/30 overflow-hidden mb-6">
+          <div class="p-5">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-warning/20 flex items-center justify-center">
+                  <span class="material-icons-round text-warning text-xl">refresh</span>
+                </div>
+                <div>
+                  <h2 class="font-bold text-text-primary flex items-center gap-2">
+                    강화 학습
+                    <span class="px-2 py-0.5 bg-warning text-white text-[10px] font-bold rounded">강사 지정</span>
+                  </h2>
+                  <p class="text-xs text-text-secondary">취약 유형 집중 연습</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Target Info -->
+            <div class="bg-white/80 rounded-xl p-4 mb-4">
+              <div class="flex items-center gap-3 mb-3">
+                <span class="w-8 h-8 rounded-full bg-warning text-white flex items-center justify-center font-bold text-sm">3</span>
+                <div class="flex-1">
+                  <h3 class="font-bold text-text-primary">일차방정식 - 이항 유형</h3>
+                  <p class="text-xs text-text-tertiary">부호 변환 집중 연습</p>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="bg-gray-50 rounded-lg p-2">
+                  <div class="text-lg font-bold text-warning">7</div>
+                  <div class="text-[10px] text-text-tertiary">추가 문제</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                  <div class="text-lg font-bold text-text-primary">68%</div>
+                  <div class="text-[10px] text-text-tertiary">현재 정답률</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                  <div class="text-lg font-bold text-success">85%</div>
+                  <div class="text-[10px] text-text-tertiary">목표</div>
+                </div>
+              </div>
+              
+              <!-- Progress to Goal -->
+              <div class="mt-3">
+                <div class="flex justify-between text-xs mb-1">
+                  <span class="text-text-secondary">목표까지</span>
+                  <span class="font-medium text-warning">68% → 85%</span>
+                </div>
+                <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full transition-all" style="width: 80%"></div>
+                </div>
+              </div>
+            </div>
+            
+            <a href="math-problem.html?mode=reinforcement" class="w-full py-3 bg-warning hover:bg-warning/90 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-warning/30">
+              <span class="material-icons-round">play_arrow</span>
+              강화 학습 시작
+            </a>
+          </div>
+        </section>
+        
+        <!-- Quick Stats Header -->
+          <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/20 rounded-full"></div>
+          <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-white/20 rounded-full"></div>
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-white/30 backdrop-blur flex items-center justify-center">
+                  <span class="material-icons-round text-2xl">calculate</span>
+                </div>
+                <div>
+                  <h1 class="text-xl font-bold">수학</h1>
+                  <p class="text-sm text-gray-700">중1-1 과정</p>
+                </div>
+              </div>
+              <button onclick="openSystemModal()" class="px-3 py-1.5 bg-white/30 hover:bg-white/40 rounded-lg text-sm font-medium transition-colors flex items-center gap-1">
+                <span class="material-icons-round text-sm">info</span>
+                학습 방법
+              </button>
+            </div>
+            <div class="flex items-center gap-6 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-base">check_circle</span>
+                <span><strong>45</strong> 문제 해결</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-base">trending_up</span>
+                <span>정답률 <strong>85%</strong></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-base">bolt</span>
+                <span>바로정답 <strong>8</strong>회</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- 🎯 Instructor Assigned Learning (강사 지정 학습) -->
+        <section class="bg-surface rounded-2xl shadow-card border-2 border-primary overflow-hidden">
+          <div class="bg-primary-light px-6 py-3 border-b border-primary/20">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="material-icons-round text-primary">assignment_ind</span>
+                <h2 class="font-bold text-text-primary">강사 지정 학습</h2>
+                <span class="px-2 py-0.5 bg-primary text-white text-xs font-bold rounded-full">필수</span>
+              </div>
+              <span class="px-2 py-1 bg-warning text-white text-xs font-bold rounded">D-3</span>
+            </div>
+          </div>
+          
+          <div class="p-5">
+            <!-- Instructor Info -->
+            <div class="flex items-center gap-3 mb-4 pb-4 border-b border-border-light">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-math to-yellow-400 flex items-center justify-center text-gray-900 font-bold text-sm">김</div>
+              <div class="flex-1">
+                <p class="text-sm text-text-primary"><strong>김수학 선생님</strong>이 지정한 문제예요</p>
+                <p class="text-xs text-text-tertiary">마감: 금요일 (1/8) 23:59까지 · 4문제</p>
+              </div>
+            </div>
+            
+            <!-- Assigned Problems List -->
+            <div class="space-y-3 mb-4">
+              <!-- Problem 1 - Completed -->
+              <div class="flex items-center gap-3 p-3 bg-success-light/50 rounded-xl border border-success/20">
+                <span class="w-8 h-8 rounded-full bg-success text-white flex items-center justify-center text-sm">
+                  <span class="material-icons-round text-lg">check</span>
+                </span>
+                <div class="flex-1">
+                  <p class="font-medium text-text-primary text-sm">일차방정식 - 괄호정리 #3</p>
+                  <p class="text-xs text-text-tertiary">방정식 · 중 · 3단계 완료</p>
+                </div>
+                <span class="px-2 py-1 bg-success text-white text-xs rounded">완료</span>
+              </div>
+              
+              <!-- Problem 2 - In Progress -->
+              <div class="flex items-center gap-3 p-3 bg-math-light/50 rounded-xl border border-math/20">
+                <span class="w-8 h-8 rounded-full bg-math text-gray-900 flex items-center justify-center font-bold text-sm">2</span>
+                <div class="flex-1">
+                  <p class="font-medium text-text-primary text-sm">일차방정식 - 계수분수 #5</p>
+                  <p class="text-xs text-text-tertiary">방정식 · 상 · 1/4단계</p>
+                </div>
+                <span class="px-2 py-1 bg-math text-gray-900 text-xs rounded font-medium">진행중</span>
+              </div>
+              
+              <!-- Problem 3 - Not Started -->
+              <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-border-light">
+                <span class="w-8 h-8 rounded-full bg-gray-200 text-text-tertiary flex items-center justify-center font-bold text-sm">3</span>
+                <div class="flex-1">
+                  <p class="font-medium text-text-primary text-sm">일차방정식 - 복합문제 #7</p>
+                  <p class="text-xs text-text-tertiary">방정식 · 상 · 미시작</p>
+                </div>
+                <span class="px-2 py-1 bg-gray-200 text-text-tertiary text-xs rounded">대기</span>
+              </div>
+              
+              <!-- Problem 4 - Not Started -->
+              <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-border-light">
+                <span class="w-8 h-8 rounded-full bg-gray-200 text-text-tertiary flex items-center justify-center font-bold text-sm">4</span>
+                <div class="flex-1">
+                  <p class="font-medium text-text-primary text-sm">일차방정식 - 활용 #2</p>
+                  <p class="text-xs text-text-tertiary">방정식 · 상 · 미시작</p>
+                </div>
+                <span class="px-2 py-1 bg-gray-200 text-text-tertiary text-xs rounded">대기</span>
+              </div>
+            </div>
+            
+            <!-- Progress -->
+            <div class="mb-4">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-text-secondary">진행률</span>
+                <span class="font-bold text-primary">1/4 완료</span>
+              </div>
+              <div class="w-full h-2 bg-gray-100 rounded-full">
+                <div class="h-full bg-primary rounded-full" style="width: 25%"></div>
+              </div>
+            </div>
+            
+            <a href="math-problem.html" class="w-full py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
+              <span class="material-icons-round">play_arrow</span>
+              이어서 풀기
+            </a>
+          </div>
+        </section>
+        
+        <!-- 🤖 AI Recommended Learning (AI 추천 학습) - Main CTA -->
+        <section class="bg-surface rounded-2xl shadow-card border border-border-light overflow-hidden">
+          <div class="bg-math-light/30 px-6 py-3 border-b border-math/10">
+            <div class="flex items-center gap-2">
+              <span class="material-icons-round text-math">auto_awesome</span>
+              <h2 class="font-bold text-text-primary">AI 추천 학습</h2>
+              <span class="px-2 py-0.5 bg-math-light text-math-dark text-xs font-bold rounded-full">권장</span>
+            </div>
+          </div>
+          
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-math">play_circle</span>
+                <span class="text-sm text-text-secondary">오늘의 학습</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-2xl font-bold text-math">2</span>
+                <span class="text-text-secondary">/</span>
+                <span class="text-lg text-text-secondary">5</span>
+              </div>
+            </div>
+            
+            <!-- AI Recommendation Info -->
+            <div class="bg-math-light/50 border border-math/20 rounded-xl p-3 mb-4">
+              <p class="text-sm text-text-secondary flex items-center gap-2">
+                <span class="material-icons-round text-math text-lg">psychology</span>
+                학습 데이터 분석 결과, <strong class="text-math-dark">일차방정식 유형 연습</strong>이 필요해요!
+              </p>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="mb-6">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-text-secondary">3단원. 일차방정식</span>
+                <span class="font-medium text-math-dark">40% 완료</span>
+              </div>
+              <div class="w-full h-3 bg-math-light rounded-full overflow-hidden">
+                <div class="h-full bg-math rounded-full transition-all duration-500" style="width: 40%"></div>
+              </div>
+            </div>
+            
+            <!-- Current Problem Preview -->
+            <div class="bg-math-light rounded-xl p-4 mb-4 border border-math/20">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="w-8 h-8 rounded-full bg-math text-gray-900 flex items-center justify-center font-bold text-sm relative">
+                  3
+                  <div class="absolute -inset-1 rounded-full border-2 border-math pulse-ring"></div>
+                </span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 bg-math-light text-math-dark text-[10px] font-bold rounded">AI추천</span>
+                    <h3 class="font-bold text-math-dark">일차방정식의 풀이</h3>
+                  </div>
+                  <p class="text-xs text-text-secondary">중급 난이도 · 4단계</p>
+                </div>
+              </div>
+              <p class="text-sm text-text-secondary">방정식을 풀어 x의 값을 구해보세요.</p>
+            </div>
+            
+            <a href="math-problem.html" class="w-full py-4 bg-math hover:bg-math-dark text-gray-900 font-bold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-math/30">
+              <span class="material-icons-round">play_arrow</span>
+              학습 시작하기
+            </a>
+          </div>
+          
+          <!-- Completed Problems -->
+          <div class="border-t border-border-light px-6 py-4 bg-gray-50">
+            <p class="text-xs text-text-tertiary mb-3">완료한 문제</p>
+            <div class="flex gap-2 flex-wrap">
+              <div class="flex items-center gap-2 px-3 py-1.5 bg-success-light rounded-lg text-xs">
+                <span class="w-5 h-5 rounded-full badge-direct flex items-center justify-center">
+                  <span class="material-icons-round text-xs">bolt</span>
+                </span>
+                <span class="text-success font-medium">Q1 바로정답</span>
+              </div>
+              <div class="flex items-center gap-2 px-3 py-1.5 bg-math-light rounded-lg text-xs">
+                <span class="w-5 h-5 rounded-full badge-step flex items-center justify-center text-[10px] font-bold">4</span>
+                <span class="text-math-dark font-medium">Q2 단계완료</span>
+              </div>
+              <div class="flex items-center gap-2 px-3 py-1.5 bg-gray-200 rounded-lg text-xs text-text-tertiary">
+                <span class="material-icons-round text-sm">lock</span>
+                <span>Q4, Q5</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Two Column Layout -->
+        <div class="grid grid-cols-2 gap-6">
+          
+          <!-- Unit Progress -->
+          <section class="bg-surface rounded-2xl shadow-card border border-border-light p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="font-bold text-text-primary flex items-center gap-2">
+                <span class="material-icons-round text-math text-lg">school</span>
+                단원별 진도
+              </h2>
+              <button onclick="openUnitModal()" class="text-sm text-math font-medium hover:underline">전체보기</button>
+            </div>
+            
+            <div class="space-y-3">
+              <div class="flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-success text-white flex items-center justify-center text-xs">✓</span>
+                <div class="flex-1">
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="font-medium">1. 정수와 유리수</span>
+                    <span class="text-success font-bold">100%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-success-light rounded-full">
+                    <div class="h-full bg-success rounded-full" style="width: 100%"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-success text-white flex items-center justify-center text-xs">✓</span>
+                <div class="flex-1">
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="font-medium">2. 문자와 식</span>
+                    <span class="text-success font-bold">100%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-success-light rounded-full">
+                    <div class="h-full bg-success rounded-full" style="width: 100%"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex items-center gap-3 bg-math-light -mx-2 px-2 py-2 rounded-lg">
+                <span class="w-7 h-7 rounded-full bg-math text-gray-900 flex items-center justify-center text-xs font-bold">3</span>
+                <div class="flex-1">
+                  <div class="flex justify-between text-sm mb-1">
+                    <span class="font-bold text-math-dark">3. 일차방정식</span>
+                    <span class="text-math-dark font-bold">60%</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-white rounded-full">
+                    <div class="h-full bg-math rounded-full" style="width: 60%"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex items-center gap-3 opacity-50">
+                <span class="w-7 h-7 rounded-full bg-border-light text-text-tertiary flex items-center justify-center">
+                  <span class="material-icons-round text-sm">lock</span>
+                </span>
+                <div class="flex-1">
+                  <span class="text-sm text-text-secondary">4. 좌표평면과 그래프</span>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Weak Points -->
+          <section class="bg-surface rounded-2xl shadow-card border border-border-light p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="font-bold text-text-primary flex items-center gap-2">
+                <span class="material-icons-round text-error text-lg">crisis_alert</span>
+                취약점 분석
+              </h2>
+              <a href="math-weak-review.html" class="text-sm text-math font-medium hover:underline">복습하기</a>
+            </div>
+            
+            <div class="space-y-3">
+              <div class="bg-error-light rounded-lg p-3 border border-error/20">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-bold text-error text-sm">이항 실수</span>
+                  <span class="text-error font-bold text-sm">45%</span>
+                </div>
+                <p class="text-xs text-text-secondary">부호 변환 시 실수 발생</p>
+              </div>
+              
+              <div class="bg-warning-light rounded-lg p-3 border border-warning/20">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-bold text-warning text-sm">계산 실수</span>
+                  <span class="text-warning font-bold text-sm">68%</span>
+                </div>
+                <p class="text-xs text-text-secondary">최종 연산 오류</p>
+              </div>
+              
+              <a href="math-weak-review.html" class="w-full py-2.5 bg-error/10 hover:bg-error/20 text-error font-medium rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
+                <span class="material-icons-round text-lg">replay</span>
+                취약점 집중 복습
+              </a>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Recent History -->
+        <section class="bg-surface rounded-2xl shadow-card border border-border-light overflow-hidden">
+          <div class="p-5 border-b border-border-light flex items-center justify-between">
+            <h2 class="font-bold text-text-primary flex items-center gap-2">
+              <span class="material-icons-round text-math text-lg">history</span>
+              최근 학습 기록
+            </h2>
+          </div>
+          
+          <div class="divide-y divide-border-light">
+            <div class="px-5 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+              <span class="px-2 py-1 badge-direct text-[10px] font-bold rounded flex items-center gap-1">
+                <span class="material-icons-round text-xs">bolt</span>
+                바로정답
+              </span>
+              <div class="flex-1">
+                <p class="font-medium text-sm">Q1. 등식의 성질</p>
+                <p class="text-xs text-text-tertiary">일차방정식 · 1단계에서</p>
+              </div>
+              <span class="px-2 py-1 bg-success-light text-success text-xs font-bold rounded">정답</span>
+              <span class="text-success font-bold text-sm">+50</span>
+            </div>
+            
+            <div class="px-5 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+              <span class="px-2 py-1 badge-step text-[10px] font-bold rounded">단계완료</span>
+              <div class="flex-1">
+                <p class="font-medium text-sm">Q2. 이항과 정리</p>
+                <p class="text-xs text-text-tertiary">일차방정식 · 4단계 완료</p>
+              </div>
+              <span class="px-2 py-1 bg-success-light text-success text-xs font-bold rounded">정답</span>
+              <span class="text-success font-bold text-sm">+20</span>
+            </div>
+            
+            <div class="px-5 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+              <span class="px-2 py-1 badge-step text-[10px] font-bold rounded">단계완료</span>
+              <div class="flex-1">
+                <p class="font-medium text-sm">등식의 변형</p>
+                <p class="text-xs text-text-tertiary">일차방정식 · 어제</p>
+              </div>
+              <span class="px-2 py-1 bg-warning-light text-warning text-xs font-bold rounded">1오답</span>
+              <span class="text-success font-bold text-sm">+20</span>
+            </div>
+          </div>
+        </section>
+        
+      </div>
+    </main>
+  </div>
+  
+  <!-- Mobile Layout -->
+  <div class="lg:hidden flex flex-col min-h-screen">
+    <header class="h-14 bg-math flex items-center justify-between px-4 flex-shrink-0 sticky top-0 z-40">
+      <a href="subjects.html" class="p-2 -ml-2 text-gray-700 hover:text-gray-900 rounded-lg">
+        <span class="material-icons-round">arrow_back</span>
+      </a>
+      <span class="font-bold text-gray-900">수학</span>
+      <button onclick="openSystemModal()" class="p-2 -mr-2 text-gray-700 hover:text-gray-900 rounded-lg">
+        <span class="material-icons-round">help_outline</span>
+      </button>
+    </header>
+    
+    <div class="flex-1 overflow-y-auto pb-20">
+      <!-- Stats Bar -->
+      <div class="bg-math px-4 pb-4">
+        <div class="flex items-center justify-around text-gray-900 text-center">
+          <div>
+            <div class="text-xl font-bold">45</div>
+            <div class="text-[10px] text-gray-700">해결</div>
+          </div>
+          <div class="w-px h-8 bg-gray-700/20"></div>
+          <div>
+            <div class="text-xl font-bold">85%</div>
+            <div class="text-[10px] text-gray-700">정답률</div>
+          </div>
+          <div class="w-px h-8 bg-gray-700/20"></div>
+          <div>
+            <div class="text-xl font-bold">8</div>
+            <div class="text-[10px] text-gray-700">바로정답</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 space-y-4">
+        
+        <!-- Mobile Instructor Comment -->
+        <section class="bg-surface rounded-xl p-3 shadow-card border-l-4 border-math">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-math to-yellow-300 p-0.5 flex-shrink-0">
+              <div class="w-full h-full rounded-full bg-surface overflow-hidden">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=teacher1&backgroundColor=ffd5dc" alt="강사" class="w-full h-full object-cover">
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-bold text-text-primary text-sm">김수학 선생님</span>
+                <span class="text-[10px] text-text-tertiary">· 2시간 전</span>
+              </div>
+              <p class="text-xs text-text-secondary leading-relaxed line-clamp-2">
+                이항 부호 실수가 자주 보여서 해당 유형 문제를 조금 더 연습하도록 설정해뒀어요.
+              </p>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-math-light text-math-dark text-[10px] font-medium rounded mt-2">
+                <span class="material-icons-round text-xs">school</span>
+                강화 학습 지정
+              </span>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Mobile Reinforcement Learning -->
+        <section class="bg-warning-light rounded-xl p-4 border border-warning/30">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-warning/20 flex items-center justify-center">
+              <span class="material-icons-round text-warning">refresh</span>
+            </span>
+            <div>
+              <h3 class="font-bold text-text-primary text-sm flex items-center gap-2">
+                강화 학습
+                <span class="px-1.5 py-0.5 bg-warning text-white text-[9px] font-bold rounded">강사지정</span>
+              </h3>
+              <p class="text-[10px] text-text-secondary">일차방정식 - 이항 유형</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-xs mb-2">
+            <span class="text-text-secondary">현재 68% → 목표 85%</span>
+            <span class="font-medium text-warning">+7문제</span>
+          </div>
+          <a href="math-problem.html?mode=reinforcement" class="w-full py-2.5 bg-warning text-white font-bold rounded-lg flex items-center justify-center gap-1 text-sm">
+            <span class="material-icons-round text-lg">play_arrow</span>
+            강화 학습 시작
+          </a>
+        </section>
+        
+        <!-- Today's Learning CTA -->
+        <section class="bg-surface rounded-2xl shadow-card border border-border-light overflow-hidden">
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="font-bold text-text-primary">오늘의 학습</h2>
+              <div class="flex items-center gap-1">
+                <span class="text-xl font-bold text-math">2</span>
+                <span class="text-text-tertiary">/5</span>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-text-secondary">3단원. 일차방정식</span>
+                <span class="font-medium text-math-dark">40%</span>
+              </div>
+              <div class="w-full h-2 bg-math-light rounded-full">
+                <div class="h-full bg-math rounded-full" style="width: 40%"></div>
+              </div>
+            </div>
+            
+            <div class="bg-math-light rounded-xl p-3 mb-3 flex items-center gap-3">
+              <span class="w-8 h-8 rounded-full bg-math text-gray-900 flex items-center justify-center font-bold text-sm relative">
+                3
+                <div class="absolute -inset-1 rounded-full border-2 border-math pulse-ring"></div>
+              </span>
+              <div>
+                <h3 class="font-bold text-math-dark text-sm">Q3. 일차방정식의 풀이</h3>
+                <p class="text-xs text-text-secondary">중급 · 4단계</p>
+              </div>
+            </div>
+            
+            <a href="math-problem.html" class="w-full py-3 bg-math hover:bg-math-dark text-gray-900 font-bold rounded-xl flex items-center justify-center gap-2">
+              <span class="material-icons-round">play_arrow</span>
+              학습 시작
+            </a>
+          </div>
+        </section>
+        
+        <!-- Unit Progress -->
+        <section class="bg-surface rounded-xl p-4 shadow-card border border-border-light">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-text-primary text-sm">단원 진도</h3>
+            <button onclick="openUnitModal()" class="text-xs text-math font-medium">전체보기</button>
+          </div>
+          <div class="space-y-2">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-text-secondary">1. 정수와 유리수</span>
+                <span class="text-success font-bold">100%</span>
+              </div>
+              <div class="w-full h-1.5 bg-success-light rounded-full">
+                <div class="h-full bg-success rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-text-secondary">2. 문자와 식</span>
+                <span class="text-success font-bold">100%</span>
+              </div>
+              <div class="w-full h-1.5 bg-success-light rounded-full">
+                <div class="h-full bg-success rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+            <div class="bg-math-light rounded-lg p-2 -mx-2">
+              <div class="flex justify-between text-xs mb-1 px-2">
+                <span class="font-medium text-math-dark">3. 일차방정식</span>
+                <span class="text-math-dark font-bold">60%</span>
+              </div>
+              <div class="w-full h-1.5 bg-white rounded-full mx-2" style="width: calc(100% - 16px)">
+                <div class="h-full bg-math rounded-full" style="width: 60%"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Weak Points -->
+        <section class="bg-surface rounded-xl p-4 shadow-card border border-border-light">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-text-primary text-sm flex items-center gap-1">
+              <span class="material-icons-round text-error text-lg">crisis_alert</span>
+              취약점
+            </h3>
+            <a href="math-weak-review.html" class="text-xs text-math font-medium">복습</a>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-error-light rounded-lg p-2.5">
+              <div class="text-error font-bold text-sm">이항 실수</div>
+              <div class="text-xs text-text-secondary">정답률 45%</div>
+            </div>
+            <div class="bg-warning-light rounded-lg p-2.5">
+              <div class="text-warning font-bold text-sm">계산 실수</div>
+              <div class="text-xs text-text-secondary">정답률 68%</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Recent History (Mobile) -->
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-text-primary flex items-center gap-1">
+              <span class="material-icons-round text-math text-lg">history</span>
+              최근 기록
+            </h3>
+          </div>
+          <div class="space-y-2">
+            <div class="bg-surface rounded-xl p-3 shadow-card border border-border-light">
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 badge-direct text-[10px] font-bold rounded flex items-center gap-0.5">
+                    <span class="material-icons-round text-[10px]">bolt</span>바로
+                  </span>
+                  <span class="text-xs text-text-tertiary">오늘</span>
+                </div>
+                <span class="text-success font-medium text-xs">+50 XP</span>
+              </div>
+              <h4 class="font-medium text-text-primary text-sm">Q1. 등식의 성질</h4>
+            </div>
+            
+            <div class="bg-surface rounded-xl p-3 shadow-card border border-border-light">
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 badge-step text-[10px] font-bold rounded">단계</span>
+                  <span class="text-xs text-text-tertiary">오늘</span>
+                </div>
+                <span class="text-success font-medium text-xs">+20 XP</span>
+              </div>
+              <h4 class="font-medium text-text-primary text-sm">Q2. 이항과 정리</h4>
+            </div>
+          </div>
+        </section>
+        
+      </div>
+    </div>
+    
+    <!-- Mobile Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-border-light flex items-center justify-around px-2 z-50">
+      <a href="student-dashboard.html" class="flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+        <span class="material-icons-round">home</span>
+        <span class="text-[10px] font-medium">홈</span>
+      </a>
+      <a href="subjects.html" class="flex flex-col items-center gap-1 px-3 py-2 text-math">
+        <span class="material-icons-round">auto_stories</span>
+        <span class="text-[10px] font-medium">과목</span>
+      </a>
+      <a href="ai-tutor.html" class="flex flex-col items-center gap-1 px-3 py-2">
+        <div class="w-12 h-12 -mt-6 bg-primary rounded-full flex items-center justify-center shadow-lg">
+          <span class="material-icons-round text-white">smart_toy</span>
+        </div>
+        <span class="text-[10px] font-medium text-primary -mt-1">AI튜터</span>
+      </a>
+      <a href="report.html" class="flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+        <span class="material-icons-round">insights</span>
+        <span class="text-[10px] font-medium">리포트</span>
+      </a>
+      <a href="mypage.html" class="flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+        <span class="material-icons-round">person</span>
+        <span class="text-[10px] font-medium">MY</span>
+      </a>
+    </nav>
+  </div>
+  
+  <!-- System Explanation Modal -->
+  <div id="systemModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-surface rounded-2xl max-w-lg w-full max-h-[80vh] overflow-hidden slide-up">
+      <div class="bg-math p-5">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <span class="material-icons-round">school</span>
+            수학 학습 시스템
+          </h2>
+          <button onclick="closeSystemModal()" class="p-1 hover:bg-white/20 rounded-lg transition-colors">
+            <span class="material-icons-round text-gray-700">close</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-5 overflow-y-auto max-h-[60vh]">
+        <div class="space-y-4">
+          
+          <!-- Step by Step -->
+          <div class="bg-math-light rounded-xl p-4 border border-math/30">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-12 h-12 rounded-full badge-step flex items-center justify-center">
+                <span class="material-icons-round text-xl">format_list_numbered</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-math-dark">단계별 풀이</h3>
+                <p class="text-xs text-text-secondary">기본 학습 방식</p>
+              </div>
+            </div>
+            <ul class="text-sm text-text-secondary space-y-1">
+              <li>• 문제를 <strong class="text-math-dark">여러 단계</strong>로 나누어 풀이</li>
+              <li>• 각 단계마다 5지선다 문제</li>
+              <li>• 틀리면 <strong class="text-math-dark">설명 제공</strong> 후 자동 진행</li>
+              <li>• 모든 단계 완료 시 <strong class="text-success">+20 XP</strong></li>
+            </ul>
+          </div>
+          
+          <!-- Direct Answer -->
+          <div class="bg-success-light rounded-xl p-4 border border-success/30">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-12 h-12 rounded-full badge-direct flex items-center justify-center">
+                <span class="material-icons-round text-xl">bolt</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-success">"답을 알겠어요!" 보너스</h3>
+                <p class="text-xs text-text-secondary">실력자를 위한 기회</p>
+              </div>
+            </div>
+            <ul class="text-sm text-text-secondary space-y-1">
+              <li>• 단계 풀이 중 답이 보이면 <strong class="text-success">바로 정답 선택</strong></li>
+              <li>• <strong class="text-error">10초</strong> 안에 5지선다로 선택</li>
+              <li>• 일찍 맞출수록 <strong class="text-success">높은 보너스</strong></li>
+              <li>• 문제당 <strong class="text-error">1회</strong> 기회만!</li>
+            </ul>
+          </div>
+          
+          <!-- Bonus Table -->
+          <div class="bg-gray-50 rounded-xl p-4">
+            <h4 class="font-bold text-text-primary mb-3 text-sm">💰 보너스 XP 계산</h4>
+            <div class="text-xs text-text-secondary space-y-1 mb-3">
+              <p><strong>보너스 = (전체 단계 - 현재 단계) × 10</strong></p>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="bg-white rounded-lg p-2 text-center">
+                <p class="text-text-tertiary">4단계 문제, 1단계에서</p>
+                <p class="font-bold text-success">+30 XP</p>
+              </div>
+              <div class="bg-white rounded-lg p-2 text-center">
+                <p class="text-text-tertiary">4단계 문제, 2단계에서</p>
+                <p class="font-bold text-success">+20 XP</p>
+              </div>
+              <div class="bg-white rounded-lg p-2 text-center">
+                <p class="text-text-tertiary">4단계 문제, 3단계에서</p>
+                <p class="font-bold text-success">+10 XP</p>
+              </div>
+              <div class="bg-white rounded-lg p-2 text-center">
+                <p class="text-text-tertiary">단계 완료</p>
+                <p class="font-bold text-math">+20 XP</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Flow -->
+          <div class="bg-gray-50 rounded-xl p-4">
+            <h4 class="font-bold text-text-primary mb-3 text-sm">학습 흐름</h4>
+            <div class="flex flex-col items-center gap-2 text-xs">
+              <div class="px-4 py-2 bg-math text-gray-900 rounded-lg font-medium w-full text-center">단계별 풀이 시작</div>
+              <span class="material-icons-round text-text-tertiary">arrow_downward</span>
+              <div class="px-4 py-2 bg-success/20 text-success rounded-lg font-medium w-full text-center">답이 보이면 → "답을 알겠어요!" (10초)</div>
+              <span class="material-icons-round text-text-tertiary">arrow_downward</span>
+              <div class="flex gap-2 w-full">
+                <div class="flex-1 px-3 py-2 bg-success text-white rounded-lg font-medium text-center">정답 → 보너스!</div>
+                <div class="flex-1 px-3 py-2 bg-error/20 text-error rounded-lg font-medium text-center">오답 → 계속 풀기</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Unit Progress Modal -->
+  <div id="unitModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-surface rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden slide-up">
+      <div class="bg-math p-5 flex items-center justify-between">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <span class="material-icons-round">school</span>
+          단원별 진도 상세
+        </h2>
+        <button onclick="closeUnitModal()" class="p-1 hover:bg-white/20 rounded-lg transition-colors">
+          <span class="material-icons-round text-gray-700">close</span>
+        </button>
+      </div>
+      
+      <div class="p-5 overflow-y-auto max-h-[70vh]">
+        <div class="space-y-4" id="unitList"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Unit Detail Modal -->
+  <div id="unitDetailModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] hidden p-4">
+    <div class="bg-surface rounded-2xl max-w-lg w-full max-h-[80vh] overflow-hidden slide-up">
+      <div id="unitDetailHeader" class="p-5 flex items-center justify-between"></div>
+      <div id="unitDetailContent" class="p-5 overflow-y-auto max-h-[65vh]"></div>
+    </div>
+  </div>
+  
+  <script>
+    // Unit data
+    const units = [
+      {
+        id: 1,
+        name: '정수와 유리수',
+        status: 'completed',
+        progress: 100,
+        totalProblems: 15,
+        completedProblems: 15,
+        accuracy: 93,
+        topics: [
+          { name: '정수의 덧셈과 뺄셈', completed: true, accuracy: 95 },
+          { name: '정수의 곱셈과 나눗셈', completed: true, accuracy: 90 },
+          { name: '유리수의 계산', completed: true, accuracy: 92 }
+        ]
+      },
+      {
+        id: 2,
+        name: '문자와 식',
+        status: 'completed',
+        progress: 100,
+        totalProblems: 12,
+        completedProblems: 12,
+        accuracy: 88,
+        topics: [
+          { name: '문자의 사용', completed: true, accuracy: 95 },
+          { name: '일차식의 계산', completed: true, accuracy: 85 },
+          { name: '다항식의 계산', completed: true, accuracy: 83 }
+        ]
+      },
+      {
+        id: 3,
+        name: '일차방정식',
+        status: 'current',
+        progress: 60,
+        totalProblems: 15,
+        completedProblems: 9,
+        accuracy: 78,
+        topics: [
+          { name: '등식의 성질', completed: true, accuracy: 90 },
+          { name: '이항과 정리', completed: true, accuracy: 70 },
+          { name: '일차방정식의 풀이', completed: false, accuracy: null },
+          { name: '복잡한 일차방정식', completed: false, accuracy: null },
+          { name: '일차방정식의 활용', completed: false, accuracy: null }
+        ]
+      },
+      {
+        id: 4,
+        name: '좌표평면과 그래프',
+        status: 'locked',
+        progress: 0,
+        totalProblems: 18,
+        completedProblems: 0,
+        topics: []
+      },
+      {
+        id: 5,
+        name: '정비례와 반비례',
+        status: 'locked',
+        progress: 0,
+        totalProblems: 15,
+        completedProblems: 0,
+        topics: []
+      },
+      {
+        id: 6,
+        name: '기본 도형',
+        status: 'locked',
+        progress: 0,
+        totalProblems: 20,
+        completedProblems: 0,
+        topics: []
+      }
+    ];
+    
+    function openSystemModal() {
+      document.getElementById('systemModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSystemModal() {
+      document.getElementById('systemModal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    
+    function openUnitModal() {
+      renderUnitList();
+      document.getElementById('unitModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeUnitModal() {
+      document.getElementById('unitModal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    
+    function renderUnitList() {
+      const container = document.getElementById('unitList');
+      container.innerHTML = units.map(unit => {
+        const statusStyles = {
+          completed: { bg: 'bg-success', text: 'text-success', light: 'bg-success-light', icon: '✓' },
+          current: { bg: 'bg-math', text: 'text-math-dark', light: 'bg-math-light', icon: unit.id },
+          locked: { bg: 'bg-border-light', text: 'text-text-tertiary', light: 'bg-gray-50', icon: 'lock' }
+        };
+        const style = statusStyles[unit.status];
+        
+        return `
+          <div class="border border-border-light rounded-xl overflow-hidden ${unit.status === 'locked' ? 'opacity-50' : 'cursor-pointer hover:shadow-md transition-shadow'}"
+               ${unit.status !== 'locked' ? `onclick="openUnitDetail(${unit.id})"` : ''}>
+            <div class="p-4 flex items-center gap-4 ${unit.status === 'current' ? 'bg-math-light' : ''}">
+              <span class="w-10 h-10 rounded-full ${style.bg} ${unit.status === 'locked' ? 'text-text-tertiary' : 'text-white'} flex items-center justify-center font-bold">
+                ${style.icon === 'lock' ? '<span class="material-icons-round text-lg">lock</span>' : style.icon}
+              </span>
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-1">
+                  <h3 class="font-bold ${unit.status === 'current' ? 'text-math-dark' : 'text-text-primary'}">${unit.id}. ${unit.name}</h3>
+                  <span class="font-bold ${style.text}">${unit.progress}%</span>
+                </div>
+                <div class="w-full h-2 ${style.light} rounded-full">
+                  <div class="h-full ${style.bg} rounded-full transition-all" style="width: ${unit.progress}%"></div>
+                </div>
+                <p class="text-xs text-text-tertiary mt-1">${unit.completedProblems}/${unit.totalProblems} 문제 완료${unit.accuracy ? ` · 정답률 ${unit.accuracy}%` : ''}</p>
+              </div>
+              ${unit.status !== 'locked' ? '<span class="material-icons-round text-text-tertiary">chevron_right</span>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    function openUnitDetail(unitId) {
+      const unit = units.find(u => u.id === unitId);
+      if (!unit) return;
+      
+      const style = unit.status === 'completed' 
+        ? { bg: 'bg-success', text: 'text-success' }
+        : { bg: 'bg-math', text: 'text-math-dark' };
+      
+      document.getElementById('unitDetailHeader').innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="w-10 h-10 rounded-full ${style.bg} text-white flex items-center justify-center font-bold">
+            ${unit.status === 'completed' ? '✓' : unit.id}
+          </span>
+          <div>
+            <h2 class="font-bold text-text-primary">${unit.id}. ${unit.name}</h2>
+            <p class="text-xs text-text-secondary">${unit.completedProblems}/${unit.totalProblems} 문제 · 정답률 ${unit.accuracy || 0}%</p>
+          </div>
+        </div>
+        <button onclick="closeUnitDetail()" class="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+          <span class="material-icons-round text-text-secondary">close</span>
+        </button>
+      `;
+      document.getElementById('unitDetailHeader').className = `p-5 flex items-center justify-between border-b border-border-light ${unit.status === 'current' ? 'bg-math-light' : ''}`;
+      
+      document.getElementById('unitDetailContent').innerHTML = `
+        <div class="space-y-3">
+          ${unit.topics.map((topic, idx) => `
+            <div class="flex items-center gap-3 p-3 rounded-lg ${topic.completed ? 'bg-success-light' : 'bg-gray-50'}">
+              <span class="w-8 h-8 rounded-full ${topic.completed ? 'bg-success text-white' : 'bg-border-light text-text-tertiary'} flex items-center justify-center text-sm">
+                ${topic.completed ? '✓' : idx + 1}
+              </span>
+              <div class="flex-1">
+                <p class="font-medium text-sm ${topic.completed ? 'text-success' : 'text-text-secondary'}">${topic.name}</p>
+                ${topic.accuracy !== null ? `<p class="text-xs text-text-tertiary">정답률 ${topic.accuracy}%</p>` : ''}
+              </div>
+              ${!topic.completed && unit.status === 'current' ? `
+                <a href="math-problem.html" class="px-3 py-1 bg-math text-gray-900 text-xs font-bold rounded-lg">학습</a>
+              ` : ''}
+            </div>
+          `).join('')}
+        </div>
+        
+        ${unit.status === 'current' ? `
+          <div class="mt-4 p-4 bg-math-light rounded-xl border border-math/30">
+            <p class="text-sm text-math-dark font-medium">
+              <span class="material-icons-round text-sm align-middle mr-1">lightbulb</span>
+              현재 학습 중인 단원입니다. 모든 주제를 완료하면 다음 단원이 열립니다.
+            </p>
+          </div>
+        ` : ''}
+      `;
+      
+      document.getElementById('unitDetailModal').classList.remove('hidden');
+    }
+    
+    function closeUnitDetail() {
+      document.getElementById('unitDetailModal').classList.add('hidden');
+    }
+    
+    // Close modals on backdrop click
+    document.getElementById('systemModal').addEventListener('click', function(e) {
+      if (e.target === this) closeSystemModal();
+    });
+    document.getElementById('unitModal').addEventListener('click', function(e) {
+      if (e.target === this) closeUnitModal();
+    });
+    document.getElementById('unitDetailModal').addEventListener('click', function(e) {
+      if (e.target === this) closeUnitDetail();
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

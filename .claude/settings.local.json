@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"tree /F c:\\\\Users\\\\1230\\\\Documents\\\\mama-asst-prototype\\\\MAMA-ASST_Prototype_v3.4.2_Updated_1\")",
+      "Bash(cmd /c:*)",
+      "Read(//c/**)",
+      "Bash(dir:*)",
+      "Bash(find:*)",
+      "Bash(for f in english-weekend-clinic.html english-monthly-exam.html english-test.html english-daily-result.html)",
+      "Bash(do sed -i \"s|https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700&display=swap|https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800\\\\&display=swap\"\" rel=\"\"stylesheet\"\">\\\\n  <link href=\"\"https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css|g\" \"$f\")",
+      "Bash(done)",
+      "Bash(for f in english-prelearn.html subject-english.html)",
+      "Bash(do sed -i \"s|https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap|https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700\\\\&display=swap\"\" rel=\"\"stylesheet\"\">\\\\n  <link href=\"\"https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css|g\" \"$f\")",
+      "Bash(python -m http.server:*)"
+    ]
+  }
+}

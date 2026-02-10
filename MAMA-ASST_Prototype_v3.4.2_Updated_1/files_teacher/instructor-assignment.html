@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>숙제 배정 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            planner: '#9C27B0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'border-medium': '#D1D5DB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active {
+      background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%);
+      color: white;
+    }
+    .tab-btn.active {
+      color: #FF6D4D;
+      border-bottom-color: #FF6D4D;
+    }
+    .content-card {
+      transition: all 0.2s ease;
+    }
+    .content-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .content-card.selected {
+      ring: 2px;
+      ring-color: #FF6D4D;
+      background-color: #FFF0ED;
+    }
+    .bottom-tab.active { color: #FF6D4D; }
+    .bottom-tab.active .material-icons-round { color: #FF6D4D; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+        <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-navy text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-white/60">강사용</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span>
+          <span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span>
+          <span class="font-medium">시간표</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-navy text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="font-bold text-lg">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span>
+          <span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span>
+          <span class="font-medium">시간표</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Main Content -->
+    <main class="flex-1 lg:ml-64 pb-20 lg:pb-0">
+      
+      <!-- Top Header -->
+            <!-- Mobile Header -->
+      <header class="lg:hidden h-14 bg-navy text-white flex items-center justify-between px-4 sticky top-0 z-30">
+        <button onclick="openMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">menu</span>
+        </button>
+        <h1 class="font-bold">숙제 배정</h1>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-sm">김</div>
+      </header>
+
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-30">
+        <div>
+          <h1 class="text-xl font-bold text-text-primary">숙제 배정</h1>
+          <p class="text-sm text-text-tertiary">반별/개인별 숙제 배정 및 관리</p>
+        </div>
+        <button onclick="openAssignmentModal()" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2">
+          <span class="material-icons-round text-lg">add</span>
+          숙제 배정
+        </button>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-4 lg:space-y-6">
+        
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-4 gap-4">
+          <div class="bg-surface rounded-2xl border border-border-light p-5">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-info-light flex items-center justify-center">
+                <span class="material-icons-round text-info text-2xl">assignment</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-text-primary">12</p>
+                <p class="text-sm text-text-tertiary">진행 중 숙제</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-2xl border border-border-light p-5">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-warning-light flex items-center justify-center">
+                <span class="material-icons-round text-warning text-2xl">schedule</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-text-primary">3</p>
+                <p class="text-sm text-text-tertiary">오늘 마감</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-2xl border border-border-light p-5">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-error-light flex items-center justify-center">
+                <span class="material-icons-round text-error text-2xl">warning</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-text-primary">5</p>
+                <p class="text-sm text-text-tertiary">미완료 학생</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-2xl border border-border-light p-5">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-success-light flex items-center justify-center">
+                <span class="material-icons-round text-success text-2xl">check_circle</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-text-primary">78%</p>
+                <p class="text-sm text-text-tertiary">평균 완료율</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="bg-surface rounded-2xl border border-border-light overflow-hidden">
+          <div class="border-b border-border-light">
+            <nav class="flex">
+              <button onclick="switchTab('current')" class="tab-btn active px-6 py-4 text-sm font-medium border-b-2 border-transparent" data-tab="current">
+                현재 숙제
+              </button>
+              <button onclick="switchTab('history')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-text-secondary" data-tab="history">
+                지난 숙제
+              </button>
+              <button onclick="switchTab('incomplete')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-text-secondary" data-tab="incomplete">
+                미제출 현황
+              </button>
+            </nav>
+          </div>
+          
+          <!-- Current Assignments Tab -->
+          <div id="currentTab" class="p-5 space-y-4">
+            <!-- Assignment Card 1 - Class Assignment with Content -->
+            <div class="p-4 border border-border-light rounded-xl hover:shadow-md transition-all">
+              <div class="flex items-start justify-between">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-korean-light flex items-center justify-center">
+                    <span class="material-icons-round text-korean text-2xl">menu_book</span>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="px-2 py-0.5 bg-korean-light text-korean text-xs font-bold rounded">국어</span>
+                      <span class="px-2 py-0.5 bg-info-light text-info text-xs font-bold rounded">반 전체</span>
+                      <span class="px-2 py-0.5 bg-planner text-white text-xs font-bold rounded">콘텐츠 지정</span>
+                      <span class="px-2 py-0.5 bg-error text-white text-xs font-bold rounded">D-1</span>
+                    </div>
+                    <h3 class="font-bold text-text-primary">비문학 독해 연습</h3>
+                    <p class="text-sm text-text-secondary mt-1">중2A반 · 마감: 내일 23:59</p>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                      <span class="px-2 py-1 bg-gray-100 text-text-secondary text-xs rounded">인공지능과 미래사회</span>
+                      <span class="px-2 py-1 bg-gray-100 text-text-secondary text-xs rounded">기후변화의 원인</span>
+                    </div>
+                    <div class="flex items-center gap-4 mt-2 text-xs text-text-tertiary">
+                      <span class="flex items-center gap-1">
+                        <span class="material-icons-round text-sm">people</span>
+                        8명 대상
+                      </span>
+                      <span class="flex items-center gap-1 text-success">
+                        <span class="material-icons-round text-sm">check_circle</span>
+                        5명 완료
+                      </span>
+                      <span class="flex items-center gap-1 text-error">
+                        <span class="material-icons-round text-sm">pending</span>
+                        3명 미완료
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button class="p-2 hover:bg-gray-100 rounded-lg" title="미완료자 알림">
+                    <span class="material-icons-round text-text-tertiary">notifications</span>
+                  </button>
+                  <button class="p-2 hover:bg-gray-100 rounded-lg" title="상세보기">
+                    <span class="material-icons-round text-text-tertiary">visibility</span>
+                  </button>
+                </div>
+              </div>
+              <div class="mt-3 pt-3 border-t border-border-light">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-text-tertiary">완료율</span>
+                  <span class="font-bold text-success">62.5%</span>
+                </div>
+                <div class="w-full h-2 bg-gray-100 rounded-full mt-2">
+                  <div class="h-full bg-success rounded-full" style="width: 62.5%"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Assignment Card 2 - Individual Direct Content -->
+            <div class="p-4 border border-border-light rounded-xl hover:shadow-md transition-all">
+              <div class="flex items-start justify-between">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-math-light flex items-center justify-center">
+                    <span class="material-icons-round text-math text-2xl">calculate</span>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="px-2 py-0.5 bg-math-light text-yellow-700 text-xs font-bold rounded">수학</span>
+                      <span class="px-2 py-0.5 bg-planner text-white text-xs font-bold rounded">개별 지정</span>
+                      <span class="px-2 py-0.5 bg-warning text-white text-xs font-bold rounded">D-3</span>
+                    </div>
+                    <h3 class="font-bold text-text-primary">일차방정식 유형별 연습</h3>
+                    <p class="text-sm text-text-secondary mt-1">박민수 (개별) · 마감: 금요일 23:59</p>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                      <span class="px-2 py-1 bg-gray-100 text-text-secondary text-xs rounded">일차방정식 - 괄호정리 #3</span>
+                      <span class="px-2 py-1 bg-gray-100 text-text-secondary text-xs rounded">일차방정식 - 계수분수 #5</span>
+                      <span class="px-2 py-1 bg-gray-100 text-text-secondary text-xs rounded">+2개</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="px-3 py-1.5 bg-warning-light text-warning text-sm font-medium rounded-lg">진행 중</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Assignment Card 3 - Text Based -->
+            <div class="p-4 border border-border-light rounded-xl hover:shadow-md transition-all">
+              <div class="flex items-start justify-between">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-english-light flex items-center justify-center">
+                    <span class="material-icons-round text-english text-2xl">translate</span>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="px-2 py-0.5 bg-english-light text-english text-xs font-bold rounded">영어</span>
+                      <span class="px-2 py-0.5 bg-info-light text-info text-xs font-bold rounded">반 전체</span>
+                      <span class="px-2 py-0.5 bg-gray-400 text-white text-xs font-bold rounded">D-5</span>
+                    </div>
+                    <h3 class="font-bold text-text-primary">단어장 Set 5 암기</h3>
+                    <p class="text-sm text-text-secondary mt-1">중2A반 · 마감: 일요일 23:59</p>
+                    <p class="text-xs text-text-tertiary mt-2 p-2 bg-gray-50 rounded">교재 p.52~60 단어 50개 암기 후 테스트</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="px-3 py-1.5 bg-gray-100 text-text-secondary text-sm font-medium rounded-lg">대기 중</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- History Tab (hidden) -->
+          <div id="historyTab" class="p-5 hidden">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <select class="px-3 py-2 border border-border-light rounded-lg text-sm">
+                  <option>최근 1주</option>
+                  <option>최근 1개월</option>
+                  <option>최근 3개월</option>
+                </select>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="p-4 bg-gray-50 rounded-xl flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <div class="w-10 h-10 rounded-lg bg-korean-light flex items-center justify-center">
+                    <span class="material-icons-round text-korean">menu_book</span>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-text-primary">문학 지문 독해</h4>
+                    <p class="text-sm text-text-tertiary">중2A반 · 12/30 마감</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-success font-bold">100%</p>
+                  <p class="text-xs text-text-tertiary">8/8 완료</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Incomplete Tab (hidden) -->
+          <div id="incompleteTab" class="p-5 hidden">
+            <div class="bg-error-light border border-error/20 rounded-xl p-4 mb-4">
+              <p class="text-sm text-error flex items-center gap-2">
+                <span class="material-icons-round">warning</span>
+                3회 이상 연속 미제출 학생은 학부모 알림을 권장합니다.
+              </p>
+            </div>
+            <div class="space-y-3">
+              <div class="p-4 border border-error/30 rounded-xl bg-error-light/30">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-error to-red-400 flex items-center justify-center text-white font-bold">박</div>
+                    <div>
+                      <p class="font-bold text-text-primary">박민수</p>
+                      <p class="text-sm text-text-secondary">중2A반 · 3회 연속 미제출</p>
+                    </div>
+                  </div>
+                  <button class="px-4 py-2 bg-error text-white rounded-lg text-sm font-medium flex items-center gap-1">
+                    <span class="material-icons-round text-sm">send</span>
+                    학부모 알림
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </main>
+    
+  
+    <!-- Mobile Bottom Tab Bar -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light bottom-nav z-40">
+      <div class="flex justify-around items-center h-16">
+        <a href="instructor-dashboard.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="text-xs">홈</span>
+          
+        </a>
+        <a href="instructor-students.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="text-xs">학생</span>
+          
+        </a>
+        <a href="instructor-attendance.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="text-xs">출결</span>
+          
+        </a>
+        <a href="instructor-evaluation.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary relative">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="text-xs">평가</span>
+          <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+        </a>
+        <button onclick="openMobileMenu()" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">menu</span>
+          <span class="text-xs">더보기</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+  
+  <!-- Assignment Modal -->
+  <div id="assignmentModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="p-5 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-xl font-bold text-text-primary">숙제 배정</h2>
+        <button onclick="closeAssignmentModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto p-5 space-y-6">
+        
+        <!-- Step 1: Assignment Type -->
+        <div>
+          <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-primary text-white text-sm flex items-center justify-center">1</span>
+            배정 유형
+          </h3>
+          <div class="grid grid-cols-2 gap-4">
+            <button onclick="selectAssignType('class')" id="typeClass" class="assign-type-btn p-4 border-2 border-primary bg-primary-light rounded-xl text-left">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="material-icons-round text-primary text-2xl">groups</span>
+                <span class="font-bold text-text-primary">반 전체 배정</span>
+              </div>
+              <p class="text-sm text-text-secondary">반 전체 학생에게 동일한 숙제를 배정합니다.</p>
+            </button>
+            <button onclick="selectAssignType('individual')" id="typeIndividual" class="assign-type-btn p-4 border-2 border-border-light rounded-xl text-left hover:border-primary hover:bg-primary-light/50 transition-all">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="material-icons-round text-planner text-2xl">person</span>
+                <span class="font-bold text-text-primary">개별 학생 지정</span>
+              </div>
+              <p class="text-sm text-text-secondary">특정 학생에게 맞춤 콘텐츠를 직접 지정합니다.</p>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Step 2: Target Selection -->
+        <div>
+          <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-primary text-white text-sm flex items-center justify-center">2</span>
+            <span id="targetLabel">대상 선택</span>
+          </h3>
+          
+          <!-- Class Selection -->
+          <div id="classSelection">
+            <select id="targetClass" onchange="checkDuplicateAssignment()" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+              <option value="">반을 선택하세요</option>
+              <option value="middle2a">중2A반 (8명)</option>
+              <option value="middle2b">중2B반 (10명)</option>
+              <option value="high1b">고1B반 (12명)</option>
+              <option value="high2a">고2A반 (6명)</option>
+            </select>
+          </div>
+          
+          <!-- Student Selection (hidden) -->
+          <div id="studentSelection" class="hidden">
+            <select id="targetStudent" onchange="checkDuplicateAssignment()" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+              <option value="">학생을 선택하세요</option>
+              <option value="1" data-class="middle2a">박민수 (중2A반)</option>
+              <option value="2" data-class="middle2a">김서연 (중2A반)</option>
+              <option value="3" data-class="middle2a">이지훈 (중2A반)</option>
+              <option value="7" data-class="middle2a">오민재 (중2A반)</option>
+              <option value="9" data-class="middle2b">강도현 (중2B반)</option>
+            </select>
+            
+            <!-- Duplicate Warning -->
+            <div id="duplicateWarning" class="hidden mt-3 p-3 bg-warning-light border border-warning/30 rounded-xl">
+              <div class="flex items-start gap-3">
+                <span class="material-icons-round text-warning">warning</span>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-warning">⚠️ 중복 숙제 주의</p>
+                  <p class="text-xs text-text-secondary mt-1">이 학생이 속한 <strong>중2A반</strong>에 이미 동일 과목 숙제가 배정되어 있습니다.</p>
+                  <p class="text-xs text-text-tertiary mt-1">• 국어: 비문학 독해 연습 (D-1)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step 3: Subject -->
+        <div>
+          <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-primary text-white text-sm flex items-center justify-center">3</span>
+            과목 선택
+          </h3>
+          
+          <div class="grid grid-cols-3 gap-4">
+            <button onclick="selectSubject('korean')" id="subjectKorean" class="subject-btn p-3 border-2 border-korean bg-korean-light rounded-xl flex items-center gap-3">
+              <span class="material-icons-round text-korean text-2xl">menu_book</span>
+              <span class="font-bold text-text-primary">국어</span>
+            </button>
+            <button onclick="selectSubject('math')" id="subjectMath" class="subject-btn p-3 border-2 border-border-light rounded-xl flex items-center gap-3 hover:border-math hover:bg-math-light transition-all">
+              <span class="material-icons-round text-math text-2xl">calculate</span>
+              <span class="font-bold text-text-primary">수학</span>
+            </button>
+            <button onclick="selectSubject('english')" id="subjectEnglish" class="subject-btn p-3 border-2 border-border-light rounded-xl flex items-center gap-3 hover:border-english hover:bg-english-light transition-all">
+              <span class="material-icons-round text-english text-2xl">translate</span>
+              <span class="font-bold text-text-primary">영어</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Step 4: Content Type -->
+        <div>
+          <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-primary text-white text-sm flex items-center justify-center">4</span>
+            숙제 내용
+          </h3>
+          
+          <!-- Content Type Toggle -->
+          <div class="flex gap-3 mb-4">
+            <button onclick="toggleContentType('text')" id="contentTypeText" class="flex-1 px-4 py-3 border-2 border-border-light rounded-xl font-medium text-text-secondary hover:border-primary hover:bg-primary-light transition-all flex items-center justify-center gap-2">
+              <span class="material-icons-round">edit_note</span>
+              텍스트 입력
+            </button>
+            <button onclick="toggleContentType('select')" id="contentTypeSelect" class="flex-1 px-4 py-3 border-2 border-primary bg-primary-light rounded-xl font-medium text-primary flex items-center justify-center gap-2">
+              <span class="material-icons-round">library_books</span>
+              콘텐츠 선택
+            </button>
+          </div>
+          
+          <!-- Text Input Section -->
+          <div id="textInputSection" class="hidden">
+            <input type="text" id="assignmentTitle" placeholder="숙제 제목 (예: 비문학 지문 2개 풀기)"
+              class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary mb-3">
+            <textarea id="assignmentDesc" rows="3" placeholder="상세 설명 (예: 교재 p.52~60 풀이 후 오답노트 정리)"
+              class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+          </div>
+          
+          <!-- Content Selection Section -->
+          <div id="contentSelectSection">
+            <input type="text" id="assignmentTitleForContent" placeholder="숙제 제목 (예: 비문학 독해 연습)"
+              class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary mb-3">
+            
+            <!-- Content Search -->
+            <div class="border border-border-light rounded-xl p-4 mb-4">
+              <div class="flex gap-3 mb-4">
+                <div class="flex-1 relative">
+                  <span class="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary">search</span>
+                  <input type="text" id="contentSearch" placeholder="콘텐츠 검색 (제목, 유형, 키워드...)" 
+                    onkeyup="searchContent()"
+                    class="w-full pl-10 pr-4 py-2.5 border border-border-light rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                </div>
+                <select id="contentTypeFilter" onchange="searchContent()" class="px-3 py-2.5 border border-border-light rounded-lg text-sm">
+                  <option value="">유형 전체</option>
+                  <option value="literature">문학</option>
+                  <option value="non-literature">비문학</option>
+                  <option value="equation">방정식</option>
+                  <option value="function">함수</option>
+                </select>
+                <select id="difficultyFilter" onchange="searchContent()" class="px-3 py-2.5 border border-border-light rounded-lg text-sm">
+                  <option value="">난이도 전체</option>
+                  <option value="easy">하</option>
+                  <option value="medium">중</option>
+                  <option value="hard">상</option>
+                </select>
+              </div>
+              
+              <!-- Search Results -->
+              <div id="contentResults" class="max-h-48 overflow-y-auto space-y-2">
+                <!-- Korean Contents -->
+                <div class="content-card korean-content p-3 border border-border-light rounded-lg cursor-pointer hover:border-primary" onclick="toggleContent(this, 'KOR-2025-001')" data-id="KOR-2025-001">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-korean-light flex items-center justify-center">
+                        <span class="material-icons-round text-korean text-sm">article</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-text-primary text-sm">인공지능과 미래사회</p>
+                        <p class="text-xs text-text-tertiary">비문학 · 과학/기술 · 중</p>
+                      </div>
+                    </div>
+                    <span class="material-icons-round text-text-tertiary content-check hidden">check_circle</span>
+                  </div>
+                </div>
+                <div class="content-card korean-content p-3 border border-border-light rounded-lg cursor-pointer hover:border-primary" onclick="toggleContent(this, 'KOR-2025-002')" data-id="KOR-2025-002">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-korean-light flex items-center justify-center">
+                        <span class="material-icons-round text-korean text-sm">article</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-text-primary text-sm">기후변화의 원인과 대책</p>
+                        <p class="text-xs text-text-tertiary">비문학 · 환경 · 중</p>
+                      </div>
+                    </div>
+                    <span class="material-icons-round text-text-tertiary content-check hidden">check_circle</span>
+                  </div>
+                </div>
+                <div class="content-card korean-content p-3 border border-border-light rounded-lg cursor-pointer hover:border-primary" onclick="toggleContent(this, 'KOR-2025-003')" data-id="KOR-2025-003">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-korean-light flex items-center justify-center">
+                        <span class="material-icons-round text-korean text-sm">auto_stories</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-text-primary text-sm">김소월 - 진달래꽃</p>
+                        <p class="text-xs text-text-tertiary">문학 · 현대시 · 하</p>
+                      </div>
+                    </div>
+                    <span class="material-icons-round text-text-tertiary content-check hidden">check_circle</span>
+                  </div>
+                </div>
+                <!-- Math Contents -->
+                <div class="content-card math-content p-3 border border-border-light rounded-lg cursor-pointer hover:border-math hidden" onclick="toggleContent(this, 'MATH-2025-001')" data-id="MATH-2025-001">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-math-light flex items-center justify-center">
+                        <span class="material-icons-round text-math text-sm">functions</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-text-primary text-sm">일차방정식 - 괄호정리 #3</p>
+                        <p class="text-xs text-text-tertiary">방정식 · 중1 · 중</p>
+                      </div>
+                    </div>
+                    <span class="material-icons-round text-text-tertiary content-check hidden">check_circle</span>
+                  </div>
+                </div>
+                <div class="content-card math-content p-3 border border-border-light rounded-lg cursor-pointer hover:border-math hidden" onclick="toggleContent(this, 'MATH-2025-002')" data-id="MATH-2025-002">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-math-light flex items-center justify-center">
+                        <span class="material-icons-round text-math text-sm">functions</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-text-primary text-sm">일차방정식 - 계수분수 #5</p>
+                        <p class="text-xs text-text-tertiary">방정식 · 중1 · 상</p>
+                      </div>
+                    </div>
+                    <span class="material-icons-round text-text-tertiary content-check hidden">check_circle</span>
+                  </div>
+                </div>
+                <!-- English Contents -->
+                <div class="content-card english-content p-3 border border-border-light rounded-lg cursor-pointer hover:border-english hidden" onclick="toggleContent(this, 'ENG-2025-001')" data-id="ENG-2025-001">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-english-light flex items-center justify-center">
+                        <span class="material-icons-round text-english text-sm">abc</span>
+                      </div>
+                      <div>
+                        <p class="font-medium text-text-primary text-sm">단어장 Set 5 (Day 1~3)</p>
+                        <p class="text-xs text-text-tertiary">어휘 · 중2 · 중</p>
+                      </div>
+                    </div>
+                    <span class="material-icons-round text-text-tertiary content-check hidden">check_circle</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Selected Contents -->
+            <div id="selectedContentsSection" class="hidden">
+              <h4 class="font-medium text-text-primary mb-2 flex items-center gap-2">
+                <span class="material-icons-round text-success text-lg">playlist_add_check</span>
+                선택된 콘텐츠 (<span id="selectedCount">0</span>개)
+              </h4>
+              <div id="selectedContentsList" class="flex flex-wrap gap-2">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step 5: Deadline -->
+        <div>
+          <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-primary text-white text-sm flex items-center justify-center">5</span>
+            마감일
+          </h3>
+          <div class="flex gap-4">
+            <input type="date" id="deadlineDate" class="flex-1 px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            <input type="time" id="deadlineTime" value="23:59" class="px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+          </div>
+          <div class="mt-3">
+            <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
+              <input type="checkbox" id="notifyStudents" checked class="w-4 h-4 rounded border-border-light text-primary focus:ring-primary">
+              학생에게 숙제 배정 알림 보내기
+            </label>
+            <label class="flex items-center gap-2 text-sm text-text-secondary cursor-pointer mt-2">
+              <input type="checkbox" id="notifyParents" class="w-4 h-4 rounded border-border-light text-primary focus:ring-primary">
+              학부모에게도 알림 보내기
+            </label>
+          </div>
+        </div>
+        
+      </div>
+      
+      <div class="p-5 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeAssignmentModal()" class="px-4 py-2 border border-border-light text-text-secondary rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="submitAssignment()" class="px-6 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2">
+          <span class="material-icons-round text-lg">send</span>
+          배정하기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Duplicate Confirmation Modal -->
+  <div id="duplicateModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] hidden">
+    <div class="bg-surface rounded-2xl max-w-md w-full mx-4 overflow-hidden">
+      <div class="p-5 border-b border-border-light bg-warning-light">
+        <div class="flex items-center gap-3">
+          <span class="material-icons-round text-warning text-3xl">warning_amber</span>
+          <h3 class="text-lg font-bold text-text-primary">중복 숙제 확인</h3>
+        </div>
+      </div>
+      
+      <div class="p-5">
+        <p class="text-text-primary mb-4">
+          <strong id="duplicateStudentName">박민수</strong> 학생에게 이미 동일 과목의 숙제가 배정되어 있습니다.
+        </p>
+        
+        <div class="bg-gray-50 rounded-xl p-4 mb-4">
+          <p class="text-sm font-medium text-text-primary mb-2">기존 배정된 숙제:</p>
+          <div class="flex items-center gap-3">
+            <span class="px-2 py-0.5 bg-korean text-white text-xs rounded">국어</span>
+            <span class="text-sm text-text-secondary">비문학 독해 연습 (중2A반 전체)</span>
+          </div>
+          <p class="text-xs text-text-tertiary mt-2">마감: 내일 23:59</p>
+        </div>
+        
+        <div class="bg-info-light border border-info/20 rounded-xl p-3">
+          <p class="text-sm text-info flex items-start gap-2">
+            <span class="material-icons-round text-lg">info</span>
+            <span>개별 숙제를 추가 배정하면 학생은 반 전체 숙제 + 개별 숙제를 <strong>모두</strong> 완료해야 합니다.</span>
+          </p>
+        </div>
+      </div>
+      
+      <div class="p-5 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeDuplicateModal()" class="px-4 py-2 border border-border-light text-text-secondary rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmDuplicate()" class="px-6 py-2 bg-warning text-white rounded-xl hover:bg-yellow-600 flex items-center gap-2">
+          <span class="material-icons-round text-lg">check</span>
+          그래도 배정하기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-navy text-white px-6 py-3 rounded-xl shadow-lg z-50 hidden flex items-center gap-2">
+    <span class="material-icons-round">check_circle</span>
+    <span id="toastMessage">저장되었습니다.</span>
+  </div>
+  
+  <script>
+    // State
+    let assignType = 'class';
+    let selectedSubject = 'korean';
+    let contentType = 'select';
+    let selectedContents = [];
+    let duplicateConfirmed = false;
+    
+    // Existing class assignments (mock data)
+    const existingAssignments = {
+      'middle2a': [
+        { subject: 'korean', title: '비문학 독해 연습', deadline: '내일 23:59' }
+      ]
+    };
+    
+    // Tab switching
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'text-primary', 'border-primary');
+        btn.classList.add('text-text-secondary');
+      });
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active', 'text-primary', 'border-primary');
+      document.querySelector(`[data-tab="${tabName}"]`).classList.remove('text-text-secondary');
+      
+      document.getElementById('currentTab').classList.add('hidden');
+      document.getElementById('historyTab').classList.add('hidden');
+      document.getElementById('incompleteTab').classList.add('hidden');
+      document.getElementById(`${tabName}Tab`).classList.remove('hidden');
+    }
+    
+    // Modal
+    function openAssignmentModal() {
+      document.getElementById('assignmentModal').classList.remove('hidden');
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('deadlineDate').value = tomorrow.toISOString().split('T')[0];
+    }
+    
+    function closeAssignmentModal() {
+      document.getElementById('assignmentModal').classList.add('hidden');
+      resetModal();
+    }
+    
+    function resetModal() {
+      assignType = 'class';
+      selectedSubject = 'korean';
+      contentType = 'select';
+      selectedContents = [];
+      duplicateConfirmed = false;
+      selectAssignType('class');
+      selectSubject('korean');
+      toggleContentType('select');
+      document.getElementById('targetClass').value = '';
+      document.getElementById('targetStudent').value = '';
+      document.getElementById('assignmentTitle').value = '';
+      document.getElementById('assignmentTitleForContent').value = '';
+      document.getElementById('assignmentDesc').value = '';
+      document.getElementById('contentSearch').value = '';
+      document.getElementById('duplicateWarning').classList.add('hidden');
+      updateSelectedContentsUI();
+      document.querySelectorAll('.content-card').forEach(card => {
+        card.classList.remove('selected', 'ring-2', 'ring-primary', 'bg-primary-light');
+        card.querySelector('.content-check').classList.add('hidden');
+      });
+    }
+    
+    // Assignment Type Selection
+    function selectAssignType(type) {
+      assignType = type;
+      
+      document.querySelectorAll('.assign-type-btn').forEach(btn => {
+        btn.classList.remove('border-primary', 'bg-primary-light');
+        btn.classList.add('border-border-light');
+      });
+      
+      if (type === 'class') {
+        document.getElementById('typeClass').classList.add('border-primary', 'bg-primary-light');
+        document.getElementById('typeClass').classList.remove('border-border-light');
+        document.getElementById('classSelection').classList.remove('hidden');
+        document.getElementById('studentSelection').classList.add('hidden');
+        document.getElementById('targetLabel').textContent = '반 선택';
+      } else {
+        document.getElementById('typeIndividual').classList.add('border-primary', 'bg-primary-light');
+        document.getElementById('typeIndividual').classList.remove('border-border-light');
+        document.getElementById('classSelection').classList.add('hidden');
+        document.getElementById('studentSelection').classList.remove('hidden');
+        document.getElementById('targetLabel').textContent = '학생 선택';
+      }
+      
+      document.getElementById('duplicateWarning').classList.add('hidden');
+    }
+    
+    // Content Type Toggle
+    function toggleContentType(type) {
+      contentType = type;
+      
+      if (type === 'text') {
+        document.getElementById('contentTypeText').classList.add('border-primary', 'bg-primary-light', 'text-primary');
+        document.getElementById('contentTypeText').classList.remove('border-border-light', 'text-text-secondary');
+        document.getElementById('contentTypeSelect').classList.remove('border-primary', 'bg-primary-light', 'text-primary');
+        document.getElementById('contentTypeSelect').classList.add('border-border-light', 'text-text-secondary');
+        document.getElementById('textInputSection').classList.remove('hidden');
+        document.getElementById('contentSelectSection').classList.add('hidden');
+      } else {
+        document.getElementById('contentTypeSelect').classList.add('border-primary', 'bg-primary-light', 'text-primary');
+        document.getElementById('contentTypeSelect').classList.remove('border-border-light', 'text-text-secondary');
+        document.getElementById('contentTypeText').classList.remove('border-primary', 'bg-primary-light', 'text-primary');
+        document.getElementById('contentTypeText').classList.add('border-border-light', 'text-text-secondary');
+        document.getElementById('textInputSection').classList.add('hidden');
+        document.getElementById('contentSelectSection').classList.remove('hidden');
+      }
+    }
+    
+    // Subject Selection
+    function selectSubject(subject) {
+      selectedSubject = subject;
+      
+      document.querySelectorAll('.subject-btn').forEach(btn => {
+        btn.classList.remove('border-korean', 'bg-korean-light', 'border-math', 'bg-math-light', 'border-english', 'bg-english-light');
+        btn.classList.add('border-border-light');
+      });
+      
+      if (subject === 'korean') {
+        document.getElementById('subjectKorean').classList.add('border-korean', 'bg-korean-light');
+        document.getElementById('subjectKorean').classList.remove('border-border-light');
+        document.querySelectorAll('.korean-content').forEach(c => c.classList.remove('hidden'));
+        document.querySelectorAll('.math-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.english-content').forEach(c => c.classList.add('hidden'));
+      } else if (subject === 'math') {
+        document.getElementById('subjectMath').classList.add('border-math', 'bg-math-light');
+        document.getElementById('subjectMath').classList.remove('border-border-light');
+        document.querySelectorAll('.korean-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.math-content').forEach(c => c.classList.remove('hidden'));
+        document.querySelectorAll('.english-content').forEach(c => c.classList.add('hidden'));
+      } else {
+        document.getElementById('subjectEnglish').classList.add('border-english', 'bg-english-light');
+        document.getElementById('subjectEnglish').classList.remove('border-border-light');
+        document.querySelectorAll('.korean-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.math-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.english-content').forEach(c => c.classList.remove('hidden'));
+      }
+      
+      // Clear selection when subject changes
+      selectedContents = [];
+      updateSelectedContentsUI();
+      document.querySelectorAll('.content-card').forEach(card => {
+        card.classList.remove('selected', 'ring-2', 'ring-primary', 'bg-primary-light');
+        card.querySelector('.content-check').classList.add('hidden');
+      });
+      
+      checkDuplicateAssignment();
+    }
+    
+    // Check Duplicate Assignment
+    function checkDuplicateAssignment() {
+      if (assignType !== 'individual') {
+        document.getElementById('duplicateWarning').classList.add('hidden');
+        return;
+      }
+      
+      const studentSelect = document.getElementById('targetStudent');
+      const selectedOption = studentSelect.options[studentSelect.selectedIndex];
+      if (!selectedOption || !selectedOption.value) {
+        document.getElementById('duplicateWarning').classList.add('hidden');
+        return;
+      }
+      
+      const studentClass = selectedOption.dataset.class;
+      const classAssignments = existingAssignments[studentClass] || [];
+      const hasDuplicate = classAssignments.some(a => a.subject === selectedSubject);
+      
+      if (hasDuplicate) {
+        document.getElementById('duplicateWarning').classList.remove('hidden');
+      } else {
+        document.getElementById('duplicateWarning').classList.add('hidden');
+      }
+    }
+    
+    // Content Selection
+    function toggleContent(card, contentId) {
+      const index = selectedContents.findIndex(c => c.id === contentId);
+      
+      if (index > -1) {
+        selectedContents.splice(index, 1);
+        card.classList.remove('selected', 'ring-2', 'ring-primary', 'bg-primary-light');
+        card.querySelector('.content-check').classList.add('hidden');
+      } else {
+        const title = card.querySelector('.font-medium').textContent;
+        const info = card.querySelector('.text-xs').textContent;
+        selectedContents.push({ id: contentId, title, info });
+        card.classList.add('selected', 'ring-2', 'ring-primary', 'bg-primary-light');
+        card.querySelector('.content-check').classList.remove('hidden');
+        card.querySelector('.content-check').classList.add('text-primary');
+      }
+      
+      updateSelectedContentsUI();
+    }
+    
+    function updateSelectedContentsUI() {
+      const section = document.getElementById('selectedContentsSection');
+      const list = document.getElementById('selectedContentsList');
+      const count = document.getElementById('selectedCount');
+      
+      if (selectedContents.length > 0) {
+        section.classList.remove('hidden');
+        count.textContent = selectedContents.length;
+        list.innerHTML = selectedContents.map(content => `
+          <div class="flex items-center gap-2 px-3 py-2 bg-primary-light border border-primary/30 rounded-lg">
+            <span class="text-sm font-medium text-primary">${content.title}</span>
+            <button onclick="removeContent('${content.id}')" class="p-0.5 hover:bg-primary/20 rounded">
+              <span class="material-icons-round text-primary text-sm">close</span>
+            </button>
+          </div>
+        `).join('');
+      } else {
+        section.classList.add('hidden');
+      }
+    }
+    
+    function removeContent(contentId) {
+      selectedContents = selectedContents.filter(c => c.id !== contentId);
+      const card = document.querySelector(`[data-id="${contentId}"]`);
+      if (card) {
+        card.classList.remove('selected', 'ring-2', 'ring-primary', 'bg-primary-light');
+        card.querySelector('.content-check').classList.add('hidden');
+      }
+      updateSelectedContentsUI();
+    }
+    
+    function searchContent() {
+      const query = document.getElementById('contentSearch').value.toLowerCase();
+      
+      document.querySelectorAll('.content-card').forEach(card => {
+        const isKorean = card.classList.contains('korean-content');
+        const isMath = card.classList.contains('math-content');
+        const isEnglish = card.classList.contains('english-content');
+        
+        // Check subject match
+        if ((selectedSubject === 'korean' && !isKorean) || 
+            (selectedSubject === 'math' && !isMath) ||
+            (selectedSubject === 'english' && !isEnglish)) {
+          card.classList.add('hidden');
+          return;
+        }
+        
+        const title = card.querySelector('.font-medium').textContent.toLowerCase();
+        const info = card.querySelector('.text-xs').textContent.toLowerCase();
+        
+        const matchesQuery = !query || title.includes(query) || info.includes(query);
+        
+        if (matchesQuery) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+    
+    // Duplicate Modal
+    function closeDuplicateModal() {
+      document.getElementById('duplicateModal').classList.add('hidden');
+    }
+    
+    function confirmDuplicate() {
+      duplicateConfirmed = true;
+      closeDuplicateModal();
+      processSubmission();
+    }
+    
+    // Submit
+    function submitAssignment() {
+      // Validation
+      if (assignType === 'class' && !document.getElementById('targetClass').value) {
+        alert('반을 선택해주세요.');
+        return;
+      }
+      if (assignType === 'individual' && !document.getElementById('targetStudent').value) {
+        alert('학생을 선택해주세요.');
+        return;
+      }
+      if (contentType === 'text' && !document.getElementById('assignmentTitle').value) {
+        alert('숙제 제목을 입력해주세요.');
+        return;
+      }
+      if (contentType === 'select' && !document.getElementById('assignmentTitleForContent').value) {
+        alert('숙제 제목을 입력해주세요.');
+        return;
+      }
+      if (contentType === 'select' && selectedContents.length === 0) {
+        alert('콘텐츠를 선택해주세요.');
+        return;
+      }
+      if (!document.getElementById('deadlineDate').value) {
+        alert('마감일을 선택해주세요.');
+        return;
+      }
+      
+      // Check for duplicate (individual assignment to student with class assignment)
+      if (assignType === 'individual' && !duplicateConfirmed) {
+        const studentSelect = document.getElementById('targetStudent');
+        const selectedOption = studentSelect.options[studentSelect.selectedIndex];
+        const studentClass = selectedOption?.dataset.class;
+        const classAssignments = existingAssignments[studentClass] || [];
+        const hasDuplicate = classAssignments.some(a => a.subject === selectedSubject);
+        
+        if (hasDuplicate) {
+          document.getElementById('duplicateStudentName').textContent = selectedOption.textContent.split('(')[0].trim();
+          document.getElementById('duplicateModal').classList.remove('hidden');
+          return;
+        }
+      }
+      
+      processSubmission();
+    }
+    
+    function processSubmission() {
+      const assignment = {
+        type: assignType,
+        subject: selectedSubject,
+        contentType: contentType,
+        target: assignType === 'class' ? document.getElementById('targetClass').value : document.getElementById('targetStudent').value,
+        title: contentType === 'text' ? document.getElementById('assignmentTitle').value : document.getElementById('assignmentTitleForContent').value,
+        description: contentType === 'text' ? document.getElementById('assignmentDesc').value : '',
+        contents: selectedContents,
+        deadline: `${document.getElementById('deadlineDate').value} ${document.getElementById('deadlineTime').value}`,
+        notifyStudents: document.getElementById('notifyStudents').checked,
+        notifyParents: document.getElementById('notifyParents').checked
+      };
+      
+      console.log('Assignment:', assignment);
+      
+      closeAssignmentModal();
+      showToast('숙제가 배정되었습니다.');
+    }
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+  </script>
+  <script>
+    function openMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.getElementById('mobileMenu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

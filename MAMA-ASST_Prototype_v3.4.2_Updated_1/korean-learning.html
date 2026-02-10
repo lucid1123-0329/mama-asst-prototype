@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>국어 5단계 학습 | MAMA-ASST</title>
+  <meta name="description" content="MAMA-ASST 국어 5단계 통합 학습 - 인공지능과 미래 사회">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/korean-learning.css">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234285F4' rx='20' width='100' height='100'/><text x='50' y='68' font-size='50' text-anchor='middle' fill='white'>국</text></svg>">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D', 'primary-light': '#FFF0ED',
+            navy: '#1A2E4D', 'navy-light': '#2C4872',
+            korean: '#4285F4', 'korean-light': '#E8F0FE', 'korean-dark': '#3367D6',
+            english: '#34A853', 'english-light': '#E6F4EA',
+            math: '#FBBC05', 'math-light': '#FEF7E0',
+            background: '#F9FAFB', surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937', 'text-secondary': '#6B7280', 'text-tertiary': '#9CA3AF',
+            success: '#22C55E', 'success-light': '#F0FDF4',
+            error: '#EF4444', 'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+          },
+          fontFamily: { sans: ['Pretendard','Apple SD Gothic Neo','Malgun Gothic','sans-serif'] },
+          boxShadow: { card: '0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)', 'card-hover': '0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.08)' },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  <div class="flex h-screen overflow-hidden">
+
+    <!-- ══ Desktop Sidebar ══ -->
+    <aside class="hidden lg:flex w-20 bg-navy flex-col items-center py-6 flex-shrink-0">
+      <a href="student-dashboard.html" class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center mb-8" aria-label="MAMA-ASST 홈">
+        <span class="text-white font-bold text-lg" aria-hidden="true">M</span>
+      </a>
+      <nav class="flex-1 flex flex-col items-center gap-2" aria-label="과목 메뉴">
+        <a href="student-dashboard.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors" aria-label="홈">
+          <span class="material-icons-round" aria-hidden="true">home</span>
+        </a>
+        <a href="subject-korean.html" class="w-12 h-12 rounded-xl flex items-center justify-center bg-white/10 text-white" aria-label="국어" aria-current="page">
+          <span class="material-icons-round" aria-hidden="true">menu_book</span>
+        </a>
+        <a href="subject-english.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors" aria-label="영어">
+          <span class="material-icons-round" aria-hidden="true">translate</span>
+        </a>
+        <a href="subject-math.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors" aria-label="수학">
+          <span class="material-icons-round" aria-hidden="true">calculate</span>
+        </a>
+      </nav>
+      <a href="subject-korean.html" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-colors" aria-label="학습 종료">
+        <span class="material-icons-round" aria-hidden="true">close</span>
+      </a>
+    </aside>
+
+    <!-- ══ Main Area ══ -->
+    <div class="flex-1 flex flex-col min-w-0">
+
+      <!-- ── Header ── -->
+      <header class="bg-surface border-b border-border-light flex-shrink-0">
+        <!-- Desktop Header -->
+        <div class="hidden lg:flex items-center justify-between px-8 py-4">
+          <div class="flex items-center gap-4">
+            <a href="subject-korean.html" class="w-10 h-10 rounded-xl bg-background flex items-center justify-center hover:bg-border-light transition-colors" aria-label="뒤로가기">
+              <span class="material-icons-round text-text-secondary" aria-hidden="true">arrow_back</span>
+            </a>
+            <div>
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="px-2 py-0.5 bg-korean-light text-korean text-xs font-bold rounded">비문학</span>
+                <span class="text-text-tertiary text-sm">국어 5단계 학습</span>
+              </div>
+              <h1 class="text-lg font-bold text-text-primary">인공지능과 미래 사회</h1>
+            </div>
+          </div>
+          <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2 px-4 py-2 bg-background rounded-xl">
+              <span class="material-icons-round text-korean text-lg timer-active">schedule</span>
+              <span id="globalTimer" class="font-bold text-text-primary font-mono">00:00</span>
+            </div>
+            <div class="flex items-center gap-1 px-3 py-1.5 bg-primary-light text-primary rounded-lg text-sm font-bold">
+              <span class="material-icons-round text-base">star</span>
+              <span>+30 XP</span>
+            </div>
+          </div>
+        </div>
+        <!-- Mobile Header -->
+        <div class="lg:hidden px-4 py-3">
+          <div class="flex items-center justify-between mb-3">
+            <a href="subject-korean.html" class="w-10 h-10 rounded-xl bg-background flex items-center justify-center">
+              <span class="material-icons-round text-text-secondary">arrow_back</span>
+            </a>
+            <div class="flex items-center gap-2">
+              <span id="stepBadgeMobile" class="px-2 py-0.5 bg-korean-light text-korean text-xs font-bold rounded">1단계</span>
+              <div class="flex items-center gap-1 px-2 py-1 bg-background rounded-lg">
+                <span class="material-icons-round text-korean text-sm timer-active">schedule</span>
+                <span id="globalTimerMobile" class="text-sm font-bold font-mono">00:00</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-1.5" id="mobileStepBars">
+            <div class="step-bar active"></div>
+            <div class="step-bar"></div>
+            <div class="step-bar"></div>
+            <div class="step-bar"></div>
+            <div class="step-bar"></div>
+          </div>
+        </div>
+        <!-- Desktop Step Indicator -->
+        <div class="hidden lg:block px-8 pb-4">
+          <div class="flex items-center justify-center max-w-2xl mx-auto">
+            <div class="flex items-center gap-0 w-full relative">
+              <div class="flex flex-col items-center z-10" style="flex:1">
+                <div class="step-circle active" id="stepCircle1"><span class="material-icons-round text-lg">auto_stories</span></div>
+                <span class="text-xs mt-1.5 font-medium text-korean">읽기</span>
+              </div>
+              <div class="flex-1 relative h-1"><div class="step-connector" id="stepConn1"></div></div>
+              <div class="flex flex-col items-center z-10" style="flex:1">
+                <div class="step-circle pending" id="stepCircle2"><span class="material-icons-round text-lg">link</span></div>
+                <span class="text-xs mt-1.5 font-medium text-text-tertiary" id="stepLabel2">어휘</span>
+              </div>
+              <div class="flex-1 relative h-1"><div class="step-connector" id="stepConn2"></div></div>
+              <div class="flex flex-col items-center z-10" style="flex:1">
+                <div class="step-circle pending" id="stepCircle3"><span class="material-icons-round text-lg">account_tree</span></div>
+                <span class="text-xs mt-1.5 font-medium text-text-tertiary" id="stepLabel3">구조화</span>
+              </div>
+              <div class="flex-1 relative h-1"><div class="step-connector" id="stepConn3"></div></div>
+              <div class="flex flex-col items-center z-10" style="flex:1">
+                <div class="step-circle pending" id="stepCircle4"><span class="material-icons-round text-lg">quiz</span></div>
+                <span class="text-xs mt-1.5 font-medium text-text-tertiary" id="stepLabel4">검증</span>
+              </div>
+              <div class="flex-1 relative h-1"><div class="step-connector" id="stepConn4"></div></div>
+              <div class="flex flex-col items-center z-10" style="flex:1">
+                <div class="step-circle pending" id="stepCircle5"><span class="material-icons-round text-lg">summarize</span></div>
+                <span class="text-xs mt-1.5 font-medium text-text-tertiary" id="stepLabel5">요약</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══════════════════════════════════════ -->
+      <!-- ══ CONTENT AREA (Step Sections) ══ -->
+      <!-- ══════════════════════════════════════ -->
+      <main id="contentArea" class="flex-1 overflow-y-auto">
+
+        <!-- ════ STEP 1: 읽기 ════ -->
+        <div id="step1" class="step-section">
+          <div class="flex flex-col lg:flex-row h-full">
+            <!-- Main: Passage -->
+            <div class="flex-1 overflow-y-auto p-4 lg:p-8" id="step1ScrollArea">
+              <!-- Reading Tips -->
+              <div class="bg-gradient-to-r from-korean-light to-blue-50 rounded-xl lg:rounded-2xl p-4 lg:p-5 mb-6 border border-korean/20">
+                <div class="flex items-start gap-3">
+                  <span class="material-icons-round text-korean text-xl flex-shrink-0 mt-0.5">lightbulb</span>
+                  <div>
+                    <h3 class="font-bold text-text-primary mb-1 text-sm lg:text-base">읽기 팁</h3>
+                    <p class="text-xs lg:text-sm text-text-secondary">각 문단의 핵심 문장에 주목하며 읽어보세요. 글의 전체 구조를 파악하는 것이 중요합니다.</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Passage -->
+              <article class="bg-surface rounded-xl lg:rounded-2xl shadow-card p-5 lg:p-8 border border-border-light/50">
+                <div class="reading-text space-y-5 lg:space-y-6" id="passageText">
+                  <div class="paragraph-block" data-para="1">
+                    <p><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-korean-light text-korean text-xs font-bold mr-2">1</span>인공지능(AI)은 인간의 학습능력, 추론능력, 지각능력을 인공적으로 구현한 컴퓨터 프로그램 또는 이를 포함한 컴퓨터 시스템을 의미한다. 최근 딥러닝 기술의 발전으로 AI는 이미지 인식, 자연어 처리, 게임 등 다양한 분야에서 인간의 능력을 뛰어넘는 성과를 보여주고 있다.</p>
+                  </div>
+                  <div class="paragraph-block" data-para="2">
+                    <p><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-korean-light text-korean text-xs font-bold mr-2">2</span>AI의 발전은 우리 사회에 큰 변화를 가져올 것으로 예상된다. 우선, 노동 시장에서 큰 변화가 일어날 것이다. 단순 반복적인 업무는 AI로 대체될 가능성이 높으며, 이로 인해 일부 직업은 사라지고 새로운 형태의 직업이 생겨날 것이다. 맥킨지 글로벌 연구소의 보고서에 따르면, 2030년까지 전 세계적으로 약 4억 개의 일자리가 자동화의 영향을 받을 것으로 전망된다.</p>
+                  </div>
+                  <div class="paragraph-block" data-para="3">
+                    <p><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-korean-light text-korean text-xs font-bold mr-2">3</span>한편, AI는 의료, 교육, 환경 등 다양한 분야에서 긍정적인 역할을 할 것으로 기대된다. 의료 분야에서 AI는 질병의 조기 진단과 맞춤형 치료법 개발에 활용되고 있으며, 교육 분야에서는 개인별 맞춤 학습을 가능하게 한다. 또한 환경 문제 해결을 위한 에너지 효율 최적화와 기후 변화 예측 모델 개발에도 AI가 활용되고 있다.</p>
+                  </div>
+                  <div class="paragraph-block" data-para="4">
+                    <p><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-korean-light text-korean text-xs font-bold mr-2">4</span>그러나 AI의 발전이 가져올 부정적인 측면도 간과해서는 안 된다. AI 시스템의 편향성 문제, 개인정보 보호 이슈, 그리고 AI의 의사결정에 대한 책임 소재 등 해결해야 할 윤리적 문제들이 산적해 있다. 특히 AI가 인간의 일자리를 대체함에 따라 발생할 수 있는 사회적 불평등 문제는 심각하게 고려되어야 한다.</p>
+                  </div>
+                  <div class="paragraph-block" data-para="5">
+                    <p><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-korean-light text-korean text-xs font-bold mr-2">5</span>따라서 AI 기술의 발전과 함께 이에 대한 사회적 논의와 제도적 장치 마련이 필요하다. AI 기술의 혜택을 모든 사람이 누릴 수 있도록 하면서도, 그로 인한 부작용을 최소화하기 위한 노력이 병행되어야 할 것이다. 궁극적으로 AI는 인간을 대체하는 것이 아니라 인간의 능력을 보완하고 확장하는 도구로 활용되어야 하며, 이를 위한 인간 중심의 AI 윤리 원칙 수립이 시급하다.</p>
+                  </div>
+                </div>
+                <div class="mt-6 lg:mt-8 pt-4 lg:pt-6 border-t border-border-light flex items-center justify-between text-xs lg:text-sm text-text-secondary">
+                  <div class="flex items-center gap-3 lg:gap-4">
+                    <span class="flex items-center gap-1"><span class="material-icons-round text-base lg:text-lg">text_fields</span>총 5개 문단</span>
+                    <span class="flex items-center gap-1"><span class="material-icons-round text-base lg:text-lg">article</span>약 650자</span>
+                  </div>
+                  <span class="flex items-center gap-1"><span class="material-icons-round text-base lg:text-lg">schedule</span>권장 3~5분</span>
+                </div>
+              </article>
+            </div>
+            <!-- Desktop Right Panel: Tools -->
+            <aside class="hidden lg:flex flex-col w-80 bg-surface border-l border-border-light p-6 overflow-y-auto flex-shrink-0">
+              <div class="mb-6">
+                <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2"><span class="material-icons-round text-korean">build</span>빠른 도구</h3>
+                <div class="grid grid-cols-2 gap-2">
+                  <button onclick="KL.changeFontSize(1)" class="flex flex-col items-center gap-1 p-3 bg-background rounded-xl hover:bg-border-light transition-colors text-xs text-text-secondary">
+                    <span class="material-icons-round text-lg">text_increase</span>글자 크게
+                  </button>
+                  <button onclick="KL.changeFontSize(-1)" class="flex flex-col items-center gap-1 p-3 bg-background rounded-xl hover:bg-border-light transition-colors text-xs text-text-secondary">
+                    <span class="material-icons-round text-lg">text_decrease</span>글자 작게
+                  </button>
+                  <button onclick="KL.toggleHighlight()" id="highlightBtn" class="flex flex-col items-center gap-1 p-3 bg-background rounded-xl hover:bg-border-light transition-colors text-xs text-text-secondary">
+                    <span class="material-icons-round text-lg">highlight</span>하이라이트
+                  </button>
+                  <button onclick="KL.toggleBookmark()" id="bookmarkBtn" class="flex flex-col items-center gap-1 p-3 bg-background rounded-xl hover:bg-border-light transition-colors text-xs text-text-secondary">
+                    <span class="material-icons-round text-lg">bookmark_border</span>북마크
+                  </button>
+                </div>
+                <p id="fontSizeLabel" class="text-center text-xs text-text-tertiary mt-2">보통 (17px)</p>
+              </div>
+              <div class="mb-6">
+                <h3 class="font-bold text-text-primary mb-3 flex items-center gap-2"><span class="material-icons-round text-korean">key</span>핵심 어휘 미리보기</h3>
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2 p-2.5 bg-background rounded-lg text-sm"><span class="px-1.5 py-0.5 bg-korean text-white text-[10px] font-bold rounded">핵심</span><span class="font-medium">딥러닝</span></div>
+                  <div class="flex items-center gap-2 p-2.5 bg-background rounded-lg text-sm"><span class="px-1.5 py-0.5 bg-korean text-white text-[10px] font-bold rounded">핵심</span><span class="font-medium">자연어 처리</span></div>
+                  <div class="flex items-center gap-2 p-2.5 bg-background rounded-lg text-sm"><span class="px-1.5 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded">중요</span><span class="font-medium">편향성</span></div>
+                </div>
+              </div>
+              <div class="p-4 bg-gradient-to-br from-purple-50 to-korean-light rounded-xl border border-korean/10">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="material-icons-round text-korean">smart_toy</span>
+                  <span class="font-bold text-sm">AI 힌트</span>
+                </div>
+                <p class="text-xs text-text-secondary leading-relaxed">"글의 마지막 문단에 주목해보세요. 필자의 주장이 요약되어 있을 거예요!"</p>
+              </div>
+              <div class="mt-8">
+                <button id="desktopNextBtn1" onclick="KL.handleNextStep()" class="w-full py-3.5 bg-korean hover:bg-korean-dark text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-korean/30">
+                  다 읽었어요! 다음 단계로
+                  <span class="material-icons-round text-lg">arrow_forward</span>
+                </button>
+                <p class="text-xs text-text-tertiary text-center mt-2">최소 2분 이상 읽기를 권장해요</p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- ════ STEP 2: 어휘 ════ -->
+        <div id="step2" class="step-section hidden">
+          <div class="flex flex-col lg:flex-row h-full">
+            <!-- Left: Passage with highlights -->
+            <div class="hidden lg:block w-2/5 overflow-y-auto p-8 bg-background/50 border-r border-border-light">
+              <h3 class="font-bold text-text-primary mb-4 flex items-center gap-2"><span class="material-icons-round text-korean">auto_stories</span>지문 속 핵심 어휘</h3>
+              <div class="bg-surface rounded-xl p-5 text-sm text-text-primary leading-relaxed space-y-3">
+                <p>인공지능(AI)은 인간의 학습능력을 인공적으로 구현한 시스템이다. 최근 <span class="highlight-word" data-vocab="1">딥러닝</span> 기술의 발전으로 AI는 <span class="highlight-word" data-vocab="2">자연어 처리</span>, 게임 등에서 성과를 보여주고 있다.</p>
+                <p>단순 반복 업무는 AI로 대체되며, <span class="highlight-word" data-vocab="3">자동화</span>의 영향을 받을 것이다.</p>
+                <p>교육 분야에서는 <span class="highlight-word" data-vocab="4">맞춤형</span> 학습을 가능하게 한다.</p>
+                <p>AI 시스템의 <span class="highlight-word" data-vocab="5">편향성</span> 문제, AI 의사결정에 대한 <span class="highlight-word" data-vocab="6">책임 소재</span> 등 윤리적 문제가 있다.</p>
+              </div>
+            </div>
+            <!-- Right: Vocab Cards -->
+            <div class="flex-1 overflow-y-auto p-4 lg:p-8">
+              <div class="flex items-center justify-between mb-4 lg:mb-6">
+                <div>
+                  <h2 class="text-base lg:text-xl font-bold text-text-primary mb-1">핵심 어휘 학습</h2>
+                  <p class="text-xs lg:text-sm text-text-secondary">카드를 클릭하여 뜻을 확인하세요</p>
+                </div>
+                <div class="px-3 py-1.5 bg-korean-light text-korean rounded-lg text-sm font-bold">
+                  <span id="vocabCount">0</span> / 6
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4" id="vocabGrid">
+                <!-- Cards injected by JS -->
+              </div>
+              <div class="hidden lg:flex justify-end mt-8 pt-6 border-t border-border-light">
+                <button id="desktopNextBtn2" onclick="KL.handleNextStep()" disabled class="px-8 py-3 bg-korean hover:bg-korean-dark text-white font-bold rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-korean/30">
+                  다음 단계로
+                  <span class="material-icons-round text-lg">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ STEP 3: 구조화 ════ -->
+        <div id="step3" class="step-section hidden">
+          <div class="flex flex-col lg:flex-row h-full">
+            <!-- Main: Quiz -->
+            <div class="flex-1 overflow-y-auto p-4 lg:p-8">
+              <div class="bg-gradient-to-r from-korean to-korean-dark rounded-xl lg:rounded-2xl p-5 lg:p-6 text-white mb-6">
+                <div class="flex items-start gap-3 lg:gap-4">
+                  <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-white text-xl lg:text-2xl">help</span>
+                  </div>
+                  <div>
+                    <span class="px-2 py-0.5 bg-white/20 text-white text-xs font-bold rounded mb-2 inline-block">핵심 문단 찾기</span>
+                    <h2 class="text-lg lg:text-xl font-bold mb-1 lg:mb-2">이 글의 핵심 주장이 담긴 문단은?</h2>
+                    <p class="text-white/80 text-xs lg:text-sm">글 전체의 중심 생각을 담고 있는 문단을 선택하세요.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-3" id="structParagraphs">
+                <!-- Paragraph cards injected by JS -->
+              </div>
+              <div id="structResult" class="hidden mt-6 bg-success-light rounded-xl lg:rounded-2xl p-5 lg:p-6 border border-success/30">
+                <div class="flex items-start gap-3 lg:gap-4">
+                  <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-success flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-white text-xl lg:text-2xl">check_circle</span>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-success text-base lg:text-lg mb-1 lg:mb-2">정답이에요! 🎉</h3>
+                    <p class="text-xs lg:text-sm text-text-secondary">5번 문단은 '따라서'로 시작하며 글 전체의 결론을 제시하고 있어요. 핵심 주장인 "인간 중심의 AI 윤리 원칙 수립"이 담겨있습니다.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="hidden lg:flex justify-end mt-8 pt-6 border-t border-border-light">
+                <button id="desktopNextBtn3" onclick="KL.handleNextStep()" disabled class="px-8 py-3 bg-korean hover:bg-korean-dark text-white font-bold rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-korean/30">
+                  다음 단계로
+                  <span class="material-icons-round text-lg">arrow_forward</span>
+                </button>
+              </div>
+            </div>
+            <!-- Desktop Right Panel: AI Structure -->
+            <aside class="hidden lg:flex flex-col w-96 bg-surface border-l border-border-light p-6 overflow-y-auto flex-shrink-0">
+              <div class="flex items-center gap-2 mb-6">
+                <span class="material-icons-round text-korean">account_tree</span>
+                <h3 class="font-bold text-text-primary">AI 구조 분석</h3>
+              </div>
+              <div class="space-y-4">
+                <div class="structure-node text-center p-3 bg-korean-light rounded-xl border border-korean/20">
+                  <p class="font-bold text-korean text-sm">인공지능과 미래 사회</p>
+                </div>
+                <div class="flex justify-center"><div class="w-0.5 h-6 bg-korean/30"></div></div>
+                <div class="structure-node p-3 bg-blue-50 rounded-lg border border-blue-200" style="animation-delay:0.1s">
+                  <p class="text-xs text-blue-600 font-bold mb-0.5">서론</p>
+                  <p class="text-xs text-text-secondary">AI 개념 정의</p>
+                </div>
+                <div class="flex justify-center"><div class="w-0.5 h-4 bg-korean/20"></div></div>
+                <div class="grid grid-cols-3 gap-2">
+                  <div class="structure-node p-2.5 bg-orange-50 rounded-lg border border-orange-200 text-center" style="animation-delay:0.2s">
+                    <p class="text-[10px] text-orange-600 font-bold">본론①</p>
+                    <p class="text-[10px] text-text-tertiary">노동시장 변화</p>
+                  </div>
+                  <div class="structure-node p-2.5 bg-green-50 rounded-lg border border-green-200 text-center" style="animation-delay:0.25s">
+                    <p class="text-[10px] text-green-600 font-bold">본론②</p>
+                    <p class="text-[10px] text-text-tertiary">긍정적 활용</p>
+                  </div>
+                  <div class="structure-node p-2.5 bg-red-50 rounded-lg border border-red-200 text-center" style="animation-delay:0.3s">
+                    <p class="text-[10px] text-red-600 font-bold">본론③</p>
+                    <p class="text-[10px] text-text-tertiary">윤리적 문제</p>
+                  </div>
+                </div>
+                <div class="flex justify-center"><div class="w-0.5 h-4 bg-korean/20"></div></div>
+                <div class="structure-node p-3 bg-purple-50 rounded-lg border-2 border-purple-300" style="animation-delay:0.4s">
+                  <p class="text-xs text-purple-600 font-bold mb-0.5">결론 ⭐</p>
+                  <p class="text-xs text-text-secondary">인간 중심 AI 윤리 원칙 필요</p>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- ════ STEP 4: 검증 (O/X) ════ -->
+        <div id="step4" class="step-section hidden">
+          <div class="flex-1 overflow-y-auto p-4 lg:p-8 max-w-3xl mx-auto">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-base lg:text-xl font-bold text-text-primary mb-1">O/X 검증 퀴즈</h2>
+                <p class="text-xs lg:text-sm text-text-secondary">지문의 내용과 일치하면 O, 아니면 X를 선택하세요</p>
+              </div>
+              <div class="px-3 py-1.5 bg-korean-light text-korean rounded-lg text-sm font-bold">
+                <span id="quizScore">0</span>/5
+              </div>
+            </div>
+            <!-- Quiz Progress Dots -->
+            <div class="flex items-center justify-center gap-3 mb-6" id="quizDots">
+              <div class="quiz-dot current"></div>
+              <div class="quiz-dot"></div>
+              <div class="quiz-dot"></div>
+              <div class="quiz-dot"></div>
+              <div class="quiz-dot"></div>
+            </div>
+            <!-- Question Card -->
+            <div class="bg-surface rounded-xl lg:rounded-2xl shadow-card p-5 lg:p-8 border border-border-light/50 text-center">
+              <p class="text-xs text-text-tertiary mb-2">문제 <span id="quizNum">1</span>/5</p>
+              <p class="text-base lg:text-lg font-bold text-text-primary mb-8" id="quizQuestion">-</p>
+              <div class="flex items-center justify-center gap-6 lg:gap-10">
+                <button class="ox-btn o-btn" onclick="KL.selectAnswer('O')">O</button>
+                <button class="ox-btn x-btn" onclick="KL.selectAnswer('X')">X</button>
+              </div>
+            </div>
+            <!-- Answer Result -->
+            <div id="quizResult" class="hidden mt-6 rounded-xl lg:rounded-2xl p-5 lg:p-6 border">
+              <div class="flex items-start gap-3 lg:gap-4">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" id="quizResultIcon"></div>
+                <div>
+                  <h3 class="font-bold text-base mb-1" id="quizResultTitle">-</h3>
+                  <p class="text-xs lg:text-sm text-text-secondary" id="quizResultExpl">-</p>
+                </div>
+              </div>
+            </div>
+            <!-- Reference Toggle -->
+            <div class="mt-4">
+              <button onclick="KL.toggleReference()" class="text-sm text-korean flex items-center gap-1 hover:underline" id="refToggleBtn">
+                <span class="material-icons-round text-base">visibility</span>지문 다시 보기
+              </button>
+              <div id="referencePanel" class="hidden mt-3 bg-background rounded-xl p-4 text-sm text-text-secondary leading-relaxed max-h-48 overflow-y-auto border border-border-light">
+                <p class="mb-2">① 인공지능(AI)은 인간의 학습능력, 추론능력, 지각능력을 인공적으로 구현한 시스템이다...</p>
+                <p class="mb-2">② AI 발전은 노동 시장에 큰 변화를 가져올 것이며, 약 4억 개 일자리가 영향을 받을 전망이다.</p>
+                <p class="mb-2">③ AI는 의료, 교육, 환경 등에서 긍정적 역할이 기대된다.</p>
+                <p class="mb-2">④ AI 편향성, 개인정보 보호, 책임 소재 등 윤리적 문제가 있다.</p>
+                <p>⑤ 인간 중심의 AI 윤리 원칙 수립이 시급하다.</p>
+              </div>
+            </div>
+            <div class="hidden lg:flex justify-end mt-8 pt-6 border-t border-border-light">
+              <button id="desktopNextBtn4" onclick="KL.handleNextStep()" disabled class="px-8 py-3 bg-korean hover:bg-korean-dark text-white font-bold rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-korean/30">
+                <span id="desktopNextBtn4Text">다음 문제</span>
+                <span class="material-icons-round text-lg">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ STEP 5: 요약 ════ -->
+        <div id="step5" class="step-section hidden">
+          <div class="flex flex-col lg:flex-row h-full">
+            <!-- Main: Summary Input -->
+            <div class="flex-1 overflow-y-auto p-4 lg:p-8">
+              <div class="max-w-2xl">
+                <h2 class="text-base lg:text-xl font-bold text-text-primary mb-1">요약문 작성</h2>
+                <p class="text-xs lg:text-sm text-text-secondary mb-6">"인공지능과 미래 사회"의 핵심 내용을 50~100자로 요약해보세요.</p>
+                <!-- Input Area -->
+                <div id="summaryInputArea">
+                  <label for="summaryInput" class="sr-only">요약문 작성</label>
+                  <textarea id="summaryInput" class="w-full h-40 p-4 bg-surface border-2 border-border-light rounded-xl text-sm lg:text-base text-text-primary resize-none focus:border-korean focus:outline-none transition-colors" placeholder="글의 핵심 내용을 요약해보세요..." maxlength="150" oninput="KL.updateCharCount()"></textarea>
+                  <div class="flex items-center justify-between mt-2">
+                    <p class="text-xs text-text-tertiary">권장: 50~100자</p>
+                    <p class="text-xs char-counter"><span id="charCount">0</span>/150</p>
+                  </div>
+                  <button id="summarySubmitBtn" onclick="KL.submitSummary()" disabled class="mt-4 w-full py-3 bg-korean text-white font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-korean-dark transition-colors flex items-center justify-center gap-2">
+                    <span class="material-icons-round text-lg">smart_toy</span>
+                    AI 피드백 받기
+                  </button>
+                </div>
+                <!-- Feedback Area (hidden initially) -->
+                <div id="summaryFeedback" class="hidden mt-6">
+                  <!-- Loading -->
+                  <div id="summaryLoading" class="text-center py-8">
+                    <div class="flex items-center justify-center gap-1 mb-3">
+                      <div class="w-2.5 h-2.5 bg-korean rounded-full typing-dot"></div>
+                      <div class="w-2.5 h-2.5 bg-korean rounded-full typing-dot" style="animation-delay:0.2s"></div>
+                      <div class="w-2.5 h-2.5 bg-korean rounded-full typing-dot" style="animation-delay:0.4s"></div>
+                    </div>
+                    <p class="text-sm text-text-secondary">AI가 요약문을 분석하고 있어요...</p>
+                  </div>
+                  <!-- Result -->
+                  <div id="summaryResult" class="hidden">
+                    <div class="bg-surface rounded-xl lg:rounded-2xl shadow-card p-5 lg:p-6 border border-border-light/50">
+                      <div class="flex items-center gap-4 mb-5">
+                        <div class="score-ring" style="--score: 85">
+                          <div class="score-ring-inner">85</div>
+                        </div>
+                        <div>
+                          <h3 class="font-bold text-text-primary text-lg">잘 작성했어요!</h3>
+                          <p class="text-sm text-text-secondary">핵심 내용을 잘 파악했습니다</p>
+                        </div>
+                      </div>
+                      <div class="space-y-3">
+                        <div class="flex items-start gap-2 p-3 bg-success-light rounded-lg">
+                          <span class="material-icons-round text-success text-lg flex-shrink-0">check_circle</span>
+                          <p class="text-sm text-text-primary">AI 개념과 영향에 대해 정확히 요약했어요</p>
+                        </div>
+                        <div class="flex items-start gap-2 p-3 bg-warning/10 rounded-lg">
+                          <span class="material-icons-round text-warning text-lg flex-shrink-0">info</span>
+                          <p class="text-sm text-text-primary">'인간 중심의 AI 윤리'라는 결론을 포함하면 더 좋아요</p>
+                        </div>
+                      </div>
+                      <div class="mt-5 p-4 bg-korean-light rounded-lg">
+                        <p class="text-xs text-korean font-bold mb-1">모범 요약</p>
+                        <p class="text-sm text-text-primary leading-relaxed">인공지능은 다양한 분야에서 혁신을 가져오지만, 윤리적 문제와 사회적 불평등을 야기할 수 있으므로, 인간 중심의 AI 윤리 원칙 수립이 필요하다.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="desktopCompleteBtn" class="hidden justify-end mt-6">
+                  <button onclick="KL.goToStep(6)" class="px-8 py-3 bg-gradient-to-r from-korean to-korean-dark text-white font-bold rounded-xl transition-opacity hover:opacity-90 flex items-center gap-2 shadow-lg shadow-korean/30">
+                    학습 완료하기 🎉
+                    <span class="material-icons-round text-lg">celebration</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Desktop Right Panel: Key Points -->
+            <aside class="hidden lg:flex flex-col w-80 bg-surface border-l border-border-light p-6 overflow-y-auto flex-shrink-0">
+              <h3 class="font-bold text-text-primary mb-4 flex items-center gap-2"><span class="material-icons-round text-korean">format_list_bulleted</span>핵심 내용 정리</h3>
+              <div class="space-y-3">
+                <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <p class="text-xs text-blue-600 font-bold mb-1">서론</p>
+                  <p class="text-xs text-text-secondary">AI 개념: 인간 학습·추론·지각 능력의 인공 구현</p>
+                </div>
+                <div class="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                  <p class="text-xs text-orange-600 font-bold mb-1">본론 - 변화</p>
+                  <p class="text-xs text-text-secondary">노동시장 변화, 4억 일자리 영향</p>
+                </div>
+                <div class="p-3 bg-green-50 rounded-lg border border-green-200">
+                  <p class="text-xs text-green-600 font-bold mb-1">본론 - 긍정</p>
+                  <p class="text-xs text-text-secondary">의료·교육·환경 분야 활용</p>
+                </div>
+                <div class="p-3 bg-red-50 rounded-lg border border-red-200">
+                  <p class="text-xs text-red-600 font-bold mb-1">본론 - 우려</p>
+                  <p class="text-xs text-text-secondary">편향성, 개인정보, 불평등</p>
+                </div>
+                <div class="p-3 bg-purple-50 rounded-lg border-2 border-purple-300">
+                  <p class="text-xs text-purple-600 font-bold mb-1">결론 ⭐</p>
+                  <p class="text-xs text-text-secondary">인간 중심 AI 윤리 원칙 수립 필요</p>
+                </div>
+              </div>
+              <div class="mt-6 p-4 bg-background rounded-xl">
+                <h4 class="font-bold text-sm text-text-primary mb-2 flex items-center gap-1"><span class="material-icons-round text-base text-primary">tips_and_updates</span>작성 팁</h4>
+                <ul class="text-xs text-text-secondary space-y-1.5">
+                  <li>• 서론/본론/결론 핵심을 포함하세요</li>
+                  <li>• 필자의 주장을 반드시 언급하세요</li>
+                  <li>• 50~100자가 적정 분량입니다</li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- ════ RESULT: 학습 완료 ════ -->
+        <div id="stepResult" class="step-section hidden">
+          <div class="overflow-y-auto">
+            <!-- Hero -->
+            <div class="bg-gradient-to-br from-korean via-korean-dark to-indigo-600 text-white text-center py-10 lg:py-16 px-4 relative overflow-hidden">
+              <div id="confettiContainer" class="fixed inset-0 pointer-events-none z-50"></div>
+              <div class="relative z-10">
+                <div class="text-4xl lg:text-5xl mb-3 float">🎉</div>
+                <h1 class="text-2xl lg:text-3xl font-bold mb-2">학습 완료!</h1>
+                <p class="text-white/80 text-sm lg:text-base">인공지능과 미래 사회</p>
+              </div>
+            </div>
+            <!-- Scores -->
+            <div class="max-w-4xl mx-auto px-4 lg:px-8 -mt-6 relative z-10">
+              <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6 lg:mb-8">
+                <div class="bg-surface rounded-xl lg:rounded-2xl p-4 lg:p-5 shadow-card text-center shine-effect count-up">
+                  <p class="text-xs text-text-tertiary mb-1">종합 점수</p>
+                  <p class="text-2xl lg:text-3xl font-bold text-korean" id="resultTotal">-</p>
+                </div>
+                <div class="bg-surface rounded-xl lg:rounded-2xl p-4 lg:p-5 shadow-card text-center count-up" style="animation-delay:0.1s">
+                  <p class="text-xs text-text-tertiary mb-1">획득 XP</p>
+                  <p class="text-2xl lg:text-3xl font-bold text-primary" id="resultXP">-</p>
+                </div>
+                <div class="bg-surface rounded-xl lg:rounded-2xl p-4 lg:p-5 shadow-card text-center count-up" style="animation-delay:0.2s">
+                  <p class="text-xs text-text-tertiary mb-1">학습 시간</p>
+                  <p class="text-2xl lg:text-3xl font-bold text-text-primary" id="resultTime">-</p>
+                </div>
+                <div class="bg-surface rounded-xl lg:rounded-2xl p-4 lg:p-5 shadow-card text-center count-up" style="animation-delay:0.3s">
+                  <p class="text-xs text-text-tertiary mb-1">연속 학습</p>
+                  <p class="text-2xl lg:text-3xl font-bold text-warning">5일 🔥</p>
+                </div>
+              </div>
+              <!-- Step Detail Scores -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
+                <div class="bg-surface rounded-xl lg:rounded-2xl p-5 lg:p-6 shadow-card">
+                  <h3 class="font-bold text-text-primary mb-4 flex items-center gap-2"><span class="material-icons-round text-korean">bar_chart</span>단계별 점수</h3>
+                  <div class="space-y-3" id="resultStepScores">
+                    <!-- Injected by JS -->
+                  </div>
+                </div>
+                <div class="bg-surface rounded-xl lg:rounded-2xl p-5 lg:p-6 shadow-card">
+                  <h3 class="font-bold text-text-primary mb-4 flex items-center gap-2"><span class="material-icons-round text-warning">emoji_events</span>획득 배지</h3>
+                  <div class="grid grid-cols-3 gap-3" id="resultBadges">
+                    <div class="text-center p-3 bg-background rounded-xl badge-unlock" style="animation-delay:0.5s">
+                      <div class="text-2xl mb-1">📚</div>
+                      <p class="text-[10px] font-bold text-text-primary">독해 완료</p>
+                    </div>
+                    <div class="text-center p-3 bg-background rounded-xl badge-unlock" style="animation-delay:0.7s">
+                      <div class="text-2xl mb-1">⚡</div>
+                      <p class="text-[10px] font-bold text-text-primary">빠른 독자</p>
+                    </div>
+                    <div class="text-center p-3 bg-background rounded-xl badge-unlock" style="animation-delay:0.9s">
+                      <div class="text-2xl mb-1">✍️</div>
+                      <p class="text-[10px] font-bold text-text-primary">요약 마스터</p>
+                    </div>
+                  </div>
+                  <div class="mt-5">
+                    <div class="flex items-center justify-between text-xs mb-2">
+                      <span class="text-text-secondary">XP 진행률 · Lv.7</span>
+                      <span class="text-text-primary font-bold"><span id="resultXPCurrent">685</span>/800</span>
+                    </div>
+                    <div class="h-2.5 bg-background rounded-full overflow-hidden">
+                      <div class="h-full bg-gradient-to-r from-primary to-orange-400 rounded-full xp-fill" id="resultXPBar" style="width: 85.6%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Next Recommendation -->
+              <div class="bg-gradient-to-r from-korean-light to-blue-50 rounded-xl lg:rounded-2xl p-5 lg:p-6 border border-korean/10 mb-6 lg:mb-8">
+                <h3 class="font-bold text-text-primary mb-4 flex items-center gap-2"><span class="material-icons-round text-korean">auto_awesome</span>다음 추천 학습</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <a href="korean-step1-reading.html" class="group bg-surface p-4 rounded-xl border border-border-light hover:border-korean transition-colors">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-lg bg-korean-light flex items-center justify-center flex-shrink-0"><span class="material-icons-round text-korean">menu_book</span></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="font-bold text-sm text-text-primary truncate">기후 변화의 원인과 대책</p>
+                        <p class="text-xs text-text-tertiary">비문학</p>
+                      </div>
+                      <span class="material-icons-round text-text-tertiary group-hover:text-korean transition-colors">chevron_right</span>
+                    </div>
+                  </a>
+                  <a href="korean-step1-reading.html" class="group bg-surface p-4 rounded-xl border border-border-light hover:border-korean transition-colors">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0"><span class="material-icons-round text-purple-500">auto_stories</span></div>
+                      <div class="flex-1 min-w-0">
+                        <p class="font-bold text-sm text-text-primary truncate">봄봄 (김유정)</p>
+                        <p class="text-xs text-text-tertiary">문학</p>
+                      </div>
+                      <span class="material-icons-round text-text-tertiary group-hover:text-purple-500 transition-colors">chevron_right</span>
+                    </div>
+                  </a>
+                </div>
+              </div>
+              <!-- Action Buttons -->
+              <div class="flex flex-col sm:flex-row gap-3 pb-24 lg:pb-8">
+                <a href="subject-korean.html" class="flex-1 py-3 border-2 border-border-light text-text-secondary font-semibold rounded-xl text-center hover:bg-background transition-colors">국어 홈</a>
+                <a href="student-dashboard.html" class="flex-1 py-3 bg-gradient-to-r from-korean to-korean-dark text-white font-bold rounded-xl text-center hover:opacity-90 transition-opacity">대시보드로 돌아가기</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- ══ Mobile Bottom Nav ══ -->
+      <div id="bottomNav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light p-4 bottom-nav-mobile z-40">
+        <button id="nextStepBtn" onclick="KL.handleNextStep()" class="w-full py-3 bg-korean text-white font-bold rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          <span id="nextStepBtnText">다 읽었어요! 다음 단계로</span>
+          <span class="material-icons-round text-lg">arrow_forward</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="assets/js/korean-learning.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+</body>
+</html>

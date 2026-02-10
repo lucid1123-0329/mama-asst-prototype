@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>브리핑 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%); color: white; }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .briefing-card { transition: all 0.2s ease; }
+    .briefing-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .briefing-card.read { opacity: 0.6; }
+    .tab-btn.active { color: #FF6D4D; border-bottom: 2px solid #FF6D4D; }
+    @keyframes pulse-ring {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+    .new-badge::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #EF4444;
+      border-radius: 50%;
+      animation: pulse-ring 1.5s ease-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Left Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-navy text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-white/60">강사용</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span><span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span><span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">rate_review</span><span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">history</span><span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span><span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span><span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span><span class="font-medium">시간표</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span><span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-briefing.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">campaign</span><span class="font-medium">브리핑</span>
+          <span class="ml-auto px-2 py-0.5 bg-white/20 text-xs rounded-full">2</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-korean-light flex items-center justify-center text-korean font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-white font-medium text-sm truncate">김선생님</p>
+            <p class="text-white/50 text-xs">국어 · 명불허전</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Header -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-14 bg-navy flex items-center justify-between px-4 z-30">
+      <button onclick="openMobileMenu()" class="text-white p-2">
+        <span class="material-icons-round">menu</span>
+      </button>
+      <span class="text-white font-bold">브리핑</span>
+      <div class="w-10"></div>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64 pt-14 lg:pt-0">
+      
+      <!-- Top Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-20">
+        <div>
+          <h1 class="text-lg font-bold text-navy">브리핑</h1>
+          <p class="text-sm text-text-secondary">학원 관리자로부터 전달받은 브리핑을 확인하세요</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-text-secondary">마지막 업데이트: 오늘 09:00</span>
+          <button class="p-2 hover:bg-gray-100 rounded-lg" title="새로고침">
+            <span class="material-icons-round text-text-secondary">refresh</span>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-6">
+        
+        <!-- Today's Summary -->
+        <div class="bg-gradient-to-br from-primary to-orange-400 rounded-2xl p-6 text-white">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="material-icons-round text-2xl">campaign</span>
+            <h2 class="text-xl font-bold">오늘의 브리핑</h2>
+            <span class="ml-auto px-3 py-1 bg-white/20 rounded-full text-sm">2025.01.13 (월)</span>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white/10 rounded-xl p-4 text-center">
+              <p class="text-white/70 text-sm mb-1">담당 학생</p>
+              <p class="text-3xl font-bold">12명</p>
+            </div>
+            <div class="bg-white/10 rounded-xl p-4 text-center">
+              <p class="text-white/70 text-sm mb-1">주의 필요</p>
+              <p class="text-3xl font-bold text-yellow-300">2명</p>
+            </div>
+            <div class="bg-white/10 rounded-xl p-4 text-center">
+              <p class="text-white/70 text-sm mb-1">관리자 전달</p>
+              <p class="text-3xl font-bold">1건</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="flex gap-4 border-b border-border-light">
+          <button onclick="showTab('ai')" class="tab-btn active px-4 py-3 text-sm font-medium transition-colors">
+            🤖 AI 분석
+          </button>
+          <button onclick="showTab('admin')" class="tab-btn px-4 py-3 text-sm font-medium text-text-secondary transition-colors relative">
+            📢 관리자 전달
+            <span class="absolute -top-1 -right-1 w-5 h-5 bg-error text-white text-xs rounded-full flex items-center justify-center">1</span>
+          </button>
+          <button onclick="showTab('history')" class="tab-btn px-4 py-3 text-sm font-medium text-text-secondary transition-colors">
+            📋 지난 브리핑
+          </button>
+        </div>
+        
+        <!-- AI Analysis Tab Content -->
+        <div id="tab-ai" class="space-y-4">
+          
+          <!-- Warning Section -->
+          <div class="bg-warning-light border border-warning rounded-xl p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="material-icons-round text-warning">warning</span>
+              <h3 class="font-bold text-warning">주의가 필요한 학생</h3>
+            </div>
+            
+            <div class="space-y-3">
+              <!-- Student Alert 1 -->
+              <div class="bg-white rounded-xl p-4 border border-warning/30">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-300 flex items-center justify-center text-white font-bold flex-shrink-0">
+                    지민
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                      <h4 class="font-bold">김지민</h4>
+                      <span class="text-xs text-text-secondary">중2</span>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                      <div class="flex items-start gap-2">
+                        <span class="material-icons-round text-error text-base mt-0.5">trending_down</span>
+                        <p><span class="font-medium text-error">정답률 45%</span> - 평소 대비 30% 하락</p>
+                      </div>
+                      <div class="flex items-start gap-2">
+                        <span class="material-icons-round text-warning text-base mt-0.5">psychology</span>
+                        <p>집중력 저하 패턴 감지 (최근 3일 연속)</p>
+                      </div>
+                    </div>
+                    <div class="mt-3 p-3 bg-info-light rounded-lg">
+                      <p class="text-sm text-info">
+                        <span class="font-medium">💡 AI 제안:</span> 격려 위주 피드백 권장. 난이도 조절 검토 필요.
+                      </p>
+                    </div>
+                  </div>
+                  <a href="instructor-student-detail.html" class="text-sm text-primary font-medium hover:underline whitespace-nowrap">
+                    상세 보기
+                  </a>
+                </div>
+              </div>
+              
+              <!-- Student Alert 2 -->
+              <div class="bg-white rounded-xl p-4 border border-warning/30">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+                    지훈
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                      <h4 class="font-bold">최지훈</h4>
+                      <span class="text-xs text-text-secondary">중1</span>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                      <div class="flex items-start gap-2">
+                        <span class="material-icons-round text-warning text-base mt-0.5">schedule</span>
+                        <p>연속 학습 끊김 - <span class="font-medium text-warning">3일 미접속</span></p>
+                      </div>
+                      <div class="flex items-start gap-2">
+                        <span class="material-icons-round text-text-secondary text-base mt-0.5">assignment_late</span>
+                        <p>미완료 숙제 2건</p>
+                      </div>
+                    </div>
+                    <div class="mt-3 p-3 bg-info-light rounded-lg">
+                      <p class="text-sm text-info">
+                        <span class="font-medium">💡 AI 제안:</span> 대면 시 동기부여 대화 필요. 숙제량 조절 검토.
+                      </p>
+                    </div>
+                  </div>
+                  <a href="instructor-student-detail.html" class="text-sm text-primary font-medium hover:underline whitespace-nowrap">
+                    상세 보기
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Positive Section -->
+          <div class="bg-success-light border border-success rounded-xl p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="material-icons-round text-success">trending_up</span>
+              <h3 class="font-bold text-success">긍정적 변화</h3>
+            </div>
+            
+            <div class="space-y-3">
+              <div class="bg-white rounded-xl p-4 border border-success/30">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+                    서연
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                      <h4 class="font-bold">박서연</h4>
+                      <span class="text-xs text-text-secondary">초6</span>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                      <div class="flex items-start gap-2">
+                        <span class="material-icons-round text-success text-base mt-0.5">emoji_events</span>
+                        <p>성향검사 완료 - <span class="font-medium text-success">메타인지 85점</span> (상위 10%)</p>
+                      </div>
+                      <div class="flex items-start gap-2">
+                        <span class="material-icons-round text-success text-base mt-0.5">local_fire_department</span>
+                        <p>연속 학습 21일 달성 🔥</p>
+                      </div>
+                    </div>
+                    <div class="mt-3 p-3 bg-info-light rounded-lg">
+                      <p class="text-sm text-info">
+                        <span class="font-medium">💡 AI 제안:</span> 자기주도 학습 역량 높음. 심화 과제 추천 가능.
+                      </p>
+                    </div>
+                  </div>
+                  <a href="instructor-student-detail.html" class="text-sm text-primary font-medium hover:underline whitespace-nowrap">
+                    상세 보기
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Other Students Summary -->
+          <div class="bg-surface rounded-xl border border-border-light p-4">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="material-icons-round text-text-secondary">people</span>
+              <h3 class="font-bold text-navy">기타 학생 현황</h3>
+              <span class="text-sm text-text-secondary">(9명)</span>
+            </div>
+            <p class="text-sm text-text-secondary">특이사항 없이 정상적으로 학습 중입니다.</p>
+            <a href="instructor-students.html" class="inline-block mt-3 text-sm text-primary font-medium hover:underline">전체 학생 목록 보기 →</a>
+          </div>
+          
+        </div>
+        
+        <!-- Admin Message Tab Content -->
+        <div id="tab-admin" class="space-y-4 hidden">
+          
+          <div class="briefing-card bg-surface rounded-xl border-2 border-info overflow-hidden">
+            <div class="p-4 bg-info-light flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-info">admin_panel_settings</span>
+                <span class="font-bold text-info">관리자 전달 사항</span>
+                <span class="px-2 py-0.5 bg-info text-white text-xs rounded-full">NEW</span>
+              </div>
+              <span class="text-xs text-text-secondary">오늘 09:00</span>
+            </div>
+            <div class="p-4 space-y-4">
+              
+              <div class="p-4 bg-gray-50 rounded-xl">
+                <div class="flex items-start gap-3 mb-3">
+                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-300 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    지민
+                  </div>
+                  <div>
+                    <p class="font-medium">김지민 관련 학부모 전달</p>
+                    <p class="text-xs text-text-tertiary">김지민 학부모 문의에서 발췌</p>
+                  </div>
+                </div>
+                <div class="p-3 bg-white rounded-lg border border-border-light">
+                  <p class="text-sm text-text-primary leading-relaxed">
+                    "최근 가정 사정으로 아이가 많이 지쳐있습니다. 수업 중 격려 위주 피드백 부탁드립니다. 
+                    성적에 대한 압박보다는 학습 습관 유지에 중점을 두어주시면 감사하겠습니다."
+                  </p>
+                </div>
+                <p class="mt-3 text-sm text-text-secondary">
+                  <span class="font-medium">관리자 메모:</span> 해당 학생 면담 시 참고 부탁드립니다.
+                </p>
+              </div>
+              
+              <div class="flex items-center justify-between pt-3 border-t border-border-light">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="confirmRead" class="w-5 h-5 text-primary rounded">
+                  <span class="text-sm">확인했습니다</span>
+                </label>
+                <button onclick="markAsRead()" class="px-4 py-2 bg-primary text-white text-sm rounded-xl font-medium hover:bg-primary-dark transition-colors">
+                  확인 완료
+                </button>
+              </div>
+              
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- History Tab Content -->
+        <div id="tab-history" class="space-y-4 hidden">
+          
+          <div class="bg-surface rounded-xl border border-border-light overflow-hidden">
+            <div class="p-4 border-b border-border-light">
+              <h3 class="font-medium text-navy">지난 브리핑 목록</h3>
+            </div>
+            <div class="divide-y divide-border-light">
+              
+              <div class="p-4 hover:bg-gray-50 cursor-pointer flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                    <span class="material-icons-round text-text-tertiary">description</span>
+                  </div>
+                  <div>
+                    <p class="font-medium">2025.01.10 (금) 브리핑</p>
+                    <p class="text-sm text-text-secondary">주의 학생 1명, 관리자 전달 0건</p>
+                  </div>
+                </div>
+                <span class="px-2 py-1 bg-success-light text-success text-xs rounded-full">확인 완료</span>
+              </div>
+              
+              <div class="p-4 hover:bg-gray-50 cursor-pointer flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                    <span class="material-icons-round text-text-tertiary">description</span>
+                  </div>
+                  <div>
+                    <p class="font-medium">2025.01.09 (목) 브리핑</p>
+                    <p class="text-sm text-text-secondary">주의 학생 0명, 관리자 전달 1건</p>
+                  </div>
+                </div>
+                <span class="px-2 py-1 bg-success-light text-success text-xs rounded-full">확인 완료</span>
+              </div>
+              
+              <div class="p-4 hover:bg-gray-50 cursor-pointer flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                    <span class="material-icons-round text-text-tertiary">description</span>
+                  </div>
+                  <div>
+                    <p class="font-medium">2025.01.08 (수) 브리핑</p>
+                    <p class="text-sm text-text-secondary">주의 학생 2명, 관리자 전달 0건</p>
+                  </div>
+                </div>
+                <span class="px-2 py-1 bg-success-light text-success text-xs rounded-full">확인 완료</span>
+              </div>
+              
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    
+  </div>
+  
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 bg-navy text-white rounded-xl shadow-lg hidden z-50 flex items-center gap-2">
+    <span class="material-icons-round text-success">check_circle</span>
+    <span id="toastMessage">확인 완료 처리되었습니다</span>
+  </div>
+  
+  <script>
+    // Tab Navigation
+    function showTab(tabId) {
+      // Hide all tabs
+      document.getElementById('tab-ai').classList.add('hidden');
+      document.getElementById('tab-admin').classList.add('hidden');
+      document.getElementById('tab-history').classList.add('hidden');
+      
+      // Show selected tab
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      
+      // Update tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.add('text-text-secondary');
+      });
+      event.target.classList.add('active');
+      event.target.classList.remove('text-text-secondary');
+    }
+    
+    // Mark as Read
+    function markAsRead() {
+      const checkbox = document.getElementById('confirmRead');
+      if (!checkbox.checked) {
+        alert('확인 체크를 해주세요.');
+        return;
+      }
+      showToast('확인 완료 처리되었습니다');
+    }
+    
+    // Toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+    
+    // Mobile Menu
+    function openMobileMenu() {
+      // Implementation for mobile menu
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

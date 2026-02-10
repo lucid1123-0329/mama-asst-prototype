@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>일일평가 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            english: '#34A853',
+            math: '#FBBC05',
+            planner: '#9C27B0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'border-medium': '#D1D5DB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active {
+      background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%);
+      color: white;
+    }
+    .star-rating .star {
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .star-rating .star:hover,
+    .star-rating .star.active {
+      color: #FBBC05;
+      transform: scale(1.1);
+    }
+    .evaluation-row:hover {
+      background-color: #F9FAFB;
+    }
+    .ai-processing {
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .tag-item {
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tag-item:hover {
+      transform: scale(1.02);
+    }
+    .dropdown-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .dropdown-content.open {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .unevaluated-highlight {
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      border-radius: 1rem;
+    }
+    .unevaluated-highlight:hover {
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+    .bottom-tab.active { color: #FF6D4D; }
+    .bottom-tab.active .material-icons-round { color: #FF6D4D; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+        <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-navy text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-white/60">강사용</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span>
+          <span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span>
+          <span class="font-medium">시간표</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-navy text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="font-bold text-lg">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span>
+          <span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span>
+          <span class="font-medium">시간표</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Main Content -->
+    <main class="flex-1 lg:ml-64 pb-36 lg:pb-20">
+      
+      <!-- Top Header -->
+            <!-- Mobile Header -->
+      <header class="lg:hidden h-14 bg-navy text-white flex items-center justify-between px-4 sticky top-0 z-30">
+        <button onclick="openMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">menu</span>
+        </button>
+        <h1 class="font-bold">일일평가</h1>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-sm">김</div>
+      </header>
+
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-30">
+        <div>
+          <h1 class="text-xl font-bold text-text-primary">일일평가</h1>
+          <p class="text-sm text-text-tertiary">수업 후 학생별 평가 및 피드백 입력</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="saveAllBtn" onclick="saveAllEvaluations()" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <span class="material-icons-round text-lg">save</span>
+            전체 저장
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-4 lg:space-y-6">
+        
+        <!-- Class Selection -->
+        <div class="bg-surface rounded-2xl border border-border-light p-4 sm:p-5">
+          <div class="flex flex-col lg:flex-row gap-3 lg:gap-4 lg:items-end">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-text-primary mb-1.5 sm:mb-2">수업 선택</label>
+              <select id="classSelect" onchange="loadClassStudents()" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+                <option value="">수업을 선택하세요</option>
+                <option value="middle2a-korean" data-subject="korean" data-color="#4285F4">중2A반 국어 (14:00~15:30)</option>
+                <option value="middle2b-math" data-subject="math" data-color="#FBBC05">중2B반 수학 (16:00~17:30)</option>
+                <option value="high1b-math" data-subject="math" data-color="#FBBC05">고1B반 수학 (18:00~19:30)</option>
+                <option value="high2a-korean" data-subject="korean" data-color="#4285F4">고2A반 국어 (20:00~21:30)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-1.5 sm:mb-2">평가 날짜</label>
+              <input type="date" id="evalDate" value="2025-01-05" class="w-full lg:w-auto px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-text-primary mb-1.5 sm:mb-2">수업 내용</label>
+              <input type="text" id="lessonTopic" placeholder="예: 비문학 지문 분석" class="w-full sm:w-64 px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Evaluation Guide -->
+        <div class="bg-info-light border border-info/20 rounded-2xl p-3 sm:p-4">
+          <div class="flex items-start gap-2 sm:gap-3">
+            <span class="material-icons-round text-info text-lg sm:text-2xl flex-shrink-0">info</span>
+            <div class="text-xs sm:text-sm text-text-secondary">
+              <strong class="text-text-primary">평가 항목 (8개):</strong><br>
+              <span class="text-info">⭐ 정성평가 (4개):</span> 집중도 · 참여도 · 이해도 · 태도<span class="hidden sm:inline"> (5점 척도)</span><br>
+              <span class="text-planner">🏷️ 정량평가 (4개):</span> 학업약점 · 관리영역 · 긴급조치 · 성장포인트<span class="hidden sm:inline"> (중복 선택)</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Students Evaluation List -->
+        <div id="evaluationContainer" class="hidden">
+          <div class="bg-surface rounded-2xl border border-border-light overflow-hidden">
+            <!-- Header -->
+            <div class="p-3 sm:p-4 bg-gray-50 border-b border-border-light">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                  <span id="classIcon" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-round text-white text-lg sm:text-xl">menu_book</span>
+                  </span>
+                  <div class="min-w-0">
+                    <h3 id="className" class="font-bold text-text-primary text-sm sm:text-base truncate">중2A반 국어</h3>
+                    <p id="classInfo" class="text-xs sm:text-sm text-text-tertiary truncate">8명 · 2025년 1월 5일</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+                  <div class="text-center">
+                    <p class="text-xl sm:text-2xl font-bold text-success" id="evaluatedCount">0</p>
+                    <p class="text-[10px] sm:text-xs text-text-tertiary">완료</p>
+                  </div>
+                  <div class="text-center">
+                    <p class="text-xl sm:text-2xl font-bold text-text-tertiary" id="remainingCount">8</p>
+                    <p class="text-[10px] sm:text-xs text-text-tertiary">미완료</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Student Cards -->
+            <div id="studentsList" class="divide-y divide-border-light">
+              <!-- Will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div id="emptyState" class="bg-surface rounded-2xl border border-border-light p-8 sm:p-12 text-center">
+          <span class="material-icons-round text-5xl sm:text-6xl text-text-tertiary mb-4">rate_review</span>
+          <h3 class="text-lg font-bold text-text-primary mb-2">수업을 선택해주세요</h3>
+          <p class="text-text-secondary">평가할 수업을 선택하면 학생 목록이 표시됩니다.</p>
+        </div>
+        
+      </div>
+    </main>
+    
+  
+    <!-- Sticky Bottom Save Bar -->
+    <div id="stickyBar" class="fixed bottom-16 lg:bottom-0 left-0 lg:left-64 right-0 bg-surface border-t border-border-light px-4 py-3 z-[35] hidden shadow-lg">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <div class="flex items-center gap-2 text-sm font-medium text-text-primary whitespace-nowrap">
+            <span id="stickyEvaluated" class="text-primary font-bold text-lg">0</span>
+            <span class="text-text-tertiary">/</span>
+            <span id="stickyTotal" class="text-text-secondary">0</span>
+            <span class="text-text-tertiary hidden sm:inline">완료</span>
+          </div>
+          <div class="flex-1 max-w-[200px] h-2 bg-gray-100 rounded-full">
+            <div id="stickyProgress" class="h-full bg-primary rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <span id="stickyRemaining" class="text-xs text-error hidden sm:inline"></span>
+        </div>
+        <button onclick="saveAllEvaluations()" class="px-4 sm:px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2 font-medium flex-shrink-0">
+          <span class="material-icons-round text-lg">save</span>
+          <span class="hidden sm:inline">전체 저장</span>
+          <span class="sm:hidden">저장</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Bottom Tab Bar -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light bottom-nav z-40">
+      <div class="flex justify-around items-center h-16">
+        <a href="instructor-dashboard.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="text-xs">홈</span>
+
+        </a>
+        <a href="instructor-students.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="text-xs">학생</span>
+
+        </a>
+        <a href="instructor-attendance.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="text-xs">출결</span>
+
+        </a>
+        <a href="instructor-evaluation.html" class="bottom-tab active flex flex-col items-center gap-0.5 px-3 py-2">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="text-xs">평가</span>
+        </a>
+        <button onclick="openMobileMenu()" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">menu</span>
+          <span class="text-xs">더보기</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+  
+  <!-- Evaluation Detail Modal -->
+  <div id="evalModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl max-w-3xl w-full mx-3 sm:mx-4 max-h-[90vh] overflow-hidden">
+      <div class="p-4 sm:p-5 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="modalAvatar" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold sm:text-lg">박</div>
+          <div>
+            <h3 id="modalStudentName" class="font-bold text-lg text-text-primary">박민수</h3>
+            <p id="modalStudentInfo" class="text-sm text-text-secondary">중2 · 정서조절 42점</p>
+          </div>
+        </div>
+        <button onclick="closeEvalModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      
+      <div class="p-4 sm:p-5 overflow-y-auto max-h-[65vh] space-y-5 sm:space-y-6">
+        
+        <!-- Section 1: 정성평가 (별점) -->
+        <div>
+          <h4 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-info">star</span>
+            정성평가 (5점 척도)
+          </h4>
+          <div class="grid grid-cols-2 gap-2 sm:gap-4">
+            <div class="p-2.5 sm:p-4 bg-gray-50 rounded-xl">
+              <label class="block text-sm font-medium text-text-secondary mb-2">집중도</label>
+              <div class="star-rating flex gap-0.5 sm:gap-1" data-field="focus">
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="1">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="2">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="3">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="4">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="5">star</span>
+              </div>
+            </div>
+            <div class="p-2.5 sm:p-4 bg-gray-50 rounded-xl">
+              <label class="block text-sm font-medium text-text-secondary mb-2">참여도</label>
+              <div class="star-rating flex gap-0.5 sm:gap-1" data-field="participation">
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="1">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="2">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="3">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="4">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="5">star</span>
+              </div>
+            </div>
+            <div class="p-2.5 sm:p-4 bg-gray-50 rounded-xl">
+              <label class="block text-sm font-medium text-text-secondary mb-2">이해도</label>
+              <div class="star-rating flex gap-0.5 sm:gap-1" data-field="understanding">
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="1">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="2">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="3">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="4">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="5">star</span>
+              </div>
+            </div>
+            <div class="p-2.5 sm:p-4 bg-gray-50 rounded-xl">
+              <label class="block text-sm font-medium text-text-secondary mb-2">태도</label>
+              <div class="star-rating flex gap-0.5 sm:gap-1" data-field="attitude">
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="1">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="2">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="3">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="4">star</span>
+                <span class="material-icons-round star text-xl sm:text-2xl text-gray-300" data-value="5">star</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section 2: 정량평가 (태그 선택) -->
+        <div>
+          <h4 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-planner">label</span>
+            정량평가 (중복 선택 가능)
+          </h4>
+          
+          <!-- 학업 약점 -->
+          <div class="mb-4">
+            <button onclick="toggleDropdown('weakness')" class="w-full p-3 bg-error-light border border-error/20 rounded-xl flex items-center justify-between hover:bg-error/10 transition-colors">
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-error">warning</span>
+                <span class="font-medium text-text-primary">학업 약점</span>
+                <span id="weaknessCount" class="px-2 py-0.5 bg-error text-white text-xs rounded-full hidden">0</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary dropdown-arrow" id="weaknessArrow">expand_more</span>
+            </button>
+            <div id="weaknessDropdown" class="dropdown-content mt-2 p-3 bg-white border border-border-light rounded-xl">
+              <div class="flex flex-wrap gap-2" id="weaknessTags">
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="개념이해">개념이해</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="단순실수">단순실수</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="유형적용">유형적용</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="풀이속도">풀이속도</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="문제이해오류">문제이해오류</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="독해력부족">독해력부족</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="기초부족(연산/어휘)">기초부족(연산/어휘)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="서술형/풀이과정">서술형/풀이과정</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="암기부족">암기부족</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="찍기/건너뛰기">찍기/건너뛰기</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="오답관리">오답관리</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="숙제미흡으로 인한 이해력 하락">숙제미흡으로 인한 이해력 하락</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-error-light" data-tag="문제가 없음">문제가 없음</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 관리 영역 -->
+          <div class="mb-4">
+            <button onclick="toggleDropdown('management')" class="w-full p-3 bg-warning-light border border-warning/20 rounded-xl flex items-center justify-between hover:bg-warning/10 transition-colors">
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-warning">settings</span>
+                <span class="font-medium text-text-primary">관리 영역</span>
+                <span id="managementCount" class="px-2 py-0.5 bg-warning text-white text-xs rounded-full hidden">0</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary dropdown-arrow" id="managementArrow">expand_more</span>
+            </button>
+            <div id="managementDropdown" class="dropdown-content mt-2 p-3 bg-white border border-border-light rounded-xl">
+              <div class="flex flex-wrap gap-2" id="managementTags">
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="동기부여">동기부여</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="과제(숙제)미흡">과제(숙제)미흡</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="학습습관(복습X)">학습습관(복습X)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="계획부재(시간관리)">계획부재(시간관리)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="심리/정서(자신감↓)">심리/정서(자신감↓)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="컨디션난조(피로)">컨디션난조(피로)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="수업이탈(졸음)">수업이탈(졸음)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="수업이탈(딴짓)">수업이탈(딴짓)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="결석">결석</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="학부모/관계">학부모/관계</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-warning-light" data-tag="문제가 없음">문제가 없음</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 긴급 조치 -->
+          <div class="mb-4">
+            <button onclick="toggleDropdown('urgent')" class="w-full p-3 bg-primary-light border border-primary/20 rounded-xl flex items-center justify-between hover:bg-primary/10 transition-colors">
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-primary">priority_high</span>
+                <span class="font-medium text-text-primary">긴급 조치</span>
+                <span id="urgentCount" class="px-2 py-0.5 bg-primary text-white text-xs rounded-full hidden">0</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary dropdown-arrow" id="urgentArrow">expand_more</span>
+            </button>
+            <div id="urgentDropdown" class="dropdown-content mt-2 p-3 bg-white border border-border-light rounded-xl">
+              <div class="flex flex-wrap gap-2" id="urgentTags">
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="정상모니터링">정상모니터링</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="격려/즉각칭찬">격려/즉각칭찬</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="수업후상담(1:1)">수업후상담(1:1)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="학부모연락(알림)">학부모연락(알림)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="학부모연락(긴급)">학부모연락(긴급)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="과제조절(양/난이도)">과제조절(양/난이도)</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="보충/재시험">보충/재시험</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="학습전략코칭">학습전략코칭</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="경고/태도지적">경고/태도지적</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="반조정권유">반조정권유</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-primary-light" data-tag="추가 설명">추가 설명</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 성장 포인트 -->
+          <div class="mb-4">
+            <button onclick="toggleDropdown('growth')" class="w-full p-3 bg-success-light border border-success/20 rounded-xl flex items-center justify-between hover:bg-success/10 transition-colors">
+              <div class="flex items-center gap-2">
+                <span class="material-icons-round text-success">trending_up</span>
+                <span class="font-medium text-text-primary">오늘의 성장 포인트</span>
+                <span id="growthCount" class="px-2 py-0.5 bg-success text-white text-xs rounded-full hidden">0</span>
+              </div>
+              <span class="material-icons-round text-text-tertiary dropdown-arrow" id="growthArrow">expand_more</span>
+            </button>
+            <div id="growthDropdown" class="dropdown-content mt-2 p-3 bg-white border border-border-light rounded-xl">
+              <div class="flex flex-wrap gap-2" id="growthTags">
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="질문하기">질문하기</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="오답노트">오답노트</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="수업집중">수업집중</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="필기습관">필기습관</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="끈기/재시도">끈기/재시도</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="시간준수">시간준수</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="스스로풀기">스스로풀기</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="피드백반영">피드백반영</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="계획실천">계획실천</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="긍정적태도">긍정적태도</span>
+                <span class="tag-item px-3 py-1.5 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-success-light" data-tag="없음">없음</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section 3: AI 피드백 -->
+        <div>
+          <h4 class="font-bold text-text-primary mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-info">smart_toy</span>
+            AI 피드백 (학생 성향 맞춤)
+          </h4>
+          
+          <div class="bg-info-light/50 border border-info/20 rounded-xl p-3 mb-3">
+            <p class="text-xs text-info">💡 작성한 코멘트가 학생의 성향(정서조절/도움요청 점수)에 맞게 자동 변환됩니다.</p>
+          </div>
+          
+          <textarea id="instructorComment" rows="2" placeholder="학생에게 전달할 코멘트를 입력하세요..."
+            class="w-full px-4 py-3 border border-border-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none mb-3"></textarea>
+          
+          <button onclick="transformFeedback()" class="w-full py-2.5 bg-gradient-to-r from-info to-primary text-white rounded-xl font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+            <span class="material-icons-round text-lg">auto_awesome</span>
+            AI 변환 미리보기
+          </button>
+          
+          <div id="transformedPreview" class="hidden mt-3 p-4 bg-primary-light rounded-xl">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="material-icons-round text-primary text-sm">smart_toy</span>
+              <span class="text-xs font-medium text-primary">AI 변환 결과</span>
+            </div>
+            <p id="transformedText" class="text-sm text-text-primary leading-relaxed"></p>
+          </div>
+        </div>
+        
+      </div>
+      
+      <div class="p-4 sm:p-5 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeEvalModal()" class="px-4 py-2 border border-border-light text-text-secondary rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="saveEvaluation()" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2">
+          <span class="material-icons-round text-lg">save</span>
+          저장
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-navy text-white px-6 py-3 rounded-xl shadow-lg z-50 hidden flex items-center gap-2">
+    <span class="material-icons-round">check_circle</span>
+    <span id="toastMessage">저장되었습니다.</span>
+  </div>
+  
+  <script>
+    // Data - 출결 정보 포함
+    const studentsData = {
+      'middle2a-korean': [
+        { id: 1, name: '박민수', tendency: { emotion: 42, help: 55 }, status: 'attention', attendance: 'present' },
+        { id: 2, name: '김서연', tendency: { emotion: 78, help: 82 }, status: 'normal', attendance: 'present' },
+        { id: 3, name: '이지훈', tendency: { emotion: 85, help: 90 }, status: 'excellent', attendance: 'late', lateMinutes: 12 },
+        { id: 4, name: '정수현', tendency: { emotion: 65, help: 70 }, status: 'normal', attendance: 'absent', absenceType: '병결', absenceReason: '발열 (38.5도)', absenceReporter: '어머니' },
+        { id: 5, name: '최예진', tendency: { emotion: 72, help: 68 }, status: 'normal', attendance: 'present' },
+        { id: 6, name: '한소율', tendency: { emotion: 88, help: 85 }, status: 'excellent', attendance: 'present' },
+        { id: 7, name: '오민재', tendency: { emotion: 55, help: 48 }, status: 'attention', attendance: 'present' },
+        { id: 8, name: '윤서아', tendency: { emotion: 75, help: 80 }, status: 'normal', attendance: 'absent', absenceType: '무단', absenceReason: '사유 미확인', absenceReporter: '-' },
+      ],
+      'middle2b-math': [
+        { id: 9, name: '강도현', tendency: { emotion: 70, help: 75 }, status: 'normal', attendance: 'present' },
+        { id: 10, name: '윤서준', tendency: { emotion: 62, help: 58 }, status: 'normal', attendance: 'present' },
+      ],
+    };
+    
+    let currentStudents = [];
+    let evaluations = {};
+    let currentStudentId = null;
+    
+    // Tag selections for current student
+    let selectedTags = {
+      weakness: [],
+      management: [],
+      urgent: [],
+      growth: []
+    };
+    
+    function loadClassStudents() {
+      const select = document.getElementById('classSelect');
+      const classKey = select.value;
+      
+      if (!classKey) {
+        document.getElementById('evaluationContainer').classList.add('hidden');
+        document.getElementById('emptyState').classList.remove('hidden');
+        document.getElementById('stickyBar').classList.add('hidden');
+        return;
+      }
+      
+      document.getElementById('evaluationContainer').classList.remove('hidden');
+      document.getElementById('emptyState').classList.add('hidden');
+      
+      const option = select.options[select.selectedIndex];
+      const color = option.dataset.color;
+      
+      document.getElementById('classIcon').style.backgroundColor = color;
+      document.getElementById('className').textContent = option.textContent.split('(')[0].trim();
+      
+      currentStudents = studentsData[classKey] || [];
+      
+      // 결석 학생은 자동으로 결석 평가 처리
+      currentStudents.forEach(student => {
+        if (student.attendance === 'absent' && !evaluations[student.id]) {
+          evaluations[student.id] = {
+            saved: true,
+            isAbsent: true,
+            absenceType: student.absenceType,
+            absenceReason: student.absenceReason
+          };
+        }
+      });
+      
+      const presentCount = currentStudents.filter(s => s.attendance !== 'absent').length;
+      const absentCount = currentStudents.filter(s => s.attendance === 'absent').length;
+      document.getElementById('classInfo').textContent = `${currentStudents.length}명 (출석 ${presentCount}명, 결석 ${absentCount}명) · ${document.getElementById('evalDate').value}`;
+      
+      renderStudentsList();
+      updateCounts();
+    }
+    
+    function renderStudentsList() {
+      const container = document.getElementById('studentsList');
+      const statusColors = {
+        attention: 'from-error to-red-400',
+        normal: 'from-info to-blue-400',
+        excellent: 'from-success to-emerald-400'
+      };
+      
+      container.innerHTML = currentStudents.map(student => {
+        const eval_ = evaluations[student.id];
+        const isEvaluated = eval_ && eval_.saved;
+        const isAbsent = student.attendance === 'absent';
+        const isLate = student.attendance === 'late';
+        
+        // 결석 학생은 별도 레이아웃
+        if (isAbsent) {
+          return `
+            <div class="evaluation-row p-4 bg-error-light/30 border-l-4 border-error">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                <div class="flex items-center gap-3 sm:gap-4">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white font-bold sm:text-lg opacity-60 flex-shrink-0">
+                    ${student.name.charAt(0)}
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-bold text-text-primary flex items-center gap-2">
+                      ${student.name}
+                      <span class="px-2 py-0.5 bg-error text-white text-xs rounded-lg">결석</span>
+                    </p>
+                    <p class="text-sm text-error">${student.absenceType}: ${student.absenceReason}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 sm:gap-4 ml-[52px] sm:ml-0">
+                  <p class="text-xs text-text-tertiary">연락: ${student.absenceReporter || '-'}</p>
+                  <span class="px-3 py-1.5 bg-error/10 text-error rounded-lg text-sm font-medium flex items-center gap-1 flex-shrink-0">
+                    <span class="material-icons-round text-sm">block</span>
+                    평가 제외
+                  </span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        
+        // 지각 학생 표시
+        const lateIndicator = isLate ? `<span class="px-2 py-0.5 bg-warning text-white text-xs rounded-lg ml-2">지각 +${student.lateMinutes}분</span>` : '';
+
+        // 미입력 하이라이트 클래스
+        const highlightClass = !isEvaluated ? 'unevaluated-highlight' : '';
+
+        return `
+          <div class="evaluation-row p-4 hover:bg-gray-50 cursor-pointer ${isEvaluated ? 'bg-success-light/30' : ''} ${isLate && !highlightClass ? 'border-l-4 border-warning' : ''} ${highlightClass}" onclick="openEvalModal(${student.id})">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div class="flex items-center gap-3 sm:gap-4">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br ${statusColors[student.status]} flex items-center justify-center text-white font-bold sm:text-lg flex-shrink-0">
+                  ${student.name.charAt(0)}
+                </div>
+                <div class="min-w-0">
+                  <p class="font-bold text-text-primary flex items-center flex-wrap gap-1">${student.name}${lateIndicator}</p>
+                  <p class="text-sm text-text-tertiary">정서조절 ${student.tendency.emotion}점 · 도움요청 ${student.tendency.help}점</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 sm:gap-4 ml-[52px] sm:ml-0">
+                ${isEvaluated ? `
+                  <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                    <span class="text-xs text-text-tertiary">⭐ ${eval_.focus || 0}/${eval_.participation || 0}/${eval_.understanding || 0}/${eval_.attitude || 0}</span>
+                    ${eval_.weakness?.length ? `<span class="px-2 py-0.5 bg-error-light text-error text-xs rounded">${eval_.weakness.length}약점</span>` : ''}
+                    ${eval_.growth?.length ? `<span class="px-2 py-0.5 bg-success-light text-success text-xs rounded">${eval_.growth.length}성장</span>` : ''}
+                    ${eval_.urgent?.length && !eval_.urgent.includes('정상모니터링') ? `<span class="px-2 py-0.5 bg-primary-light text-primary text-xs rounded">${eval_.urgent.length}조치</span>` : ''}
+                  </div>
+                ` : `
+                  <span class="text-xs text-error flex items-center gap-1">
+                    <span class="material-icons-round text-sm">error_outline</span>
+                    미입력
+                  </span>
+                `}
+                <span class="px-3 py-1.5 ${isEvaluated ? 'bg-success text-white' : 'bg-gray-100 text-text-secondary'} rounded-lg text-sm font-medium flex items-center gap-1 flex-shrink-0">
+                  <span class="material-icons-round text-sm">${isEvaluated ? 'check' : 'edit'}</span>
+                  ${isEvaluated ? '완료' : '평가'}
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    function updateCounts() {
+      let evaluated = 0;
+      let absentCount = 0;
+      currentStudents.forEach(student => {
+        if (student.attendance === 'absent') {
+          absentCount++;
+          evaluated++;
+        } else if (evaluations[student.id]?.saved) {
+          evaluated++;
+        }
+      });
+      const total = currentStudents.length;
+      const remaining = total - evaluated;
+      document.getElementById('evaluatedCount').textContent = evaluated;
+      document.getElementById('remainingCount').textContent = remaining;
+      document.getElementById('saveAllBtn').disabled = evaluated === 0;
+
+      // Update sticky bar
+      const stickyBar = document.getElementById('stickyBar');
+      if (currentStudents.length > 0) {
+        stickyBar.classList.remove('hidden');
+        document.getElementById('stickyEvaluated').textContent = evaluated;
+        document.getElementById('stickyTotal').textContent = total;
+        const percent = total > 0 ? Math.round((evaluated / total) * 100) : 0;
+        document.getElementById('stickyProgress').style.width = percent + '%';
+        const remainingEl = document.getElementById('stickyRemaining');
+        if (remaining > 0) {
+          remainingEl.textContent = `${remaining}명 미입력`;
+          remainingEl.classList.remove('hidden');
+        } else {
+          remainingEl.textContent = '전원 완료!';
+          remainingEl.classList.remove('hidden', 'text-error');
+          remainingEl.classList.add('text-success');
+        }
+      } else {
+        stickyBar.classList.add('hidden');
+      }
+    }
+    
+    function openEvalModal(studentId) {
+      currentStudentId = studentId;
+      const student = currentStudents.find(s => s.id === studentId);
+      
+      // Set student info
+      document.getElementById('modalAvatar').textContent = student.name.charAt(0);
+      document.getElementById('modalStudentName').textContent = student.name;
+      document.getElementById('modalStudentInfo').textContent = `정서조절 ${student.tendency.emotion}점 · 도움요청 ${student.tendency.help}점`;
+      
+      // Load existing evaluation if any
+      const existingEval = evaluations[studentId] || {};
+      
+      // Reset and load star ratings
+      document.querySelectorAll('.star-rating').forEach(rating => {
+        const field = rating.dataset.field;
+        const value = existingEval[field] || 0;
+        rating.querySelectorAll('.star').forEach((star, i) => {
+          star.classList.toggle('active', i < value);
+          star.classList.toggle('text-gray-300', i >= value);
+        });
+      });
+      
+      // Reset and load tag selections
+      selectedTags = {
+        weakness: existingEval.weakness || [],
+        management: existingEval.management || [],
+        urgent: existingEval.urgent || [],
+        growth: existingEval.growth || []
+      };
+      
+      // Update tag UI
+      ['weakness', 'management', 'urgent', 'growth'].forEach(type => {
+        const container = document.getElementById(type + 'Tags');
+        container.querySelectorAll('.tag-item').forEach(tag => {
+          const isSelected = selectedTags[type].includes(tag.dataset.tag);
+          resetTagStyle(tag);
+          if (isSelected) {
+            applySelectedStyle(tag, type);
+          }
+        });
+        updateTagCount(type);
+      });
+      
+      // Load comment
+      document.getElementById('instructorComment').value = existingEval.comment || '';
+      document.getElementById('transformedPreview').classList.add('hidden');
+      
+      // Close all dropdowns
+      ['weakness', 'management', 'urgent', 'growth'].forEach(type => {
+        document.getElementById(type + 'Dropdown').classList.remove('open');
+        document.getElementById(type + 'Arrow').textContent = 'expand_more';
+      });
+      
+      document.getElementById('evalModal').classList.remove('hidden');
+      initializeStarRatings();
+      initializeTagSelection();
+    }
+    
+    function closeEvalModal() {
+      document.getElementById('evalModal').classList.add('hidden');
+      currentStudentId = null;
+    }
+    
+    function resetTagStyle(tag) {
+      tag.classList.remove('ring-2', 'ring-offset-1', 'bg-error-light', 'text-error', 'ring-error',
+        'bg-warning-light', 'text-warning', 'ring-warning', 'bg-primary-light', 'text-primary', 'ring-primary',
+        'bg-success-light', 'text-success', 'ring-success');
+      tag.classList.add('bg-gray-100', 'text-text-secondary');
+    }
+    
+    function applySelectedStyle(tag, type) {
+      tag.classList.remove('bg-gray-100', 'text-text-secondary');
+      tag.classList.add('ring-2', 'ring-offset-1');
+      if (type === 'weakness') tag.classList.add('bg-error-light', 'text-error', 'ring-error');
+      if (type === 'management') tag.classList.add('bg-warning-light', 'text-warning', 'ring-warning');
+      if (type === 'urgent') tag.classList.add('bg-primary-light', 'text-primary', 'ring-primary');
+      if (type === 'growth') tag.classList.add('bg-success-light', 'text-success', 'ring-success');
+    }
+    
+    function initializeStarRatings() {
+      document.querySelectorAll('.star-rating').forEach(rating => {
+        rating.querySelectorAll('.star').forEach(star => {
+          star.onclick = function() {
+            const value = parseInt(this.dataset.value);
+            
+            // Update visual
+            rating.querySelectorAll('.star').forEach((s, i) => {
+              s.classList.toggle('active', i < value);
+              s.classList.toggle('text-gray-300', i >= value);
+            });
+          };
+        });
+      });
+    }
+    
+    function initializeTagSelection() {
+      document.querySelectorAll('.tag-item').forEach(tag => {
+        tag.onclick = function() {
+          const tagValue = this.dataset.tag;
+          const container = this.closest('[id$="Tags"]');
+          const type = container.id.replace('Tags', '');
+          
+          const index = selectedTags[type].indexOf(tagValue);
+          if (index > -1) {
+            selectedTags[type].splice(index, 1);
+            resetTagStyle(this);
+          } else {
+            selectedTags[type].push(tagValue);
+            applySelectedStyle(this, type);
+          }
+          
+          updateTagCount(type);
+        };
+      });
+    }
+    
+    function updateTagCount(type) {
+      const count = selectedTags[type].length;
+      const badge = document.getElementById(type + 'Count');
+      if (count > 0) {
+        badge.textContent = count;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+    
+    function toggleDropdown(type) {
+      const dropdown = document.getElementById(type + 'Dropdown');
+      const arrow = document.getElementById(type + 'Arrow');
+      
+      if (dropdown.classList.contains('open')) {
+        dropdown.classList.remove('open');
+        arrow.textContent = 'expand_more';
+      } else {
+        // Close other dropdowns
+        ['weakness', 'management', 'urgent', 'growth'].forEach(t => {
+          if (t !== type) {
+            document.getElementById(t + 'Dropdown').classList.remove('open');
+            document.getElementById(t + 'Arrow').textContent = 'expand_more';
+          }
+        });
+        dropdown.classList.add('open');
+        arrow.textContent = 'expand_less';
+      }
+    }
+    
+    function transformFeedback() {
+      const comment = document.getElementById('instructorComment').value.trim();
+      if (!comment) {
+        alert('코멘트를 입력해주세요.');
+        return;
+      }
+      
+      const preview = document.getElementById('transformedPreview');
+      preview.classList.remove('hidden');
+      document.getElementById('transformedText').innerHTML = '<span class="ai-processing">AI가 변환 중...</span>';
+      
+      const student = currentStudents.find(s => s.id === currentStudentId);
+      
+      setTimeout(() => {
+        let transformed = '';
+        if (student.tendency.emotion < 60) {
+          transformed = `${student.name}아! 😊 오늘도 정말 수고했어. 선생님이 항상 응원하고 있어! 조금씩 천천히 해도 괜찮아. 힘들 때는 언제든 말해줘. 💪`;
+        } else if (student.tendency.emotion < 75) {
+          transformed = `${student.name} 학생, 오늘 수업 잘 들었어요! 꾸준히 하면 분명 좋은 결과가 있을 거예요. 어려운 부분 있으면 질문해주세요! 👍`;
+        } else {
+          transformed = `${student.name} 학생, 오늘도 열심히 했네요! 앞으로도 이 페이스 유지하면서 더 도전해보세요. 기대하고 있어요! 🌟`;
+        }
+        document.getElementById('transformedText').textContent = transformed;
+      }, 1000);
+    }
+    
+    function saveEvaluation() {
+      if (!currentStudentId) return;
+      
+      // Collect star ratings by counting active stars
+      const getStarValue = (field) => {
+        const rating = document.querySelector(`[data-field="${field}"]`);
+        const activeStars = rating.querySelectorAll('.star.active');
+        return activeStars.length;
+      };
+      
+      evaluations[currentStudentId] = {
+        focus: getStarValue('focus'),
+        participation: getStarValue('participation'),
+        understanding: getStarValue('understanding'),
+        attitude: getStarValue('attitude'),
+        weakness: [...selectedTags.weakness],
+        management: [...selectedTags.management],
+        urgent: [...selectedTags.urgent],
+        growth: [...selectedTags.growth],
+        comment: document.getElementById('instructorComment').value,
+        transformedComment: document.getElementById('transformedText')?.textContent || '',
+        saved: true
+      };
+      
+      closeEvalModal();
+      renderStudentsList();
+      updateCounts();
+      showToast('평가가 저장되었습니다.');
+    }
+    
+    function saveAllEvaluations() {
+      console.log('All evaluations:', evaluations);
+      showToast('전체 평가가 저장되었습니다.');
+    }
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+  </script>
+  <script>
+    function openMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.getElementById('mobileMenu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

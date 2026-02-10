@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>상담 리포트 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            korean: '#4285F4',
+            english: '#34A853',
+            math: '#FBBC05',
+            planner: '#9C27B0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .no-print { display: none !important; }
+      .page-break { page-break-before: always; }
+      main { max-width: 100% !important; padding: 0 !important; }
+    }
+    
+    .report-section {
+      page-break-inside: avoid;
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <!-- Header (Admin - No Print) -->
+  <header class="h-16 bg-navy text-white flex items-center justify-between px-6 sticky top-0 z-50 no-print">
+    <div class="flex items-center gap-4">
+      <a href="consultation-dashboard.html" class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+          <span class="text-white font-bold text-lg">M</span>
+        </div>
+        <span class="font-bold text-lg">MAMA-ASST</span>
+      </a>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="window.print()" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium flex items-center gap-2">
+        <span class="material-icons-round text-lg">print</span>
+        인쇄하기
+      </button>
+      <button onclick="shareReport()" class="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl font-medium flex items-center gap-2">
+        <span class="material-icons-round text-lg">share</span>
+        학부모 공유
+      </button>
+    </div>
+  </header>
+  
+  <!-- Report Content -->
+  <main class="max-w-4xl mx-auto px-6 py-8">
+    
+    <!-- Report Header -->
+    <div class="bg-surface rounded-2xl shadow-sm border border-border-light overflow-hidden mb-6 report-section">
+      <div class="bg-gradient-to-r from-navy to-navy-light p-8 text-white">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+              <span class="text-white font-bold text-xl">M</span>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold">MAMA-ASST</h1>
+              <p class="text-white/70 text-sm">학습 상담 리포트</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-white/70 text-sm">수학의정석 학원</p>
+            <p class="text-sm">2025년 1월 5일</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-6">
+        <div class="flex items-center gap-6">
+          <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white text-3xl font-bold">
+            이
+          </div>
+          <div class="flex-1">
+            <h2 class="text-2xl font-bold text-text-primary mb-1">이영희 학생</h2>
+            <p class="text-text-secondary">서울중학교 2학년</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-text-tertiary">상담 번호</p>
+            <p class="font-mono text-sm text-text-secondary">CS-2025010503</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Summary Section -->
+    <div class="bg-surface rounded-2xl shadow-sm border border-border-light p-6 mb-6 report-section">
+      <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+        <span class="material-icons-round text-primary">summarize</span>
+        검사 결과 요약
+      </h3>
+      
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Tendency Summary -->
+        <div class="bg-planner/5 rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="material-icons-round text-planner">psychology</span>
+            <span class="font-bold text-text-primary">학습 성향 검사</span>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-text-secondary">학습동기</span>
+              <div class="flex items-center gap-2">
+                <div class="w-24 h-2 bg-gray-200 rounded-full">
+                  <div class="h-full bg-red-500 rounded-full" style="width: 78%"></div>
+                </div>
+                <span class="text-sm font-medium w-8">78</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-text-secondary">실행전략</span>
+              <div class="flex items-center gap-2">
+                <div class="w-24 h-2 bg-gray-200 rounded-full">
+                  <div class="h-full bg-blue-500 rounded-full" style="width: 65%"></div>
+                </div>
+                <span class="text-sm font-medium w-8">65</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-text-secondary">메타인지</span>
+              <div class="flex items-center gap-2">
+                <div class="w-24 h-2 bg-gray-200 rounded-full">
+                  <div class="h-full bg-purple-500 rounded-full" style="width: 82%"></div>
+                </div>
+                <span class="text-sm font-medium w-8">82</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-text-secondary">정서조절</span>
+              <div class="flex items-center gap-2">
+                <div class="w-24 h-2 bg-gray-200 rounded-full">
+                  <div class="h-full bg-green-500 rounded-full" style="width: 71%"></div>
+                </div>
+                <span class="text-sm font-medium w-8">71</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-text-secondary">도움요청</span>
+              <div class="flex items-center gap-2">
+                <div class="w-24 h-2 bg-gray-200 rounded-full">
+                  <div class="h-full bg-amber-500 rounded-full" style="width: 58%"></div>
+                </div>
+                <span class="text-sm font-medium w-8 text-warning">58</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-planner/20">
+            <p class="text-sm text-planner font-medium">📌 학습자 유형: 자기주도형</p>
+          </div>
+        </div>
+        
+        <!-- Level Test Summary -->
+        <div class="bg-gray-50 rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="material-icons-round text-info">quiz</span>
+            <span class="font-bold text-text-primary">레벨테스트</span>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-korean-light flex items-center justify-center">
+                  <span class="material-icons-round text-korean text-sm">menu_book</span>
+                </div>
+                <span class="text-sm text-text-primary">국어</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-lg font-bold text-korean">80%</span>
+                <span class="px-2 py-0.5 bg-korean-light text-korean text-xs font-bold rounded">B반</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-english-light flex items-center justify-center">
+                  <span class="material-icons-round text-english text-sm">translate</span>
+                </div>
+                <span class="text-sm text-text-primary">영어</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-lg font-bold text-english">80%</span>
+                <span class="px-2 py-0.5 bg-english-light text-english text-xs font-bold rounded">B반</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-math-light flex items-center justify-center">
+                  <span class="material-icons-round text-math text-sm">calculate</span>
+                </div>
+                <span class="text-sm text-text-primary">수학</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-lg font-bold text-math">90%</span>
+                <span class="px-2 py-0.5 bg-math-light text-math text-xs font-bold rounded">A반</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Detailed Analysis -->
+    <div class="bg-surface rounded-2xl shadow-sm border border-border-light p-6 mb-6 report-section">
+      <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+        <span class="material-icons-round text-primary">analytics</span>
+        종합 분석
+      </h3>
+      
+      <div class="prose max-w-none text-text-secondary">
+        <p class="mb-4">
+          이영희 학생은 <strong class="text-text-primary">자기주도적 학습 성향</strong>이 강한 학생입니다. 
+          특히 메타인지 능력이 뛰어나 자신의 학습 상태를 잘 파악하고, 
+          학습동기가 높아 스스로 목표를 설정하고 노력하는 모습이 기대됩니다.
+        </p>
+        
+        <div class="grid grid-cols-2 gap-4 my-6 not-prose">
+          <div class="bg-success-light/50 rounded-xl p-4">
+            <h4 class="font-bold text-success mb-2 flex items-center gap-1">
+              <span class="material-icons-round text-sm">thumb_up</span>
+              강점
+            </h4>
+            <ul class="text-sm space-y-1 text-text-secondary">
+              <li>• 높은 메타인지 능력 (자기 점검)</li>
+              <li>• 우수한 수학적 사고력</li>
+              <li>• 탄탄한 어휘/문법 기초</li>
+              <li>• 내재적 학습 동기</li>
+            </ul>
+          </div>
+          <div class="bg-warning-light/50 rounded-xl p-4">
+            <h4 class="font-bold text-warning mb-2 flex items-center gap-1">
+              <span class="material-icons-round text-sm">priority_high</span>
+              개선 필요
+            </h4>
+            <ul class="text-sm space-y-1 text-text-secondary">
+              <li>• 도움 요청 능력 향상 필요</li>
+              <li>• 독해력/추론력 강화</li>
+              <li>• 구체적 학습 계획 수립</li>
+            </ul>
+          </div>
+        </div>
+        
+        <p>
+          수학은 이미 상급 수준의 실력을 보유하고 있어 심화 학습이 가능합니다.
+          국어와 영어는 기초는 탄탄하나 독해 영역에서 보완이 필요합니다.
+          특히 <strong class="text-text-primary">질문하기를 어려워하는 성향</strong>이 있어,
+          수업 중 적극적인 질문 습관을 기르는 것이 중요합니다.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Recommendations -->
+    <div class="bg-surface rounded-2xl shadow-sm border border-border-light p-6 mb-6 report-section">
+      <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+        <span class="material-icons-round text-primary">lightbulb</span>
+        맞춤 학습 추천
+      </h3>
+      
+      <div class="space-y-4">
+        <div class="flex gap-4 p-4 bg-korean-light/30 rounded-xl">
+          <div class="w-12 h-12 rounded-xl bg-korean flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-white">menu_book</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-text-primary mb-1">국어 학습 방향</h4>
+            <p class="text-sm text-text-secondary">
+              5단계 독해 학습 도우미를 통해 체계적인 독해 훈련을 진행합니다.
+              특히 핵심 내용 파악과 추론 능력 강화에 집중하며,
+              지문 요약 연습으로 이해력을 높입니다.
+            </p>
+            <p class="text-xs text-korean font-medium mt-2">추천 반: B반 (중급)</p>
+          </div>
+        </div>
+        
+        <div class="flex gap-4 p-4 bg-english-light/30 rounded-xl">
+          <div class="w-12 h-12 rounded-xl bg-english flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-white">translate</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-text-primary mb-1">영어 학습 방향</h4>
+            <p class="text-sm text-text-secondary">
+              7초 발화 테스트로 단어 암기를 강화하고,
+              긴 문장 구조 분석 연습을 병행합니다.
+              문법 기초가 탄탄하므로 독해 중심으로 학습합니다.
+            </p>
+            <p class="text-xs text-english font-medium mt-2">추천 반: B반 (중급)</p>
+          </div>
+        </div>
+        
+        <div class="flex gap-4 p-4 bg-math-light/30 rounded-xl">
+          <div class="w-12 h-12 rounded-xl bg-math flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-round text-white">calculate</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-text-primary mb-1">수학 학습 방향</h4>
+            <p class="text-sm text-text-secondary">
+              높은 수학 역량을 살려 심화 문제에 도전합니다.
+              Jump/Anchor 시스템을 활용해 빠른 진도 진행이 가능하며,
+              응용력 강화에 집중합니다.
+            </p>
+            <p class="text-xs text-math font-medium mt-2">추천 반: A반 (상급)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Home Support -->
+    <div class="bg-surface rounded-2xl shadow-sm border border-border-light p-6 mb-6 report-section">
+      <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+        <span class="material-icons-round text-primary">home</span>
+        가정에서의 지원 방법
+      </h3>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-gray-50 rounded-xl p-4">
+          <h4 class="font-medium text-text-primary mb-2 flex items-center gap-1">
+            <span class="material-icons-round text-success text-sm">check_circle</span>
+            권장 사항
+          </h4>
+          <ul class="text-sm text-text-secondary space-y-2">
+            <li>✓ 스스로 계획을 세울 수 있도록 격려해주세요</li>
+            <li>✓ 어려움이 있을 때 질문하도록 응원해주세요</li>
+            <li>✓ 학습 과정에 대한 대화를 나눠주세요</li>
+            <li>✓ 작은 성취도 칭찬해주세요</li>
+          </ul>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4">
+          <h4 class="font-medium text-text-primary mb-2 flex items-center gap-1">
+            <span class="material-icons-round text-warning text-sm">warning</span>
+            주의 사항
+          </h4>
+          <ul class="text-sm text-text-secondary space-y-2">
+            <li>⚠ 지나친 결과 중심의 평가는 피해주세요</li>
+            <li>⚠ 혼자 해결하려는 성향이 있어 도움 제안이 필요해요</li>
+            <li>⚠ 비교보다는 개인의 성장에 초점을 맞춰주세요</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Enrollment Info -->
+    <div class="bg-primary-light rounded-2xl p-6 mb-6 report-section">
+      <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
+        <span class="material-icons-round text-primary">school</span>
+        등록 안내
+      </h3>
+      
+      <div class="grid grid-cols-3 gap-4 mb-4">
+        <div class="bg-white rounded-xl p-4 text-center">
+          <p class="text-xs text-text-tertiary mb-1">국어</p>
+          <p class="font-bold text-korean">B반 (중급)</p>
+          <p class="text-xs text-text-secondary mt-1">화/목 16:00</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 text-center">
+          <p class="text-xs text-text-tertiary mb-1">영어</p>
+          <p class="font-bold text-english">B반 (중급)</p>
+          <p class="text-xs text-text-secondary mt-1">월/수 17:00</p>
+        </div>
+        <div class="bg-white rounded-xl p-4 text-center">
+          <p class="text-xs text-text-tertiary mb-1">수학</p>
+          <p class="font-bold text-math">A반 (상급)</p>
+          <p class="text-xs text-text-secondary mt-1">월/수/금 18:00</p>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-text-tertiary">예상 월 수강료</p>
+            <p class="text-2xl font-bold text-text-primary">450,000원</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm text-text-tertiary">수업 시작일</p>
+            <p class="font-bold text-text-primary">2025년 1월 8일 (수)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="text-center py-6 border-t border-border-light">
+      <div class="flex items-center justify-center gap-2 mb-2">
+        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-sm">M</span>
+        </div>
+        <span class="font-bold text-text-primary">수학의정석 학원</span>
+      </div>
+      <p class="text-sm text-text-tertiary">서울시 강남구 테헤란로 123 | 02-1234-5678</p>
+      <p class="text-xs text-text-tertiary mt-2">담당: 김원장 | 상담일: 2025년 1월 5일</p>
+    </div>
+    
+    <!-- Admin Actions (No Print) -->
+    <div class="no-print flex items-center justify-center gap-4 py-6">
+      <a href="consultation-result.html" class="px-5 py-2.5 border border-border-light text-text-secondary rounded-xl font-medium hover:bg-gray-50">
+        결과 분석으로 돌아가기
+      </a>
+      <button onclick="completeConsultation()" class="px-5 py-2.5 bg-success text-white rounded-xl font-medium hover:bg-success/90 flex items-center gap-2">
+        <span class="material-icons-round">check</span>
+        상담 완료 처리
+      </button>
+    </div>
+    
+  </main>
+  
+  <!-- Share Modal -->
+  <div id="shareModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden no-print">
+    <div class="bg-surface rounded-2xl p-6 max-w-md mx-4 w-full">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-text-primary">학부모 공유</h2>
+        <button onclick="closeShareModal()" class="p-2 text-text-tertiary hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <p class="text-text-secondary mb-4">리포트를 학부모에게 공유합니다.</p>
+      
+      <div class="space-y-3 mb-6">
+        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+          <input type="radio" name="shareMethod" value="kakao" checked class="w-4 h-4 text-primary">
+          <span class="material-icons-round text-amber-500">chat</span>
+          <span>카카오톡 알림톡</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+          <input type="radio" name="shareMethod" value="sms" class="w-4 h-4 text-primary">
+          <span class="material-icons-round text-info">sms</span>
+          <span>SMS 문자</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+          <input type="radio" name="shareMethod" value="link" class="w-4 h-4 text-primary">
+          <span class="material-icons-round text-success">link</span>
+          <span>링크 복사</span>
+        </label>
+      </div>
+      
+      <button onclick="sendShare()" class="w-full py-3 bg-primary text-white rounded-xl font-medium">
+        공유하기
+      </button>
+    </div>
+  </div>
+  
+  <script>
+    function shareReport() {
+      document.getElementById('shareModal').classList.remove('hidden');
+    }
+    
+    function closeShareModal() {
+      document.getElementById('shareModal').classList.add('hidden');
+    }
+    
+    function sendShare() {
+      const method = document.querySelector('input[name="shareMethod"]:checked').value;
+      
+      let message = '';
+      switch(method) {
+        case 'kakao':
+          message = '카카오톡 알림톡으로 리포트가 발송되었습니다.';
+          break;
+        case 'sms':
+          message = 'SMS로 리포트 링크가 발송되었습니다.';
+          break;
+        case 'link':
+          navigator.clipboard.writeText('https://mama-asst.com/report/CS-2025010503');
+          message = '링크가 클립보드에 복사되었습니다.';
+          break;
+      }
+      
+      alert(message);
+      closeShareModal();
+    }
+    
+    function completeConsultation() {
+      if (confirm('상담을 완료 처리하시겠습니까?')) {
+        alert('상담이 완료되었습니다. 학생 계정이 생성됩니다.');
+        window.location.href = 'consultation-dashboard.html';
+      }
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

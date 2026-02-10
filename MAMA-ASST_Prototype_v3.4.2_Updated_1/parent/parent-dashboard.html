@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>홈 | MAMA-ASST 학부모</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            parent: '#8B5CF6',
+            'parent-light': '#EDE9FE',
+            'parent-dark': '#7C3AED',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+          boxShadow: {
+            'card': '0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)',
+            'card-hover': '0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.08)',
+          },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { 
+      background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%); 
+      color: white; 
+    }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .bottom-tab.active { color: #8B5CF6; }
+    .bottom-tab.active .material-icons-round { color: #8B5CF6; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    .stat-card { transition: all 0.2s ease; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-navy text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-parent rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-parent-light">학부모</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Child Selector -->
+      <div class="p-4 border-b border-white/10">
+        <label class="text-xs text-white/50 mb-2 block">자녀 선택</label>
+        <div class="relative">
+          <select class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white appearance-none cursor-pointer hover:bg-white/15 transition-colors">
+            <option value="1">김지민 (중2)</option>
+            <option value="2">김서연 (초5)</option>
+          </select>
+          <span class="material-icons-round absolute right-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none">expand_more</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="parent-dashboard.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">home</span>
+          <span class="font-medium">홈</span>
+        </a>
+        <a href="parent-child-status.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">person</span>
+          <span class="font-medium">자녀 현황</span>
+        </a>
+        <a href="parent-report.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">학습 리포트</span>
+        </a>
+        <a href="parent-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">schedule</span>
+          <span class="font-medium">출결 확인</span>
+        </a>
+        <a href="parent-payment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">payments</span>
+          <span class="font-medium">결제</span>
+          <span class="ml-auto px-2 py-0.5 bg-error text-white text-xs rounded-full">1</span>
+        </a>
+        <a href="parent-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">settings</span>
+          <span class="font-medium">설정</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-parent to-purple-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김부모님</p>
+            <p class="text-xs text-white/60">자녀 2명</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-navy text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-parent rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="font-bold text-lg">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <!-- Mobile Child Selector -->
+      <div class="p-4 border-b border-white/10">
+        <label class="text-xs text-white/50 mb-2 block">자녀 선택</label>
+        <select class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white">
+          <option value="1">김지민 (중2)</option>
+          <option value="2">김서연 (초5)</option>
+        </select>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="parent-dashboard.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">home</span>
+          <span class="font-medium">홈</span>
+        </a>
+        <a href="parent-child-status.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">person</span>
+          <span class="font-medium">자녀 현황</span>
+        </a>
+        <a href="parent-report.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">학습 리포트</span>
+        </a>
+        <a href="parent-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">schedule</span>
+          <span class="font-medium">출결 확인</span>
+        </a>
+        <a href="parent-payment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">payments</span>
+          <span class="font-medium">결제</span>
+          <span class="ml-auto px-2 py-0.5 bg-error text-white text-xs rounded-full">1</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64">
+      
+      <!-- Top Header -->
+      <header class="h-16 bg-surface border-b border-border-light flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+          <button onclick="openMobileMenu()" class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+            <span class="material-icons-round">menu</span>
+          </button>
+          <div>
+            <h1 class="text-lg font-bold text-navy">안녕하세요, 김부모님 👋</h1>
+            <p class="text-xs text-text-secondary" id="todayDate">2025년 1월 13일 월요일</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="relative p-2 hover:bg-gray-100 rounded-lg">
+            <span class="material-icons-round text-text-secondary">notifications</span>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full pulse-dot"></span>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-6">
+        
+        <!-- Child Summary Card -->
+        <div class="bg-gradient-to-br from-parent to-purple-400 rounded-2xl p-6 text-white">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold">
+                지민
+              </div>
+              <div>
+                <h2 class="text-xl font-bold">김지민</h2>
+                <p class="text-white/80">중학교 2학년 · 명불허전 학원</p>
+              </div>
+            </div>
+            <a href="parent-child-status.html" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-medium transition-colors">
+              상세보기
+            </a>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-white/10 rounded-xl p-4 text-center">
+              <p class="text-white/70 text-sm mb-1">오늘 학습</p>
+              <p class="text-2xl font-bold">67%</p>
+            </div>
+            <div class="bg-white/10 rounded-xl p-4 text-center">
+              <p class="text-white/70 text-sm mb-1">연속 학습</p>
+              <p class="text-2xl font-bold">12일 🔥</p>
+            </div>
+            <div class="bg-white/10 rounded-xl p-4 text-center">
+              <p class="text-white/70 text-sm mb-1">이번 주 출석</p>
+              <p class="text-2xl font-bold">4/4</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <a href="parent-attendance.html" class="stat-card bg-surface rounded-xl p-4 border border-border-light flex flex-col items-center gap-2 text-center">
+            <div class="w-12 h-12 rounded-xl bg-success-light flex items-center justify-center">
+              <span class="material-icons-round text-success">check_circle</span>
+            </div>
+            <span class="text-sm font-medium">오늘 등원</span>
+            <span class="text-xs text-text-secondary">14:30 등원 완료</span>
+          </a>
+          
+          <a href="parent-report.html" class="stat-card bg-surface rounded-xl p-4 border border-border-light flex flex-col items-center gap-2 text-center">
+            <div class="w-12 h-12 rounded-xl bg-info-light flex items-center justify-center">
+              <span class="material-icons-round text-info">description</span>
+            </div>
+            <span class="text-sm font-medium">상담 리포트</span>
+            <span class="text-xs text-text-secondary">1월 10일 업데이트</span>
+          </a>
+          
+          <a href="parent-payment.html" class="stat-card bg-surface rounded-xl p-4 border border-border-light flex flex-col items-center gap-2 text-center">
+            <div class="w-12 h-12 rounded-xl bg-error-light flex items-center justify-center">
+              <span class="material-icons-round text-error">receipt_long</span>
+            </div>
+            <span class="text-sm font-medium">미납 청구서</span>
+            <span class="text-xs text-error font-medium">1건 결제 필요</span>
+          </a>
+          
+          <a href="parent-inquiry.html" class="stat-card bg-surface rounded-xl p-4 border border-border-light flex flex-col items-center gap-2 text-center">
+            <div class="w-12 h-12 rounded-xl bg-parent-light flex items-center justify-center">
+              <span class="material-icons-round text-parent">support_agent</span>
+            </div>
+            <span class="text-sm font-medium">학원 문의</span>
+            <span class="text-xs text-text-secondary">궁금한 점을 물어보세요</span>
+          </a>
+        </div>
+        
+        <!-- Today's Learning -->
+        <section class="bg-surface rounded-xl border border-border-light overflow-hidden">
+          <div class="p-4 border-b border-border-light flex items-center justify-between">
+            <h3 class="font-bold text-navy">오늘의 학습 현황</h3>
+            <a href="parent-child-status.html" class="text-sm text-parent font-medium">전체보기</a>
+          </div>
+          <div class="p-4 space-y-4">
+            <!-- Korean -->
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-korean-light flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-korean">menu_book</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-medium">국어</span>
+                  <span class="text-sm text-korean font-bold">2/3 완료</span>
+                </div>
+                <div class="w-full h-2 bg-korean-light rounded-full overflow-hidden">
+                  <div class="h-full bg-korean rounded-full transition-all" style="width: 67%"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- English -->
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-english-light flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-english">translate</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-medium">영어</span>
+                  <span class="text-sm text-english font-bold">15/20 완료</span>
+                </div>
+                <div class="w-full h-2 bg-english-light rounded-full overflow-hidden">
+                  <div class="h-full bg-english rounded-full transition-all" style="width: 75%"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Math -->
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-math-light flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-math">calculate</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-medium">수학</span>
+                  <span class="text-sm text-warning font-bold">0/3 대기중</span>
+                </div>
+                <div class="w-full h-2 bg-math-light rounded-full overflow-hidden">
+                  <div class="h-full bg-math rounded-full transition-all" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Recent Notifications -->
+        <section class="bg-surface rounded-xl border border-border-light overflow-hidden">
+          <div class="p-4 border-b border-border-light flex items-center justify-between">
+            <h3 class="font-bold text-navy">최근 알림</h3>
+            <a href="parent-settings.html" class="text-sm text-parent font-medium">전체보기</a>
+          </div>
+          <div class="divide-y divide-border-light">
+            <div class="p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors">
+              <div class="w-10 h-10 rounded-full bg-success-light flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-success text-lg">login</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm"><span class="font-medium">김지민</span> 학생이 등원했습니다.</p>
+                <p class="text-xs text-text-tertiary mt-0.5">오늘 오후 2:30</p>
+              </div>
+            </div>
+            
+            <div class="p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors">
+              <div class="w-10 h-10 rounded-full bg-info-light flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-info text-lg">description</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm"><span class="font-medium">2주차 상담 리포트</span>가 공유되었습니다.</p>
+                <p class="text-xs text-text-tertiary mt-0.5">어제 오후 5:00</p>
+              </div>
+              <a href="parent-report.html" class="px-3 py-1.5 bg-info-light text-info text-xs font-medium rounded-lg hover:bg-info/20 transition-colors">
+                확인
+              </a>
+            </div>
+            
+            <div class="p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors">
+              <div class="w-10 h-10 rounded-full bg-error-light flex items-center justify-center flex-shrink-0">
+                <span class="material-icons-round text-error text-lg">receipt_long</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm"><span class="font-medium">1월 수강료 청구서</span>가 발행되었습니다.</p>
+                <p class="text-xs text-text-tertiary mt-0.5">1월 5일</p>
+              </div>
+              <a href="parent-payment.html" class="px-3 py-1.5 bg-error text-white text-xs font-medium rounded-lg hover:bg-error/90 transition-colors">
+                결제하기
+              </a>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Upcoming Schedule -->
+        <section class="bg-surface rounded-xl border border-border-light overflow-hidden">
+          <div class="p-4 border-b border-border-light">
+            <h3 class="font-bold text-navy">이번 주 일정</h3>
+          </div>
+          <div class="p-4 space-y-3">
+            <div class="flex items-center gap-4 p-3 bg-parent-light rounded-xl">
+              <div class="w-12 text-center">
+                <p class="text-xs text-parent font-medium">1/15</p>
+                <p class="text-lg font-bold text-parent">수</p>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium">2주차 정기 상담</p>
+                <p class="text-sm text-text-secondary">학원 매니저 · 오후 4:00</p>
+              </div>
+              <span class="material-icons-round text-parent">event</span>
+            </div>
+            
+            <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+              <div class="w-12 text-center">
+                <p class="text-xs text-text-secondary font-medium">1/17</p>
+                <p class="text-lg font-bold text-text-secondary">금</p>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium">영어 주말 클리닉</p>
+                <p class="text-sm text-text-secondary">오답 복습 테스트</p>
+              </div>
+              <span class="material-icons-round text-text-tertiary">quiz</span>
+            </div>
+          </div>
+        </section>
+        
+      </div>
+      
+    </main>
+    
+  </div>
+  
+  <!-- Mobile Bottom Navigation -->
+  <nav class="bottom-nav lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface border-t border-border-light flex items-center justify-around px-2 z-40">
+    <a href="parent-dashboard.html" class="bottom-tab active flex flex-col items-center gap-1 px-3 py-2">
+      <span class="material-icons-round">home</span>
+      <span class="text-[10px] font-medium">홈</span>
+    </a>
+    <a href="parent-child-status.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">person</span>
+      <span class="text-[10px] font-medium">자녀</span>
+    </a>
+    <a href="parent-report.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">assessment</span>
+      <span class="text-[10px] font-medium">리포트</span>
+    </a>
+    <a href="parent-payment.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary relative">
+      <span class="material-icons-round">payments</span>
+      <span class="text-[10px] font-medium">결제</span>
+      <span class="absolute top-1 right-2 w-2 h-2 bg-error rounded-full"></span>
+    </a>
+    <a href="parent-settings.html" class="bottom-tab flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+      <span class="material-icons-round">settings</span>
+      <span class="text-[10px] font-medium">설정</span>
+    </a>
+  </nav>
+  
+  <script>
+    // Update date
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+    document.getElementById('todayDate').textContent = today.toLocaleDateString('ko-KR', options);
+    
+    // Mobile menu
+    function openMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

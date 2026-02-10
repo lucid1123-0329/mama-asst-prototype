@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학생 관리 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            english: '#34A853',
+            math: '#FBBC05',
+            planner: '#9C27B0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'border-medium': '#D1D5DB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active {
+      background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%);
+      color: white;
+    }
+    .sidebar-item.active .material-icons-round {
+      color: white;
+    }
+    .student-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    .filter-chip.active {
+      background-color: #FF6D4D;
+      color: white;
+      border-color: #FF6D4D;
+    }
+    .view-toggle.active {
+      background-color: #FF6D4D;
+      color: white;
+    }
+    .bottom-tab.active { color: #FF6D4D; }
+    .bottom-tab.active .material-icons-round { color: #FF6D4D; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+        <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-navy text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-white/60">강사용</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span>
+          <span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span>
+          <span class="font-medium">시간표</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-navy text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="font-bold text-lg">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span>
+          <span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span>
+          <span class="font-medium">시간표</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Main Content -->
+    <main class="flex-1 lg:ml-64 pb-20 lg:pb-0">
+      
+      <!-- Top Header -->
+            <!-- Mobile Header -->
+      <header class="lg:hidden h-14 bg-navy text-white flex items-center justify-between px-4 sticky top-0 z-30">
+        <button onclick="openMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">menu</span>
+        </button>
+        <h1 class="font-bold">학생 관리</h1>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-sm">김</div>
+      </header>
+
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-30">
+        <div>
+          <h1 class="text-xl font-bold text-text-primary">학생 관리</h1>
+          <p class="text-sm text-text-tertiary">담당 학생 45명</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <!-- Notifications -->
+          <button class="relative p-2 hover:bg-gray-100 rounded-xl transition-colors">
+            <span class="material-icons-round text-2xl text-text-secondary">notifications</span>
+            <span class="absolute top-1 right-1 w-5 h-5 bg-error text-white text-xs font-bold rounded-full flex items-center justify-center">3</span>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-4 lg:space-y-6">
+        
+        <!-- Search and Filters -->
+        <div class="bg-surface rounded-2xl border border-border-light p-5">
+          <div class="flex flex-col lg:flex-row gap-4">
+            <!-- Search -->
+            <div class="relative flex-1">
+              <input type="text" id="searchInput" placeholder="학생 이름, 학교로 검색..." 
+                class="w-full pl-10 pr-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+              <span class="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary">search</span>
+            </div>
+            
+            <!-- Filter Dropdowns -->
+            <div class="flex gap-3">
+              <select id="classFilter" class="px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+                <option value="">전체 반</option>
+                <option value="middle2a">중2A반</option>
+                <option value="middle2b">중2B반</option>
+                <option value="high1a">고1A반</option>
+                <option value="high1b">고1B반</option>
+                <option value="high2a">고2A반</option>
+              </select>
+              
+              <select id="subjectFilter" class="px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+                <option value="">전체 과목</option>
+                <option value="korean">국어</option>
+                <option value="english">영어</option>
+                <option value="math">수학</option>
+              </select>
+              
+              <select id="statusFilter" class="px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+                <option value="">전체 상태</option>
+                <option value="normal">정상</option>
+                <option value="attention">주의 필요</option>
+                <option value="excellent">우수</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Quick Filter Chips -->
+          <div class="flex flex-wrap gap-2 mt-4">
+            <button class="filter-chip active px-3 py-1.5 border border-border-light rounded-full text-sm font-medium transition-colors" data-filter="all">
+              전체 (45)
+            </button>
+            <button class="filter-chip px-3 py-1.5 border border-border-light rounded-full text-sm font-medium text-text-secondary hover:border-primary hover:text-primary transition-colors" data-filter="attention">
+              <span class="inline-block w-2 h-2 rounded-full bg-error mr-1"></span>
+              주의 필요 (5)
+            </button>
+            <button class="filter-chip px-3 py-1.5 border border-border-light rounded-full text-sm font-medium text-text-secondary hover:border-primary hover:text-primary transition-colors" data-filter="homework">
+              <span class="inline-block w-2 h-2 rounded-full bg-warning mr-1"></span>
+              숙제 미제출 (7)
+            </button>
+            <button class="filter-chip px-3 py-1.5 border border-border-light rounded-full text-sm font-medium text-text-secondary hover:border-primary hover:text-primary transition-colors" data-filter="observation">
+              <span class="inline-block w-2 h-2 rounded-full bg-planner mr-1"></span>
+              관찰 필요 (3)
+            </button>
+            <button class="filter-chip px-3 py-1.5 border border-border-light rounded-full text-sm font-medium text-text-secondary hover:border-primary hover:text-primary transition-colors" data-filter="excellent">
+              <span class="inline-block w-2 h-2 rounded-full bg-success mr-1"></span>
+              우수 학생 (8)
+            </button>
+          </div>
+        </div>
+        
+        <!-- View Toggle & Sort -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button class="view-toggle active p-2 rounded-lg transition-colors" data-view="grid">
+              <span class="material-icons-round">grid_view</span>
+            </button>
+            <button class="view-toggle p-2 rounded-lg bg-gray-100 text-text-secondary hover:bg-gray-200 transition-colors" data-view="list">
+              <span class="material-icons-round">view_list</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-text-tertiary">정렬:</span>
+            <select class="px-3 py-2 border border-border-light rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 bg-white">
+              <option value="name">이름순</option>
+              <option value="grade">학년순</option>
+              <option value="attendance">출석률순</option>
+              <option value="performance">성적순</option>
+              <option value="recent">최근 활동순</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Students Grid -->
+        <div id="studentsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          
+          <!-- Student Card 1 - Attention Needed -->
+          <div class="student-card bg-surface rounded-2xl border-2 border-error/30 p-5 cursor-pointer transition-all hover:border-error" onclick="location.href='instructor-student-detail.html?id=1'">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="relative">
+                  <div class="w-14 h-14 rounded-full bg-gradient-to-br from-error to-red-400 flex items-center justify-center text-white font-bold text-xl">
+                    박
+                  </div>
+                  <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-error rounded-full flex items-center justify-center">
+                    <span class="material-icons-round text-white text-xs">warning</span>
+                  </span>
+                </div>
+                <div>
+                  <p class="font-bold text-text-primary">박민수</p>
+                  <p class="text-sm text-text-secondary">중2 · 서울중학교</p>
+                </div>
+              </div>
+              <span class="px-2 py-1 bg-error-light text-error text-xs font-medium rounded-lg">주의</span>
+            </div>
+            
+            <div class="flex gap-2 mb-4">
+              <span class="px-2 py-1 bg-korean/10 text-korean text-xs font-medium rounded">국어</span>
+              <span class="px-2 py-1 bg-math/10 text-math text-xs font-medium rounded">수학</span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3 mb-4">
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-error">60%</p>
+                <p class="text-xs text-text-tertiary">출석률</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-error">45%</p>
+                <p class="text-xs text-text-tertiary">숙제완료</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-warning">C</p>
+                <p class="text-xs text-text-tertiary">평균등급</p>
+              </div>
+            </div>
+            
+            <div class="p-3 bg-error-light rounded-xl">
+              <p class="text-xs text-error flex items-center gap-1">
+                <span class="material-icons-round text-sm">warning</span>
+                3일 연속 숙제 미제출
+              </p>
+            </div>
+          </div>
+          
+          <!-- Student Card 2 - Normal -->
+          <div class="student-card bg-surface rounded-2xl border border-border-light p-5 cursor-pointer transition-all hover:border-primary" onclick="location.href='instructor-student-detail.html?id=2'">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-info to-blue-400 flex items-center justify-center text-white font-bold text-xl">
+                  김
+                </div>
+                <div>
+                  <p class="font-bold text-text-primary">김서연</p>
+                  <p class="text-sm text-text-secondary">중2 · 강남중학교</p>
+                </div>
+              </div>
+              <span class="px-2 py-1 bg-gray-100 text-text-secondary text-xs font-medium rounded-lg">정상</span>
+            </div>
+            
+            <div class="flex gap-2 mb-4">
+              <span class="px-2 py-1 bg-korean/10 text-korean text-xs font-medium rounded">국어</span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3 mb-4">
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-success">95%</p>
+                <p class="text-xs text-text-tertiary">출석률</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-success">88%</p>
+                <p class="text-xs text-text-tertiary">숙제완료</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-info">B+</p>
+                <p class="text-xs text-text-tertiary">평균등급</p>
+              </div>
+            </div>
+            
+            <div class="p-3 bg-gray-50 rounded-xl">
+              <p class="text-xs text-text-secondary flex items-center gap-1">
+                <span class="material-icons-round text-sm text-success">check_circle</span>
+                최근 성적 상승 추세
+              </p>
+            </div>
+          </div>
+          
+          <!-- Student Card 3 - Excellent -->
+          <div class="student-card bg-surface rounded-2xl border-2 border-success/30 p-5 cursor-pointer transition-all hover:border-success" onclick="location.href='instructor-student-detail.html?id=3'">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="relative">
+                  <div class="w-14 h-14 rounded-full bg-gradient-to-br from-success to-emerald-400 flex items-center justify-center text-white font-bold text-xl">
+                    이
+                  </div>
+                  <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center">
+                    <span class="material-icons-round text-white text-xs">star</span>
+                  </span>
+                </div>
+                <div>
+                  <p class="font-bold text-text-primary">이지훈</p>
+                  <p class="text-sm text-text-secondary">고1 · 서울고등학교</p>
+                </div>
+              </div>
+              <span class="px-2 py-1 bg-success-light text-success text-xs font-medium rounded-lg">우수</span>
+            </div>
+            
+            <div class="flex gap-2 mb-4">
+              <span class="px-2 py-1 bg-korean/10 text-korean text-xs font-medium rounded">국어</span>
+              <span class="px-2 py-1 bg-math/10 text-math text-xs font-medium rounded">수학</span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3 mb-4">
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-success">100%</p>
+                <p class="text-xs text-text-tertiary">출석률</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-success">100%</p>
+                <p class="text-xs text-text-tertiary">숙제완료</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-success">A</p>
+                <p class="text-xs text-text-tertiary">평균등급</p>
+              </div>
+            </div>
+            
+            <div class="p-3 bg-success-light rounded-xl">
+              <p class="text-xs text-success flex items-center gap-1">
+                <span class="material-icons-round text-sm">emoji_events</span>
+                이번 달 MVP 후보
+              </p>
+            </div>
+          </div>
+          
+          <!-- Student Card 4 - Observation Needed -->
+          <div class="student-card bg-surface rounded-2xl border-2 border-planner/30 p-5 cursor-pointer transition-all hover:border-planner" onclick="location.href='instructor-student-detail.html?id=4'">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="relative">
+                  <div class="w-14 h-14 rounded-full bg-gradient-to-br from-planner to-purple-400 flex items-center justify-center text-white font-bold text-xl">
+                    정
+                  </div>
+                  <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-planner rounded-full flex items-center justify-center">
+                    <span class="material-icons-round text-white text-xs">visibility</span>
+                  </span>
+                </div>
+                <div>
+                  <p class="font-bold text-text-primary">정수현</p>
+                  <p class="text-sm text-text-secondary">중2 · 역삼중학교</p>
+                </div>
+              </div>
+              <span class="px-2 py-1 bg-planner/10 text-planner text-xs font-medium rounded-lg">관찰</span>
+            </div>
+            
+            <div class="flex gap-2 mb-4">
+              <span class="px-2 py-1 bg-math/10 text-math text-xs font-medium rounded">수학</span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3 mb-4">
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-info">90%</p>
+                <p class="text-xs text-text-tertiary">출석률</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-warning">75%</p>
+                <p class="text-xs text-text-tertiary">숙제완료</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-info">B</p>
+                <p class="text-xs text-text-tertiary">평균등급</p>
+              </div>
+            </div>
+            
+            <div class="p-3 bg-planner/10 rounded-xl">
+              <p class="text-xs text-planner flex items-center gap-1">
+                <span class="material-icons-round text-sm">visibility</span>
+                성향검사 4주 관찰 진행 중 (2주차)
+              </p>
+            </div>
+          </div>
+          
+          <!-- Student Card 5 -->
+          <div class="student-card bg-surface rounded-2xl border border-border-light p-5 cursor-pointer transition-all hover:border-primary" onclick="location.href='instructor-student-detail.html?id=5'">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-warning to-orange-400 flex items-center justify-center text-white font-bold text-xl">
+                  최
+                </div>
+                <div>
+                  <p class="font-bold text-text-primary">최예진</p>
+                  <p class="text-sm text-text-secondary">고2 · 강남고등학교</p>
+                </div>
+              </div>
+              <span class="px-2 py-1 bg-gray-100 text-text-secondary text-xs font-medium rounded-lg">정상</span>
+            </div>
+            
+            <div class="flex gap-2 mb-4">
+              <span class="px-2 py-1 bg-korean/10 text-korean text-xs font-medium rounded">국어</span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3 mb-4">
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-success">92%</p>
+                <p class="text-xs text-text-tertiary">출석률</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-info">85%</p>
+                <p class="text-xs text-text-tertiary">숙제완료</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-info">B+</p>
+                <p class="text-xs text-text-tertiary">평균등급</p>
+              </div>
+            </div>
+            
+            <div class="p-3 bg-gray-50 rounded-xl">
+              <p class="text-xs text-text-secondary flex items-center gap-1">
+                <span class="material-icons-round text-sm text-info">schedule</span>
+                다음 상담: 1월 8일
+              </p>
+            </div>
+          </div>
+          
+          <!-- Student Card 6 -->
+          <div class="student-card bg-surface rounded-2xl border border-border-light p-5 cursor-pointer transition-all hover:border-primary" onclick="location.href='instructor-student-detail.html?id=6'">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-english to-green-400 flex items-center justify-center text-white font-bold text-xl">
+                  한
+                </div>
+                <div>
+                  <p class="font-bold text-text-primary">한소율</p>
+                  <p class="text-sm text-text-secondary">고1 · 대치고등학교</p>
+                </div>
+              </div>
+              <span class="px-2 py-1 bg-gray-100 text-text-secondary text-xs font-medium rounded-lg">정상</span>
+            </div>
+            
+            <div class="flex gap-2 mb-4">
+              <span class="px-2 py-1 bg-korean/10 text-korean text-xs font-medium rounded">국어</span>
+              <span class="px-2 py-1 bg-math/10 text-math text-xs font-medium rounded">수학</span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3 mb-4">
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-success">98%</p>
+                <p class="text-xs text-text-tertiary">출석률</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-success">92%</p>
+                <p class="text-xs text-text-tertiary">숙제완료</p>
+              </div>
+              <div class="text-center p-2 bg-gray-50 rounded-lg">
+                <p class="text-lg font-bold text-success">A-</p>
+                <p class="text-xs text-text-tertiary">평균등급</p>
+              </div>
+            </div>
+            
+            <div class="p-3 bg-gray-50 rounded-xl">
+              <p class="text-xs text-text-secondary flex items-center gap-1">
+                <span class="material-icons-round text-sm text-success">trending_up</span>
+                수학 성적 15점 상승
+              </p>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- Pagination -->
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-text-tertiary">총 45명 중 1-6 표시</p>
+          <div class="flex items-center gap-2">
+            <button class="p-2 border border-border-light rounded-lg text-text-tertiary hover:bg-gray-50 disabled:opacity-50" disabled>
+              <span class="material-icons-round">chevron_left</span>
+            </button>
+            <button class="w-10 h-10 bg-primary text-white rounded-lg font-medium">1</button>
+            <button class="w-10 h-10 border border-border-light rounded-lg text-text-secondary hover:bg-gray-50">2</button>
+            <button class="w-10 h-10 border border-border-light rounded-lg text-text-secondary hover:bg-gray-50">3</button>
+            <span class="text-text-tertiary">...</span>
+            <button class="w-10 h-10 border border-border-light rounded-lg text-text-secondary hover:bg-gray-50">8</button>
+            <button class="p-2 border border-border-light rounded-lg text-text-secondary hover:bg-gray-50">
+              <span class="material-icons-round">chevron_right</span>
+            </button>
+          </div>
+        </div>
+        
+      </div>
+    </main>
+    
+  
+    <!-- Mobile Bottom Tab Bar -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light bottom-nav z-40">
+      <div class="flex justify-around items-center h-16">
+        <a href="instructor-dashboard.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="text-xs">홈</span>
+          
+        </a>
+        <a href="instructor-students.html" class="bottom-tab active flex flex-col items-center gap-0.5 px-3 py-2">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="text-xs">학생</span>
+        </a>
+        <a href="instructor-attendance.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="text-xs">출결</span>
+          
+        </a>
+        <a href="instructor-evaluation.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary relative">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="text-xs">평가</span>
+          <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+        </a>
+        <button onclick="openMobileMenu()" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">menu</span>
+          <span class="text-xs">더보기</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+  
+  <script>
+    // Filter chips toggle
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', function() {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        filterStudents(this.dataset.filter);
+      });
+    });
+    
+    // View toggle
+    document.querySelectorAll('.view-toggle').forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        document.querySelectorAll('.view-toggle').forEach(t => {
+          t.classList.remove('active', 'bg-primary', 'text-white');
+          t.classList.add('bg-gray-100', 'text-text-secondary');
+        });
+        this.classList.add('active');
+        this.classList.remove('bg-gray-100', 'text-text-secondary');
+        toggleView(this.dataset.view);
+      });
+    });
+    
+    function filterStudents(filter) {
+      console.log('Filtering by:', filter);
+      // In real app, filter the student cards
+    }
+    
+    function toggleView(view) {
+      const grid = document.getElementById('studentsGrid');
+      if (view === 'list') {
+        grid.classList.remove('grid-cols-1', 'md:grid-cols-2', 'xl:grid-cols-3');
+        grid.classList.add('grid-cols-1');
+      } else {
+        grid.classList.remove('grid-cols-1');
+        grid.classList.add('grid-cols-1', 'md:grid-cols-2', 'xl:grid-cols-3');
+      }
+    }
+    
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      console.log('Searching:', query);
+      // In real app, filter student cards by name/school
+    });
+  </script>
+  <script>
+    function openMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.getElementById('mobileMenu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

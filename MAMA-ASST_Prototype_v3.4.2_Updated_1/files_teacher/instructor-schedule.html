@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>시간표 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active {
+      background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%);
+      color: white;
+    }
+    .schedule-cell { min-height: 80px; }
+    .schedule-cell:hover { background-color: #F9FAFB; }
+    .class-block { transition: all 0.2s ease; cursor: pointer; }
+    .class-block:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .today-column { background-color: #FFF0ED; }
+    .bottom-tab.active { color: #FF6D4D; }
+    .bottom-tab.active .material-icons-round { color: #FF6D4D; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .bottom-nav { padding-bottom: env(safe-area-inset-bottom); }
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+        <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-navy text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-white/60">강사용</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span>
+          <span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span>
+          <span class="font-medium">시간표</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-navy text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">M</span>
+          </div>
+          <span class="font-bold text-lg">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="instructor-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        <a href="instructor-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="instructor-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="instructor-evaluation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="font-medium">일일평가</span>
+        </a>
+        <a href="instructor-counseling-history.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assessment</span>
+          <span class="font-medium">상담 결과</span>
+        </a>
+        <a href="instructor-assignment.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 배정</span>
+        </a>
+        <a href="instructor-observation.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">visibility</span>
+          <span class="font-medium">관찰 입력</span>
+        </a>
+        <a href="instructor-schedule.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">calendar_month</span>
+          <span class="font-medium">시간표</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">김</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">김선생님</p>
+            <p class="text-xs text-white/60">국어·수학 담당</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Main Content -->
+    <main class="flex-1 lg:ml-64 pb-20 lg:pb-0">
+      
+      <!-- Top Header -->
+            <!-- Mobile Header -->
+      <header class="lg:hidden h-14 bg-navy text-white flex items-center justify-between px-4 sticky top-0 z-30">
+        <button onclick="openMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">menu</span>
+        </button>
+        <h1 class="font-bold">시간표</h1>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold text-sm">김</div>
+      </header>
+
+      <!-- Desktop Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-30">
+        <div>
+          <h1 class="text-xl font-bold text-text-primary">시간표</h1>
+          <p class="text-sm text-text-tertiary">주간 수업 일정 관리</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="prevWeek()" class="p-2 hover:bg-gray-100 rounded-lg">
+            <span class="material-icons-round text-text-tertiary">chevron_left</span>
+          </button>
+          <span class="text-sm font-medium text-text-primary" id="weekLabel">2025년 1월 1주차</span>
+          <button onclick="nextWeek()" class="p-2 hover:bg-gray-100 rounded-lg">
+            <span class="material-icons-round text-text-tertiary">chevron_right</span>
+          </button>
+          <button onclick="goToday()" class="ml-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark flex items-center gap-2">
+            <span class="material-icons-round text-lg">today</span>
+            오늘
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-4 lg:space-y-6">
+        
+        <!-- Week Stats -->
+        <div class="grid grid-cols-4 gap-4">
+          <div class="bg-surface rounded-2xl border border-border-light p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-2xl font-bold text-text-primary">18</p>
+                <p class="text-sm text-text-tertiary">이번 주 수업</p>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-info-light flex items-center justify-center">
+                <span class="material-icons-round text-info text-2xl">event</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-2xl border border-border-light p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-2xl font-bold text-text-primary">36</p>
+                <p class="text-sm text-text-tertiary">총 학생 수</p>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-success-light flex items-center justify-center">
+                <span class="material-icons-round text-success text-2xl">groups</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-2xl border border-border-light p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-2xl font-bold text-korean">10</p>
+                <p class="text-sm text-text-tertiary">국어 수업</p>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-korean-light flex items-center justify-center">
+                <span class="material-icons-round text-korean text-2xl">menu_book</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-2xl border border-border-light p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-2xl font-bold" style="color: #E5A800;">8</p>
+                <p class="text-sm text-text-tertiary">수학 수업</p>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-math-light flex items-center justify-center">
+                <span class="material-icons-round text-math text-2xl">calculate</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Timetable -->
+        <div class="bg-surface rounded-2xl border border-border-light overflow-hidden">
+          <!-- Legend -->
+          <div class="p-4 border-b border-border-light bg-gray-50 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <span class="flex items-center gap-2 text-sm">
+                <span class="w-4 h-4 rounded bg-korean"></span>국어
+              </span>
+              <span class="flex items-center gap-2 text-sm">
+                <span class="w-4 h-4 rounded bg-math"></span>수학
+              </span>
+              <span class="flex items-center gap-2 text-sm">
+                <span class="w-4 h-4 rounded bg-gray-400"></span>상담
+              </span>
+            </div>
+            <span class="px-3 py-1 bg-primary-light text-primary text-xs font-medium rounded-full">오늘</span>
+          </div>
+          
+          <!-- Schedule Grid -->
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[800px]">
+              <thead>
+                <tr class="border-b border-border-light">
+                  <th class="w-20 p-3 text-center text-sm font-medium text-text-tertiary bg-gray-50">시간</th>
+                  <th class="p-3 text-center text-sm font-medium text-text-tertiary"><div>월</div><div class="text-xs font-normal">1/6</div></th>
+                  <th class="p-3 text-center text-sm font-medium text-text-tertiary"><div>화</div><div class="text-xs font-normal">1/7</div></th>
+                  <th class="p-3 text-center text-sm font-medium text-primary today-column rounded-t-xl"><div>수</div><div class="text-xs font-normal">1/8 (오늘)</div></th>
+                  <th class="p-3 text-center text-sm font-medium text-text-tertiary"><div>목</div><div class="text-xs font-normal">1/9</div></th>
+                  <th class="p-3 text-center text-sm font-medium text-text-tertiary"><div>금</div><div class="text-xs font-normal">1/10</div></th>
+                  <th class="p-3 text-center text-sm font-medium text-text-tertiary"><div>토</div><div class="text-xs font-normal">1/11</div></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 14:00 -->
+                <tr class="border-b border-border-light">
+                  <td class="p-2 text-center text-sm text-text-tertiary bg-gray-50 font-medium">14:00</td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('중2A반 국어', 'korean')" class="class-block bg-korean text-white p-3 rounded-xl">
+                      <p class="font-bold text-sm">중2A반</p>
+                      <p class="text-xs opacity-80">국어 · 8명</p>
+                      <p class="text-xs mt-1">14:00~15:30</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell"></td>
+                  <td class="p-2 schedule-cell today-column">
+                    <div onclick="openClassDetail('중2A반 국어', 'korean')" class="class-block bg-korean text-white p-3 rounded-xl border-2 border-white shadow-lg">
+                      <p class="font-bold text-sm">중2A반</p>
+                      <p class="text-xs opacity-80">국어 · 8명</p>
+                      <p class="text-xs mt-1">14:00~15:30</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell"></td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('중2A반 국어', 'korean')" class="class-block bg-korean text-white p-3 rounded-xl">
+                      <p class="font-bold text-sm">중2A반</p>
+                      <p class="text-xs opacity-80">국어 · 8명</p>
+                      <p class="text-xs mt-1">14:00~15:30</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell"></td>
+                </tr>
+                <!-- 15:30 -->
+                <tr class="border-b border-border-light">
+                  <td class="p-2 text-center text-sm text-text-tertiary bg-gray-50 font-medium">15:30</td>
+                  <td class="p-2 schedule-cell"></td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('중2B반 수학', 'math')" class="class-block bg-math text-gray-900 p-3 rounded-xl">
+                      <p class="font-bold text-sm">중2B반</p>
+                      <p class="text-xs opacity-80">수학 · 10명</p>
+                      <p class="text-xs mt-1">15:30~17:00</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell today-column"></td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('중2B반 수학', 'math')" class="class-block bg-math text-gray-900 p-3 rounded-xl">
+                      <p class="font-bold text-sm">중2B반</p>
+                      <p class="text-xs opacity-80">수학 · 10명</p>
+                      <p class="text-xs mt-1">15:30~17:00</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell"></td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('토요 특강', 'korean')" class="class-block bg-korean text-white p-3 rounded-xl">
+                      <p class="font-bold text-sm">토요 특강</p>
+                      <p class="text-xs opacity-80">국어 · 15명</p>
+                      <p class="text-xs mt-1">15:30~18:00</p>
+                    </div>
+                  </td>
+                </tr>
+                <!-- 17:00 -->
+                <tr class="border-b border-border-light">
+                  <td class="p-2 text-center text-sm text-text-tertiary bg-gray-50 font-medium">17:00</td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('고1B반 수학', 'math')" class="class-block bg-math text-gray-900 p-3 rounded-xl">
+                      <p class="font-bold text-sm">고1B반</p>
+                      <p class="text-xs opacity-80">수학 · 12명</p>
+                      <p class="text-xs mt-1">17:00~18:30</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell"></td>
+                  <td class="p-2 schedule-cell today-column">
+                    <div onclick="openClassDetail('고1B반 수학', 'math')" class="class-block bg-math text-gray-900 p-3 rounded-xl border-2 border-white shadow-lg">
+                      <p class="font-bold text-sm">고1B반</p>
+                      <p class="text-xs opacity-80">수학 · 12명</p>
+                      <p class="text-xs mt-1">17:00~18:30</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell"></td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('고1B반 수학', 'math')" class="class-block bg-math text-gray-900 p-3 rounded-xl">
+                      <p class="font-bold text-sm">고1B반</p>
+                      <p class="text-xs opacity-80">수학 · 12명</p>
+                      <p class="text-xs mt-1">17:00~18:30</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell"></td>
+                </tr>
+                <!-- 18:30 -->
+                <tr class="border-b border-border-light">
+                  <td class="p-2 text-center text-sm text-text-tertiary bg-gray-50 font-medium">18:30</td>
+                  <td class="p-2 schedule-cell"></td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('고2A반 국어', 'korean')" class="class-block bg-korean text-white p-3 rounded-xl">
+                      <p class="font-bold text-sm">고2A반</p>
+                      <p class="text-xs opacity-80">국어 · 6명</p>
+                      <p class="text-xs mt-1">18:30~20:00</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell today-column"></td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('고2A반 국어', 'korean')" class="class-block bg-korean text-white p-3 rounded-xl">
+                      <p class="font-bold text-sm">고2A반</p>
+                      <p class="text-xs opacity-80">국어 · 6명</p>
+                      <p class="text-xs mt-1">18:30~20:00</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell"></td>
+                  <td class="p-2 schedule-cell"></td>
+                </tr>
+                <!-- 20:00 -->
+                <tr>
+                  <td class="p-2 text-center text-sm text-text-tertiary bg-gray-50 font-medium">20:00</td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('학부모 상담', 'counsel')" class="class-block bg-gray-500 text-white p-3 rounded-xl">
+                      <p class="font-bold text-sm">학부모 상담</p>
+                      <p class="text-xs opacity-80">박민수 어머니</p>
+                      <p class="text-xs mt-1">20:00~20:30</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell"></td>
+                  <td class="p-2 schedule-cell today-column"></td>
+                  <td class="p-2 schedule-cell">
+                    <div onclick="openClassDetail('학부모 상담', 'counsel')" class="class-block bg-gray-500 text-white p-3 rounded-xl">
+                      <p class="font-bold text-sm">학부모 상담</p>
+                      <p class="text-xs opacity-80">김서연 어머니</p>
+                      <p class="text-xs mt-1">20:00~20:30</p>
+                    </div>
+                  </td>
+                  <td class="p-2 schedule-cell"></td>
+                  <td class="p-2 schedule-cell"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Today's Schedule Summary -->
+        <div class="bg-surface rounded-2xl border border-border-light p-5">
+          <h3 class="font-bold text-text-primary mb-4 flex items-center gap-2">
+            <span class="material-icons-round text-primary">event_available</span>
+            오늘의 일정 (수요일)
+          </h3>
+          <div class="space-y-3">
+            <div class="flex items-center gap-4 p-3 bg-korean-light rounded-xl">
+              <div class="w-2 h-12 bg-korean rounded-full"></div>
+              <div class="flex-1">
+                <p class="font-bold text-text-primary">중2A반 국어</p>
+                <p class="text-sm text-text-secondary">14:00~15:30 · 8명</p>
+              </div>
+              <span class="px-3 py-1.5 bg-warning text-white text-sm font-medium rounded-lg">진행 예정</span>
+            </div>
+            <div class="flex items-center gap-4 p-3 bg-math-light rounded-xl">
+              <div class="w-2 h-12 bg-math rounded-full"></div>
+              <div class="flex-1">
+                <p class="font-bold text-text-primary">고1B반 수학</p>
+                <p class="text-sm text-text-secondary">17:00~18:30 · 12명</p>
+              </div>
+              <span class="px-3 py-1.5 bg-gray-400 text-white text-sm font-medium rounded-lg">대기 중</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  
+    <!-- Mobile Bottom Tab Bar -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border-light bottom-nav z-40">
+      <div class="flex justify-around items-center h-16">
+        <a href="instructor-dashboard.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="text-xs">홈</span>
+          
+        </a>
+        <a href="instructor-students.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="text-xs">학생</span>
+          
+        </a>
+        <a href="instructor-attendance.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="text-xs">출결</span>
+          
+        </a>
+        <a href="instructor-evaluation.html" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary relative">
+          <span class="material-icons-round text-xl">rate_review</span>
+          <span class="text-xs">평가</span>
+          <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+        </a>
+        <button onclick="openMobileMenu()" class="bottom-tab flex flex-col items-center gap-0.5 px-3 py-2 text-text-tertiary">
+          <span class="material-icons-round text-xl">menu</span>
+          <span class="text-xs">더보기</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+  
+  <!-- Class Detail Modal -->
+  <div id="classModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl max-w-lg w-full mx-4 overflow-hidden">
+      <div id="modalHeader" class="p-5 border-b border-border-light bg-korean flex items-center justify-between">
+        <h3 id="modalClassTitle" class="font-bold text-lg text-white">중2A반 국어</h3>
+        <button onclick="closeClassModal()" class="p-2 hover:bg-white/20 rounded-lg">
+          <span class="material-icons-round text-white">close</span>
+        </button>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="p-3 bg-gray-50 rounded-xl">
+            <p class="text-xs text-text-tertiary mb-1">수업 시간</p>
+            <p class="font-bold text-text-primary">14:00 ~ 15:30</p>
+          </div>
+          <div class="p-3 bg-gray-50 rounded-xl">
+            <p class="text-xs text-text-tertiary mb-1">수강 인원</p>
+            <p class="font-bold text-text-primary">8명</p>
+          </div>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-text-primary mb-2">수강 학생</p>
+          <div class="flex flex-wrap gap-2" id="modalStudents">
+            <span class="px-3 py-1.5 bg-korean-light text-korean text-sm rounded-lg">김서연</span>
+            <span class="px-3 py-1.5 bg-korean-light text-korean text-sm rounded-lg">박민수</span>
+            <span class="px-3 py-1.5 bg-korean-light text-korean text-sm rounded-lg">이지훈</span>
+            <span class="px-3 py-1.5 bg-korean-light text-korean text-sm rounded-lg">최예은</span>
+            <span class="px-3 py-1.5 bg-korean-light text-korean text-sm rounded-lg">정수현</span>
+            <span class="px-3 py-1.5 bg-korean-light text-korean text-sm rounded-lg">강하준</span>
+            <span class="px-3 py-1.5 bg-korean-light text-korean text-sm rounded-lg">오민재</span>
+            <span class="px-3 py-1.5 bg-korean-light text-korean text-sm rounded-lg">윤서아</span>
+          </div>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-text-primary mb-2">오늘의 학습 내용</p>
+          <div class="p-3 bg-gray-50 rounded-xl">
+            <p class="text-sm text-text-secondary">비문학 독해 - 과학/기술 지문</p>
+            <p class="text-xs text-text-tertiary mt-1">인공지능과 미래사회, 기후변화의 원인</p>
+          </div>
+        </div>
+      </div>
+      <div class="p-5 border-t border-border-light flex gap-3">
+        <a href="instructor-evaluation.html" class="flex-1 py-2.5 border border-korean text-korean rounded-xl hover:bg-korean-light text-center font-medium">일일평가 입력</a>
+        <a href="instructor-assignment.html" class="flex-1 py-2.5 bg-korean text-white rounded-xl hover:bg-blue-600 text-center font-medium">숙제 배정</a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function prevWeek() { document.getElementById('weekLabel').textContent = '2024년 12월 5주차'; }
+    function nextWeek() { document.getElementById('weekLabel').textContent = '2025년 1월 2주차'; }
+    function goToday() { document.getElementById('weekLabel').textContent = '2025년 1월 1주차'; }
+    
+    function openClassDetail(className, type) {
+      document.getElementById('modalClassTitle').textContent = className;
+      const header = document.getElementById('modalHeader');
+      header.className = 'p-5 border-b border-border-light flex items-center justify-between';
+      if (type === 'korean') header.classList.add('bg-korean');
+      else if (type === 'math') header.classList.add('bg-math');
+      else header.classList.add('bg-gray-500');
+      document.getElementById('classModal').classList.remove('hidden');
+    }
+    
+    function closeClassModal() { document.getElementById('classModal').classList.add('hidden'); }
+  </script>
+  <script>
+    function openMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.getElementById('mobileMenu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobileMenu() {
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

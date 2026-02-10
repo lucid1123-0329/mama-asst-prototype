@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문의 관리 | MAMA-ASST 관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            'deep-navy': '#1A2E4D',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%); color: white; }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    .modal-overlay { 
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .tab-btn.active { color: #FF6D4D; border-color: #FF6D4D; }
+    .inquiry-card { transition: all 0.2s ease; }
+    .inquiry-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-64 bg-deep-navy flex-col fixed h-full z-40">
+      <div class="p-4 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">M</span>
+          </div>
+          <span class="text-white font-bold">MAMA-ASST</span>
+          <span class="ml-auto px-2 py-0.5 bg-primary/20 text-primary text-xs rounded-full">Admin</span>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+        <a href="admin-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">dashboard</span>
+          <span class="font-medium">대시보드</span>
+        </a>
+        
+        <p class="px-4 pt-4 pb-2 text-xs text-white/40 font-medium">사용자 관리</p>
+        <a href="admin-students.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">school</span>
+          <span class="font-medium">학생 관리</span>
+        </a>
+        <a href="admin-parents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">family_restroom</span>
+          <span class="font-medium">학부모 관리</span>
+        </a>
+        <a href="admin-instructors.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">person</span>
+          <span class="font-medium">강사 관리</span>
+        </a>
+        
+        <p class="px-4 pt-4 pb-2 text-xs text-white/40 font-medium">학원 운영</p>
+        <a href="admin-classes.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">반 관리</span>
+        </a>
+        <a href="admin-inquiries.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">support_agent</span>
+          <span class="font-medium">문의 관리</span>
+          <span class="ml-auto px-2 py-0.5 bg-white text-primary text-xs rounded-full font-bold">3</span>
+        </a>
+        <a href="admin-counseling.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">psychology</span>
+          <span class="font-medium">상담 관리</span>
+        </a>
+        <a href="admin-attendance.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">fact_check</span>
+          <span class="font-medium">출결 관리</span>
+        </a>
+        <a href="admin-homework.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">assignment</span>
+          <span class="font-medium">숙제 관리</span>
+        </a>
+        
+        <p class="px-4 pt-4 pb-2 text-xs text-white/40 font-medium">결제/정산</p>
+        <a href="admin-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">payments</span>
+          <span class="font-medium">결제 관리</span>
+        </a>
+        
+        <p class="px-4 pt-4 pb-2 text-xs text-white/40 font-medium">설정</p>
+        <a href="admin-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">settings</span>
+          <span class="font-medium">학원 설정</span>
+        </a>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">관</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-white font-medium text-sm truncate">김관리자</p>
+            <p class="text-white/50 text-xs">명불허전 학원</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Header -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 h-14 bg-deep-navy flex items-center justify-between px-4 z-30">
+      <button onclick="openMobileMenu()" class="text-white p-2">
+        <span class="material-icons-round">menu</span>
+      </button>
+      <span class="text-white font-bold">문의 관리</span>
+      <div class="w-10"></div>
+    </div>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-deep-navy z-50 lg:hidden flex flex-col">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">M</span>
+          </div>
+          <span class="text-white font-bold">MAMA-ASST</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="text-white p-2">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+        <a href="admin-dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round">dashboard</span>
+          <span>대시보드</span>
+        </a>
+        <a href="admin-students.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round">school</span>
+          <span>학생 관리</span>
+        </a>
+        <a href="admin-inquiries.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white">
+          <span class="material-icons-round">support_agent</span>
+          <span>문의 관리</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64 pt-14 lg:pt-0">
+      
+      <!-- Top Header -->
+      <header class="hidden lg:flex h-16 bg-surface border-b border-border-light items-center justify-between px-6 sticky top-0 z-20">
+        <div>
+          <h1 class="text-lg font-bold text-navy">문의 관리</h1>
+          <p class="text-sm text-text-secondary">학부모/학생 문의를 확인하고 답변하세요</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="openInstructorBriefingModal()" class="px-4 py-2 border border-primary text-primary rounded-xl text-sm font-medium hover:bg-primary-light transition-colors flex items-center gap-2">
+            <span class="material-icons-round text-lg">send</span>
+            강사 브리핑 발송
+          </button>
+        </div>
+      </header>
+      
+      <!-- Content -->
+      <div class="p-4 lg:p-6 space-y-6">
+        
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-surface rounded-xl border border-border-light p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-error-light flex items-center justify-center">
+                <span class="material-icons-round text-error">priority_high</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-error">3</p>
+                <p class="text-xs text-text-secondary">미답변</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-xl border border-border-light p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-warning-light flex items-center justify-center">
+                <span class="material-icons-round text-warning">hourglass_empty</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-warning">2</p>
+                <p class="text-xs text-text-secondary">처리중</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-xl border border-border-light p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-success-light flex items-center justify-center">
+                <span class="material-icons-round text-success">check_circle</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-success">28</p>
+                <p class="text-xs text-text-secondary">이번 달 완료</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-surface rounded-xl border border-border-light p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-info-light flex items-center justify-center">
+                <span class="material-icons-round text-info">schedule</span>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-info">2.5h</p>
+                <p class="text-xs text-text-secondary">평균 응답시간</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tabs & Filter -->
+        <div class="bg-surface rounded-xl border border-border-light overflow-hidden">
+          <div class="p-4 border-b border-border-light">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <!-- Tabs -->
+              <div class="flex gap-1 bg-gray-100 p-1 rounded-xl">
+                <button onclick="filterInquiries('all', this)" class="tab-btn active px-4 py-2 rounded-lg text-sm font-medium bg-white shadow-sm">
+                  전체 <span class="text-text-tertiary">(33)</span>
+                </button>
+                <button onclick="filterInquiries('pending', this)" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-white/50 transition-colors">
+                  미답변 <span class="text-error">(3)</span>
+                </button>
+                <button onclick="filterInquiries('processing', this)" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-white/50 transition-colors">
+                  처리중 <span class="text-warning">(2)</span>
+                </button>
+                <button onclick="filterInquiries('completed', this)" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-white/50 transition-colors">
+                  완료
+                </button>
+              </div>
+              
+              <!-- Search & Filter -->
+              <div class="flex gap-2">
+                <div class="relative">
+                  <span class="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary text-lg">search</span>
+                  <input type="text" placeholder="학생/학부모 검색" class="pl-10 pr-4 py-2 border border-border-light rounded-xl text-sm w-48 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                </div>
+                <select class="px-4 py-2 border border-border-light rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20">
+                  <option value="">카테고리 전체</option>
+                  <option value="schedule">일정</option>
+                  <option value="learning">학습</option>
+                  <option value="payment">결제</option>
+                  <option value="etc">기타</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Inquiry List -->
+          <div class="divide-y divide-border-light">
+            
+            <!-- Pending Inquiry 1 -->
+            <div class="inquiry-card p-4 hover:bg-gray-50 cursor-pointer" data-status="pending" onclick="openInquiryModal('1')">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-error-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-error text-lg">mail</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 bg-error text-white text-xs rounded-full">미답변</span>
+                      <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded-full">일정</span>
+                    </div>
+                    <span class="text-xs text-text-tertiary whitespace-nowrap">1시간 전</span>
+                  </div>
+                  <h4 class="font-medium text-navy mb-1 truncate">수업 시간 변경 가능한가요?</h4>
+                  <p class="text-sm text-text-secondary truncate">다음 주 화요일에 학교 행사가 있어서 수업 시간을 오후 5시로 변경하고 싶습니다...</p>
+                  <div class="flex items-center gap-3 mt-2">
+                    <span class="text-xs text-text-tertiary">👤 김지민 학부모</span>
+                    <span class="text-xs text-text-tertiary">📚 김지민 (중2)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Pending Inquiry 2 -->
+            <div class="inquiry-card p-4 hover:bg-gray-50 cursor-pointer" data-status="pending" onclick="openInquiryModal('2')">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-error-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-error text-lg">mail</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 bg-error text-white text-xs rounded-full">미답변</span>
+                      <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded-full">학습</span>
+                    </div>
+                    <span class="text-xs text-text-tertiary whitespace-nowrap">3시간 전</span>
+                  </div>
+                  <h4 class="font-medium text-navy mb-1 truncate">숙제 관련 질문이 있어요</h4>
+                  <p class="text-sm text-text-secondary truncate">오늘 수학 숙제 3번 문제가 이해가 안 돼요. 힌트를 받을 수 있을까요?</p>
+                  <div class="flex items-center gap-3 mt-2">
+                    <span class="text-xs text-text-tertiary">👤 박민수 (학생)</span>
+                    <span class="text-xs text-text-tertiary">📚 고1</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Pending Inquiry 3 -->
+            <div class="inquiry-card p-4 hover:bg-gray-50 cursor-pointer" data-status="pending" onclick="openInquiryModal('3')">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-error-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-error text-lg">mail</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 bg-error text-white text-xs rounded-full">미답변</span>
+                      <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded-full">결제</span>
+                    </div>
+                    <span class="text-xs text-text-tertiary whitespace-nowrap">5시간 전</span>
+                  </div>
+                  <h4 class="font-medium text-navy mb-1 truncate">청구서 금액 문의</h4>
+                  <p class="text-sm text-text-secondary truncate">이번 달 청구서에 교재비가 포함되어 있는데 확인 부탁드립니다.</p>
+                  <div class="flex items-center gap-3 mt-2">
+                    <span class="text-xs text-text-tertiary">👤 이서연 학부모</span>
+                    <span class="text-xs text-text-tertiary">📚 이서연 (초5)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Processing Inquiry -->
+            <div class="inquiry-card p-4 hover:bg-gray-50 cursor-pointer" data-status="processing" onclick="openInquiryModal('4')">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-warning-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-warning text-lg">pending</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 bg-warning text-white text-xs rounded-full">처리중</span>
+                      <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded-full">학습</span>
+                      <span class="px-2 py-0.5 bg-info-light text-info text-xs rounded-full">강사 전달</span>
+                    </div>
+                    <span class="text-xs text-text-tertiary whitespace-nowrap">어제</span>
+                  </div>
+                  <h4 class="font-medium text-navy mb-1 truncate">아이가 수학을 어려워해요</h4>
+                  <p class="text-sm text-text-secondary truncate">최근 수학 성적이 많이 떨어졌는데 추가 보충이 가능한가요?</p>
+                  <div class="flex items-center gap-3 mt-2">
+                    <span class="text-xs text-text-tertiary">👤 최지훈 학부모</span>
+                    <span class="text-xs text-text-tertiary">📚 최지훈 (중1)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Completed Inquiry -->
+            <div class="inquiry-card p-4 hover:bg-gray-50 cursor-pointer opacity-60" data-status="completed" onclick="openInquiryModal('5')">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full bg-success-light flex items-center justify-center flex-shrink-0">
+                  <span class="material-icons-round text-success text-lg">check_circle</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 bg-success text-white text-xs rounded-full">완료</span>
+                      <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded-full">일정</span>
+                    </div>
+                    <span class="text-xs text-text-tertiary whitespace-nowrap">1월 10일</span>
+                  </div>
+                  <h4 class="font-medium text-navy mb-1 truncate">휴원 신청 문의</h4>
+                  <p class="text-sm text-text-secondary truncate">다음 달 가족 여행으로 2주간 휴원하고 싶습니다.</p>
+                  <div class="flex items-center gap-3 mt-2">
+                    <span class="text-xs text-text-tertiary">👤 김지민 학부모</span>
+                    <span class="text-xs text-text-tertiary">📚 김지민 (중2)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          
+          <!-- Pagination -->
+          <div class="p-4 border-t border-border-light flex items-center justify-between">
+            <p class="text-sm text-text-secondary">총 33건</p>
+            <div class="flex items-center gap-1">
+              <button class="w-8 h-8 rounded-lg border border-border-light flex items-center justify-center text-text-tertiary hover:bg-gray-50">
+                <span class="material-icons-round text-lg">chevron_left</span>
+              </button>
+              <button class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center text-sm font-medium">1</button>
+              <button class="w-8 h-8 rounded-lg border border-border-light flex items-center justify-center text-sm text-text-secondary hover:bg-gray-50">2</button>
+              <button class="w-8 h-8 rounded-lg border border-border-light flex items-center justify-center text-sm text-text-secondary hover:bg-gray-50">3</button>
+              <button class="w-8 h-8 rounded-lg border border-border-light flex items-center justify-center text-text-tertiary hover:bg-gray-50">
+                <span class="material-icons-round text-lg">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+    </main>
+    
+  </div>
+  
+  <!-- Inquiry Detail Modal -->
+  <div id="inquiryModal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="p-4 lg:p-6 border-b border-border-light flex items-start justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2 py-0.5 bg-error text-white text-xs rounded-full">미답변</span>
+            <span class="px-2 py-0.5 bg-gray-100 text-text-secondary text-xs rounded-full">일정</span>
+          </div>
+          <h3 class="text-lg font-bold text-navy">수업 시간 변경 가능한가요?</h3>
+        </div>
+        <button onclick="closeInquiryModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="flex-1 overflow-y-auto p-4 lg:p-6 space-y-6">
+        
+        <!-- Inquiry Info -->
+        <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white font-bold">
+            김
+          </div>
+          <div class="flex-1">
+            <p class="font-medium">김지민 학부모</p>
+            <p class="text-sm text-text-secondary">김지민 (중2) · 접수: 1시간 전</p>
+          </div>
+          <a href="admin-students.html" class="text-sm text-primary font-medium hover:underline">학생 정보 보기</a>
+        </div>
+        
+        <!-- Inquiry Content -->
+        <div>
+          <h4 class="font-medium text-navy mb-2">문의 내용</h4>
+          <div class="p-4 bg-gray-50 rounded-xl">
+            <p class="text-text-primary leading-relaxed">
+              안녕하세요. 다음 주 화요일(1월 21일)에 학교 행사가 있어서 오후 4시 수업을 오후 5시로 변경하고 싶습니다. 
+              변경이 가능한지 확인 부탁드립니다. 감사합니다.
+            </p>
+          </div>
+        </div>
+        
+        <!-- Quick Reply Templates -->
+        <div>
+          <h4 class="font-medium text-navy mb-2">빠른 답변 템플릿</h4>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="useTemplate('schedule')" class="px-3 py-2 bg-info-light text-info text-sm rounded-lg hover:bg-info/20 transition-colors flex items-center gap-1.5">
+              <span class="material-icons-round text-base">calendar_today</span>
+              수업 일정
+            </button>
+            <button onclick="useTemplate('payment')" class="px-3 py-2 bg-warning-light text-warning text-sm rounded-lg hover:bg-warning/20 transition-colors flex items-center gap-1.5">
+              <span class="material-icons-round text-base">payments</span>
+              결제 안내
+            </button>
+            <button onclick="useTemplate('counseling')" class="px-3 py-2 bg-success-light text-success text-sm rounded-lg hover:bg-success/20 transition-colors flex items-center gap-1.5">
+              <span class="material-icons-round text-base">menu_book</span>
+              학습 상담
+            </button>
+            <button onclick="useTemplate('absence')" class="px-3 py-2 bg-error-light text-error text-sm rounded-lg hover:bg-error/20 transition-colors flex items-center gap-1.5">
+              <span class="material-icons-round text-base">event_busy</span>
+              결석/조퇴
+            </button>
+            <button onclick="useTemplate('general')" class="px-3 py-2 bg-gray-100 text-text-secondary text-sm rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-1.5">
+              <span class="material-icons-round text-base">info</span>
+              기타 안내
+            </button>
+          </div>
+        </div>
+        
+        <!-- Reply Input -->
+        <div>
+          <h4 class="font-medium text-navy mb-2">답변 작성</h4>
+          <textarea id="replyTextarea" class="w-full h-32 p-4 border border-border-light rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="답변 내용을 입력하세요..."></textarea>
+        </div>
+        
+        <!-- Forward to Instructor Option -->
+        <div class="p-4 border border-info rounded-xl bg-info-light/30">
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="forwardToInstructor" class="w-5 h-5 mt-0.5 text-info rounded">
+            <div>
+              <p class="font-medium text-info">강사에게 전달</p>
+              <p class="text-sm text-text-secondary mt-0.5">이 문의 내용을 해당 강사의 브리핑에 포함합니다.</p>
+            </div>
+          </label>
+          <div id="instructorSelectArea" class="mt-3 hidden">
+            <select class="w-full px-4 py-2 border border-border-light rounded-xl text-sm bg-white">
+              <option value="">강사 선택</option>
+              <option value="kim">김선생님 (국어)</option>
+              <option value="lee">이선생님 (영어)</option>
+              <option value="park">박선생님 (수학)</option>
+            </select>
+            <textarea class="w-full h-20 mt-2 p-3 border border-border-light rounded-xl text-sm resize-none" placeholder="강사에게 전달할 메모 (선택)"></textarea>
+          </div>
+        </div>
+        
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="p-4 lg:p-6 border-t border-border-light flex items-center justify-between">
+        <button class="px-4 py-2 text-text-secondary hover:text-text-primary transition-colors text-sm">
+          삭제
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="closeInquiryModal()" class="px-4 py-2 border border-border-light rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
+            취소
+          </button>
+          <button onclick="sendReply()" class="px-6 py-2 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary-dark transition-colors flex items-center gap-2">
+            <span class="material-icons-round text-lg">send</span>
+            답변 발송
+          </button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- Instructor Briefing Modal -->
+  <div id="instructorBriefingModal" class="modal-overlay">
+    <div class="bg-surface rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="p-4 lg:p-6 border-b border-border-light flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-bold text-navy">강사 브리핑 발송</h3>
+          <p class="text-sm text-text-secondary">AI 분석 결과와 전달 사항을 강사에게 발송합니다</p>
+        </div>
+        <button onclick="closeInstructorBriefingModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round text-text-tertiary">close</span>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="flex-1 overflow-y-auto p-4 lg:p-6 space-y-6">
+        
+        <!-- Instructor Selection -->
+        <div>
+          <h4 class="font-medium text-navy mb-3">강사 선택</h4>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+              <input type="checkbox" checked class="w-5 h-5 text-primary rounded">
+              <div class="w-10 h-10 rounded-full bg-korean-light flex items-center justify-center text-korean font-bold">김</div>
+              <div class="flex-1">
+                <p class="font-medium">김선생님</p>
+                <p class="text-sm text-text-secondary">국어 · 담당 학생 12명</p>
+              </div>
+              <span class="px-2 py-1 bg-info-light text-info text-xs rounded-full">전달 2건</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+              <input type="checkbox" class="w-5 h-5 text-primary rounded">
+              <div class="w-10 h-10 rounded-full bg-english-light flex items-center justify-center text-english font-bold">이</div>
+              <div class="flex-1">
+                <p class="font-medium">이선생님</p>
+                <p class="text-sm text-text-secondary">영어 · 담당 학생 15명</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-border-light rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+              <input type="checkbox" checked class="w-5 h-5 text-primary rounded">
+              <div class="w-10 h-10 rounded-full bg-math-light flex items-center justify-center text-math font-bold">박</div>
+              <div class="flex-1">
+                <p class="font-medium">박선생님</p>
+                <p class="text-sm text-text-secondary">수학 · 담당 학생 10명</p>
+              </div>
+              <span class="px-2 py-1 bg-info-light text-info text-xs rounded-full">전달 1건</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- AI Briefing Preview -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-medium text-navy">🤖 AI 자동 브리핑 미리보기</h4>
+            <button class="text-sm text-primary font-medium hover:underline">새로고침</button>
+          </div>
+          
+          <!-- Kim Teacher's Briefing -->
+          <div class="border border-border-light rounded-xl overflow-hidden mb-3">
+            <div class="p-3 bg-korean-light flex items-center gap-2">
+              <span class="font-medium text-korean">김선생님 (국어)</span>
+            </div>
+            <div class="p-4 space-y-3">
+              <div class="flex items-start gap-3">
+                <span class="material-icons-round text-warning text-lg mt-0.5">warning</span>
+                <div>
+                  <p class="font-medium">김지민 - 집중력 저하 관찰</p>
+                  <p class="text-sm text-text-secondary">어제 수업 중 정답률 45%로 하락. 최근 피로감 호소 (학부모 전달)</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="material-icons-round text-success text-lg mt-0.5">trending_up</span>
+                <div>
+                  <p class="font-medium">박서연 - 성향검사 완료</p>
+                  <p class="text-sm text-text-secondary">메타인지 점수 85점. 자기주도 학습 성향이 높음.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Park Teacher's Briefing -->
+          <div class="border border-border-light rounded-xl overflow-hidden">
+            <div class="p-3 bg-math-light flex items-center gap-2">
+              <span class="font-medium text-warning">박선생님 (수학)</span>
+            </div>
+            <div class="p-4 space-y-3">
+              <div class="flex items-start gap-3">
+                <span class="material-icons-round text-info text-lg mt-0.5">chat</span>
+                <div>
+                  <p class="font-medium">최지훈 학부모 문의 전달</p>
+                  <p class="text-sm text-text-secondary">"수학 성적 하락으로 추가 보충 요청" - 면담 시 참고 부탁드립니다.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Additional Notes -->
+        <div>
+          <h4 class="font-medium text-navy mb-2">추가 메모 (선택)</h4>
+          <textarea class="w-full h-24 p-4 border border-border-light rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="모든 강사에게 전달할 공지사항을 입력하세요..."></textarea>
+        </div>
+        
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="p-4 lg:p-6 border-t border-border-light flex items-center justify-end gap-2">
+        <button onclick="closeInstructorBriefingModal()" class="px-4 py-2 border border-border-light rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors">
+          취소
+        </button>
+        <button class="px-6 py-2 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary-dark transition-colors flex items-center gap-2">
+          <span class="material-icons-round text-lg">send</span>
+          선택한 강사에게 발송
+        </button>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 bg-navy text-white rounded-xl shadow-lg hidden z-50 flex items-center gap-2">
+    <span class="material-icons-round text-success">check_circle</span>
+    <span id="toastMessage">답변이 발송되었습니다</span>
+  </div>
+  
+  <script>
+    // Mobile Menu
+    function openMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // Tab Filter
+    function filterInquiries(type, btnEl) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-white', 'shadow-sm');
+        btn.classList.add('text-text-secondary');
+      });
+      btnEl.classList.add('active', 'bg-white', 'shadow-sm');
+      btnEl.classList.remove('text-text-secondary');
+
+      document.querySelectorAll('.inquiry-card[data-status]').forEach(card => {
+        if (type === 'all') {
+          card.style.display = '';
+        } else {
+          card.style.display = card.dataset.status === type ? '' : 'none';
+        }
+      });
+    }
+    
+    // Inquiry Modal
+    function openInquiryModal(id) {
+      document.getElementById('inquiryModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeInquiryModal() {
+      document.getElementById('inquiryModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // Instructor Briefing Modal
+    function openInstructorBriefingModal() {
+      document.getElementById('instructorBriefingModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeInstructorBriefingModal() {
+      document.getElementById('instructorBriefingModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // Quick Reply Templates (5 templates, append mode)
+    function useTemplate(type) {
+      const templates = {
+        'schedule': '안녕하세요, [학원명]입니다. 문의하신 수업 일정 안내드립니다.\n\n[수업 시간/요일 정보를 입력해주세요]\n\n추가 문의사항이 있으시면 언제든 연락 부탁드립니다.',
+        'payment': '안녕하세요, [학원명]입니다. 결제 관련 안내드립니다.\n\n납부 기한: [날짜]\n납부 금액: [금액]\n납부 방법: [방법]\n\n감사합니다.',
+        'counseling': '안녕하세요, [학원명]입니다. 학습 상담을 원하시면 아래 방법으로 예약해주세요.\n\n상담 가능 시간: 평일 14:00~18:00\n예약 방법: 전화 또는 앱 내 문의\n\n감사합니다.',
+        'absence': '안녕하세요, [학원명]입니다. 결석(조퇴) 사유를 접수하였습니다.\n\n학생명: [이름]\n일자: [날짜]\n사유: [사유]\n\n확인 감사드립니다.',
+        'general': '안녕하세요, [학원명]입니다. 문의 내용을 확인하였습니다.\n\n담당자 확인 후 빠른 시일 내 연락드리겠습니다.\n감사합니다.'
+      };
+      const textarea = document.getElementById('replyTextarea');
+      const text = templates[type] || '';
+      if (textarea.value.trim()) {
+        textarea.value = textarea.value + '\n\n' + text;
+      } else {
+        textarea.value = text;
+      }
+      textarea.focus();
+    }
+    
+    // Forward to Instructor Toggle
+    document.getElementById('forwardToInstructor').addEventListener('change', function() {
+      document.getElementById('instructorSelectArea').classList.toggle('hidden', !this.checked);
+    });
+    
+    // Send Reply
+    function sendReply() {
+      closeInquiryModal();
+      showToast('답변이 발송되었습니다');
+    }
+    
+    // Toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

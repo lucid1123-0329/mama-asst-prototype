@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>시스템 설정 | MAMA-ASST 슈퍼관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'super': '#6366F1',
+            'super-dark': '#4F46E5',
+            'super-light': '#EEF2FF',
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { 
+      background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); 
+      color: white; 
+    }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    
+    /* Modal Styles */
+    .modal-overlay { opacity: 0; visibility: hidden; transition: all 0.3s; }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-content { transform: scale(0.95) translateY(10px); transition: all 0.3s; }
+    .modal-overlay.open .modal-content { transform: scale(1) translateY(0); }
+    
+    .gradient-super { background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); }
+    .setting-section { transition: all 0.2s ease; }
+    .setting-section:hover { box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1); }
+    .toggle-switch { position: relative; width: 48px; height: 26px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #D1D5DB; border-radius: 26px; transition: 0.3s; }
+    .toggle-slider:before { content: ''; position: absolute; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.3s; }
+    input:checked + .toggle-slider { background: #6366F1; }
+    input:checked + .toggle-slider:before { transform: translateX(22px); }
+    .nav-tab { transition: all 0.2s ease; }
+    .nav-tab.active { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); color: #6366F1; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-72 bg-gradient-to-b from-slate-900 to-slate-800 text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-super-light">Super Admin</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">비즈니스</p>
+          <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">apartment</span>
+            <span class="font-medium">학원 관리</span>
+          </a>
+          <a href="super-inquiries.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">support_agent</span>
+            <span class="font-medium">도입 문의</span>
+          </a>
+          <a href="super-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">account_balance</span>
+            <span class="font-medium">결제/정산</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">콘텐츠</p>
+          <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">library_books</span>
+            <span class="font-medium">콘텐츠 마스터</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">운영</p>
+          <a href="super-users.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">groups</span>
+            <span class="font-medium">사용자 관리</span>
+          </a>
+          <a href="super-ai-usage.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">smart_toy</span>
+            <span class="font-medium">AI 모니터링</span>
+          </a>
+          <a href="super-notices.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">campaign</span>
+            <span class="font-medium">공지사항</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">시스템</p>
+          <a href="super-settings.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+            <span class="material-icons-round text-xl">tune</span>
+            <span class="font-medium">시스템 설정</span>
+          </a>
+          <a href="super-logs.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">history</span>
+            <span class="font-medium">로그/감사</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full gradient-super flex items-center justify-center text-white font-bold">
+            <span class="material-icons-round text-xl">admin_panel_settings</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">Super Admin</p>
+            <p class="text-xs text-white/60">MAMA-ASST Platform</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <span class="font-bold text-lg">Super Admin</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">apartment</span>
+          <span class="font-medium">학원 관리</span>
+        </a>
+        <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">library_books</span>
+          <span class="font-medium">콘텐츠 마스터</span>
+        </a>
+        <a href="super-users.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">사용자 관리</span>
+        </a>
+        <a href="super-settings.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl">
+          <span class="material-icons-round text-xl">tune</span>
+          <span class="font-medium">시스템 설정</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-72">
+      <!-- Top Header -->
+      <header class="bg-white border-b border-border-light sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 lg:px-8 py-4">
+          <div class="flex items-center gap-4">
+            <button onclick="openMobileMenu()" class="lg:hidden p-2 hover:bg-gray-100 rounded-xl">
+              <span class="material-icons-round">menu</span>
+            </button>
+            <div>
+              <h1 class="text-xl font-bold text-navy">시스템 설정</h1>
+              <p class="text-sm text-text-secondary">플랫폼 전역 설정 관리</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <button onclick="openChangeHistoryModal()" class="p-2 hover:bg-gray-100 rounded-xl" title="변경 이력">
+              <span class="material-icons-round text-text-secondary">history</span>
+            </button>
+            <button onclick="exportSettings()" class="p-2 hover:bg-gray-100 rounded-xl" title="설정 내보내기">
+              <span class="material-icons-round text-text-secondary">download</span>
+            </button>
+            <button onclick="importSettings()" class="p-2 hover:bg-gray-100 rounded-xl" title="설정 가져오기">
+              <span class="material-icons-round text-text-secondary">upload</span>
+            </button>
+            <button onclick="resetToDefault()" class="p-2 hover:bg-gray-100 rounded-xl" title="기본값 초기화">
+              <span class="material-icons-round text-text-secondary">restart_alt</span>
+            </button>
+            <button onclick="openSystemStatusModal()" class="p-2 hover:bg-gray-100 rounded-xl" title="시스템 상태">
+              <span class="material-icons-round text-text-secondary">monitor_heart</span>
+            </button>
+            <button onclick="saveAllSettings()" class="flex items-center gap-2 px-4 py-2 gradient-super text-white rounded-xl hover:opacity-90 transition-opacity">
+              <span class="material-icons-round text-sm">save</span>
+              <span class="font-medium">저장</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- 설정 탭 -->
+        <div class="px-4 lg:px-8 pb-0">
+          <div class="flex gap-1 p-1 bg-gray-100 rounded-xl max-w-2xl overflow-x-auto">
+            <button class="nav-tab active flex-1 min-w-[100px] px-4 py-2 rounded-lg text-sm font-medium" onclick="switchSettingTab('general')">일반</button>
+            <button class="nav-tab flex-1 min-w-[100px] px-4 py-2 rounded-lg text-sm font-medium text-text-secondary" onclick="switchSettingTab('plan')">요금제</button>
+            <button class="nav-tab flex-1 min-w-[100px] px-4 py-2 rounded-lg text-sm font-medium text-text-secondary" onclick="switchSettingTab('api')">API 설정</button>
+            <button class="nav-tab flex-1 min-w-[100px] px-4 py-2 rounded-lg text-sm font-medium text-text-secondary" onclick="switchSettingTab('notification')">알림</button>
+            <button class="nav-tab flex-1 min-w-[100px] px-4 py-2 rounded-lg text-sm font-medium text-text-secondary" onclick="switchSettingTab('security')">보안</button>
+          </div>
+        </div>
+      </header>
+      
+      <div class="p-4 lg:p-8">
+        <!-- 일반 설정 탭 -->
+        <div id="tab-general" class="setting-tab space-y-6">
+          <!-- 플랫폼 기본 정보 -->
+          <div class="setting-section bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl gradient-super flex items-center justify-center">
+                <span class="material-icons-round text-white">settings</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">플랫폼 기본 정보</h3>
+                <p class="text-sm text-text-secondary">서비스명 및 기본 설정</p>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">서비스명</label>
+                <input type="text" value="MAMA-ASST" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">서비스 버전</label>
+                <input type="text" value="v3.1 MVP" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">운영사</label>
+                <input type="text" value="명불허전" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">고객센터 연락처</label>
+                <input type="text" value="02-1234-5678" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+              </div>
+            </div>
+          </div>
+          
+          <!-- 학습 기본 설정 -->
+          <div class="setting-section bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">school</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">학습 기본 설정</h3>
+                <p class="text-sm text-text-secondary">과목별 기본 학습량 설정</p>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">국어 일일 기본 지문 수</p>
+                  <p class="text-sm text-text-secondary">학생 기본 학습량 (1-5개)</p>
+                </div>
+                <select class="px-4 py-2 bg-white border border-border-light rounded-lg focus:outline-none">
+                  <option>2개</option>
+                  <option selected>3개</option>
+                  <option>4개</option>
+                  <option>5개</option>
+                </select>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">영어 일일 기본 단어 수</p>
+                  <p class="text-sm text-text-secondary">신규 단어 출제량 (5-20개)</p>
+                </div>
+                <select class="px-4 py-2 bg-white border border-border-light rounded-lg focus:outline-none">
+                  <option>5개</option>
+                  <option selected>10개</option>
+                  <option>15개</option>
+                  <option>20개</option>
+                </select>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">수학 일일 기본 문제 수</p>
+                  <p class="text-sm text-text-secondary">일일 문제 풀이량 (1-10개)</p>
+                </div>
+                <select class="px-4 py-2 bg-white border border-border-light rounded-lg focus:outline-none">
+                  <option>3개</option>
+                  <option selected>5개</option>
+                  <option>7개</option>
+                  <option>10개</option>
+                </select>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">7초 발화 타임아웃</p>
+                  <p class="text-sm text-text-secondary">영어 발화 테스트 시간 (초)</p>
+                </div>
+                <select class="px-4 py-2 bg-white border border-border-light rounded-lg focus:outline-none">
+                  <option>5초</option>
+                  <option selected>7초</option>
+                  <option>10초</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 기능 ON/OFF -->
+          <div class="setting-section bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">toggle_on</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">기능 ON/OFF</h3>
+                <p class="text-sm text-text-secondary">플랫폼 기능 활성화 관리</p>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">AI 자동 콘텐츠 생성</p>
+                  <p class="text-sm text-text-secondary">CSV 업로드 시 자동 AI 처리</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">학부모 알림톡 발송</p>
+                  <p class="text-sm text-text-secondary">등/하원, 숙제 알림 자동 발송</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">데이터 파트너십 기능</p>
+                  <p class="text-sm text-text-secondary">500점 캐시백 시스템</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">성향검사 후보정</p>
+                  <p class="text-sm text-text-secondary">4주 관찰 후 자동 후보정</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-warning-light/50 rounded-xl border border-warning/30">
+                <div>
+                  <p class="font-medium text-navy">서비스 점검 모드</p>
+                  <p class="text-sm text-warning">활성화 시 학원 사용자 접근 차단</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 요금제 설정 탭 -->
+        <div id="tab-plan" class="setting-tab space-y-6 hidden">
+          <div class="setting-section bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">payments</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">요금제 설정</h3>
+                <p class="text-sm text-text-secondary">학생당 월 요금 설정</p>
+              </div>
+              <button onclick="openAddPlanModal()" class="ml-auto px-4 py-2 gradient-super text-white rounded-xl hover:opacity-90 flex items-center gap-2">
+                <span class="material-icons-round text-sm">add</span>
+                요금제 추가
+              </button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Basic -->
+              <div class="border-2 border-border-light rounded-2xl p-6 hover:border-super transition-colors">
+                <div class="text-center mb-6">
+                  <span class="px-3 py-1 bg-gray-100 text-text-secondary text-sm rounded-full">Basic</span>
+                  <p class="text-3xl font-bold text-navy mt-4">₩3,000</p>
+                  <p class="text-sm text-text-secondary">학생당 / 월</p>
+                </div>
+                <div class="space-y-3">
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-sm">check_circle</span>
+                    <span class="text-sm">국어/영어/수학 학습</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-sm">check_circle</span>
+                    <span class="text-sm">기본 AI 분석</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-text-tertiary text-sm">cancel</span>
+                    <span class="text-sm text-text-tertiary">상담 AI 브리핑</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-text-tertiary text-sm">cancel</span>
+                    <span class="text-sm text-text-tertiary">학부모 리포트</span>
+                  </div>
+                </div>
+                <button onclick="openEditPlanModal('basic', 'Basic', 3000)" class="w-full mt-6 px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50">수정</button>
+              </div>
+              
+              <!-- Pro -->
+              <div class="border-2 border-super rounded-2xl p-6 relative">
+                <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 gradient-super text-white text-xs rounded-full">인기</span>
+                <div class="text-center mb-6">
+                  <span class="px-3 py-1 bg-super-light text-super text-sm rounded-full">Pro</span>
+                  <p class="text-3xl font-bold text-navy mt-4">₩5,000</p>
+                  <p class="text-sm text-text-secondary">학생당 / 월</p>
+                </div>
+                <div class="space-y-3">
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-sm">check_circle</span>
+                    <span class="text-sm">Basic 모든 기능</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-sm">check_circle</span>
+                    <span class="text-sm">상담 AI 브리핑</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-sm">check_circle</span>
+                    <span class="text-sm">학부모 리포트</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-text-tertiary text-sm">cancel</span>
+                    <span class="text-sm text-text-tertiary">전용 매니저</span>
+                  </div>
+                </div>
+                <button onclick="openEditPlanModal('pro', 'Pro', 5000)" class="w-full mt-6 px-4 py-2 gradient-super text-white rounded-xl hover:opacity-90">수정</button>
+              </div>
+              
+              <!-- Enterprise -->
+              <div class="border-2 border-border-light rounded-2xl p-6 hover:border-super transition-colors">
+                <div class="text-center mb-6">
+                  <span class="px-3 py-1 bg-navy text-white text-sm rounded-full">Enterprise</span>
+                  <p class="text-3xl font-bold text-navy mt-4">₩6,000</p>
+                  <p class="text-sm text-text-secondary">학생당 / 월</p>
+                </div>
+                <div class="space-y-3">
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-sm">check_circle</span>
+                    <span class="text-sm">Pro 모든 기능</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-sm">check_circle</span>
+                    <span class="text-sm">전용 매니저</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-sm">check_circle</span>
+                    <span class="text-sm">맞춤 콘텐츠</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-sm">check_circle</span>
+                    <span class="text-sm">API 연동 지원</span>
+                  </div>
+                </div>
+                <button onclick="openEditPlanModal('enterprise', 'Enterprise', 6000)" class="w-full mt-6 px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50">수정</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- API 설정 탭 -->
+        <div id="tab-api" class="setting-tab space-y-6 hidden">
+          <div class="setting-section bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-violet-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">smart_toy</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">Gemini API 설정</h3>
+                <p class="text-sm text-text-secondary">AI 모델 연동 설정</p>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">API Key</label>
+                <div class="flex gap-3">
+                  <input type="password" value="AIza************************" class="flex-1 px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+                  <button class="px-4 py-3 border border-border-light rounded-xl hover:bg-gray-50">
+                    <span class="material-icons-round text-text-secondary">visibility</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-navy mb-2">Flash Rate Limit (RPM)</label>
+                  <input type="number" value="60" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-navy mb-2">Pro Rate Limit (RPM)</label>
+                  <input type="number" value="30" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">월간 예산 한도 ($)</label>
+                <input type="number" value="1500" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+              </div>
+            </div>
+          </div>
+          
+          <div class="setting-section bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-teal-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">sms</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">NCP SENS 설정</h3>
+                <p class="text-sm text-text-secondary">SMS/알림톡 발송 설정</p>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">Service ID</label>
+                <input type="text" value="ncp:sms:kr:123456789:mama-asst" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">Access Key</label>
+                <input type="password" value="************************" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">발신 번호</label>
+                <input type="text" value="02-1234-5678" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+              </div>
+            </div>
+          </div>
+          
+          <div class="setting-section bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">payment</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">결제선생 (Paymint) 설정</h3>
+                <p class="text-sm text-text-secondary">결제 연동 설정</p>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">운영 환경</p>
+                  <p class="text-sm text-text-secondary">개발/운영 환경 전환</p>
+                </div>
+                <select class="px-4 py-2 bg-white border border-border-light rounded-lg focus:outline-none">
+                  <option>개발 (stg.paymint.co.kr)</option>
+                  <option selected>운영 (erp-api.payssam.kr)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">API Key</label>
+                <input type="password" value="************************" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-navy mb-2">Webhook URL</label>
+                <input type="text" value="https://mama-asst.com/webhook/paymint/review" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 알림 설정 탭 -->
+        <div id="tab-notification" class="setting-tab space-y-6 hidden">
+          <div class="setting-section bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">notifications</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">알림 발송 설정</h3>
+                <p class="text-sm text-text-secondary">이벤트별 알림 ON/OFF</p>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">등원 알림</p>
+                  <p class="text-sm text-text-secondary">학부모에게 등원 시 알림톡 발송</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">하원 알림</p>
+                  <p class="text-sm text-text-secondary">학부모에게 하원 시 알림톡 발송</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">숙제 배정 알림</p>
+                  <p class="text-sm text-text-secondary">학생에게 숙제 배정 시 알림</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">숙제 마감 리마인더</p>
+                  <p class="text-sm text-text-secondary">마감 1일 전 알림</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">결제 청구서 발송</p>
+                  <p class="text-sm text-text-secondary">학부모에게 청구서 알림톡</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">결제 미완료 리마인더</p>
+                  <p class="text-sm text-text-secondary">마감 후 2일, 5일 재발송</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 보안 설정 탭 -->
+        <div id="tab-security" class="setting-tab space-y-6 hidden">
+          <div class="setting-section bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-400 flex items-center justify-center">
+                <span class="material-icons-round text-white">security</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">보안 설정</h3>
+                <p class="text-sm text-text-secondary">계정 및 접근 보안 설정</p>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">로그인 실패 잠금</p>
+                  <p class="text-sm text-text-secondary">5회 실패 시 10분 잠금</p>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">세션 타임아웃</p>
+                  <p class="text-sm text-text-secondary">비활동 시 자동 로그아웃 시간</p>
+                </div>
+                <select class="px-4 py-2 bg-white border border-border-light rounded-lg focus:outline-none">
+                  <option>30분</option>
+                  <option selected>1시간</option>
+                  <option>2시간</option>
+                  <option>4시간</option>
+                </select>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">비밀번호 최소 길이</p>
+                  <p class="text-sm text-text-secondary">사용자 비밀번호 최소 글자 수</p>
+                </div>
+                <select class="px-4 py-2 bg-white border border-border-light rounded-lg focus:outline-none">
+                  <option selected>6자</option>
+                  <option>8자</option>
+                  <option>10자</option>
+                </select>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div>
+                  <p class="font-medium text-navy">접근 로그 보관 기간</p>
+                  <p class="text-sm text-text-secondary">사용자 접근 로그 보관 기간</p>
+                </div>
+                <select class="px-4 py-2 bg-white border border-border-light rounded-lg focus:outline-none">
+                  <option>30일</option>
+                  <option selected>90일</option>
+                  <option>180일</option>
+                  <option>365일</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="setting-section bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center">
+                <span class="material-icons-round text-white">admin_panel_settings</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-navy">슈퍼 관리자 계정</h3>
+                <p class="text-sm text-text-secondary">플랫폼 관리자 계정 관리</p>
+              </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-gray-50 border-y border-border-light">
+                  <tr>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary">이름</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-text-secondary">이메일</th>
+                    <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary">최근 접속</th>
+                    <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary">상태</th>
+                    <th class="px-4 py-3 text-center text-xs font-semibold text-text-secondary">관리</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-border-light">
+                  <tr>
+                    <td class="px-4 py-3 font-medium">명불허전</td>
+                    <td class="px-4 py-3 text-text-secondary"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="86e7e2ebefe8c6ebe7ebe7abe7f5f5f2a8e5e9eb">[email&#160;protected]</a></td>
+                    <td class="px-4 py-3 text-center text-sm">오늘 10:32</td>
+                    <td class="px-4 py-3 text-center">
+                      <span class="px-2 py-1 bg-success-light text-success text-xs rounded-full">활성</span>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                      <button onclick="openEditAdminModal('명불허전', 'admin@mama-asst.com')" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <span class="material-icons-round text-text-secondary text-sm">edit</span>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-medium">운영팀장</td>
+                    <td class="px-4 py-3 text-text-secondary"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aac5dad9eac7cbc7cb87cbd9d9de84c9c5c7">[email&#160;protected]</a></td>
+                    <td class="px-4 py-3 text-center text-sm">어제 18:45</td>
+                    <td class="px-4 py-3 text-center">
+                      <span class="px-2 py-1 bg-success-light text-success text-xs rounded-full">활성</span>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                      <button onclick="openEditAdminModal('운영팀장', 'ops@mama-asst.com')" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <span class="material-icons-round text-text-secondary text-sm">edit</span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <button onclick="openAddAdminModal()" class="mt-4 px-4 py-2 border border-dashed border-border-light rounded-xl hover:bg-gray-50 text-text-secondary flex items-center gap-2">
+              <span class="material-icons-round text-sm">add</span>
+              관리자 추가
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- 관리자 추가 모달 -->
+  <div id="addAdminModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeAddAdminModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">person_add</span>
+          슈퍼 관리자 추가
+        </h2>
+        <button onclick="closeAddAdminModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">이름 <span class="text-error">*</span></label>
+          <input type="text" id="newAdminName" placeholder="관리자 이름" 
+                 class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">이메일 <span class="text-error">*</span></label>
+          <input type="email" id="newAdminEmail" placeholder="admin@mama-asst.com" 
+                 class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">연락처</label>
+          <input type="tel" id="newAdminPhone" placeholder="010-0000-0000" 
+                 class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">권한 범위</label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" checked class="w-4 h-4 accent-super">
+              <span class="text-sm">학원 관리</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" checked class="w-4 h-4 accent-super">
+              <span class="text-sm">결제/정산 관리</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" class="w-4 h-4 accent-super">
+              <span class="text-sm">시스템 설정</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="bg-info-light rounded-xl p-3 text-sm text-info flex items-start gap-2">
+          <span class="material-icons-round text-lg">info</span>
+          <span>초기 비밀번호가 이메일로 발송됩니다.</span>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeAddAdminModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmAddAdmin()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90 flex items-center gap-2">
+          <span class="material-icons-round text-sm">person_add</span>
+          추가
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 관리자 수정 모달 -->
+  <div id="editAdminModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeEditAdminModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">edit</span>
+          관리자 정보 수정
+        </h2>
+        <button onclick="closeEditAdminModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">이름</label>
+          <input type="text" id="editAdminName" value="명불허전" 
+                 class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">이메일</label>
+          <input type="email" id="editAdminEmail" value="admin@mama-asst.com" 
+                 class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-navy mb-2">상태</label>
+          <select id="editAdminStatus" class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            <option value="active" selected>활성</option>
+            <option value="suspended">정지</option>
+          </select>
+        </div>
+        
+        <div class="flex gap-3">
+          <button onclick="resetAdminPassword()" class="flex-1 px-4 py-2 border border-warning text-warning rounded-xl hover:bg-warning-light text-sm flex items-center justify-center gap-2">
+            <span class="material-icons-round text-sm">lock_reset</span>
+            비밀번호 초기화
+          </button>
+          <button onclick="deleteAdmin()" class="flex-1 px-4 py-2 border border-error text-error rounded-xl hover:bg-error-light text-sm flex items-center justify-center gap-2">
+            <span class="material-icons-round text-sm">delete</span>
+            계정 삭제
+          </button>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-end gap-3">
+        <button onclick="closeEditAdminModal()" class="px-6 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="saveAdminEdit()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90">
+          저장
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- API 키 설정 모달 -->
+  <div id="apiKeyModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeApiKeyModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-lg overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy flex items-center gap-2">
+          <span class="material-icons-round text-super">key</span>
+          API 키 관리
+        </h2>
+        <button onclick="closeApiKeyModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <!-- Gemini API -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-super">smart_toy</span>
+            Google Gemini API
+          </h3>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-center gap-3 mb-3">
+              <input type="password" id="geminiApiKey" value="AIzaSyD************************" 
+                     class="flex-1 px-4 py-2 border border-border-light rounded-lg font-mono text-sm bg-white">
+              <button onclick="toggleApiKeyVisibility('geminiApiKey')" class="p-2 hover:bg-gray-200 rounded-lg">
+                <span class="material-icons-round text-text-secondary">visibility</span>
+              </button>
+              <button onclick="copyApiKey('geminiApiKey')" class="p-2 hover:bg-gray-200 rounded-lg">
+                <span class="material-icons-round text-text-secondary">content_copy</span>
+              </button>
+            </div>
+            <div class="flex items-center justify-between text-xs text-text-tertiary">
+              <span>마지막 수정: 2025.01.10</span>
+              <span class="text-success flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-success"></span>
+                연결됨
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- NCP SENS -->
+        <div class="mb-6">
+          <h3 class="font-bold text-navy mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-info">sms</span>
+            NCP SENS (SMS/알림톡)
+          </h3>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-center gap-3 mb-3">
+              <input type="password" id="sensApiKey" value="ncp_**********************" 
+                     class="flex-1 px-4 py-2 border border-border-light rounded-lg font-mono text-sm bg-white">
+              <button onclick="toggleApiKeyVisibility('sensApiKey')" class="p-2 hover:bg-gray-200 rounded-lg">
+                <span class="material-icons-round text-text-secondary">visibility</span>
+              </button>
+              <button onclick="copyApiKey('sensApiKey')" class="p-2 hover:bg-gray-200 rounded-lg">
+                <span class="material-icons-round text-text-secondary">content_copy</span>
+              </button>
+            </div>
+            <div class="flex items-center justify-between text-xs text-text-tertiary">
+              <span>마지막 수정: 2025.01.05</span>
+              <span class="text-success flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-success"></span>
+                연결됨
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 결제선생 -->
+        <div>
+          <h3 class="font-bold text-navy mb-3 flex items-center gap-2">
+            <span class="material-icons-round text-warning">payment</span>
+            결제선생 (Paymint)
+          </h3>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-center gap-3 mb-3">
+              <input type="password" id="paymintApiKey" value="paymint_**********************" 
+                     class="flex-1 px-4 py-2 border border-border-light rounded-lg font-mono text-sm bg-white">
+              <button onclick="toggleApiKeyVisibility('paymintApiKey')" class="p-2 hover:bg-gray-200 rounded-lg">
+                <span class="material-icons-round text-text-secondary">visibility</span>
+              </button>
+              <button onclick="copyApiKey('paymintApiKey')" class="p-2 hover:bg-gray-200 rounded-lg">
+                <span class="material-icons-round text-text-secondary">content_copy</span>
+              </button>
+            </div>
+            <div class="flex items-center justify-between text-xs text-text-tertiary">
+              <span>마지막 수정: 2024.12.20</span>
+              <span class="text-success flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-success"></span>
+                연결됨
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="testAllConnections()" class="px-4 py-2 border border-info text-info rounded-xl hover:bg-info-light flex items-center gap-2">
+          <span class="material-icons-round text-sm">sync</span>
+          연결 테스트
+        </button>
+        <div class="flex gap-3">
+          <button onclick="closeApiKeyModal()" class="px-6 py-2 border border-border-light rounded-xl hover:bg-gray-50">
+            닫기
+          </button>
+          <button onclick="saveApiKeys()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+            저장
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 설정 저장 확인 모달 -->
+  <div id="saveConfirmModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeSaveConfirmModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-sm overflow-hidden" onclick="event.stopPropagation()">
+      <div class="p-6 text-center">
+        <div class="w-16 h-16 rounded-full bg-warning-light mx-auto mb-4 flex items-center justify-center">
+          <span class="material-icons-round text-warning text-3xl">save</span>
+        </div>
+        <h2 class="text-lg font-bold text-navy mb-2">설정을 저장하시겠습니까?</h2>
+        <p class="text-sm text-text-secondary mb-6">변경된 설정이 즉시 적용됩니다.</p>
+        
+        <div class="flex gap-3">
+          <button onclick="closeSaveConfirmModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+            취소
+          </button>
+          <button onclick="confirmSaveSettings()" class="flex-1 px-4 py-2.5 gradient-super text-white rounded-xl hover:opacity-90">
+            저장
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 변경 이력 모달 -->
+  <div id="changeHistoryModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeChangeHistoryModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl gradient-super flex items-center justify-center">
+            <span class="material-icons-round text-white">history</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">설정 변경 이력</h2>
+            <p class="text-sm text-text-secondary">최근 30일간 변경 내역</p>
+          </div>
+        </div>
+        <button onclick="closeChangeHistoryModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[55vh]">
+        <div class="space-y-4">
+          <!-- 이력 항목들 -->
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-start justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 bg-super-light text-super text-xs font-medium rounded-full">API 설정</span>
+                <span class="text-sm font-medium text-navy">Gemini API 키 변경</span>
+              </div>
+              <span class="text-xs text-text-tertiary">2025-01-13 14:30</span>
+            </div>
+            <p class="text-sm text-text-secondary">API 키가 업데이트되었습니다.</p>
+            <p class="text-xs text-text-tertiary mt-1">변경자: Super Admin</p>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-start justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 bg-info-light text-info text-xs font-medium rounded-full">요금제</span>
+                <span class="text-sm font-medium text-navy">Basic 요금제 가격 변경</span>
+              </div>
+              <span class="text-xs text-text-tertiary">2025-01-12 09:15</span>
+            </div>
+            <p class="text-sm text-text-secondary">월 35,000원 → 39,000원</p>
+            <p class="text-xs text-text-tertiary mt-1">변경자: Super Admin</p>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-start justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 bg-success-light text-success text-xs font-medium rounded-full">일반</span>
+                <span class="text-sm font-medium text-navy">국어 일일 기본 지문 수 변경</span>
+              </div>
+              <span class="text-xs text-text-tertiary">2025-01-10 16:45</span>
+            </div>
+            <p class="text-sm text-text-secondary">2개 → 3개</p>
+            <p class="text-xs text-text-tertiary mt-1">변경자: Super Admin</p>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-start justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 bg-warning-light text-warning text-xs font-medium rounded-full">보안</span>
+                <span class="text-sm font-medium text-navy">2FA 필수 설정 활성화</span>
+              </div>
+              <span class="text-xs text-text-tertiary">2025-01-08 11:20</span>
+            </div>
+            <p class="text-sm text-text-secondary">관리자 계정 2단계 인증 필수화</p>
+            <p class="text-xs text-text-tertiary mt-1">변경자: Super Admin</p>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-start justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 bg-error-light text-error text-xs font-medium rounded-full">알림</span>
+                <span class="text-sm font-medium text-navy">시스템 알림 수신자 변경</span>
+              </div>
+              <span class="text-xs text-text-tertiary">2025-01-05 10:00</span>
+            </div>
+            <p class="text-sm text-text-secondary">알림 수신 이메일 추가: dev@mama-asst.com</p>
+            <p class="text-xs text-text-tertiary mt-1">변경자: Super Admin</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="exportChangeHistory()" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2">
+          <span class="material-icons-round text-sm">download</span>
+          이력 내보내기
+        </button>
+        <button onclick="closeChangeHistoryModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 시스템 상태 모달 -->
+  <div id="systemStatusModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeSystemStatusModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-success-light flex items-center justify-center">
+            <span class="material-icons-round text-success">monitor_heart</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">시스템 상태</h2>
+            <p class="text-sm text-text-secondary flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+              모든 시스템 정상
+            </p>
+          </div>
+        </div>
+        <button onclick="closeSystemStatusModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[55vh]">
+        <!-- 서비스 상태 -->
+        <h3 class="font-bold text-navy mb-4">서비스 상태</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <div class="bg-success-light/50 rounded-xl p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
+              <span class="material-icons-round text-success">cloud</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-navy">Bubble.io</p>
+              <p class="text-xs text-success">정상 운영 중</p>
+            </div>
+            <span class="w-3 h-3 rounded-full bg-success"></span>
+          </div>
+          
+          <div class="bg-success-light/50 rounded-xl p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
+              <span class="material-icons-round text-success">smart_toy</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-navy">Gemini API</p>
+              <p class="text-xs text-success">응답시간: 0.3s</p>
+            </div>
+            <span class="w-3 h-3 rounded-full bg-success"></span>
+          </div>
+          
+          <div class="bg-success-light/50 rounded-xl p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
+              <span class="material-icons-round text-success">sms</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-navy">NCP SENS</p>
+              <p class="text-xs text-success">정상 운영 중</p>
+            </div>
+            <span class="w-3 h-3 rounded-full bg-success"></span>
+          </div>
+          
+          <div class="bg-success-light/50 rounded-xl p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
+              <span class="material-icons-round text-success">payments</span>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-navy">결제선생</p>
+              <p class="text-xs text-success">정상 운영 중</p>
+            </div>
+            <span class="w-3 h-3 rounded-full bg-success"></span>
+          </div>
+        </div>
+        
+        <!-- 서버 리소스 -->
+        <h3 class="font-bold text-navy mb-4">서버 리소스</h3>
+        <div class="space-y-4">
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-navy">CPU 사용률</span>
+              <span class="text-sm font-bold text-success">32%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-success h-2 rounded-full" style="width: 32%"></div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-navy">메모리 사용률</span>
+              <span class="text-sm font-bold text-warning">68%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-warning h-2 rounded-full" style="width: 68%"></div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-navy">데이터베이스 용량</span>
+              <span class="text-sm font-bold text-info">45% (4.5GB / 10GB)</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-info h-2 rounded-full" style="width: 45%"></div>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-navy">파일 스토리지</span>
+              <span class="text-sm font-bold text-super">28% (2.8GB / 10GB)</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-super h-2 rounded-full" style="width: 28%"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 최근 이벤트 -->
+        <h3 class="font-bold text-navy mb-4 mt-6">최근 시스템 이벤트</h3>
+        <div class="space-y-2">
+          <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg text-sm">
+            <span class="material-icons-round text-success text-sm">check_circle</span>
+            <span class="text-text-secondary flex-1">배치 작업 완료: 영어 슬롯 생성</span>
+            <span class="text-xs text-text-tertiary">5분 전</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg text-sm">
+            <span class="material-icons-round text-info text-sm">info</span>
+            <span class="text-text-secondary flex-1">자동 백업 완료</span>
+            <span class="text-xs text-text-tertiary">1시간 전</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg text-sm">
+            <span class="material-icons-round text-warning text-sm">warning</span>
+            <span class="text-text-secondary flex-1">Gemini API Rate Limit 경고 (80%)</span>
+            <span class="text-xs text-text-tertiary">3시간 전</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="refreshSystemStatus()" class="px-4 py-2 border border-border-light rounded-xl hover:bg-gray-50 flex items-center gap-2">
+          <span class="material-icons-round text-sm">refresh</span>
+          새로고침
+        </button>
+        <button onclick="closeSystemStatusModal()" class="px-6 py-2 gradient-super text-white rounded-xl hover:opacity-90">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 설정 가져오기 모달 -->
+  <div id="importSettingsModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeImportSettingsModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-info-light flex items-center justify-center">
+            <span class="material-icons-round text-info">upload</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">설정 가져오기</h2>
+            <p class="text-sm text-text-secondary">JSON 파일 업로드</p>
+          </div>
+        </div>
+        <button onclick="closeImportSettingsModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6">
+        <div class="border-2 border-dashed border-border-light rounded-xl p-8 text-center hover:border-super transition-colors cursor-pointer" onclick="document.getElementById('importFileInput').click()">
+          <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="handleImportFile(this)">
+          <span class="material-icons-round text-4xl text-text-tertiary mb-3">cloud_upload</span>
+          <p class="font-medium text-navy mb-1">파일을 선택하거나 드래그하세요</p>
+          <p class="text-sm text-text-secondary">JSON 형식 (.json)</p>
+        </div>
+        
+        <div id="importFileInfo" class="hidden mt-4 p-4 bg-success-light rounded-xl">
+          <div class="flex items-center gap-3">
+            <span class="material-icons-round text-success">description</span>
+            <div class="flex-1">
+              <p id="importFileName" class="font-medium text-navy">settings_backup.json</p>
+              <p id="importFileSize" class="text-xs text-text-secondary">12.5 KB</p>
+            </div>
+            <button onclick="clearImportFile()" class="p-1 hover:bg-success/20 rounded">
+              <span class="material-icons-round text-text-secondary text-sm">close</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="mt-4 p-4 bg-warning-light/50 rounded-xl">
+          <div class="flex items-start gap-2">
+            <span class="material-icons-round text-warning text-sm mt-0.5">warning</span>
+            <p class="text-sm text-warning">가져오기를 실행하면 현재 설정이 덮어씌워집니다. 먼저 현재 설정을 내보내기 하는 것을 권장합니다.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex gap-3">
+        <button onclick="closeImportSettingsModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmImportSettings()" class="flex-1 px-4 py-2.5 gradient-super text-white rounded-xl hover:opacity-90">
+          가져오기
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 요금제 수정 모달 -->
+  <div id="editPlanModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeEditPlanModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-400 flex items-center justify-center">
+            <span class="material-icons-round text-white">edit</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">요금제 수정</h2>
+            <p id="editPlanSubtitle" class="text-sm text-text-secondary">Basic 요금제</p>
+          </div>
+        </div>
+        <button onclick="closeEditPlanModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <input type="hidden" id="editPlanId">
+        
+        <!-- 기본 정보 -->
+        <div class="space-y-4 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">요금제 이름</label>
+            <input type="text" id="editPlanName" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">월 요금 (원)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">₩</span>
+              <input type="number" id="editPlanPrice" class="w-full pl-10 pr-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+            <p class="text-xs text-text-tertiary mt-1">학생당 월 요금</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">설명</label>
+            <textarea id="editPlanDescription" rows="2" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super resize-none" placeholder="요금제 설명을 입력하세요"></textarea>
+          </div>
+        </div>
+        
+        <!-- 포함 기능 -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-navy mb-3">포함 기능</label>
+          <div class="space-y-3">
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100">
+              <input type="checkbox" id="feat_learning" checked class="w-5 h-5 accent-super rounded">
+              <div>
+                <p class="font-medium text-navy text-sm">국어/영어/수학 학습</p>
+                <p class="text-xs text-text-secondary">3과목 기본 학습 기능</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100">
+              <input type="checkbox" id="feat_ai_analysis" checked class="w-5 h-5 accent-super rounded">
+              <div>
+                <p class="font-medium text-navy text-sm">기본 AI 분석</p>
+                <p class="text-xs text-text-secondary">학습 데이터 분석 및 리포트</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100">
+              <input type="checkbox" id="feat_counseling" class="w-5 h-5 accent-super rounded">
+              <div>
+                <p class="font-medium text-navy text-sm">상담 AI 브리핑</p>
+                <p class="text-xs text-text-secondary">AI 기반 상담 사전 브리핑</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100">
+              <input type="checkbox" id="feat_parent_report" class="w-5 h-5 accent-super rounded">
+              <div>
+                <p class="font-medium text-navy text-sm">학부모 리포트</p>
+                <p class="text-xs text-text-secondary">정기 학습 리포트 발송</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100">
+              <input type="checkbox" id="feat_manager" class="w-5 h-5 accent-super rounded">
+              <div>
+                <p class="font-medium text-navy text-sm">전용 매니저</p>
+                <p class="text-xs text-text-secondary">담당 매니저 배정 및 지원</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100">
+              <input type="checkbox" id="feat_custom_content" class="w-5 h-5 accent-super rounded">
+              <div>
+                <p class="font-medium text-navy text-sm">맞춤 콘텐츠</p>
+                <p class="text-xs text-text-secondary">학원별 맞춤 콘텐츠 제작</p>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100">
+              <input type="checkbox" id="feat_api" class="w-5 h-5 accent-super rounded">
+              <div>
+                <p class="font-medium text-navy text-sm">API 연동 지원</p>
+                <p class="text-xs text-text-secondary">외부 시스템 연동 지원</p>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 추가 설정 -->
+        <div>
+          <label class="block text-sm font-medium text-navy mb-3">추가 설정</label>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div>
+                <p class="font-medium text-navy text-sm">인기 태그 표시</p>
+                <p class="text-xs text-text-secondary">요금제 카드에 '인기' 태그 표시</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="editPlanPopular">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <div>
+                <p class="font-medium text-navy text-sm">활성화 상태</p>
+                <p class="text-xs text-text-secondary">비활성화 시 신규 가입 불가</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="editPlanActive" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex justify-between">
+        <button onclick="deletePlan()" class="px-4 py-2 text-error hover:bg-error-light rounded-xl flex items-center gap-2">
+          <span class="material-icons-round text-sm">delete</span>
+          삭제
+        </button>
+        <div class="flex gap-3">
+          <button onclick="closeEditPlanModal()" class="px-4 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+            취소
+          </button>
+          <button onclick="savePlanEdit()" class="px-6 py-2.5 gradient-super text-white rounded-xl hover:opacity-90">
+            저장
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 요금제 추가 모달 -->
+  <div id="addPlanModal" class="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeAddPlanModal()">
+    <div class="modal-content bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden" onclick="event.stopPropagation()">
+      <div class="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl gradient-super flex items-center justify-center">
+            <span class="material-icons-round text-white">add</span>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-navy">새 요금제 추가</h2>
+            <p class="text-sm text-text-secondary">새로운 요금제를 생성합니다</p>
+          </div>
+        </div>
+        <button onclick="closeAddPlanModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">요금제 이름 <span class="text-error">*</span></label>
+            <input type="text" id="newPlanName" placeholder="예: Premium" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">월 요금 (원) <span class="text-error">*</span></label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">₩</span>
+              <input type="number" id="newPlanPrice" placeholder="10000" class="w-full pl-10 pr-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super">
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">기반 요금제</label>
+            <select id="newPlanBase" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none">
+              <option value="">-- 선택 안함 (새로 구성) --</option>
+              <option value="basic">Basic 기능 포함</option>
+              <option value="pro">Pro 기능 포함</option>
+              <option value="enterprise">Enterprise 기능 포함</option>
+            </select>
+            <p class="text-xs text-text-tertiary mt-1">선택한 요금제의 기능을 기본으로 포함</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-navy mb-2">설명</label>
+            <textarea id="newPlanDescription" rows="3" class="w-full px-4 py-3 bg-background border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super resize-none" placeholder="요금제 설명을 입력하세요"></textarea>
+          </div>
+          
+          <div class="p-4 bg-info-light/50 rounded-xl">
+            <div class="flex items-start gap-2">
+              <span class="material-icons-round text-info text-sm mt-0.5">info</span>
+              <p class="text-sm text-info">요금제 생성 후 포함 기능을 상세하게 설정할 수 있습니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-border-light flex gap-3">
+        <button onclick="closeAddPlanModal()" class="flex-1 px-4 py-2.5 border border-border-light rounded-xl hover:bg-gray-50">
+          취소
+        </button>
+        <button onclick="confirmAddPlan()" class="flex-1 px-4 py-2.5 gradient-super text-white rounded-xl hover:opacity-90">
+          생성
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 토스트 컨테이너 -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-3"></div>
+  
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // ========================================
+    // 토스트 알림 시스템
+    // ========================================
+    // [MIGRATED TO MODULE] showToast - now using toast.js module
+    
+    // ========================================
+    // Mobile Menu
+    // ========================================
+    function openMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // ========================================
+    // Setting Tab Switching
+    // ========================================
+    function switchSettingTab(tabName) {
+      document.querySelectorAll('.setting-tab').forEach(tab => tab.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.add('text-text-secondary');
+      });
+      
+      document.getElementById('tab-' + tabName).classList.remove('hidden');
+      event.target.classList.add('active');
+      event.target.classList.remove('text-text-secondary');
+    }
+    
+    // ========================================
+    // Add Admin Modal
+    // ========================================
+    function openAddAdminModal() {
+      document.getElementById('newAdminName').value = '';
+      document.getElementById('newAdminEmail').value = '';
+      document.getElementById('newAdminPhone').value = '';
+      document.getElementById('addAdminModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAddAdminModal() {
+      document.getElementById('addAdminModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmAddAdmin() {
+      const name = document.getElementById('newAdminName').value;
+      const email = document.getElementById('newAdminEmail').value;
+      
+      if (!name || !email) {
+        showToast('이름과 이메일을 입력해주세요.', 'warning');
+        return;
+      }
+      
+      closeAddAdminModal();
+      showToast(`${name} 관리자가 추가되었습니다. 초기 비밀번호가 발송됩니다.`, 'success');
+    }
+    
+    // ========================================
+    // Edit Admin Modal
+    // ========================================
+    function openEditAdminModal(name, email) {
+      document.getElementById('editAdminName').value = name || '명불허전';
+      document.getElementById('editAdminEmail').value = email || 'admin@mama-asst.com';
+      document.getElementById('editAdminModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeEditAdminModal() {
+      document.getElementById('editAdminModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function saveAdminEdit() {
+      closeEditAdminModal();
+      showToast('관리자 정보가 수정되었습니다.', 'success');
+    }
+    
+    function resetAdminPassword() {
+      closeEditAdminModal();
+      showToast('임시 비밀번호가 이메일로 발송되었습니다.', 'info');
+    }
+    
+    function deleteAdmin() {
+      if (confirm('정말 이 관리자 계정을 삭제하시겠습니까?')) {
+        closeEditAdminModal();
+        showToast('관리자 계정이 삭제되었습니다.', 'success');
+      }
+    }
+    
+    // ========================================
+    // API Key Modal
+    // ========================================
+    function openApiKeyModal() {
+      document.getElementById('apiKeyModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeApiKeyModal() {
+      document.getElementById('apiKeyModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function toggleApiKeyVisibility(inputId) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+    
+    function copyApiKey(inputId) {
+      const input = document.getElementById(inputId);
+      const originalType = input.type;
+      input.type = 'text';
+      navigator.clipboard.writeText(input.value);
+      input.type = originalType;
+      showToast('API 키가 복사되었습니다.', 'success');
+    }
+    
+    function testAllConnections() {
+      showToast('연결 테스트 중...', 'info');
+      setTimeout(() => {
+        showToast('모든 API 연결이 정상입니다.', 'success');
+      }, 1500);
+    }
+    
+    function saveApiKeys() {
+      closeApiKeyModal();
+      showToast('API 키가 저장되었습니다.', 'success');
+    }
+    
+    // ========================================
+    // Save Settings Confirm Modal
+    // ========================================
+    function openSaveConfirmModal() {
+      document.getElementById('saveConfirmModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSaveConfirmModal() {
+      document.getElementById('saveConfirmModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmSaveSettings() {
+      closeSaveConfirmModal();
+      showToast('설정이 저장되었습니다.', 'success');
+    }
+    
+    // ========================================
+    // Quick Actions
+    // ========================================
+    function saveAllSettings() {
+      openSaveConfirmModal();
+    }
+    
+    function resetToDefault() {
+      if (confirm('모든 설정을 기본값으로 초기화하시겠습니까?')) {
+        showToast('설정이 기본값으로 초기화되었습니다.', 'info');
+      }
+    }
+    
+    // ========================================
+    // Change History Modal
+    // ========================================
+    function openChangeHistoryModal() {
+      document.getElementById('changeHistoryModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeChangeHistoryModal() {
+      document.getElementById('changeHistoryModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function exportChangeHistory() {
+      showToast('변경 이력을 다운로드합니다...', 'info');
+      setTimeout(() => {
+        showToast('settings_change_history.xlsx 다운로드 완료', 'success');
+      }, 1000);
+    }
+    
+    // ========================================
+    // System Status Modal
+    // ========================================
+    function openSystemStatusModal() {
+      document.getElementById('systemStatusModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeSystemStatusModal() {
+      document.getElementById('systemStatusModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function refreshSystemStatus() {
+      showToast('시스템 상태를 새로고침합니다...', 'info');
+      setTimeout(() => {
+        showToast('시스템 상태가 업데이트되었습니다.', 'success');
+      }, 800);
+    }
+    
+    // ========================================
+    // Export/Import Settings
+    // ========================================
+    function exportSettings() {
+      showToast('설정을 내보내는 중...', 'info');
+      setTimeout(() => {
+        // 가상의 설정 데이터 생성
+        const settingsData = {
+          exportDate: new Date().toISOString(),
+          version: 'v3.1',
+          general: {
+            serviceName: 'MAMA-ASST',
+            operatingCompany: '명불허전',
+            supportContact: '02-1234-5678'
+          },
+          learning: {
+            koreanDaily: 3,
+            englishDaily: 10,
+            mathDaily: 5
+          },
+          notifications: {
+            emailEnabled: true,
+            smsEnabled: true,
+            kakaoEnabled: true
+          }
+        };
+        
+        const blob = new Blob([JSON.stringify(settingsData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mama_asst_settings_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        showToast('설정 파일이 다운로드되었습니다.', 'success');
+      }, 500);
+    }
+    
+    function importSettings() {
+      document.getElementById('importSettingsModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeImportSettingsModal() {
+      document.getElementById('importSettingsModal').classList.remove('open');
+      document.body.style.overflow = '';
+      clearImportFile();
+    }
+    
+    function handleImportFile(input) {
+      const file = input.files[0];
+      if (file) {
+        document.getElementById('importFileInfo').classList.remove('hidden');
+        document.getElementById('importFileName').textContent = file.name;
+        document.getElementById('importFileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+      }
+    }
+    
+    function clearImportFile() {
+      document.getElementById('importFileInput').value = '';
+      document.getElementById('importFileInfo').classList.add('hidden');
+    }
+    
+    function confirmImportSettings() {
+      const fileInput = document.getElementById('importFileInput');
+      if (!fileInput.files[0]) {
+        showToast('파일을 선택해주세요.', 'warning');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const settings = JSON.parse(e.target.result);
+          closeImportSettingsModal();
+          showToast('설정을 가져오는 중...', 'info');
+          setTimeout(() => {
+            showToast('설정이 성공적으로 적용되었습니다.', 'success');
+          }, 1000);
+        } catch (err) {
+          showToast('유효하지 않은 JSON 파일입니다.', 'error');
+        }
+      };
+      reader.readAsText(fileInput.files[0]);
+    }
+    
+    // ========================================
+    // Keyboard Shortcuts
+    // ========================================
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeSaveConfirmModal();
+        closeAddAdminModal();
+        closeEditAdminModal();
+        closeApiKeyModal();
+        closeChangeHistoryModal();
+        closeSystemStatusModal();
+        closeImportSettingsModal();
+        closeEditPlanModal();
+        closeAddPlanModal();
+      }
+      
+      // Ctrl+S 저장
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        saveAllSettings();
+      }
+    });
+    
+    // ========================================
+    // Plan Edit Modal
+    // ========================================
+    const planFeatures = {
+      basic: {
+        feat_learning: true,
+        feat_ai_analysis: true,
+        feat_counseling: false,
+        feat_parent_report: false,
+        feat_manager: false,
+        feat_custom_content: false,
+        feat_api: false
+      },
+      pro: {
+        feat_learning: true,
+        feat_ai_analysis: true,
+        feat_counseling: true,
+        feat_parent_report: true,
+        feat_manager: false,
+        feat_custom_content: false,
+        feat_api: false
+      },
+      enterprise: {
+        feat_learning: true,
+        feat_ai_analysis: true,
+        feat_counseling: true,
+        feat_parent_report: true,
+        feat_manager: true,
+        feat_custom_content: true,
+        feat_api: true
+      }
+    };
+    
+    function openEditPlanModal(planId, planName, price) {
+      document.getElementById('editPlanId').value = planId;
+      document.getElementById('editPlanName').value = planName;
+      document.getElementById('editPlanPrice').value = price;
+      document.getElementById('editPlanSubtitle').textContent = planName + ' 요금제';
+      
+      // 기능 체크박스 설정
+      const features = planFeatures[planId] || planFeatures.basic;
+      Object.keys(features).forEach(key => {
+        const checkbox = document.getElementById(key);
+        if (checkbox) checkbox.checked = features[key];
+      });
+      
+      // 인기 태그 설정 (Pro만 true)
+      document.getElementById('editPlanPopular').checked = (planId === 'pro');
+      document.getElementById('editPlanActive').checked = true;
+      
+      // 설명 설정
+      const descriptions = {
+        basic: '기본적인 학습 기능을 제공하는 입문 요금제입니다.',
+        pro: '상담 브리핑과 학부모 리포트가 포함된 인기 요금제입니다.',
+        enterprise: '모든 기능과 전용 매니저가 포함된 프리미엄 요금제입니다.'
+      };
+      document.getElementById('editPlanDescription').value = descriptions[planId] || '';
+      
+      document.getElementById('editPlanModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeEditPlanModal() {
+      document.getElementById('editPlanModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function savePlanEdit() {
+      const planId = document.getElementById('editPlanId').value;
+      const planName = document.getElementById('editPlanName').value;
+      const price = document.getElementById('editPlanPrice').value;
+      
+      if (!planName || !price) {
+        showToast('요금제 이름과 가격을 입력해주세요.', 'warning');
+        return;
+      }
+      
+      closeEditPlanModal();
+      showToast(`${planName} 요금제가 수정되었습니다.`, 'success');
+    }
+    
+    function deletePlan() {
+      const planId = document.getElementById('editPlanId').value;
+      const planName = document.getElementById('editPlanName').value;
+      
+      if (confirm(`정말 ${planName} 요금제를 삭제하시겠습니까?\n이 요금제를 사용 중인 학원이 있다면 다른 요금제로 변경해야 합니다.`)) {
+        closeEditPlanModal();
+        showToast(`${planName} 요금제가 삭제되었습니다.`, 'success');
+      }
+    }
+    
+    // ========================================
+    // Plan Add Modal
+    // ========================================
+    function openAddPlanModal() {
+      document.getElementById('newPlanName').value = '';
+      document.getElementById('newPlanPrice').value = '';
+      document.getElementById('newPlanBase').value = '';
+      document.getElementById('newPlanDescription').value = '';
+      
+      document.getElementById('addPlanModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeAddPlanModal() {
+      document.getElementById('addPlanModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    function confirmAddPlan() {
+      const name = document.getElementById('newPlanName').value;
+      const price = document.getElementById('newPlanPrice').value;
+      
+      if (!name || !price) {
+        showToast('요금제 이름과 가격을 입력해주세요.', 'warning');
+        return;
+      }
+      
+      closeAddPlanModal();
+      showToast(`${name} 요금제가 생성되었습니다. 포함 기능을 설정해주세요.`, 'success');
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

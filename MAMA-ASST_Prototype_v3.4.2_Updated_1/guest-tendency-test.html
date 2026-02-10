@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>성향검사 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .response-btn {
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+    .response-btn:active {
+      transform: scale(0.95);
+    }
+    .response-btn.selected {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 4px rgba(156, 39, 176, 0.2);
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .question-animate {
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(156, 39, 176, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(156, 39, 176, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(156, 39, 176, 0); }
+    }
+    .pulse-ring {
+      animation: pulse-ring 1.5s infinite;
+    }
+    
+    /* Hide scrollbar */
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased min-h-screen flex flex-col">
+  
+  <!-- Header -->
+  <header class="h-14 sm:h-16 bg-navy text-white flex items-center justify-between px-4 sm:px-6 flex-shrink-0">
+    <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+      <div class="w-8 h-8 sm:w-10 sm:h-10 bg-planner rounded-xl flex items-center justify-center flex-shrink-0">
+        <span class="material-icons-round text-white text-lg sm:text-2xl">psychology</span>
+      </div>
+      <div class="min-w-0">
+        <span class="font-bold text-sm sm:text-base">학습 성향 검사</span>
+        <span class="px-1.5 sm:px-2 py-0.5 bg-info/20 text-info text-[10px] sm:text-xs font-bold rounded ml-1 sm:ml-2 hidden sm:inline">게스트 모드</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+      <div class="text-right">
+        <p class="text-[10px] sm:text-xs text-white/50">진행률</p>
+        <p class="font-bold text-sm sm:text-base"><span id="progressPercent">0</span>%</p>
+      </div>
+      <button onclick="pauseTest()" class="px-2 sm:px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1 min-h-[44px]">
+        <span class="material-icons-round text-sm">pause</span>
+        <span class="hidden sm:inline">일시정지</span>
+      </button>
+    </div>
+  </header>
+  
+  <!-- Progress Bar -->
+  <div class="bg-surface border-b border-border-light px-4 sm:px-6 py-3 flex-shrink-0">
+    <div class="max-w-3xl mx-auto">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <span id="sectionIcon" class="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center">
+            <span class="material-icons-round text-red-500 text-sm">favorite</span>
+          </span>
+          <span id="sectionName" class="text-sm font-medium text-text-primary">학습동기</span>
+        </div>
+        <span class="text-sm text-text-tertiary">
+          <span id="currentQ">1</span> / <span id="totalQ">150</span>
+        </span>
+      </div>
+      <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div id="progressBar" class="h-full bg-gradient-to-r from-planner to-purple-400 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      <!-- Section indicators -->
+      <div class="flex mt-2 gap-1">
+        <div id="sec1" class="flex-1 h-1 bg-red-200 rounded-full"></div>
+        <div id="sec2" class="flex-1 h-1 bg-blue-200 rounded-full"></div>
+        <div id="sec3" class="flex-1 h-1 bg-purple-200 rounded-full"></div>
+        <div id="sec4" class="flex-1 h-1 bg-green-200 rounded-full"></div>
+        <div id="sec5" class="flex-1 h-1 bg-amber-200 rounded-full"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Question Area -->
+  <main class="flex-1 flex items-center justify-center p-4 sm:p-6">
+    <div class="w-full max-w-2xl">
+      
+      <!-- Question Card -->
+      <div id="questionCard" class="bg-surface rounded-3xl p-5 sm:p-8 shadow-lg border border-border-light question-animate">
+        <!-- Question Number -->
+        <div class="flex items-center justify-center gap-2 mb-6">
+          <span class="px-3 py-1 bg-planner-light text-planner text-sm font-bold rounded-full">
+            Q.<span id="questionNum">1</span>
+          </span>
+        </div>
+        
+        <!-- Question Text -->
+        <p id="questionText" class="text-lg sm:text-xl md:text-2xl font-medium text-text-primary text-center leading-relaxed mb-6 sm:mb-10">
+          나는 공부할 때 목표를 분명하게 정한다.
+        </p>
+
+        <!-- Response Options -->
+        <div class="flex items-center justify-center gap-2 sm:gap-4 md:gap-6">
+          <div class="text-center">
+            <button onclick="selectResponse(1)" class="response-btn w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-red-100 border-3 border-red-300 flex items-center justify-center mb-2 hover:bg-red-200" data-value="1">
+              <span class="text-xl sm:text-2xl md:text-3xl">😟</span>
+            </button>
+            <p class="text-[10px] sm:text-xs text-text-tertiary">전혀<br>아니다</p>
+          </div>
+          <div class="text-center">
+            <button onclick="selectResponse(2)" class="response-btn w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-orange-100 border-3 border-orange-300 flex items-center justify-center mb-2 hover:bg-orange-200" data-value="2">
+              <span class="text-xl sm:text-2xl md:text-3xl">😕</span>
+            </button>
+            <p class="text-[10px] sm:text-xs text-text-tertiary">아니다</p>
+          </div>
+          <div class="text-center">
+            <button onclick="selectResponse(3)" class="response-btn w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-gray-100 border-3 border-gray-300 flex items-center justify-center mb-2 hover:bg-gray-200" data-value="3">
+              <span class="text-xl sm:text-2xl md:text-3xl">😐</span>
+            </button>
+            <p class="text-[10px] sm:text-xs text-text-tertiary">보통<br>이다</p>
+          </div>
+          <div class="text-center">
+            <button onclick="selectResponse(4)" class="response-btn w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-green-100 border-3 border-green-300 flex items-center justify-center mb-2 hover:bg-green-200" data-value="4">
+              <span class="text-xl sm:text-2xl md:text-3xl">🙂</span>
+            </button>
+            <p class="text-[10px] sm:text-xs text-text-tertiary">그렇다</p>
+          </div>
+          <div class="text-center">
+            <button onclick="selectResponse(5)" class="response-btn w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-planner-light border-3 border-planner flex items-center justify-center mb-2 hover:bg-purple-200" data-value="5">
+              <span class="text-xl sm:text-2xl md:text-3xl">😊</span>
+            </button>
+            <p class="text-[10px] sm:text-xs text-text-tertiary">매우<br>그렇다</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Navigation Buttons -->
+      <div class="flex items-center justify-between mt-6">
+        <button id="prevBtn" onclick="prevQuestion()" class="px-5 py-3 text-text-secondary hover:bg-gray-100 rounded-xl font-medium transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+          <span class="material-icons-round">arrow_back</span>
+          이전
+        </button>
+        <button onclick="callAdmin()" class="px-4 py-2 text-text-tertiary hover:text-text-secondary text-sm flex items-center gap-1">
+          <span class="material-icons-round text-sm">support_agent</span>
+          도움 필요
+        </button>
+        <button id="nextBtn" onclick="nextQuestion()" class="px-5 py-3 bg-planner hover:bg-planner/90 text-white rounded-xl font-medium transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+          다음
+          <span class="material-icons-round">arrow_forward</span>
+        </button>
+      </div>
+      
+    </div>
+  </main>
+  
+  <!-- Question Navigator (Bottom) -->
+  <div class="bg-surface border-t border-border-light px-4 sm:px-6 py-3 flex-shrink-0">
+    <div class="max-w-3xl mx-auto">
+      <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-2" id="questionNav">
+        <!-- Generated by JS -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Pause Modal -->
+  <div id="pauseModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl p-8 max-w-md mx-4 text-center">
+      <div class="w-16 h-16 mx-auto rounded-full bg-info-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-info text-3xl">pause_circle</span>
+      </div>
+      <h2 class="text-xl font-bold text-text-primary mb-2">검사 일시정지</h2>
+      <p class="text-text-secondary mb-2">현재 진행 상황이 자동 저장되었습니다.</p>
+      <p class="text-sm text-text-tertiary mb-6">진행률: <span id="pauseProgress">0</span>% (<span id="pauseCount">0</span>/150)</p>
+      
+      <div class="space-y-3">
+        <button onclick="resumeTest()" class="w-full py-3 bg-planner text-white rounded-xl font-medium">계속하기</button>
+        <button onclick="callAdmin()" class="w-full py-3 border border-border-light text-text-secondary rounded-xl font-medium hover:bg-gray-50">관리자 호출</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Complete Modal -->
+  <div id="completeModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl p-8 max-w-md mx-4 text-center">
+      <div class="w-20 h-20 mx-auto rounded-full bg-success-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-success text-4xl">check_circle</span>
+      </div>
+      <h2 class="text-2xl font-bold text-text-primary mb-2">검사 완료! 🎉</h2>
+      <p class="text-text-secondary mb-6">성향검사가 모두 끝났습니다.<br>수고하셨어요!</p>
+      
+      <button onclick="goToNext()" class="w-full py-4 bg-success text-white rounded-xl font-bold text-lg">
+        다음 단계로
+      </button>
+    </div>
+  </div>
+  
+  <!-- Admin Call Modal -->
+  <div id="adminModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl p-8 max-w-sm mx-4 text-center">
+      <div class="w-16 h-16 mx-auto rounded-full bg-primary-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-primary text-3xl">support_agent</span>
+      </div>
+      <h2 class="text-xl font-bold text-text-primary mb-2">관리자를 호출했습니다</h2>
+      <p class="text-text-secondary mb-6">잠시만 기다려주세요.</p>
+      <button onclick="closeAdminModal()" class="w-full py-3 bg-primary text-white rounded-xl font-medium">확인</button>
+    </div>
+  </div>
+
+  <!-- Resume Modal (shown when saved progress exists) -->
+  <div id="resumeModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl p-8 max-w-md mx-4 text-center">
+      <div class="w-16 h-16 mx-auto rounded-full bg-planner-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-planner text-3xl">history</span>
+      </div>
+      <h2 class="text-xl font-bold text-text-primary mb-2">이전 검사가 진행 중이에요</h2>
+      <p class="text-text-secondary mb-2">이어서 검사하거나 처음부터 시작할 수 있어요.</p>
+      <p class="text-sm text-text-tertiary mb-4">진행률: <span id="resumeProgress">0</span>% (<span id="resumeCount">0</span>/150)</p>
+
+      <!-- Section Cards -->
+      <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-6" id="resumeSectionCards"></div>
+
+      <div class="space-y-3">
+        <button onclick="resumeExisting()" class="w-full py-3 bg-planner text-white rounded-xl font-medium flex items-center justify-center gap-2">
+          <span class="material-icons-round text-lg">play_arrow</span>
+          이어하기
+        </button>
+        <button onclick="startFresh()" class="w-full py-3 border border-border-light text-text-secondary rounded-xl font-medium hover:bg-gray-50 flex items-center justify-center gap-2">
+          <span class="material-icons-round text-lg">refresh</span>
+          처음부터
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample questions (in real app, load from API)
+    const sections = [
+      { name: '학습동기', icon: 'favorite', color: 'red', questions: 30 },
+      { name: '실행전략', icon: 'rocket_launch', color: 'blue', questions: 30 },
+      { name: '메타인지', icon: 'psychology', color: 'purple', questions: 30 },
+      { name: '정서조절', icon: 'sentiment_satisfied', color: 'green', questions: 30 },
+      { name: '도움요청', icon: 'handshake', color: 'amber', questions: 30 }
+    ];
+    
+    const sampleQuestions = [
+      "나는 공부할 때 목표를 분명하게 정한다.",
+      "나는 공부가 내 미래에 도움이 된다고 생각한다.",
+      "나는 어려운 문제도 포기하지 않고 끝까지 풀려고 노력한다.",
+      "나는 새로운 것을 배우는 것이 즐겁다.",
+      "나는 좋은 성적을 받기 위해 열심히 공부한다.",
+      "나는 공부 계획을 세우고 실천한다.",
+      "나는 수업 시간에 선생님 말씀을 집중해서 듣는다.",
+      "나는 모르는 것이 있으면 반드시 해결하려고 한다.",
+      "나는 공부할 때 중요한 내용을 따로 정리한다.",
+      "나는 시험 전에 충분히 복습한다.",
+      "나는 내가 무엇을 알고 무엇을 모르는지 잘 안다.",
+      "나는 공부하다가 막히면 다른 방법을 찾아본다.",
+      "나는 공부한 내용을 스스로 점검해본다.",
+      "나는 문제를 풀 때 왜 그런 답이 나왔는지 생각한다.",
+      "나는 내가 잘하는 과목과 못하는 과목을 알고 있다.",
+      "나는 스트레스를 받아도 공부에 집중할 수 있다.",
+      "나는 시험 결과가 나빠도 다음에 더 잘하려고 노력한다.",
+      "나는 공부할 때 불안하거나 긴장되지 않는다.",
+      "나는 어려운 과목도 피하지 않고 도전한다.",
+      "나는 실수를 해도 크게 낙담하지 않는다.",
+      "나는 모르는 것이 있으면 친구에게 물어본다.",
+      "나는 선생님께 질문하는 것이 어렵지 않다.",
+      "나는 다른 사람의 도움을 받는 것이 부끄럽지 않다.",
+      "나는 공부 방법에 대해 조언을 구한다.",
+      "나는 어려울 때 혼자 해결하려고만 하지 않는다.",
+    ];
+    
+    // Generate 150 questions by cycling through samples
+    const questions = [];
+    for (let i = 0; i < 150; i++) {
+      questions.push(sampleQuestions[i % sampleQuestions.length]);
+    }
+    
+    let currentQuestion = 0;
+    let responses = new Array(150).fill(null);
+    let hasExistingProgress = false;
+
+    // Check for saved progress in localStorage
+    const savedData = localStorage.getItem('mama_tendency_progress');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        const answered = parsed.filter(r => r !== null).length;
+        if (answered > 0 && answered < 150) {
+          hasExistingProgress = true;
+        }
+      } catch (e) { /* ignore corrupted data */ }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      generateQuestionNav();
+      if (hasExistingProgress) {
+        showResumeModal();
+      }
+      showQuestion(currentQuestion);
+      updateProgress();
+    });
+    
+    function generateQuestionNav() {
+      const nav = document.getElementById('questionNav');
+      nav.innerHTML = '';
+      
+      for (let i = 0; i < 150; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'w-8 h-8 rounded-full text-xs font-medium flex-shrink-0 transition-all';
+        btn.textContent = i + 1;
+        btn.onclick = () => goToQuestion(i);
+        btn.id = 'navBtn' + i;
+        updateNavButton(btn, i);
+        nav.appendChild(btn);
+      }
+    }
+    
+    function updateNavButton(btn, index) {
+      btn.className = 'w-8 h-8 rounded-full text-xs font-medium flex-shrink-0 transition-all ';
+      if (index === currentQuestion) {
+        btn.className += 'bg-planner text-white ring-2 ring-planner/30';
+      } else if (responses[index] !== null) {
+        btn.className += 'bg-success text-white';
+      } else {
+        btn.className += 'bg-gray-100 text-text-tertiary hover:bg-gray-200';
+      }
+    }
+    
+    function showQuestion(index) {
+      currentQuestion = index;
+      
+      // Update question text
+      document.getElementById('questionNum').textContent = index + 1;
+      document.getElementById('questionText').textContent = questions[index];
+      document.getElementById('currentQ').textContent = index + 1;
+      
+      // Update section info
+      let sectionIndex = Math.floor(index / 30);
+      const section = sections[sectionIndex];
+      document.getElementById('sectionName').textContent = section.name;
+      document.getElementById('sectionIcon').innerHTML = `<span class="material-icons-round text-${section.color}-500 text-sm">${section.icon}</span>`;
+      document.getElementById('sectionIcon').className = `w-6 h-6 rounded-full bg-${section.color}-100 flex items-center justify-center`;
+      
+      // Update section progress bars
+      for (let i = 0; i < 5; i++) {
+        const secBar = document.getElementById('sec' + (i + 1));
+        const sectionStart = i * 30;
+        const sectionResponses = responses.slice(sectionStart, sectionStart + 30).filter(r => r !== null).length;
+        const percent = (sectionResponses / 30) * 100;
+        secBar.style.background = `linear-gradient(to right, ${getColorClass(i)} ${percent}%, #E5E7EB ${percent}%)`;
+      }
+      
+      // Update response buttons
+      document.querySelectorAll('.response-btn').forEach(btn => {
+        btn.classList.remove('selected', 'ring-4', 'ring-planner/30');
+        if (responses[index] !== null && parseInt(btn.dataset.value) === responses[index]) {
+          btn.classList.add('selected', 'ring-4', 'ring-planner/30');
+        }
+      });
+      
+      // Update navigation buttons
+      document.getElementById('prevBtn').disabled = index === 0;
+      document.getElementById('nextBtn').disabled = responses[index] === null;
+      
+      // Update nav buttons
+      for (let i = 0; i < 150; i++) {
+        updateNavButton(document.getElementById('navBtn' + i), i);
+      }
+      
+      // Scroll nav to current question
+      const navBtn = document.getElementById('navBtn' + index);
+      navBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      
+      // Animation
+      document.getElementById('questionCard').classList.remove('question-animate');
+      void document.getElementById('questionCard').offsetWidth; // Trigger reflow
+      document.getElementById('questionCard').classList.add('question-animate');
+    }
+    
+    function getColorClass(sectionIndex) {
+      const colors = ['#EF4444', '#3B82F6', '#9C27B0', '#22C55E', '#F59E0B'];
+      return colors[sectionIndex];
+    }
+    
+    function selectResponse(value) {
+      responses[currentQuestion] = value;
+      localStorage.setItem('mama_tendency_progress', JSON.stringify(responses));
+      
+      // Update button states
+      document.querySelectorAll('.response-btn').forEach(btn => {
+        btn.classList.remove('selected', 'ring-4', 'ring-planner/30');
+        if (parseInt(btn.dataset.value) === value) {
+          btn.classList.add('selected', 'ring-4', 'ring-planner/30');
+        }
+      });
+      
+      document.getElementById('nextBtn').disabled = false;
+      updateNavButton(document.getElementById('navBtn' + currentQuestion), currentQuestion);
+      updateProgress();
+      
+      // Auto advance after short delay
+      setTimeout(() => {
+        if (currentQuestion < 149) {
+          nextQuestion();
+        } else {
+          checkComplete();
+        }
+      }, 300);
+    }
+    
+    function nextQuestion() {
+      if (currentQuestion < 149) {
+        showQuestion(currentQuestion + 1);
+      }
+    }
+    
+    function prevQuestion() {
+      if (currentQuestion > 0) {
+        showQuestion(currentQuestion - 1);
+      }
+    }
+    
+    function goToQuestion(index) {
+      showQuestion(index);
+    }
+    
+    function updateProgress() {
+      const answered = responses.filter(r => r !== null).length;
+      const percent = Math.round((answered / 150) * 100);
+      
+      document.getElementById('progressPercent').textContent = percent;
+      document.getElementById('progressBar').style.width = percent + '%';
+    }
+    
+    function checkComplete() {
+      const answered = responses.filter(r => r !== null).length;
+      if (answered === 150) {
+        document.getElementById('completeModal').classList.remove('hidden');
+      }
+    }
+    
+    function pauseTest() {
+      const answered = responses.filter(r => r !== null).length;
+      const percent = Math.round((answered / 150) * 100);
+      
+      document.getElementById('pauseProgress').textContent = percent;
+      document.getElementById('pauseCount').textContent = answered;
+      document.getElementById('pauseModal').classList.remove('hidden');
+    }
+    
+    function resumeTest() {
+      document.getElementById('pauseModal').classList.add('hidden');
+    }
+    
+    function goToNext() {
+      localStorage.removeItem('mama_tendency_progress');
+      window.location.href = 'guest-level-select.html';
+    }
+    
+    function callAdmin() {
+      document.getElementById('adminModal').classList.remove('hidden');
+    }
+    
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.add('hidden');
+    }
+
+    // ── Resume / Fresh Start ──
+    function showResumeModal() {
+      const saved = JSON.parse(localStorage.getItem('mama_tendency_progress'));
+      const answered = saved.filter(r => r !== null).length;
+      const percent = Math.round((answered / 150) * 100);
+
+      document.getElementById('resumeProgress').textContent = percent;
+      document.getElementById('resumeCount').textContent = answered;
+
+      const cardsContainer = document.getElementById('resumeSectionCards');
+      cardsContainer.innerHTML = sections.map((sec, i) => {
+        const start = i * 30;
+        const secAnswered = saved.slice(start, start + 30).filter(r => r !== null).length;
+        const isDone = secAnswered === 30;
+        const isActive = secAnswered > 0 && secAnswered < 30;
+        return `
+          <div class="flex flex-col items-center p-2 rounded-xl ${isDone ? 'bg-success-light' : isActive ? 'bg-planner-light' : 'bg-gray-50'} border ${isDone ? 'border-success/30' : isActive ? 'border-planner/30' : 'border-border-light'}">
+            <span class="material-icons-round text-lg ${isDone ? 'text-success' : isActive ? 'text-planner' : 'text-text-tertiary'}">${isDone ? 'check_circle' : sec.icon}</span>
+            <span class="text-[10px] font-medium ${isDone ? 'text-success' : isActive ? 'text-planner' : 'text-text-tertiary'} mt-1">${sec.name}</span>
+            <span class="text-[10px] ${isDone ? 'text-success' : 'text-text-tertiary'}">${secAnswered}/30</span>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('resumeModal').classList.remove('hidden');
+    }
+
+    function resumeExisting() {
+      const saved = JSON.parse(localStorage.getItem('mama_tendency_progress'));
+      responses = saved;
+      currentQuestion = responses.findIndex(r => r === null);
+      if (currentQuestion === -1) currentQuestion = 149;
+
+      document.getElementById('resumeModal').classList.add('hidden');
+      showQuestion(currentQuestion);
+      updateProgress();
+      for (let i = 0; i < 150; i++) {
+        updateNavButton(document.getElementById('navBtn' + i), i);
+      }
+    }
+
+    function startFresh() {
+      localStorage.removeItem('mama_tendency_progress');
+      responses = new Array(150).fill(null);
+      currentQuestion = 0;
+
+      document.getElementById('resumeModal').classList.add('hidden');
+      showQuestion(0);
+      updateProgress();
+      for (let i = 0; i < 150; i++) {
+        updateNavButton(document.getElementById('navBtn' + i), i);
+      }
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>

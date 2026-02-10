@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>플랫폼 대시보드 | MAMA-ASST 슈퍼관리자</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'super': '#6366F1',
+            'super-dark': '#4F46E5',
+            'super-light': '#EEF2FF',
+            primary: '#FF6D4D',
+            'primary-dark': '#E55A3A',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            'navy-light': '#2C4872',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            planner: '#9C27B0',
+            'planner-light': '#F3E5F5',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            'error-light': '#FEF2F2',
+            warning: '#F59E0B',
+            'warning-light': '#FFFBEB',
+            info: '#3B82F6',
+            'info-light': '#EFF6FF',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .sidebar-item.active { 
+      background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); 
+      color: white; 
+    }
+    .sidebar-item.active .material-icons-round { color: white; }
+    .mobile-menu-overlay { opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .mobile-menu-overlay.open { opacity: 1; visibility: visible; }
+    .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease; }
+    .mobile-menu.open { transform: translateX(0); }
+    
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    
+    @keyframes slide-in { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .slide-in { animation: slide-in 0.3s ease-out; }
+    
+    @keyframes count-up { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+    .count-up { animation: count-up 0.5s ease-out; }
+    
+    .stat-card { transition: all 0.2s ease; cursor: pointer; }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15); }
+    
+    .action-card { transition: all 0.2s ease; }
+    .action-card:hover { transform: scale(1.02); }
+    
+    .gradient-super { background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); }
+    .gradient-coral { background: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%); }
+    .gradient-navy { background: linear-gradient(135deg, #1A2E4D 0%, #2C4872 100%); }
+    .gradient-success { background: linear-gradient(135deg, #22C55E 0%, #4ADE80 100%); }
+    .gradient-warning { background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%); }
+    .gradient-info { background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%); }
+    
+    .chart-container { position: relative; height: 200px; }
+    
+    .pipeline-step { position: relative; }
+    .pipeline-step::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -12px;
+      width: 24px;
+      height: 2px;
+      background: #E5E7EB;
+    }
+    .pipeline-step:last-child::after { display: none; }
+    
+    .todo-item { transition: all 0.2s ease; }
+    .todo-item:hover { background-color: #F9FAFB; }
+    .todo-item.completed { opacity: 0.6; }
+    .todo-item.completed .todo-text { text-decoration: line-through; color: #9CA3AF; }
+    .todo-item.system-todo { cursor: default; }
+    .todo-item.user-todo { cursor: pointer; }
+    
+    .alert-banner { animation: slide-in 0.5s ease-out; }
+    
+    .quick-action-btn {
+      transition: all 0.2s ease;
+    }
+    .quick-action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* 스크롤바 스타일 */
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #F3F4F6; border-radius: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased">
+  
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+  
+  <div class="flex min-h-screen">
+    
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex w-72 bg-gradient-to-b from-slate-900 to-slate-800 text-white flex-col fixed h-full z-40">
+      <div class="p-5 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <div>
+            <span class="font-bold text-lg">MAMA-ASST</span>
+            <p class="text-xs text-super-light">Super Admin</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <a href="super-dashboard.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">비즈니스</p>
+          <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">apartment</span>
+            <span class="font-medium">학원 관리</span>
+            <span class="ml-auto px-2 py-0.5 bg-super text-white text-xs rounded-full">127</span>
+          </a>
+          <a href="super-inquiries.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">support_agent</span>
+            <span class="font-medium">도입 문의</span>
+            <span class="ml-auto px-2 py-0.5 bg-warning text-white text-xs rounded-full">12</span>
+          </a>
+          <a href="super-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">account_balance</span>
+            <span class="font-medium">결제/정산</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">콘텐츠</p>
+          <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">library_books</span>
+            <span class="font-medium">콘텐츠 마스터</span>
+            <span class="ml-auto px-2 py-0.5 bg-info text-white text-xs rounded-full">5</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">운영</p>
+          <a href="super-users.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">groups</span>
+            <span class="font-medium">사용자 관리</span>
+          </a>
+          <a href="super-ai-usage.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">smart_toy</span>
+            <span class="font-medium">AI 모니터링</span>
+          </a>
+          <a href="super-notices.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">campaign</span>
+            <span class="font-medium">공지사항</span>
+          </a>
+        </div>
+        
+        <div class="pt-4">
+          <p class="px-4 py-2 text-xs text-white/40 font-medium uppercase tracking-wider">시스템</p>
+          <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">tune</span>
+            <span class="font-medium">시스템 설정</span>
+          </a>
+          <a href="super-logs.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+            <span class="material-icons-round text-xl">history</span>
+            <span class="font-medium">로그/감사</span>
+          </a>
+        </div>
+      </nav>
+      
+      <div class="p-4 border-t border-white/10">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full gradient-super flex items-center justify-center text-white font-bold">
+            <span class="material-icons-round text-xl">admin_panel_settings</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm truncate">Super Admin</p>
+            <p class="text-xs text-white/60">MAMA-ASST Platform</p>
+          </div>
+        </div>
+        <a href="../login.html" class="flex items-center justify-center gap-2 px-4 py-2 border border-white/20 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all text-sm">
+          <span class="material-icons-round text-sm">logout</span>
+          <span>로그아웃</span>
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay fixed inset-0 bg-black/50 z-50 lg:hidden" onclick="closeMobileMenu()"></div>
+    
+    <!-- Mobile Slide Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 w-72 h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 lg:hidden flex flex-col">
+      <div class="p-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-super rounded-xl flex items-center justify-center">
+            <span class="material-icons-round text-white">shield</span>
+          </div>
+          <span class="font-bold text-lg">Super Admin</span>
+        </div>
+        <button onclick="closeMobileMenu()" class="p-2 hover:bg-white/10 rounded-lg">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+      
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+        <a href="super-dashboard.html" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl transition-all">
+          <span class="material-icons-round text-xl">space_dashboard</span>
+          <span class="font-medium">플랫폼 대시보드</span>
+        </a>
+        <a href="super-academies.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">apartment</span>
+          <span class="font-medium">학원 관리</span>
+        </a>
+        <a href="super-inquiries.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">support_agent</span>
+          <span class="font-medium">도입 문의</span>
+        </a>
+        <a href="super-payments.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">account_balance</span>
+          <span class="font-medium">결제/정산</span>
+        </a>
+        <a href="super-contents.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">library_books</span>
+          <span class="font-medium">콘텐츠 마스터</span>
+        </a>
+        <a href="super-users.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">groups</span>
+          <span class="font-medium">사용자 관리</span>
+        </a>
+        <a href="super-ai-usage.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">smart_toy</span>
+          <span class="font-medium">AI 모니터링</span>
+        </a>
+        <a href="super-settings.html" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all">
+          <span class="material-icons-round text-xl">tune</span>
+          <span class="font-medium">시스템 설정</span>
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-72">
+      <!-- Top Header -->
+      <header class="bg-white border-b border-border-light sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 lg:px-8 py-4">
+          <div class="flex items-center gap-4">
+            <button onclick="openMobileMenu()" class="lg:hidden p-2 hover:bg-gray-100 rounded-xl">
+              <span class="material-icons-round">menu</span>
+            </button>
+            <div>
+              <h1 class="text-xl font-bold text-navy">플랫폼 대시보드</h1>
+              <p class="text-sm text-text-secondary">
+                <span id="currentDateTime">2025년 1월 12일 일요일 오전 10:30</span>
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <button onclick="refreshDashboard()" class="p-2.5 hover:bg-gray-100 rounded-xl transition-colors" title="새로고침">
+              <span class="material-icons-round text-text-secondary">refresh</span>
+            </button>
+            
+            <button onclick="openNotificationPanel()" class="relative p-2.5 hover:bg-gray-100 rounded-xl transition-colors" title="알림">
+              <span class="material-icons-round text-text-secondary">notifications</span>
+              <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-error rounded-full pulse-dot"></span>
+            </button>
+            
+            <div class="hidden sm:flex items-center gap-2 ml-2 pl-4 border-l border-border-light">
+              <div class="w-8 h-8 rounded-full gradient-super flex items-center justify-center">
+                <span class="material-icons-round text-white text-sm">person</span>
+              </div>
+              <span class="text-sm font-medium">슈퍼관리자</span>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <div class="p-4 lg:p-6">
+        
+        <!-- 긴급 알림 배너 섹션 -->
+        <div id="alertBanners" class="space-y-3 mb-6">
+          <!-- 결제 실패 알림 -->
+          <div class="alert-banner flex items-center gap-4 p-4 bg-gradient-to-r from-error/10 to-error/5 border border-error/20 rounded-2xl">
+            <div class="w-12 h-12 rounded-xl bg-error/20 flex items-center justify-center flex-shrink-0">
+              <span class="material-icons-round text-error text-2xl">credit_card_off</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-error">결제 실패 알림 2건</p>
+              <p class="text-sm text-text-secondary">강북학습관, 송파영어학원의 1월 결제가 실패했습니다.</p>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <a href="super-payments.html?filter=failed" class="px-4 py-2 bg-error text-white text-sm font-medium rounded-xl hover:bg-error/90 transition-colors">
+                즉시 확인
+              </a>
+              <button onclick="dismissAlert(this)" class="p-2 hover:bg-error/10 rounded-lg transition-colors">
+                <span class="material-icons-round text-text-tertiary">close</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 새 문의 알림 -->
+          <div class="alert-banner flex items-center gap-4 p-4 bg-gradient-to-r from-warning/10 to-warning/5 border border-warning/20 rounded-2xl">
+            <div class="w-12 h-12 rounded-xl bg-warning/20 flex items-center justify-center flex-shrink-0">
+              <span class="material-icons-round text-warning text-2xl">mark_email_unread</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-warning">새 도입 문의 3건</p>
+              <p class="text-sm text-text-secondary">청담영어학원(51-100명), 판교코딩학원(21-50명) 외 1건이 대기 중입니다.</p>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <a href="super-inquiries.html?filter=pending" class="px-4 py-2 bg-warning text-white text-sm font-medium rounded-xl hover:bg-warning/90 transition-colors">
+                문의 확인
+              </a>
+              <button onclick="dismissAlert(this)" class="p-2 hover:bg-warning/10 rounded-lg transition-colors">
+                <span class="material-icons-round text-text-tertiary">close</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 빠른 액션 버튼 -->
+        <div class="mb-6">
+          <h2 class="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3">빠른 작업</h2>
+          <div class="flex flex-wrap gap-3">
+            <a href="super-academies.html?action=add" class="quick-action-btn flex items-center gap-2 px-4 py-2.5 bg-white border border-border-light rounded-xl text-sm font-medium hover:border-super hover:text-super">
+              <span class="material-icons-round text-lg">add_business</span>
+              학원 등록
+            </a>
+            <a href="super-contents.html?filter=pending" class="quick-action-btn flex items-center gap-2 px-4 py-2.5 bg-white border border-border-light rounded-xl text-sm font-medium hover:border-super hover:text-super">
+              <span class="material-icons-round text-lg">fact_check</span>
+              콘텐츠 승인
+              <span class="px-1.5 py-0.5 bg-info text-white text-xs rounded">5</span>
+            </a>
+            <a href="super-notices.html?action=add" class="quick-action-btn flex items-center gap-2 px-4 py-2.5 bg-white border border-border-light rounded-xl text-sm font-medium hover:border-super hover:text-super">
+              <span class="material-icons-round text-lg">campaign</span>
+              공지 작성
+            </a>
+            <a href="super-payments.html?action=invoice" class="quick-action-btn flex items-center gap-2 px-4 py-2.5 bg-white border border-border-light rounded-xl text-sm font-medium hover:border-super hover:text-super">
+              <span class="material-icons-round text-lg">receipt_long</span>
+              청구서 발행
+            </a>
+            <button onclick="exportMonthlyReport()" class="quick-action-btn flex items-center gap-2 px-4 py-2.5 bg-white border border-border-light rounded-xl text-sm font-medium hover:border-super hover:text-super">
+              <span class="material-icons-round text-lg">download</span>
+              월간 리포트
+            </button>
+          </div>
+        </div>
+        
+        <!-- 핵심 KPI 카드 -->
+        <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
+          <!-- 전체 학원 -->
+          <a href="super-academies.html" class="stat-card bg-white rounded-2xl p-4 shadow-sm border border-border-light group">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 rounded-xl gradient-super flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span class="material-icons-round text-white">apartment</span>
+              </div>
+              <span class="px-2 py-0.5 bg-success-light text-success text-xs font-medium rounded-lg">+8</span>
+            </div>
+            <p class="text-xs text-text-secondary mb-0.5">전체 학원</p>
+            <p class="text-xl font-bold text-navy count-up">127</p>
+            <div class="mt-2 flex items-center gap-1.5 text-xs text-text-tertiary">
+              <span class="w-1.5 h-1.5 rounded-full bg-success"></span> 활성 118
+              <span class="w-1.5 h-1.5 rounded-full bg-warning ml-1"></span> 체험 9
+            </div>
+          </a>
+          
+          <!-- 전체 학생 -->
+          <a href="super-users.html?role=student" class="stat-card bg-white rounded-2xl p-4 shadow-sm border border-border-light group">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span class="material-icons-round text-white">school</span>
+              </div>
+              <span class="px-2 py-0.5 bg-success-light text-success text-xs font-medium rounded-lg">+156</span>
+            </div>
+            <p class="text-xs text-text-secondary mb-0.5">전체 학생</p>
+            <p class="text-xl font-bold text-navy count-up">4,823</p>
+            <p class="mt-2 text-xs text-text-tertiary">학원당 평균 38명</p>
+          </a>
+          
+          <!-- 이번 달 매출 -->
+          <a href="super-payments.html" class="stat-card bg-white rounded-2xl p-4 shadow-sm border border-border-light group">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 rounded-xl gradient-coral flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span class="material-icons-round text-white">payments</span>
+              </div>
+              <span class="px-2 py-0.5 bg-success-light text-success text-xs font-medium rounded-lg">+12%</span>
+            </div>
+            <p class="text-xs text-text-secondary mb-0.5">이번 달 매출</p>
+            <p class="text-xl font-bold text-navy count-up">₩48.2M</p>
+            <p class="mt-2 text-xs text-text-tertiary">목표 대비 96%</p>
+          </a>
+          
+          <!-- 도입 문의 -->
+          <a href="super-inquiries.html" class="stat-card bg-white rounded-2xl p-4 shadow-sm border border-border-light group">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 rounded-xl gradient-warning flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span class="material-icons-round text-white">support_agent</span>
+              </div>
+              <span class="px-2 py-0.5 bg-warning-light text-warning text-xs font-medium rounded-lg">NEW 3</span>
+            </div>
+            <p class="text-xs text-text-secondary mb-0.5">도입 문의</p>
+            <p class="text-xl font-bold text-navy count-up">12</p>
+            <p class="mt-2 text-xs text-text-tertiary">이번 주 전환 2건</p>
+          </a>
+          
+          <!-- AI 사용량 -->
+          <a href="super-ai-usage.html" class="stat-card bg-white rounded-2xl p-4 shadow-sm border border-border-light group">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 rounded-xl gradient-success flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span class="material-icons-round text-white">smart_toy</span>
+              </div>
+              <span class="px-2 py-0.5 bg-info-light text-info text-xs font-medium rounded-lg">$1,234</span>
+            </div>
+            <p class="text-xs text-text-secondary mb-0.5">AI 호출량</p>
+            <p class="text-xl font-bold text-navy count-up">1.2M</p>
+            <p class="mt-2 text-xs text-text-tertiary">예산 82% 사용</p>
+          </a>
+          
+          <!-- 콘텐츠 -->
+          <a href="super-contents.html" class="stat-card bg-white rounded-2xl p-4 shadow-sm border border-border-light group">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 rounded-xl gradient-info flex items-center justify-center group-hover:scale-110 transition-transform">
+                <span class="material-icons-round text-white">library_books</span>
+              </div>
+              <span class="px-2 py-0.5 bg-super-light text-super text-xs font-medium rounded-lg">승인 5</span>
+            </div>
+            <p class="text-xs text-text-secondary mb-0.5">전체 콘텐츠</p>
+            <p class="text-xl font-bold text-navy count-up">2,335</p>
+            <p class="mt-2 text-xs text-text-tertiary">국어 245 · 영어 1,200 · 수학 890</p>
+          </a>
+        </div>
+        
+        <!-- 메인 그리드 -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
+          
+          <!-- 왼쪽: 도입 문의 파이프라인 -->
+          <div class="xl:col-span-2 space-y-6">
+            
+            <!-- 도입 문의 파이프라인 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+              <div class="flex items-center justify-between mb-5">
+                <h3 class="font-bold text-navy flex items-center gap-2">
+                  <span class="material-icons-round text-warning">support_agent</span>
+                  도입 문의 파이프라인
+                </h3>
+                <a href="super-inquiries.html" class="text-sm text-super font-medium hover:underline flex items-center gap-1">
+                  전체 보기 <span class="material-icons-round text-sm">arrow_forward</span>
+                </a>
+              </div>
+              
+              <!-- 파이프라인 스테이지 -->
+              <div class="grid grid-cols-5 gap-2 mb-6">
+                <div class="pipeline-step text-center p-3 bg-warning-light rounded-xl cursor-pointer hover:bg-warning/20 transition-colors" onclick="location.href='super-inquiries.html?stage=new'">
+                  <p class="text-2xl font-bold text-warning">3</p>
+                  <p class="text-xs text-text-secondary">신규</p>
+                </div>
+                <div class="pipeline-step text-center p-3 bg-info-light rounded-xl cursor-pointer hover:bg-info/20 transition-colors" onclick="location.href='super-inquiries.html?stage=contact'">
+                  <p class="text-2xl font-bold text-info">4</p>
+                  <p class="text-xs text-text-secondary">연락 중</p>
+                </div>
+                <div class="pipeline-step text-center p-3 bg-super-light rounded-xl cursor-pointer hover:bg-super/20 transition-colors" onclick="location.href='super-inquiries.html?stage=demo'">
+                  <p class="text-2xl font-bold text-super">2</p>
+                  <p class="text-xs text-text-secondary">데모 예정</p>
+                </div>
+                <div class="pipeline-step text-center p-3 bg-planner-light rounded-xl cursor-pointer hover:bg-planner/20 transition-colors" onclick="location.href='super-inquiries.html?stage=nego'">
+                  <p class="text-2xl font-bold text-planner">2</p>
+                  <p class="text-xs text-text-secondary">협상 중</p>
+                </div>
+                <div class="text-center p-3 bg-success-light rounded-xl cursor-pointer hover:bg-success/20 transition-colors" onclick="location.href='super-inquiries.html?stage=closed'">
+                  <p class="text-2xl font-bold text-success">1</p>
+                  <p class="text-xs text-text-secondary">계약 완료</p>
+                </div>
+              </div>
+              
+              <!-- 최근 문의 목록 -->
+              <div class="space-y-2">
+                <div class="flex items-center gap-3 p-3 bg-warning-light/50 rounded-xl hover:bg-warning-light transition-colors cursor-pointer" onclick="location.href='super-inquiries.html?id=inq001'">
+                  <div class="w-10 h-10 rounded-full bg-warning/20 flex items-center justify-center">
+                    <span class="material-icons-round text-warning">priority_high</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                      <p class="font-medium text-sm">청담영어학원</p>
+                      <span class="px-2 py-0.5 bg-warning text-white text-xs rounded">NEW</span>
+                    </div>
+                    <p class="text-xs text-text-secondary">51-100명 · 10분 전 · 담당: 미배정</p>
+                  </div>
+                  <button class="px-3 py-1.5 bg-super text-white text-xs rounded-lg hover:bg-super-dark">배정</button>
+                </div>
+                
+                <div class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" onclick="location.href='super-inquiries.html?id=inq002'">
+                  <div class="w-10 h-10 rounded-full bg-info-light flex items-center justify-center">
+                    <span class="material-icons-round text-info">phone_in_talk</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-medium text-sm">서초수학전문학원</p>
+                    <p class="text-xs text-text-secondary">21-50명 · 오늘 14:00 통화 예정 · 담당: 김영업</p>
+                  </div>
+                  <span class="px-2 py-1 bg-info text-white text-xs rounded-lg">연락 중</span>
+                </div>
+                
+                <div class="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" onclick="location.href='super-inquiries.html?id=inq003'">
+                  <div class="w-10 h-10 rounded-full bg-super-light flex items-center justify-center">
+                    <span class="material-icons-round text-super">event</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-medium text-sm">강남스터디학원</p>
+                    <p class="text-xs text-text-secondary">101-200명 · 내일 15:00 데모 · 담당: 박영업</p>
+                  </div>
+                  <span class="px-2 py-1 bg-super text-white text-xs rounded-lg">데모 예정</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 주의 필요 학원 + 매출 차트 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- 주의 필요 학원 -->
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="font-bold text-navy flex items-center gap-2">
+                    <span class="material-icons-round text-error">warning</span>
+                    주의 필요
+                    <span class="px-2 py-0.5 bg-error text-white text-xs rounded-full">3</span>
+                  </h3>
+                  <a href="super-academies.html?filter=warning" class="text-sm text-super hover:underline">더보기</a>
+                </div>
+                
+                <div class="space-y-2">
+                  <div class="flex items-center gap-3 p-3 bg-error-light rounded-xl">
+                    <div class="w-9 h-9 rounded-full bg-error/20 flex items-center justify-center">
+                      <span class="material-icons-round text-error text-lg">credit_card_off</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium text-sm">강북학습관</p>
+                      <p class="text-xs text-error">결제 3회 연속 실패</p>
+                    </div>
+                    <button onclick="location.href='super-academies.html?id=acad001'" class="p-2 hover:bg-error/20 rounded-lg">
+                      <span class="material-icons-round text-error text-lg">arrow_forward</span>
+                    </button>
+                  </div>
+                  
+                  <div class="flex items-center gap-3 p-3 bg-warning-light rounded-xl">
+                    <div class="w-9 h-9 rounded-full bg-warning/20 flex items-center justify-center">
+                      <span class="material-icons-round text-warning text-lg">schedule</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium text-sm">목동영어학원</p>
+                      <p class="text-xs text-warning">30일 미접속</p>
+                    </div>
+                    <button onclick="location.href='super-academies.html?id=acad002'" class="p-2 hover:bg-warning/20 rounded-lg">
+                      <span class="material-icons-round text-warning text-lg">arrow_forward</span>
+                    </button>
+                  </div>
+                  
+                  <div class="flex items-center gap-3 p-3 bg-warning-light rounded-xl">
+                    <div class="w-9 h-9 rounded-full bg-warning/20 flex items-center justify-center">
+                      <span class="material-icons-round text-warning text-lg">trending_down</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium text-sm">일산수학학원</p>
+                      <p class="text-xs text-warning">학생 수 50% 감소</p>
+                    </div>
+                    <button onclick="location.href='super-academies.html?id=acad003'" class="p-2 hover:bg-warning/20 rounded-lg">
+                      <span class="material-icons-round text-warning text-lg">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 매출 추이 미니 차트 -->
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="font-bold text-navy flex items-center gap-2">
+                    <span class="material-icons-round text-primary">trending_up</span>
+                    매출 추이
+                  </h3>
+                  <a href="super-payments.html" class="text-sm text-super hover:underline">상세</a>
+                </div>
+                <div class="chart-container">
+                  <canvas id="miniRevenueChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 오른쪽: 오늘의 할 일 + 시스템 현황 -->
+          <div class="space-y-6">
+            
+            <!-- 오늘의 할 일 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-navy flex items-center gap-2">
+                  <span class="material-icons-round text-super">task_alt</span>
+                  오늘의 할 일
+                </h3>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-text-tertiary" id="todoProgress">2/4 완료</span>
+                  <button onclick="openAddTodoModal()" class="p-1.5 hover:bg-super-light rounded-lg transition-colors" title="할 일 추가">
+                    <span class="material-icons-round text-super text-lg">add_circle</span>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- 시스템 자동 생성 항목 -->
+              <div class="mb-3">
+                <p class="text-xs text-text-tertiary mb-2 flex items-center gap-1">
+                  <span class="material-icons-round text-xs">auto_awesome</span>
+                  시스템 알림
+                </p>
+                <div class="space-y-2" id="systemTodoList">
+                  <div class="todo-item system-todo flex items-center gap-3 p-3 bg-warning-light/30 rounded-xl group" data-id="sys-1" data-link="super-inquiries.html?filter=pending">
+                    <span class="material-icons-round text-warning text-lg">priority_high</span>
+                    <span class="todo-text text-sm flex-1">신규 문의 3건 배정 필요</span>
+                    <span class="px-2 py-0.5 bg-warning text-white text-xs rounded">긴급</span>
+                    <button onclick="goToSystemTask(this)" class="p-1 hover:bg-warning/20 rounded opacity-0 group-hover:opacity-100 transition-opacity" title="바로가기">
+                      <span class="material-icons-round text-warning text-sm">arrow_forward</span>
+                    </button>
+                  </div>
+                  
+                  <div class="todo-item system-todo flex items-center gap-3 p-3 bg-error-light/30 rounded-xl group" data-id="sys-2" data-link="super-payments.html?filter=failed">
+                    <span class="material-icons-round text-error text-lg">credit_card_off</span>
+                    <span class="todo-text text-sm flex-1">결제 실패 학원 2건 확인</span>
+                    <span class="px-2 py-0.5 bg-error text-white text-xs rounded">중요</span>
+                    <button onclick="goToSystemTask(this)" class="p-1 hover:bg-error/20 rounded opacity-0 group-hover:opacity-100 transition-opacity" title="바로가기">
+                      <span class="material-icons-round text-error text-sm">arrow_forward</span>
+                    </button>
+                  </div>
+                  
+                  <div class="todo-item system-todo flex items-center gap-3 p-3 bg-info-light/30 rounded-xl group" data-id="sys-3" data-link="super-contents.html?filter=pending">
+                    <span class="material-icons-round text-info text-lg">fact_check</span>
+                    <span class="todo-text text-sm flex-1">콘텐츠 승인 대기 5건</span>
+                    <span class="text-xs text-text-tertiary">오늘 중</span>
+                    <button onclick="goToSystemTask(this)" class="p-1 hover:bg-info/20 rounded opacity-0 group-hover:opacity-100 transition-opacity" title="바로가기">
+                      <span class="material-icons-round text-info text-sm">arrow_forward</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 사용자 추가 항목 -->
+              <div>
+                <p class="text-xs text-text-tertiary mb-2 flex items-center gap-1">
+                  <span class="material-icons-round text-xs">edit_note</span>
+                  내 할 일
+                </p>
+                <div class="space-y-2" id="userTodoList">
+                  <div class="todo-item user-todo completed flex items-center gap-3 p-3 rounded-xl group" data-id="user-1">
+                    <button onclick="toggleUserTodo(this)" class="flex-shrink-0">
+                      <span class="material-icons-round text-success">check_circle</span>
+                    </button>
+                    <span class="todo-text text-sm flex-1">일일 플랫폼 점검</span>
+                    <span class="text-xs text-text-tertiary">09:00</span>
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onclick="editTodo(this)" class="p-1 hover:bg-gray-100 rounded" title="편집">
+                        <span class="material-icons-round text-text-tertiary text-sm">edit</span>
+                      </button>
+                      <button onclick="deleteTodo(this)" class="p-1 hover:bg-error-light rounded" title="삭제">
+                        <span class="material-icons-round text-error text-sm">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="todo-item user-todo completed flex items-center gap-3 p-3 rounded-xl group" data-id="user-2">
+                    <button onclick="toggleUserTodo(this)" class="flex-shrink-0">
+                      <span class="material-icons-round text-success">check_circle</span>
+                    </button>
+                    <span class="todo-text text-sm flex-1">AI 비용 리포트 확인</span>
+                    <span class="text-xs text-text-tertiary">09:30</span>
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onclick="editTodo(this)" class="p-1 hover:bg-gray-100 rounded" title="편집">
+                        <span class="material-icons-round text-text-tertiary text-sm">edit</span>
+                      </button>
+                      <button onclick="deleteTodo(this)" class="p-1 hover:bg-error-light rounded" title="삭제">
+                        <span class="material-icons-round text-error text-sm">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="todo-item user-todo flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 group" data-id="user-3">
+                    <button onclick="toggleUserTodo(this)" class="flex-shrink-0">
+                      <span class="material-icons-round text-border-light">radio_button_unchecked</span>
+                    </button>
+                    <span class="todo-text text-sm flex-1">강남스터디학원 데모 준비</span>
+                    <span class="px-2 py-0.5 bg-super text-white text-xs rounded">데모</span>
+                    <span class="text-xs text-text-tertiary">내일 15:00</span>
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onclick="editTodo(this)" class="p-1 hover:bg-gray-100 rounded" title="편집">
+                        <span class="material-icons-round text-text-tertiary text-sm">edit</span>
+                      </button>
+                      <button onclick="deleteTodo(this)" class="p-1 hover:bg-error-light rounded" title="삭제">
+                        <span class="material-icons-round text-error text-sm">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="todo-item user-todo flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 group" data-id="user-4">
+                    <button onclick="toggleUserTodo(this)" class="flex-shrink-0">
+                      <span class="material-icons-round text-border-light">radio_button_unchecked</span>
+                    </button>
+                    <span class="todo-text text-sm flex-1">파트너사 미팅 자료 준비</span>
+                    <span class="text-xs text-text-tertiary">오후 2시</span>
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onclick="editTodo(this)" class="p-1 hover:bg-gray-100 rounded" title="편집">
+                        <span class="material-icons-round text-text-tertiary text-sm">edit</span>
+                      </button>
+                      <button onclick="deleteTodo(this)" class="p-1 hover:bg-error-light rounded" title="삭제">
+                        <span class="material-icons-round text-error text-sm">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 빈 상태 -->
+                <div id="emptyTodoState" class="hidden text-center py-6">
+                  <span class="material-icons-round text-text-tertiary text-4xl mb-2">checklist</span>
+                  <p class="text-sm text-text-tertiary">등록된 할 일이 없습니다</p>
+                  <button onclick="openAddTodoModal()" class="mt-2 text-sm text-super hover:underline">+ 할 일 추가하기</button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 시스템 현황 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-navy flex items-center gap-2">
+                  <span class="material-icons-round text-success pulse-dot">circle</span>
+                  시스템 현황
+                </h3>
+                <span class="text-xs text-success font-medium">정상 운영 중</span>
+              </div>
+              
+              <div class="space-y-3">
+                <!-- API 상태 -->
+                <div class="flex items-center justify-between p-3 bg-success-light rounded-xl">
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-lg">api</span>
+                    <span class="text-sm font-medium">Gemini API</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-success">120ms</span>
+                    <span class="w-2 h-2 rounded-full bg-success"></span>
+                  </div>
+                </div>
+                
+                <!-- 결제 시스템 -->
+                <div class="flex items-center justify-between p-3 bg-success-light rounded-xl">
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-lg">payment</span>
+                    <span class="text-sm font-medium">결제선생</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-success">정상</span>
+                    <span class="w-2 h-2 rounded-full bg-success"></span>
+                  </div>
+                </div>
+                
+                <!-- 알림 시스템 -->
+                <div class="flex items-center justify-between p-3 bg-success-light rounded-xl">
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-success text-lg">sms</span>
+                    <span class="text-sm font-medium">NCP SENS</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-success">정상</span>
+                    <span class="w-2 h-2 rounded-full bg-success"></span>
+                  </div>
+                </div>
+                
+                <!-- DB 현황 -->
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                  <div class="flex items-center gap-2">
+                    <span class="material-icons-round text-text-secondary text-lg">storage</span>
+                    <span class="text-sm font-medium">Database</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-text-secondary">42% 사용</span>
+                    <div class="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div class="h-full bg-success rounded-full" style="width: 42%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <a href="super-logs.html" class="mt-4 flex items-center justify-center gap-2 p-2 text-sm text-super hover:bg-super-light rounded-xl transition-colors">
+                <span class="material-icons-round text-sm">history</span>
+                시스템 로그 보기
+              </a>
+            </div>
+            
+            <!-- AI 비용 현황 -->
+            <div class="bg-gradient-to-br from-super to-super-dark rounded-2xl p-6 text-white">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold flex items-center gap-2">
+                  <span class="material-icons-round">smart_toy</span>
+                  AI 비용 현황
+                </h3>
+                <a href="super-ai-usage.html" class="text-xs text-white/70 hover:text-white">상세 →</a>
+              </div>
+              
+              <div class="flex items-end justify-between mb-3">
+                <div>
+                  <p class="text-3xl font-bold">$1,234</p>
+                  <p class="text-sm text-white/70">이번 달 사용 비용</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-lg font-semibold">$1,500</p>
+                  <p class="text-xs text-white/70">월 예산</p>
+                </div>
+              </div>
+              
+              <div class="w-full h-3 bg-white/20 rounded-full overflow-hidden mb-2">
+                <div class="h-full bg-white rounded-full transition-all duration-500" style="width: 82%"></div>
+              </div>
+              
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-white/70">82% 사용</span>
+                <span class="text-white/70">잔여 $266</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 실시간 활동 로그 -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-border-light">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-navy flex items-center gap-2">
+              <span class="material-icons-round text-super pulse-dot">circle</span>
+              실시간 플랫폼 활동
+            </h3>
+            <div class="flex items-center gap-2">
+              <select id="activityFilter" class="px-3 py-1.5 bg-background border border-border-light rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-super/20">
+                <option value="all">전체</option>
+                <option value="academy">학원</option>
+                <option value="payment">결제</option>
+                <option value="inquiry">문의</option>
+                <option value="content">콘텐츠</option>
+              </select>
+              <a href="super-logs.html" class="text-sm text-super font-medium hover:underline">전체 로그</a>
+            </div>
+          </div>
+          
+          <div class="space-y-1 max-h-72 overflow-y-auto custom-scrollbar" id="activityLog">
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" data-type="academy">
+              <span class="text-xs text-text-tertiary w-16 flex-shrink-0">방금 전</span>
+              <span class="w-2 h-2 rounded-full bg-success flex-shrink-0"></span>
+              <span class="text-sm"><strong class="text-navy">명불허전학원</strong>에서 학생 <strong>김민수</strong> 등록</span>
+              <span class="ml-auto text-xs text-text-tertiary">학원</span>
+            </div>
+            
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" data-type="payment">
+              <span class="text-xs text-text-tertiary w-16 flex-shrink-0">2분 전</span>
+              <span class="w-2 h-2 rounded-full bg-info flex-shrink-0"></span>
+              <span class="text-sm"><strong class="text-navy">강남수학학원</strong> 1월 결제 완료 (₩450,000)</span>
+              <span class="ml-auto text-xs text-text-tertiary">결제</span>
+            </div>
+            
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" data-type="inquiry">
+              <span class="text-xs text-text-tertiary w-16 flex-shrink-0">5분 전</span>
+              <span class="w-2 h-2 rounded-full bg-warning flex-shrink-0"></span>
+              <span class="text-sm">새 도입 문의: <strong class="text-navy">청담영어학원</strong> (51-100명)</span>
+              <span class="ml-auto text-xs text-text-tertiary">문의</span>
+            </div>
+            
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" data-type="payment">
+              <span class="text-xs text-text-tertiary w-16 flex-shrink-0">8분 전</span>
+              <span class="w-2 h-2 rounded-full bg-error flex-shrink-0"></span>
+              <span class="text-sm"><strong class="text-navy">목동영어학원</strong> 결제 실패 알림 발송</span>
+              <span class="ml-auto text-xs text-text-tertiary">결제</span>
+            </div>
+            
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" data-type="content">
+              <span class="text-xs text-text-tertiary w-16 flex-shrink-0">12분 전</span>
+              <span class="w-2 h-2 rounded-full bg-korean flex-shrink-0"></span>
+              <span class="text-sm">국어 콘텐츠 5개 AI 처리 완료</span>
+              <span class="ml-auto text-xs text-text-tertiary">콘텐츠</span>
+            </div>
+            
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" data-type="inquiry">
+              <span class="text-xs text-text-tertiary w-16 flex-shrink-0">15분 전</span>
+              <span class="w-2 h-2 rounded-full bg-success flex-shrink-0"></span>
+              <span class="text-sm"><strong class="text-navy">분당영재학원</strong> 계약 완료 (Pro 플랜)</span>
+              <span class="ml-auto text-xs text-text-tertiary">문의</span>
+            </div>
+            
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" data-type="academy">
+              <span class="text-xs text-text-tertiary w-16 flex-shrink-0">20분 전</span>
+              <span class="w-2 h-2 rounded-full bg-super flex-shrink-0"></span>
+              <span class="text-sm"><strong class="text-navy">송파국어학원</strong> Pro → Enterprise 플랜 업그레이드</span>
+              <span class="ml-auto text-xs text-text-tertiary">학원</span>
+            </div>
+            
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer" data-type="content">
+              <span class="text-xs text-text-tertiary w-16 flex-shrink-0">25분 전</span>
+              <span class="w-2 h-2 rounded-full bg-math flex-shrink-0"></span>
+              <span class="text-sm">수학 문제 12개 관리자 승인 완료</span>
+              <span class="ml-auto text-xs text-text-tertiary">콘텐츠</span>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </main>
+  </div>
+  
+  <!-- 할 일 추가/편집 모달 -->
+  <div id="todoModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 transition-all duration-200" style="opacity: 0; visibility: hidden;">
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl transform transition-transform duration-200">
+      <div class="flex items-center justify-between p-5 border-b border-border-light">
+        <h3 id="todoModalTitle" class="text-lg font-bold text-navy">할 일 추가</h3>
+        <button onclick="closeTodoModal()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+          <span class="material-icons-round text-text-secondary">close</span>
+        </button>
+      </div>
+      
+      <div class="p-5 space-y-4">
+        <!-- 할 일 내용 -->
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">할 일 내용 <span class="text-error">*</span></label>
+          <input type="text" id="todoTitleInput" 
+            class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super transition-colors"
+            placeholder="할 일을 입력하세요">
+        </div>
+        
+        <!-- 우선순위 -->
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">우선순위</label>
+          <select id="todoPrioritySelect" 
+            class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super transition-colors bg-white">
+            <option value="">일반</option>
+            <option value="urgent">🔴 긴급</option>
+            <option value="important">🟠 중요</option>
+            <option value="demo">🟣 데모</option>
+          </select>
+        </div>
+        
+        <!-- 시간/마감 -->
+        <div>
+          <label class="block text-sm font-medium text-text-primary mb-2">시간 / 마감</label>
+          <input type="text" id="todoTimeInput" 
+            class="w-full px-4 py-3 border border-border-light rounded-xl focus:outline-none focus:ring-2 focus:ring-super/20 focus:border-super transition-colors"
+            placeholder="예: 오후 2시, 내일 15:00, 금요일까지">
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-3 p-5 border-t border-border-light bg-gray-50 rounded-b-2xl">
+        <button onclick="closeTodoModal()" class="flex-1 px-4 py-3 border border-border-light rounded-xl text-text-secondary font-medium hover:bg-gray-100 transition-colors">
+          취소
+        </button>
+        <button onclick="saveTodo()" class="flex-1 px-4 py-3 bg-super text-white rounded-xl font-medium hover:bg-super-dark transition-colors flex items-center justify-center gap-2">
+          <span class="material-icons-round text-lg">check</span>
+          저장
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // 현재 날짜/시간 업데이트
+    function updateDateTime() {
+      const now = new Date();
+      const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        weekday: 'long',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      document.getElementById('currentDateTime').textContent = now.toLocaleDateString('ko-KR', options);
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 60000);
+    
+    // 모바일 메뉴
+    function openMobileMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.getElementById('mobileMenuOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('mobileMenuOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    
+    // 토스트 알림
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const colors = {
+        success: 'bg-success',
+        error: 'bg-error',
+        warning: 'bg-warning',
+        info: 'bg-info'
+      };
+      const icons = {
+        success: 'check_circle',
+        error: 'error',
+        warning: 'warning',
+        info: 'info'
+      };
+      
+      const toast = document.createElement('div');
+      toast.className = `flex items-center gap-3 px-4 py-3 ${colors[type]} text-white rounded-xl shadow-lg slide-in`;
+      toast.innerHTML = `
+        <span class="material-icons-round">${icons[type]}</span>
+        <span class="text-sm font-medium">${message}</span>
+        <button onclick="this.parentElement.remove()" class="ml-2 hover:bg-white/20 rounded p-1">
+          <span class="material-icons-round text-sm">close</span>
+        </button>
+      `;
+      
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 5000);
+    }
+    
+    // 알림 배너 닫기
+    function dismissAlert(btn) {
+      const banner = btn.closest('.alert-banner');
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateX(100px)';
+      setTimeout(() => banner.remove(), 300);
+    }
+    
+    // 할 일 토글 (사용자 할 일만)
+    function toggleUserTodo(btn) {
+      const item = btn.closest('.todo-item');
+      item.classList.toggle('completed');
+      const icon = btn.querySelector('.material-icons-round');
+      if (item.classList.contains('completed')) {
+        icon.textContent = 'check_circle';
+        icon.classList.remove('text-border-light');
+        icon.classList.add('text-success');
+        showToast('할 일을 완료했습니다.', 'success');
+      } else {
+        icon.textContent = 'radio_button_unchecked';
+        icon.classList.remove('text-success');
+        icon.classList.add('text-border-light');
+      }
+      updateTodoProgress();
+    }
+    
+    // 시스템 할 일 바로가기
+    function goToSystemTask(btn) {
+      const item = btn.closest('.todo-item');
+      const link = item.dataset.link;
+      if (link) {
+        window.location.href = link;
+      }
+    }
+    
+    function updateTodoProgress() {
+      const userItems = document.querySelectorAll('.user-todo');
+      const completed = document.querySelectorAll('.user-todo.completed').length;
+      document.getElementById('todoProgress').textContent = `${completed}/${userItems.length} 완료`;
+    }
+    
+    // 할 일 추가 모달
+    let editingTodoId = null;
+    
+    function openAddTodoModal() {
+      editingTodoId = null;
+      document.getElementById('todoModalTitle').textContent = '할 일 추가';
+      document.getElementById('todoTitleInput').value = '';
+      document.getElementById('todoPrioritySelect').value = '';
+      document.getElementById('todoTimeInput').value = '';
+      const modal = document.getElementById('todoModal');
+      modal.style.opacity = '1';
+      modal.style.visibility = 'visible';
+      document.getElementById('todoTitleInput').focus();
+    }
+    
+    function closeTodoModal() {
+      const modal = document.getElementById('todoModal');
+      modal.style.opacity = '0';
+      modal.style.visibility = 'hidden';
+      editingTodoId = null;
+    }
+    
+    function editTodo(btn) {
+      const item = btn.closest('.todo-item');
+      editingTodoId = item.dataset.id;
+      
+      const titleEl = item.querySelector('.todo-text');
+      const title = titleEl.textContent;
+      
+      // 우선순위 태그 확인
+      const priorityTag = item.querySelector('.bg-warning, .bg-error, .bg-super, .bg-info');
+      let priority = '';
+      if (priorityTag) {
+        const tagText = priorityTag.textContent;
+        if (tagText === '긴급') priority = 'urgent';
+        else if (tagText === '중요') priority = 'important';
+        else if (tagText === '데모') priority = 'demo';
+      }
+      
+      // 시간 확인
+      const timeEl = item.querySelector('.text-text-tertiary:last-of-type');
+      const time = timeEl ? timeEl.textContent : '';
+      
+      document.getElementById('todoModalTitle').textContent = '할 일 편집';
+      document.getElementById('todoTitleInput').value = title;
+      document.getElementById('todoPrioritySelect').value = priority;
+      document.getElementById('todoTimeInput').value = time;
+      const modal = document.getElementById('todoModal');
+      modal.style.opacity = '1';
+      modal.style.visibility = 'visible';
+      document.getElementById('todoTitleInput').focus();
+    }
+    
+    function saveTodo() {
+      const title = document.getElementById('todoTitleInput').value.trim();
+      const priority = document.getElementById('todoPrioritySelect').value;
+      const time = document.getElementById('todoTimeInput').value.trim();
+      
+      if (!title) {
+        showToast('할 일 내용을 입력해주세요.', 'warning');
+        return;
+      }
+      
+      const priorityBadge = getPriorityBadge(priority);
+      const timeDisplay = time ? `<span class="text-xs text-text-tertiary">${time}</span>` : '';
+      
+      if (editingTodoId) {
+        // 편집 모드
+        const item = document.querySelector(`.user-todo[data-id="${editingTodoId}"]`);
+        if (item) {
+          item.querySelector('.todo-text').textContent = title;
+          
+          // 기존 우선순위 태그와 시간 제거
+          const existingBadge = item.querySelector('.bg-warning, .bg-error, .bg-super, .bg-info');
+          if (existingBadge) existingBadge.remove();
+          
+          const existingTime = item.querySelectorAll('.text-text-tertiary');
+          existingTime.forEach(el => {
+            if (!el.classList.contains('text-sm')) el.remove();
+          });
+          
+          // 새로운 태그와 시간 추가
+          const textEl = item.querySelector('.todo-text');
+          if (priorityBadge) {
+            textEl.insertAdjacentHTML('afterend', priorityBadge);
+          }
+          if (time) {
+            const actionsDiv = item.querySelector('.flex.items-center.gap-1');
+            actionsDiv.insertAdjacentHTML('beforebegin', `<span class="text-xs text-text-tertiary">${time}</span>`);
+          }
+          
+          showToast('할 일이 수정되었습니다.', 'success');
+        }
+      } else {
+        // 추가 모드
+        const newId = 'user-' + Date.now();
+        const todoHtml = `
+          <div class="todo-item user-todo flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 group" data-id="${newId}">
+            <button onclick="toggleUserTodo(this)" class="flex-shrink-0">
+              <span class="material-icons-round text-border-light">radio_button_unchecked</span>
+            </button>
+            <span class="todo-text text-sm flex-1">${escapeHtml(title)}</span>
+            ${priorityBadge}
+            ${timeDisplay}
+            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button onclick="editTodo(this)" class="p-1 hover:bg-gray-100 rounded" title="편집">
+                <span class="material-icons-round text-text-tertiary text-sm">edit</span>
+              </button>
+              <button onclick="deleteTodo(this)" class="p-1 hover:bg-error-light rounded" title="삭제">
+                <span class="material-icons-round text-error text-sm">delete</span>
+              </button>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('userTodoList').insertAdjacentHTML('beforeend', todoHtml);
+        showToast('할 일이 추가되었습니다.', 'success');
+        updateTodoProgress();
+      }
+      
+      closeTodoModal();
+    }
+    
+    function getPriorityBadge(priority) {
+      switch(priority) {
+        case 'urgent':
+          return '<span class="px-2 py-0.5 bg-warning text-white text-xs rounded">긴급</span>';
+        case 'important':
+          return '<span class="px-2 py-0.5 bg-error text-white text-xs rounded">중요</span>';
+        case 'demo':
+          return '<span class="px-2 py-0.5 bg-super text-white text-xs rounded">데모</span>';
+        default:
+          return '';
+      }
+    }
+    
+    function deleteTodo(btn) {
+      const item = btn.closest('.todo-item');
+      const title = item.querySelector('.todo-text').textContent;
+      
+      if (confirm(`"${title}" 할 일을 삭제하시겠습니까?`)) {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(20px)';
+        setTimeout(() => {
+          item.remove();
+          updateTodoProgress();
+          checkEmptyTodoState();
+          showToast('할 일이 삭제되었습니다.', 'success');
+        }, 200);
+      }
+    }
+    
+    function checkEmptyTodoState() {
+      const userTodos = document.querySelectorAll('.user-todo');
+      const emptyState = document.getElementById('emptyTodoState');
+      if (userTodos.length === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+      }
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // 모달 외부 클릭 시 닫기
+    document.getElementById('todoModal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeTodoModal();
+      }
+    });
+    
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeTodoModal();
+      }
+    });
+    
+    // 활동 로그 필터
+    document.getElementById('activityFilter').addEventListener('change', function() {
+      const filter = this.value;
+      const items = document.querySelectorAll('#activityLog > div');
+      items.forEach(item => {
+        if (filter === 'all' || item.dataset.type === filter) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+    
+    // 대시보드 새로고침
+    function refreshDashboard() {
+      showToast('대시보드를 새로고침했습니다.', 'success');
+      // 실제로는 데이터 다시 로드
+    }
+    
+    // 알림 패널
+    function openNotificationPanel() {
+      showToast('알림 패널 기능 준비 중', 'info');
+    }
+    
+    // 월간 리포트 내보내기
+    function exportMonthlyReport() {
+      showToast('월간 리포트를 생성 중입니다...', 'info');
+      setTimeout(() => {
+        showToast('리포트 다운로드가 시작됩니다.', 'success');
+      }, 1500);
+    }
+    
+    // 매출 미니 차트
+    const miniRevenueCtx = document.getElementById('miniRevenueChart').getContext('2d');
+    new Chart(miniRevenueCtx, {
+      type: 'line',
+      data: {
+        labels: ['8월', '9월', '10월', '11월', '12월', '1월'],
+        datasets: [{
+          data: [32, 35, 38, 42, 43, 48.2],
+          borderColor: '#6366F1',
+          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#6366F1',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1F2937',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            padding: 12,
+            displayColors: false,
+            callbacks: {
+              label: (ctx) => `₩${ctx.raw}M`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 25,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { 
+              callback: value => '₩' + value + 'M',
+              font: { size: 10 }
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 10 } }
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        }
+      }
+    });
+    
+    // 페이지 로드 시 애니메이션
+    document.addEventListener('DOMContentLoaded', function() {
+      // 카드 순차 애니메이션
+      const cards = document.querySelectorAll('.stat-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          card.style.transition = 'all 0.4s ease-out';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100 + index * 50);
+      });
+    });
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/modal.js"></script>
+  <script src="../assets/js/toast.js"></script>
+  <script src="../assets/js/table.js"></script>
+  <script src="../assets/js/chart-config.js"></script>
+
+</body>
+</html>

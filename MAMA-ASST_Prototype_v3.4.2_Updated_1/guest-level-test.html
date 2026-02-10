@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>레벨테스트 | MAMA-ASST</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6D4D',
+            'primary-light': '#FFF0ED',
+            navy: '#1A2E4D',
+            korean: '#4285F4',
+            'korean-light': '#E8F0FE',
+            english: '#34A853',
+            'english-light': '#E6F4EA',
+            math: '#FBBC05',
+            'math-light': '#FEF7E0',
+            background: '#F9FAFB',
+            surface: '#FFFFFF',
+            'border-light': '#E5E7EB',
+            'text-primary': '#1F2937',
+            'text-secondary': '#6B7280',
+            'text-tertiary': '#9CA3AF',
+            success: '#22C55E',
+            'success-light': '#F0FDF4',
+            error: '#EF4444',
+            info: '#3B82F6',
+          },
+          fontFamily: { sans: ['Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .choice-btn {
+      transition: all 0.2s ease;
+    }
+    .choice-btn:hover {
+      border-color: var(--subject-color);
+      background: var(--subject-light);
+    }
+    .choice-btn.selected {
+      border-color: var(--subject-color);
+      background: var(--subject-light);
+      box-shadow: 0 0 0 3px var(--subject-ring);
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide {
+      animation: slideIn 0.3s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-background font-sans text-text-primary antialiased min-h-screen flex flex-col">
+  
+  <!-- Header -->
+  <header id="header" class="h-16 bg-korean text-white flex items-center justify-between px-6 flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <div id="subjectIcon" class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+        <span class="material-icons-round text-white">menu_book</span>
+      </div>
+      <div>
+        <span id="subjectTitle" class="font-bold text-lg">국어 레벨테스트</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="text-right">
+        <p class="text-xs text-white/70">남은 시간</p>
+        <p id="timer" class="font-bold font-mono">10:00</p>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Progress -->
+  <div class="bg-surface border-b border-border-light px-6 py-3 flex-shrink-0">
+    <div class="max-w-3xl mx-auto flex items-center gap-4">
+      <span class="text-sm text-text-secondary"><span id="currentQ">1</span> / <span id="totalQ">10</span></span>
+      <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div id="progressBar" class="h-full bg-korean rounded-full transition-all duration-300" style="width: 10%"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Question Area -->
+  <main class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-3xl mx-auto">
+      
+      <!-- Question Card -->
+      <div id="questionCard" class="bg-surface rounded-2xl p-8 shadow-sm border border-border-light animate-slide">
+        
+        <!-- Question -->
+        <div class="mb-8">
+          <div class="flex items-center gap-2 mb-4">
+            <span id="questionBadge" class="px-3 py-1 bg-korean-light text-korean text-sm font-bold rounded-full">Q.1</span>
+            <span id="questionType" class="text-sm text-text-tertiary">어휘</span>
+          </div>
+          
+          <!-- Passage (if applicable) -->
+          <div id="passageArea" class="bg-gray-50 rounded-xl p-5 mb-6 hidden">
+            <p id="passageText" class="text-text-primary leading-relaxed"></p>
+          </div>
+          
+          <!-- Question Text -->
+          <p id="questionText" class="text-xl font-medium text-text-primary leading-relaxed">
+            다음 중 '고요하다'와 가장 비슷한 뜻을 가진 말은?
+          </p>
+        </div>
+        
+        <!-- Choices -->
+        <div id="choicesArea" class="space-y-3">
+          <button onclick="selectChoice(0)" class="choice-btn w-full p-4 text-left border-2 border-border-light rounded-xl flex items-center gap-4 hover:bg-gray-50">
+            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-text-secondary">①</span>
+            <span class="text-text-primary">조용하다</span>
+          </button>
+          <button onclick="selectChoice(1)" class="choice-btn w-full p-4 text-left border-2 border-border-light rounded-xl flex items-center gap-4 hover:bg-gray-50">
+            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-text-secondary">②</span>
+            <span class="text-text-primary">시끄럽다</span>
+          </button>
+          <button onclick="selectChoice(2)" class="choice-btn w-full p-4 text-left border-2 border-border-light rounded-xl flex items-center gap-4 hover:bg-gray-50">
+            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-text-secondary">③</span>
+            <span class="text-text-primary">바쁘다</span>
+          </button>
+          <button onclick="selectChoice(3)" class="choice-btn w-full p-4 text-left border-2 border-border-light rounded-xl flex items-center gap-4 hover:bg-gray-50">
+            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-text-secondary">④</span>
+            <span class="text-text-primary">복잡하다</span>
+          </button>
+          <button onclick="selectChoice(4)" class="choice-btn w-full p-4 text-left border-2 border-border-light rounded-xl flex items-center gap-4 hover:bg-gray-50">
+            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-text-secondary">⑤</span>
+            <span class="text-text-primary">깨끗하다</span>
+          </button>
+        </div>
+        
+      </div>
+      
+      <!-- Navigation -->
+      <div class="flex items-center justify-between mt-6">
+        <button id="prevBtn" onclick="prevQuestion()" class="px-5 py-3 text-text-secondary hover:bg-gray-100 rounded-xl font-medium transition-colors flex items-center gap-2 disabled:opacity-50" disabled>
+          <span class="material-icons-round">arrow_back</span>
+          이전
+        </button>
+        <button onclick="callAdmin()" class="px-4 py-2 text-text-tertiary hover:text-text-secondary text-sm flex items-center gap-1">
+          <span class="material-icons-round text-sm">support_agent</span>
+          도움 필요
+        </button>
+        <button id="nextBtn" onclick="nextQuestion()" class="px-5 py-3 bg-korean hover:bg-korean/90 text-white rounded-xl font-medium transition-colors flex items-center gap-2 disabled:opacity-50" disabled>
+          다음
+          <span class="material-icons-round">arrow_forward</span>
+        </button>
+      </div>
+      
+    </div>
+  </main>
+  
+  <!-- Subject Complete Modal -->
+  <div id="subjectCompleteModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl p-8 max-w-md mx-4 text-center">
+      <div id="completeIcon" class="w-20 h-20 mx-auto rounded-full bg-korean-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-korean text-4xl">check_circle</span>
+      </div>
+      <h2 id="completeTitle" class="text-2xl font-bold text-text-primary mb-2">국어 테스트 완료!</h2>
+      <p id="completeDesc" class="text-text-secondary mb-6">수고하셨어요. 다음 과목을 진행해주세요.</p>
+      <button onclick="goToNextSubject()" id="nextSubjectBtn" class="w-full py-4 bg-korean text-white rounded-xl font-bold text-lg">
+        다음 과목으로
+      </button>
+    </div>
+  </div>
+  
+  <!-- Admin Modal -->
+  <div id="adminModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-surface rounded-2xl p-8 max-w-sm mx-4 text-center">
+      <div class="w-16 h-16 mx-auto rounded-full bg-primary-light flex items-center justify-center mb-4">
+        <span class="material-icons-round text-primary text-3xl">support_agent</span>
+      </div>
+      <h2 class="text-xl font-bold text-text-primary mb-2">관리자를 호출했습니다</h2>
+      <p class="text-text-secondary mb-6">잠시만 기다려주세요.</p>
+      <button onclick="closeAdminModal()" class="w-full py-3 bg-primary text-white rounded-xl font-medium">확인</button>
+    </div>
+  </div>
+  
+  <script>
+    // Subject configurations
+    const subjectConfig = {
+      korean: {
+        name: '국어',
+        color: '#4285F4',
+        lightColor: '#E8F0FE',
+        icon: 'menu_book',
+        totalQuestions: 10,
+        timeLimit: 600, // seconds
+        questions: [
+          { type: '어휘', question: "다음 중 '고요하다'와 가장 비슷한 뜻을 가진 말은?", choices: ['조용하다', '시끄럽다', '바쁘다', '복잡하다', '깨끗하다'], answer: 0 },
+          { type: '어휘', question: "'사자성어' 중 '위기일발'의 뜻은?", choices: ['위험한 상황', '빠른 속도', '정확한 표현', '조용한 행동', '깊은 생각'], answer: 0 },
+          { type: '문법', question: "다음 중 맞춤법이 올바른 것은?", choices: ['됬다', '됐다', '되었음', '되엿다', '됬음'], answer: 1 },
+          { type: '독해', question: "글의 중심 내용을 파악하는 것은?", choices: ['주제 찾기', '문장 외우기', '단어 암기', '문단 나누기', '받아쓰기'], answer: 0 },
+          { type: '어휘', question: "'선견지명'의 의미로 가장 적절한 것은?", choices: ['먼 곳을 봄', '앞일을 미리 아는 지혜', '과거를 돌아봄', '현재에 집중함', '빠른 결정'], answer: 1 },
+          { type: '문법', question: "다음 중 띄어쓰기가 올바른 것은?", choices: ['할수있다', '할 수 있다', '할수 있다', '할 수있다', '할수 있 다'], answer: 1 },
+          { type: '독해', question: "글에서 필자의 주장을 뒷받침하는 것은?", choices: ['근거', '제목', '맺음말', '첫 문장', '마지막 단어'], answer: 0 },
+          { type: '어휘', question: "'일취월장'이 의미하는 것은?", choices: ['빠른 발전', '느린 퇴보', '갑작스러운 변화', '꾸준한 노력', '잠시 쉼'], answer: 0 },
+          { type: '문법', question: "다음 중 높임 표현이 올바른 것은?", choices: ['선생님이 말했다', '선생님께서 말씀하셨다', '선생님이 말씀했다', '선생님께서 말했다', '선생님 말했다'], answer: 1 },
+          { type: '독해', question: "글의 구조를 파악할 때 중요한 것은?", choices: ['문단 간의 관계', '글자 수', '제목 길이', '작가 이름', '출판 연도'], answer: 0 }
+        ]
+      },
+      english: {
+        name: '영어',
+        color: '#34A853',
+        lightColor: '#E6F4EA',
+        icon: 'translate',
+        totalQuestions: 15,
+        timeLimit: 720,
+        questions: [
+          { type: '어휘', question: "What is the meaning of 'beautiful'?", choices: ['아름다운', '추운', '더운', '빠른', '느린'], answer: 0 },
+          { type: '어휘', question: "'Happy'의 반의어는?", choices: ['Sad', 'Good', 'Nice', 'Great', 'Fine'], answer: 0 },
+          { type: '문법', question: "빈칸에 알맞은 것은? 'She ___ a student.'", choices: ['is', 'are', 'am', 'be', 'been'], answer: 0 },
+          { type: '문법', question: "'I ___ to school yesterday.'의 빈칸에 알맞은 것은?", choices: ['go', 'went', 'going', 'gone', 'goes'], answer: 1 },
+          { type: '어휘', question: "'Book'의 복수형은?", choices: ['Books', 'Bookes', 'Bookies', 'Booken', 'Bookses'], answer: 0 },
+          { type: '독해', question: "'I like apples.'에서 주어는?", choices: ['I', 'like', 'apples', 'I like', 'apples like'], answer: 0 },
+          { type: '문법', question: "'They ___ playing soccer now.'의 빈칸은?", choices: ['is', 'are', 'am', 'was', 'were'], answer: 1 },
+          { type: '어휘', question: "'Big'의 비교급은?", choices: ['Bigger', 'More big', 'Bigest', 'Most big', 'Biger'], answer: 0 },
+          { type: '문법', question: "'_____ is your name?'의 빈칸은?", choices: ['What', 'Who', 'Where', 'When', 'Why'], answer: 0 },
+          { type: '독해', question: "'Can you help me?'는 어떤 의미인가요?", choices: ['도와줄 수 있니?', '뭐 하니?', '어디 가니?', '누구니?', '왜 그러니?'], answer: 0 },
+          { type: '어휘', question: "'Run'의 과거형은?", choices: ['Ran', 'Runned', 'Running', 'Runs', 'Runed'], answer: 0 },
+          { type: '문법', question: "'This is ___ apple.'의 빈칸은?", choices: ['a', 'an', 'the', 'one', '-'], answer: 1 },
+          { type: '어휘', question: "'Teacher'의 뜻은?", choices: ['선생님', '학생', '부모님', '친구', '형제'], answer: 0 },
+          { type: '문법', question: "'He ___ like pizza.'의 빈칸은?", choices: ["doesn't", "don't", 'not', 'no', 'never'], answer: 0 },
+          { type: '독해', question: "'How are you?'에 대한 적절한 대답은?", choices: ["I'm fine", 'Yes, I am', 'I go', 'It is', 'They are'], answer: 0 }
+        ]
+      },
+      math: {
+        name: '수학',
+        color: '#FBBC05',
+        lightColor: '#FEF7E0',
+        icon: 'calculate',
+        totalQuestions: 10,
+        timeLimit: 900,
+        questions: [
+          { type: '연산', question: '15 + 27 = ?', choices: ['42', '41', '43', '40', '44'], answer: 0 },
+          { type: '연산', question: '84 - 39 = ?', choices: ['45', '44', '46', '43', '47'], answer: 0 },
+          { type: '연산', question: '7 × 8 = ?', choices: ['56', '54', '58', '52', '60'], answer: 0 },
+          { type: '연산', question: '72 ÷ 9 = ?', choices: ['8', '7', '9', '6', '10'], answer: 0 },
+          { type: '개념', question: '다음 중 가장 큰 수는?', choices: ['999', '1000', '998', '997', '996'], answer: 1 },
+          { type: '문제해결', question: '사과 5개와 배 3개를 합하면 총 몇 개?', choices: ['8개', '7개', '9개', '6개', '10개'], answer: 0 },
+          { type: '개념', question: '1m는 몇 cm인가요?', choices: ['100cm', '10cm', '1000cm', '1cm', '50cm'], answer: 0 },
+          { type: '연산', question: '(3 + 4) × 2 = ?', choices: ['14', '11', '10', '12', '13'], answer: 0 },
+          { type: '문제해결', question: '연필 12자루를 3명이 똑같이 나누면 한 명당 몇 자루?', choices: ['4자루', '3자루', '5자루', '6자루', '2자루'], answer: 0 },
+          { type: '개념', question: '삼각형의 변은 몇 개인가요?', choices: ['3개', '4개', '2개', '5개', '6개'], answer: 0 }
+        ]
+      }
+    };
+    
+    let selectedSubjects = [];
+    let currentSubjectIndex = 0;
+    let currentSubject = null;
+    let currentQuestionIndex = 0;
+    let answers = [];
+    let timerInterval = null;
+    let remainingTime = 0;
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      selectedSubjects = JSON.parse(sessionStorage.getItem('selectedLevelTests') || '["korean"]');
+      currentSubjectIndex = parseInt(sessionStorage.getItem('currentLevelTestIndex') || '0');
+      
+      loadSubject(selectedSubjects[currentSubjectIndex]);
+    });
+    
+    function loadSubject(subjectKey) {
+      currentSubject = subjectConfig[subjectKey];
+      currentQuestionIndex = 0;
+      answers = new Array(currentSubject.totalQuestions).fill(null);
+      
+      // Update UI colors
+      document.documentElement.style.setProperty('--subject-color', currentSubject.color);
+      document.documentElement.style.setProperty('--subject-light', currentSubject.lightColor);
+      document.documentElement.style.setProperty('--subject-ring', currentSubject.color + '30');
+      
+      document.getElementById('header').style.background = currentSubject.color;
+      document.getElementById('subjectIcon').innerHTML = `<span class="material-icons-round text-white">${currentSubject.icon}</span>`;
+      document.getElementById('subjectTitle').textContent = currentSubject.name + ' 레벨테스트';
+      document.getElementById('totalQ').textContent = currentSubject.totalQuestions;
+      document.getElementById('progressBar').style.background = currentSubject.color;
+      document.getElementById('questionBadge').style.background = currentSubject.lightColor;
+      document.getElementById('questionBadge').style.color = currentSubject.color;
+      document.getElementById('nextBtn').style.background = currentSubject.color;
+      
+      // Start timer
+      remainingTime = currentSubject.timeLimit;
+      startTimer();
+      
+      // Show first question
+      showQuestion(0);
+    }
+    
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      
+      timerInterval = setInterval(() => {
+        remainingTime--;
+        updateTimerDisplay();
+        
+        if (remainingTime <= 0) {
+          clearInterval(timerInterval);
+          finishSubject();
+        }
+      }, 1000);
+    }
+    
+    function updateTimerDisplay() {
+      const minutes = Math.floor(remainingTime / 60);
+      const seconds = remainingTime % 60;
+      document.getElementById('timer').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      if (remainingTime <= 60) {
+        document.getElementById('timer').classList.add('text-red-300');
+      }
+    }
+    
+    function showQuestion(index) {
+      currentQuestionIndex = index;
+      const q = currentSubject.questions[index];
+      
+      document.getElementById('currentQ').textContent = index + 1;
+      document.getElementById('questionBadge').textContent = `Q.${index + 1}`;
+      document.getElementById('questionType').textContent = q.type;
+      document.getElementById('questionText').textContent = q.question;
+      
+      // Progress
+      const progress = ((index + 1) / currentSubject.totalQuestions) * 100;
+      document.getElementById('progressBar').style.width = progress + '%';
+      
+      // Choices
+      const choicesArea = document.getElementById('choicesArea');
+      const numbers = ['①', '②', '③', '④', '⑤'];
+      choicesArea.innerHTML = q.choices.map((choice, i) => `
+        <button onclick="selectChoice(${i})" class="choice-btn w-full p-4 text-left border-2 rounded-xl flex items-center gap-4 ${answers[index] === i ? 'selected border-[var(--subject-color)] bg-[var(--subject-light)]' : 'border-border-light'}">
+          <span class="w-8 h-8 rounded-full ${answers[index] === i ? 'bg-[var(--subject-color)] text-white' : 'bg-gray-100 text-text-secondary'} flex items-center justify-center font-bold">${numbers[i]}</span>
+          <span class="text-text-primary">${choice}</span>
+        </button>
+      `).join('');
+      
+      // Navigation
+      document.getElementById('prevBtn').disabled = index === 0;
+      document.getElementById('nextBtn').disabled = answers[index] === null;
+      document.getElementById('nextBtn').textContent = index === currentSubject.totalQuestions - 1 ? '완료' : '다음';
+      
+      // Animation
+      document.getElementById('questionCard').classList.remove('animate-slide');
+      void document.getElementById('questionCard').offsetWidth;
+      document.getElementById('questionCard').classList.add('animate-slide');
+    }
+    
+    function selectChoice(index) {
+      answers[currentQuestionIndex] = index;
+      document.getElementById('nextBtn').disabled = false;
+      showQuestion(currentQuestionIndex); // Refresh to show selection
+    }
+    
+    function nextQuestion() {
+      if (currentQuestionIndex < currentSubject.totalQuestions - 1) {
+        showQuestion(currentQuestionIndex + 1);
+      } else {
+        finishSubject();
+      }
+    }
+    
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        showQuestion(currentQuestionIndex - 1);
+      }
+    }
+    
+    function finishSubject() {
+      clearInterval(timerInterval);
+      
+      // Save results
+      const results = JSON.parse(sessionStorage.getItem('levelTestResults') || '{}');
+      const score = answers.reduce((sum, ans, i) => {
+        return sum + (ans === currentSubject.questions[i].answer ? 1 : 0);
+      }, 0);
+      results[selectedSubjects[currentSubjectIndex]] = {
+        score: score,
+        total: currentSubject.totalQuestions,
+        answers: answers
+      };
+      sessionStorage.setItem('levelTestResults', JSON.stringify(results));
+      
+      // Show complete modal
+      const modal = document.getElementById('subjectCompleteModal');
+      document.getElementById('completeIcon').style.background = currentSubject.lightColor;
+      document.getElementById('completeIcon').querySelector('span').style.color = currentSubject.color;
+      document.getElementById('completeTitle').textContent = currentSubject.name + ' 테스트 완료!';
+      document.getElementById('nextSubjectBtn').style.background = currentSubject.color;
+      
+      if (currentSubjectIndex < selectedSubjects.length - 1) {
+        document.getElementById('completeDesc').textContent = '수고하셨어요. 다음 과목을 진행해주세요.';
+        document.getElementById('nextSubjectBtn').textContent = '다음 과목으로';
+      } else {
+        document.getElementById('completeDesc').textContent = '모든 테스트가 완료되었습니다!';
+        document.getElementById('nextSubjectBtn').textContent = '완료';
+      }
+      
+      modal.classList.remove('hidden');
+    }
+    
+    function goToNextSubject() {
+      if (currentSubjectIndex < selectedSubjects.length - 1) {
+        currentSubjectIndex++;
+        sessionStorage.setItem('currentLevelTestIndex', currentSubjectIndex.toString());
+        document.getElementById('subjectCompleteModal').classList.add('hidden');
+        loadSubject(selectedSubjects[currentSubjectIndex]);
+      } else {
+        window.location.href = 'guest-complete.html';
+      }
+    }
+    
+    function callAdmin() {
+      document.getElementById('adminModal').classList.remove('hidden');
+    }
+    
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.add('hidden');
+    }
+  </script>
+  <!-- MAMA-ASST Common Modules -->
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/modal.js"></script>
+  <script src="assets/js/toast.js"></script>
+  <script src="assets/js/table.js"></script>
+  <script src="assets/js/chart-config.js"></script>
+
+</body>
+</html>
