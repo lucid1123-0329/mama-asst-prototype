@@ -11,7 +11,10 @@
       "Bash(done)",
       "Bash(for f in english-prelearn.html subject-english.html)",
       "Bash(do sed -i \"s|https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap|https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700\\\\&display=swap\"\" rel=\"\"stylesheet\"\">\\\\n  <link href=\"\"https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css|g\" \"$f\")",
-      "Bash(python -m http.server:*)"
+      "Bash(python -m http.server:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nchore: 프로젝트 정리 - desktop.ini 삭제, .gitignore 추가, v3.6 Style Variables 보완\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: Shadow 변수 v3.6 스펙 값으로 수정 \\(rgba→HEX, 값 통일\\)\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }
