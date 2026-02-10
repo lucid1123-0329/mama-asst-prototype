@@ -114,6 +114,22 @@
   --z-modal-backdrop: 300;
   --z-modal: 400;
   --z-toast: 500;
+
+  /* v3.6 - Super Admin */
+  --color-super: #6366F1;
+  --color-super-dark: #4F46E5;
+  --color-super-light: #EEF2FF;
+
+  /* v3.6 - Shadow (추가분) */
+  --shadow-focus: 0 0 0 3px #FF6D4D1A;
+
+  /* v3.6 - Gradient */
+  --gradient-primary: linear-gradient(135deg, #FF6D4D 0%, #FF8A6A 100%);
+  --gradient-super: linear-gradient(135deg, #6366F1 0%, #818CF8 100%);
+  --overlay-dark: #00000080;
+
+  /* v3.6 - Primary Active */
+  --color-coral-active: #CC4A2F;
 }
 
 /* ============================================
