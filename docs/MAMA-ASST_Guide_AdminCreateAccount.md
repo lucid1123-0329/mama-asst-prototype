@@ -668,10 +668,12 @@ Event: When Button_Create is clicked
      name           = Input_Name's value
      role           = Dropdown_Role's value
      is_first_login = yes
-     status         = ACTIVE
+     is_active      = yes
      academy_id     = (MVP: 비워둠 또는 하드코딩)
    
    ★ grade는 User에 없음! → Step 8에서 StudentProfile로 저장
+   ★ is_first_login은 기본값이 이미 yes이므로 별도 설정 불필요
+     (명시적으로 설정해도 무방)
 
 ── Step 8: StudentProfile 생성 (학생일 때만) ★★★ NEW
    Only when: Dropdown_Role's value is "STUDENT"
@@ -930,12 +932,12 @@ Input, Dropdown: Width 100%
 
 App Data → All Users 검색:
 
-| email                  | phone       | name       | role          | is_first_login | status |
-|------------------------|-------------|------------|---------------|----------------|--------|
-| 01011110000@mama.app   | 01011110000 | 테스트학생A | STUDENT       | yes            | ACTIVE |
-| 01022220000@mama.app   | 01022220000 | 테스트학생B | STUDENT       | yes            | ACTIVE |
-| 01099990000@mama.app   | 01099990000 | 테스트관리자 | ACADEMY_ADMIN | yes            | ACTIVE |
-| 01088880000@mama.app   | 01088880000 | 테스트강사  | INSTRUCTOR    | yes            | ACTIVE |
+| email                  | phone       | name       | role          | is_first_login | is_active |
+|------------------------|-------------|------------|---------------|----------------|-----------|
+| 01011110000@mama.app   | 01011110000 | 테스트학생A | STUDENT       | yes            | yes       |
+| 01022220000@mama.app   | 01022220000 | 테스트학생B | STUDENT       | yes            | yes       |
+| 01099990000@mama.app   | 01099990000 | 테스트관리자 | ACADEMY_ADMIN | yes            | yes       |
+| 01088880000@mama.app   | 01088880000 | 테스트강사  | INSTRUCTOR    | yes            | yes       |
 
 ★ password는 Data 탭에서 확인 불가 (정상)
 ★ email이 "전화번호@mama.app" 형태인지 확인
