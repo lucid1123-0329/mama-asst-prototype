@@ -1,19 +1,19 @@
 # MAMA-ASST S-01 학생 대시보드 — Bubble.io 구현 가이드
 
-> **버전**: v1.1 | **작성일**: 2025-02-25  
+> **버전**: v1.2 | **작성일**: 2025-02-25  
 > **참조 문서**: RE_DevGuide v1.3, RE_UpdateGuide v1.4, PageDevPlan v2.2  
 > **선행 완료**: RE_Header, RE_Sidebar (Bubble 구현 완료), C-02 로그인, C-05 비밀번호 변경  
 > **목업 파일**: `S01_student_dashboard_mockup.html`, `RE_Header_Sidebar_mockup.html`  
 > **예상 소요**: 약 4시간 (Type A 템플릿 1.5시간 + 콘텐츠 2.5시간)
 >
-> ### v1.1 변경사항 (vs v1.0)
-> | 항목 | v1.0 | v1.1 |
-> |------|------|------|
-> | RE_Sidebar 메뉴 | v1.3 기준 | ★ v1.4 반영 (subjects 삭제, 섹션 라벨 추가) |
-> | 모바일 사이드바 | 3가지 방법 혼재 | ★ 1가지(Floating Group)로 통일 |
-> | 프로그레스 바 | 2가지 방법 제시 | ★ HTML Element로 확정 + 복붙 코드 제공 |
-> | Page HTML Header | 없음 | ★ 추가 (sticky CSS + 프로그레스 바 스타일) |
-> | active_page | "student-dashboard" | 동일 (변경 없음) |
+> ### v1.2 변경사항 (vs v1.1)
+> | 항목 | v1.1 (잘못됨) | v1.2 (수정) |
+> |------|-------------|------------|
+> | Page layout | Column | ★ **Row** (사이드바 + 메인영역 가로) |
+> | Header 배치 | FG_Header (Floating Group, 전체 너비) | ★ **일반 RE 배치** (MainArea Column 안) |
+> | 구조 | Page > FG_Header > PageBody(Row) > Sidebar+Main | ★ **Page(Row) > Sidebar + MainArea(Column) > Header+Main** |
+> | Page HTML Header CSS | sticky CSS 포함 | ★ sticky 삭제 (불필요) |
+> | Conditional 수 | 19개 | 18개 (XP 반응형 제거) |
 
 ---
 
@@ -44,10 +44,13 @@
 | **Page name** | `student-dashboard` | URL: `/student-dashboard` |
 | **Page title** | `대시보드 \| MAMA-ASST` | 브라우저 탭 |
 | **Type of content** | (없음) | |
-| **Container layout** | Column | |
+| **Container layout** | ★ **Row** | 사이드바 + 메인영역 가로 배치 |
 | **Width** | `100%` | |
-| **Min height** | `100vh` | |
+| **Height** | `100vh` | ★ Min height 아님, 고정 높이 |
 | **Background color** | `#F9FAFB` (Background) | Style Variable |
+
+> ⚠️ Page layout이 **Row**인 것이 핵심입니다.
+> 사이드바(왼쪽 256px)와 메인영역(오른쪽 flex: 1)이 가로로 나란히 배치됩니다.
 
 ---
 
@@ -55,18 +58,8 @@
 
 > Settings → SEO / metatags → Script/meta tags in header
 
-아래 CSS를 **그대로 복사**하여 Page HTML Header에 붙여넣으세요.
-
 ```html
 <style>
-  /* ===== RE_Sidebar sticky (PC 고정) ===== */
-  #sidebarWrapper {
-    position: sticky !important;
-    top: 64px;
-    height: calc(100vh - 64px);
-    overflow-y: auto;
-  }
-
   /* ===== 프로그레스 바 공통 ===== */
   .progress-track {
     width: 100%;
@@ -97,8 +90,7 @@
 </style>
 ```
 
-> ⚠️ Bubble의 Group에는 CSS `position: sticky`를 직접 지정할 수 없으므로
-> element ID + Page HTML Header CSS로 처리합니다.
+> v1.2에서 sticky CSS 삭제 — 사이드바가 Page Row의 직접 자식이므로 별도 sticky 불필요
 
 ---
 
@@ -135,23 +127,58 @@
 
 > ★ 이 구조는 **한 번만 만들면 이후 모든 Type A 페이지에서 복사** 재사용합니다.
 
-### 4.1 전체 구조 트리
+### 4.1 레이아웃 개념도
 
 ```
-student-dashboard (Page, Column, 100%)
+┌────────────────────────────────────────────────────────┐
+│                    Page (Row, 100vh)                    │
+│                                                        │
+│  ┌──────────┬─────────────────────────────────────┐   │
+│  │          │  Group_MainArea (Column, flex:1)     │   │
+│  │  Group   │  ┌───────────────────────────────┐  │   │
+│  │  Sidebar │  │ RE_Header (64px)              │  │   │
+│  │  Wrapper │  │ page_title="대시보드"          │  │   │
+│  │          │  ├───────────────────────────────┤  │   │
+│  │  256px   │  │                               │  │   │
+│  │  100vh   │  │ Group_MainContent (scroll)    │  │   │
+│  │          │  │  ├ 인사말                      │  │   │
+│  │  RE_     │  │  ├ Daily Target               │  │   │
+│  │  Sidebar │  │  ├ 과목 카드 3개              │  │   │
+│  │          │  │  └ XP 카드                     │  │   │
+│  │          │  │                               │  │   │
+│  │          │  └───────────────────────────────┘  │   │
+│  └──────────┴─────────────────────────────────────┘   │
+│                                                        │
+│  + FG_MobileSidebar (Floating, left, 기본 숨김)        │
+│  + Group_SidebarOverlay (기본 숨김)                    │
+└────────────────────────────────────────────────────────┘
+
+PC (> 1200px):
+  사이드바 표시, 햄버거 숨김
+  헤더는 사이드바 오른쪽에만 존재
+
+모바일 (≤ 1200px):
+  사이드바 숨김 → MainArea가 전체 폭
+  헤더에 햄버거 표시
+  햄버거 클릭 → FG_MobileSidebar 표시
+```
+
+### 4.2 전체 구조 트리
+
+```
+student-dashboard (Page, ★ Row, 100% × 100vh, BG: #F9FAFB)
 │
-├── FG_Header ──────────────── Floating Group (top, 64px)
-│   └── RE_Header
-│       📥 page_title = "대시보드"
-│       📥 notif_count = Search for Notifications:count
+├── Group_SidebarWrapper ────── 256px × 100vh (Fixed width)
+│   └── RE_Sidebar
+│       📥 active_page = "student-dashboard"
 │
-├── Group_PageBody ─────────── Row (100%, margin-top: 64px)
+├── Group_MainArea ─────────── Column (flex: 1, 100vh)
 │   │
-│   ├── Group_SidebarWrapper ─ 256px, id="sidebarWrapper"
-│   │   └── RE_Sidebar
-│   │       📥 active_page = "student-dashboard"
+│   ├── RE_Header ─────────── 64px (일반 배치, Floating Group 아님!)
+│   │   📥 page_title = "대시보드"
+│   │   📥 notif_count = Search for Notifications:count
 │   │
-│   └── Group_MainContent ──── Column (flex: 1, scroll)
+│   └── Group_MainContent ─── Column (flex: 1, scroll)
 │       ├── Group_Greeting ──────── 인사말
 │       ├── Group_DailyTarget ───── Daily Target 요약 바
 │       ├── Group_SubjectCards ──── Row (3개 카드)
@@ -160,30 +187,76 @@ student-dashboard (Page, Column, 100%)
 │       │   └── Group_CardMath
 │       └── Group_XP ───────────── XP + 레벨 + Streak
 │
-├── FG_MobileSidebar ───────── Floating Group (left, 256px, 기본 숨김)
+├── FG_MobileSidebar ──────── Floating Group (left, 256px, 기본 숨김)
 │   └── RE_Sidebar
 │       📥 active_page = "student-dashboard"
 │
-└── Group_SidebarOverlay ───── 반투명 오버레이 (기본 숨김)
+└── Group_SidebarOverlay ──── 반투명 오버레이 (기본 숨김)
 ```
 
-### 4.2 FG_Header (Floating Group)
+> ★ **핵심 차이** (v1.1과 비교):
+> - Page가 **Row** (Column 아님)
+> - 헤더가 **일반 RE 배치** (Floating Group 아님)
+> - 헤더는 사이드바 옆 MainArea 안에만 존재
+> - 사이드바가 화면 전체 높이 (100vh)
 
-| 속성 | 값 |
-|------|-----|
-| **Type** | Floating Group |
-| **Vertically float relative to** | Top |
-| **Float margin** | `0` |
-| **Width** | `100%` |
-| **Height** | `64px` |
+### 4.3 Group_SidebarWrapper
 
-**내부: RE_Header** (100% × 64px)
+| 속성 | 값 | 비고 |
+|------|-----|------|
+| **Container layout** | Column | |
+| **Width** | `256px` (Fixed) | |
+| **Make this element fixed-width** | ✅ | |
+| **Height** | `100vh` 또는 `100%` | 페이지 전체 높이 |
+| **Make this element fixed-height** | ✅ | |
+| **Background** | (없음 — RE_Sidebar Navy가 처리) | |
+| **Overflow** | Hidden | |
+| **Collapse when hidden** | ✅ | ★ 모바일에서 숨길 때 공간 반납 |
 
-📥 **Property 설정** (Appearance 탭에서 직접 입력):
+**내부: RE_Sidebar** (256px × 100%)
+
+📥 **Property 설정** (Appearance 탭):
+
+| Property | 값 |
+|----------|-----|
+| `active_page` | `student-dashboard` |
+
+> ★ RE v1.4에서 active_page가 "student-dashboard"이면 사이드바의 **"홈"** NavItem이 하이라이트됩니다.
+
+**반응형 Conditional:**
+
+| 조건 | 속성 | 값 |
+|------|------|-----|
+| `Current page width ≤ 1200` | Visible | `false` |
+
+> Collapse when hidden = ✅ 이므로, 숨기면 256px 공간이 사라지고
+> Group_MainArea가 전체 폭을 차지합니다.
+
+### 4.4 Group_MainArea
+
+| 속성 | 값 | 비고 |
+|------|-----|------|
+| **Container layout** | Column | |
+| **Make this element fixed-width** | ❌ | flex: 1 (남은 너비 차지) |
+| **Min width** | `0` | flex 자식 overflow 방지 |
+| **Height** | `100vh` 또는 `100%` | |
+| **Row gap** | `0` | Header와 MainContent 사이 간격 없음 |
+
+### 4.5 RE_Header (일반 배치)
+
+> ★ Floating Group이 **아닙니다**! Group_MainArea Column의 **첫 번째 자식**으로 배치합니다.
+
+| 속성 | 값 | 비고 |
+|------|-----|------|
+| **Width** | `100%` | MainArea 전체 폭 |
+| **Height** | `64px` (Fixed) | |
+| **Make this element fixed-height** | ✅ | |
+
+📥 **Property 설정** (Appearance 탭):
 
 | Property | 값 | 비고 |
 |----------|-----|------|
-| `page_title` | `대시보드` | 텍스트 |
+| `page_title` | `대시보드` | 텍스트 직접 입력 |
 | `notif_count` | `Search for Notifications` | 아래 참조 |
 
 ```
@@ -197,50 +270,27 @@ notif_count 검색 설정:
 → 하드코딩 NO — 검색식 미리 넣어두면 향후 자동 작동
 ```
 
-### 4.3 Group_PageBody
+> 💡 **왜 Floating Group이 아닌가?**
+> - Floating Group으로 만들면 헤더가 **사이드바 위에도 걸쳐서** 표시됩니다.
+> - 목업처럼 헤더가 **사이드바 옆(오른쪽)에만** 있으려면 MainArea Column 안에 일반 배치해야 합니다.
+> - MainArea가 Column이고 Height가 100vh이므로 헤더는 자연스럽게 상단 고정됩니다.
 
-| 속성 | 값 |
-|------|-----|
-| **Container layout** | Row |
-| **Width** | `100%` |
-| **Margin top** | `64px` |
-| **Column gap** | `0` |
-
-### 4.4 Group_SidebarWrapper
+### 4.6 Group_MainContent
 
 | 속성 | 값 | 비고 |
 |------|-----|------|
-| **ID attribute** | `sidebarWrapper` | ★ Page HTML Header CSS 연동 |
-| **Width** | `256px` (Fixed) | |
-| **Make this element fixed-width** | ✅ | |
-| **Overflow** | Hidden | |
+| **Container layout** | Column | |
+| **Make this element fixed-width** | ❌ | (부모 100% 상속) |
+| **Make this element fixed-height** | ❌ | flex: 1 (남은 높이 차지) |
+| **Min width** | `0` | |
+| **Padding** | 상 `28px`, 좌우 `32px`, 하 `28px` | |
+| **Row gap** | `24px` | 내부 섹션 간격 |
+| **Vertical scrolling** | ✅ when content is taller | ★ 이 영역만 스크롤 |
 
-> sticky 동작은 Section 2의 CSS가 처리합니다.
+> 💡 Header는 스크롤되지 않고 고정, MainContent만 스크롤되는 구조입니다.
+> 이는 MainArea가 Column이고 Header가 fixed-height이기 때문에 자연스럽게 작동합니다.
 
-**내부: RE_Sidebar** (256px × 100%)
-
-📥 **Property 설정**:
-
-| Property | 값 |
-|----------|-----|
-| `active_page` | `student-dashboard` |
-
-> ★ RE v1.4에서 active_page가 "student-dashboard"이면 사이드바의 **"홈"** NavItem이 하이라이트됩니다.
-
-### 4.5 Group_MainContent
-
-| 속성 | 값 |
-|------|-----|
-| **Container layout** | Column |
-| **Make this element fixed-width** | ❌ (flex: 1) |
-| **Min width** | `0` |
-| **Padding** | 상 `28px`, 좌우 `32px`, 하 `28px` |
-| **Row gap** | `24px` |
-| **Vertical scrolling** | ✅ when content is taller |
-
-### 4.6 모바일 사이드바 (≤ 1200px)
-
-> ★ v1.1에서 **FG_MobileSidebar (Floating Group)** 방식으로 통일
+### 4.7 모바일 사이드바 (≤ 1200px)
 
 #### FG_MobileSidebar
 
@@ -252,7 +302,7 @@ notif_count 검색 설정:
 | **Width** | `256px` | |
 | **Height** | `100%` | |
 | **Visible on page load** | ❌ | |
-| **Background** | (없음 — RE_Sidebar의 Navy가 처리) | |
+| **Background** | (없음 — RE_Sidebar Navy가 처리) | |
 
 **내부: RE_Sidebar** (256px × 100%)
 
@@ -264,9 +314,8 @@ notif_count 검색 설정:
 |------|------|-----|
 | `RE_Header's sidebar_open is "yes"` | Visible | `true` |
 
-> 💡 FG_MobileSidebar는 **항상 왼쪽에 떠 있으므로** PC에서도 존재하지만,
-> PC에서는 Group_SidebarWrapper가 같은 위치에 있어 겹쳐지므로 보이지 않습니다.
-> `sidebar_open`이 `no`(기본)이면 FG_MobileSidebar는 숨겨져 있습니다.
+> PC에서는 Group_SidebarWrapper가 같은 위치에 있어 FG가 보여도 뒤에 가려집니다.
+> 모바일에서는 SidebarWrapper가 숨겨져 있으므로 FG만 표시됩니다.
 
 #### Group_SidebarOverlay
 
@@ -276,7 +325,6 @@ notif_count 검색 설정:
 | **Height** | `100%` |
 | **Background** | `#000000`, Opacity `50%` |
 | **Visible on page load** | ❌ |
-| **Collapse when hidden** | ❌ |
 
 **Conditional:**
 
@@ -289,7 +337,7 @@ notif_count 검색 설정:
 | Action | Set state: `RE_Header's sidebar_open` = `no` |
 |--------|------|
 
-### 4.7 close_requested 신호 처리
+### 4.8 close_requested 신호 처리
 
 | Event | `Do when condition is true` |
 |-------|----------------------------|
@@ -297,17 +345,8 @@ notif_count 검색 설정:
 | **Action 1** | Set state: `RE_Header's sidebar_open` = `no` |
 | **Action 2** | Set state: `RE_Sidebar's close_requested` = `no` |
 
-> ⚠️ FG_MobileSidebar 안의 RE_Sidebar에서도 close_requested가 발생합니다.
-> 부모 페이지에서 이 신호를 감지하므로 **두 RE_Sidebar 인스턴스 모두 동일하게** 처리됩니다.
-
-### 4.8 반응형: Group_SidebarWrapper 숨김
-
-| 조건 | 속성 | 값 |
-|------|------|-----|
-| `Current page width ≤ 1200` | Visible | `false` |
-| `Current page width ≤ 1200` | Collapse when hidden | `true` |
-
-> 1200px 이하에서 SidebarWrapper가 사라지면 MainContent가 전체 폭을 차지합니다.
+> FG_MobileSidebar 안의 RE_Sidebar에서도 close_requested가 발생하며,
+> 부모 페이지에서 감지하므로 **두 RE_Sidebar 인스턴스 모두** 처리됩니다.
 
 ---
 
@@ -759,15 +798,14 @@ Group_XP (Row, justify: space-between, align: center)
 
 ## 10. Conditional 총정리
 
-### 반응형 (5개)
+### 반응형 (4개)
 
 | # | 요소 | 조건 | 변경 |
 |---|------|------|------|
-| C-01 | Group_SidebarWrapper | `width ≤ 1200` | Visible = false, Collapse = true |
+| C-01 | Group_SidebarWrapper | `width ≤ 1200` | Visible = false (Collapse when hidden = ✅) |
 | C-02 | FG_MobileSidebar | `sidebar_open = yes` | Visible = true |
 | C-03 | Group_SidebarOverlay | `width ≤ 1200` AND `sidebar_open = yes` | Visible = true |
 | C-04 | Group_SubjectCards 내부 카드 | `width ≤ 900` | Min width = 100% |
-| C-05 | Group_XP | `width ≤ 768` | Layout → Column |
 
 ### Daily Target 빈 상태 (2개)
 
@@ -794,7 +832,7 @@ Group_XP (Row, justify: space-between, align: center)
 | C-21 | Button_StartEnglish | hovered | `#34A853` | white |
 | C-22 | Button_StartMath | hovered | `#FBBC05` | `#7A5C00` |
 
-**총 Conditional: 19개**
+**총 Conditional: 18개**
 
 ---
 
@@ -886,7 +924,6 @@ RE_Sidebar (× 2개 인스턴스: SidebarWrapper + MobileSidebar):
 
 ```html
 <style>
-#sidebarWrapper{position:sticky!important;top:64px;height:calc(100vh - 64px);overflow-y:auto}
 .progress-track{width:100%;background:#F3F4F6;border-radius:999px;overflow:hidden}
 .progress-bar{height:100%;border-radius:999px;transition:width .6s ease}
 .dt-track{height:12px}.dt-bar{background:linear-gradient(90deg,#FF6D4D,#FF8F73)}
