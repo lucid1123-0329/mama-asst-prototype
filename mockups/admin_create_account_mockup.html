@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학생 계정 생성 | MAMA-ASST MVP</title>
+  
+  <!-- Fonts -->
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <style>
+    /* ===== Design System Variables ===== */
+    :root {
+      --primary: #FF6D4D;
+      --primary-hover: #E5573D;
+      --navy: #1A2E4D;
+      --surface: #FFFFFF;
+      --background: #F9FAFB;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --text-tertiary: #9CA3AF;
+      --border-light: #E5E7EB;
+      --error: #EF4444;
+      --error-bg: #FEF2F2;
+      --success: #22C55E;
+      --success-bg: #F0FDF4;
+      --info: #3B82F6;
+      --info-bg: #EFF6FF;
+      --shadow-card: 0px 1px 3px 0px rgba(0,0,0,0.1);
+      --shadow-focus: 0 0 0 3px rgba(255,109,77,0.1);
+      --font: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+    
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: var(--font);
+      background: var(--background);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+    
+    /* ===== Layout ===== */
+    .page-wrapper {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    
+    /* ===== Logo ===== */
+    .logo-area { text-align: center; }
+    
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary), #FF8F75);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,109,77,0.3);
+    }
+    .logo-icon span { color: white; font-size: 32px; }
+    
+    .logo-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .logo-subtitle {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+    
+    /* ===== Card ===== */
+    .card {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 32px;
+    }
+    
+    /* ===== Info Box ===== */
+    .info-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--info-bg);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: var(--radius-sm);
+      margin-bottom: 24px;
+    }
+    .info-box .material-icons-round {
+      font-size: 18px;
+      color: var(--info);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .info-box p {
+      font-size: 13px;
+      color: #1E40AF;
+      line-height: 1.5;
+    }
+    .info-box strong { font-weight: 600; }
+    
+    /* ===== Form ===== */
+    .form-group { margin-bottom: 20px; }
+    
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .form-label .required {
+      color: var(--error);
+      font-size: 14px;
+    }
+    
+    .form-input, .form-select {
+      width: 100%;
+      height: 48px;
+      padding: 12px 16px;
+      font-family: var(--font);
+      font-size: 16px;
+      color: var(--text-primary);
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: all 0.2s ease;
+      -webkit-appearance: none;
+    }
+    .form-input::placeholder { color: var(--text-tertiary); }
+    .form-input:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-focus);
+    }
+    .form-input.error { border-color: var(--error); background: var(--error-bg); }
+    
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 40px;
+      cursor: pointer;
+    }
+    .form-select option { font-size: 16px; }
+    
+    /* Error */
+    .form-error {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--error);
+      margin-top: 6px;
+    }
+    .form-error.show { display: flex; }
+    .form-error .material-icons-round { font-size: 14px; }
+    
+    /* ===== Row (학년 + 역할) ===== */
+    .form-row {
+      display: flex;
+      gap: 12px;
+    }
+    .form-row .form-group { flex: 1; }
+    
+    /* ===== Divider ===== */
+    .divider {
+      height: 1px;
+      background: var(--border-light);
+      margin: 24px 0;
+    }
+    
+    /* ===== Password Preview ===== */
+    .password-preview {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--background);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+    }
+    .password-preview .label {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .password-preview .value {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 4px;
+    }
+    
+    /* ===== Buttons ===== */
+    .btn-primary {
+      width: 100%;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      background: var(--primary);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255,109,77,0.3);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary .material-icons-round { font-size: 20px; }
+    
+    .btn-primary.loading { opacity: 0.7; pointer-events: none; }
+    .btn-primary.loading::after {
+      content: '';
+      width: 18px; height: 18px;
+      border: 2px solid white;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-left: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* ===== Created List ===== */
+    .created-section {
+      width: 100%;
+    }
+    .created-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .created-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+    .created-count {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+    
+    .created-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .created-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .created-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+    .created-avatar.student { background: var(--primary); }
+    .created-avatar.admin { background: var(--navy); }
+    .created-avatar.instructor { background: var(--success); }
+    
+    .created-info { flex: 1; min-width: 0; }
+    .created-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .created-meta {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+    
+    .created-badge {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+    .created-badge.student {
+      background: var(--primary);
+      color: white;
+      opacity: 0.9;
+    }
+    .created-badge.admin {
+      background: var(--navy);
+      color: white;
+    }
+    .created-badge.instructor {
+      background: var(--success);
+      color: white;
+    }
+    
+    /* ===== Toast ===== */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-80px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 20px;
+      background: #1F2937;
+      color: white;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      z-index: 200;
+      transition: transform 0.3s ease;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast .material-icons-round { font-size: 20px; color: var(--success); }
+    
+    /* ===== Footer ===== */
+    .page-footer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+    
+    /* ===== Responsive ===== */
+    @media (max-width: 480px) {
+      body { padding: 24px 16px; }
+      .card { padding: 24px; }
+      .logo-title { font-size: 22px; }
+      .form-row { flex-direction: column; gap: 0; }
+    }
+
+    /* ===== Bubble Element Mapping ===== */
+    /*
+      HTML Element              → Bubble Element
+      ──────────────────────────────────────────────────
+      .page-wrapper              → Group_PageWrapper (Column, Center, max 480px)
+      .logo-area                 → Group_Logo (Column, Center)
+      .logo-icon                 → Group_LogoIcon (64×64, Primary, Roundness 16)
+      .logo-icon > span          → Icon_Logo (person_add, 32px, white)
+      h1.logo-title              → Text_PageTitle (24px, Bold, Navy)
+      p.logo-subtitle            → Text_PageSubtitle (15px, Text Secondary)
+      .card                      → Group_Card (Column, Surface, Roundness 16)
+      .info-box                  → Group_InfoBox (Row, Info BG)
+      #nameInput                 → Input_Name (Text)
+      #phoneInput                → Input_Phone (Text, tel)
+      #gradeSelect               → Dropdown_Grade (Option Set 또는 Static)
+      #roleSelect                → Dropdown_Role (STUDENT / ACADEMY_ADMIN / INSTRUCTOR)
+      .password-preview          → Group_PasswordPreview (Row, BG)
+      .btn-primary               → Button_Create (Primary, 52px)
+      .created-section           → Group_CreatedList
+      .created-list              → RG_CreatedUsers (Repeating Group)
+      .toast                     → RE_Toast (Reusable Element)
+    */
+  </style>
+</head>
+<body>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="material-icons-round">check_circle</span>
+    <span id="toastText">학생 계정이 생성되었습니다</span>
+  </div>
+
+  <div class="page-wrapper">
+
+    <!-- Logo -->
+    <div class="logo-area">
+      <div class="logo-icon">
+        <span class="material-icons-round">person_add</span>
+      </div>
+      <h1 class="logo-title">학생 계정 생성</h1>
+      <p class="logo-subtitle">학원 학생의 계정을 등록하세요</p>
+    </div>
+
+    <!-- Card -->
+    <div class="card">
+
+      <!-- Info -->
+      <div class="info-box">
+        <span class="material-icons-round">info</span>
+        <p>
+          초기 비밀번호는 <strong>mb1234</strong>으로 자동 설정됩니다.<br>
+          학생은 첫 로그인 시 비밀번호를 변경합니다.
+        </p>
+      </div>
+
+      <form id="createForm" novalidate>
+
+        <!-- 이름 -->
+        <div class="form-group">
+          <label class="form-label" for="nameInput">
+            이름 <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="nameInput" 
+            class="form-input" 
+            placeholder="학생 이름"
+            maxlength="20"
+          >
+          <div class="form-error" id="nameError">
+            <span class="material-icons-round">error_outline</span>
+            이름을 입력해주세요
+          </div>
+        </div>
+
+        <!-- 전화번호 -->
+        <div class="form-group">
+          <label class="form-label" for="phoneInput">
+            전화번호 <span class="required">*</span>
+          </label>
+          <input 
+            type="tel" 
+            id="phoneInput" 
+            class="form-input" 
+            placeholder="01012345678"
+            maxlength="13"
+          >
+          <div class="form-error" id="phoneError">
+            <span class="material-icons-round">error_outline</span>
+            <span id="phoneErrorText">전화번호를 입력해주세요</span>
+          </div>
+        </div>
+
+        <!-- 학년 + 역할 (한 줄) -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="gradeSelect">
+              학년 <span class="required">*</span>
+            </label>
+            <select id="gradeSelect" class="form-select">
+              <option value="" disabled selected>학년 선택</option>
+              <optgroup label="초등학교">
+                <option value="E1">초1</option>
+                <option value="E2">초2</option>
+                <option value="E3">초3</option>
+                <option value="E4">초4</option>
+                <option value="E5">초5</option>
+                <option value="E6">초6</option>
+              </optgroup>
+              <optgroup label="중학교">
+                <option value="M1">중1</option>
+                <option value="M2">중2</option>
+                <option value="M3">중3</option>
+              </optgroup>
+              <optgroup label="고등학교">
+                <option value="H1">고1</option>
+                <option value="H2">고2</option>
+                <option value="H3">고3</option>
+              </optgroup>
+            </select>
+            <div class="form-error" id="gradeError">
+              <span class="material-icons-round">error_outline</span>
+              학년을 선택해주세요
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="roleSelect">역할</label>
+            <select id="roleSelect" class="form-select">
+              <option value="STUDENT" selected>학생</option>
+              <option value="ACADEMY_ADMIN">관리자</option>
+              <option value="INSTRUCTOR">강사</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 초기 비밀번호 표시 -->
+        <div class="form-group">
+          <label class="form-label">초기 비밀번호</label>
+          <div class="password-preview">
+            <span class="label">자동 설정</span>
+            <span class="value">mb1234</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 생성 버튼 -->
+        <button type="submit" class="btn-primary" id="createBtn">
+          <span class="material-icons-round">person_add</span>
+          <span>계정 생성</span>
+        </button>
+
+      </form>
+    </div>
+
+    <!-- 생성된 계정 목록 -->
+    <div class="created-section" id="createdSection" style="display: none;">
+      <div class="created-header">
+        <span class="created-title">생성된 계정</span>
+        <span class="created-count" id="createdCount">0명</span>
+      </div>
+      <div class="created-list" id="createdList"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+      © 2025 MAMA-ASST. All rights reserved.
+    </div>
+
+  </div>
+
+  <script>
+    // ===== DOM =====
+    const form = document.getElementById('createForm');
+    const nameInput = document.getElementById('nameInput');
+    const phoneInput = document.getElementById('phoneInput');
+    const gradeSelect = document.getElementById('gradeSelect');
+    const roleSelect = document.getElementById('roleSelect');
+    const createBtn = document.getElementById('createBtn');
+    const nameError = document.getElementById('nameError');
+    const phoneError = document.getElementById('phoneError');
+    const gradeError = document.getElementById('gradeError');
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+    const createdSection = document.getElementById('createdSection');
+    const createdList = document.getElementById('createdList');
+    const createdCount = document.getElementById('createdCount');
+
+    let accounts = [];
+
+    // ===== 포커스 시 에러 초기화 =====
+    nameInput.addEventListener('focus', () => {
+      nameError.classList.remove('show');
+      nameInput.classList.remove('error');
+    });
+    phoneInput.addEventListener('focus', () => {
+      phoneError.classList.remove('show');
+      phoneInput.classList.remove('error');
+    });
+    gradeSelect.addEventListener('focus', () => {
+      gradeError.classList.remove('show');
+      gradeSelect.classList.remove('error');
+    });
+
+    // ===== Toast =====
+    function showToast(message) {
+      toastText.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ===== 학년 라벨 변환 =====
+    function gradeLabel(value) {
+      const map = {
+        E1:'초1', E2:'초2', E3:'초3', E4:'초4', E5:'초5', E6:'초6',
+        M1:'중1', M2:'중2', M3:'중3', H1:'고1', H2:'고2', H3:'고3'
+      };
+      return map[value] || value;
+    }
+
+    // ===== 생성 목록에 추가 =====
+    function addToList(account) {
+      accounts.push(account);
+      createdSection.style.display = 'block';
+      createdCount.textContent = accounts.length + '명';
+
+      const isAdmin = account.role === 'ACADEMY_ADMIN';
+      const isInstructor = account.role === 'INSTRUCTOR';
+      const initial = account.name.charAt(0);
+      const roleClass = isAdmin ? 'admin' : isInstructor ? 'instructor' : 'student';
+      const roleLabel = isAdmin ? '관리자' : isInstructor ? '강사' : '학생';
+      const gradeText = (isAdmin || isInstructor) ? '' : ` · ${gradeLabel(account.grade)}`;
+
+      const item = document.createElement('div');
+      item.className = 'created-item';
+      item.innerHTML = `
+        <div class="created-avatar ${roleClass}">${initial}</div>
+        <div class="created-info">
+          <div class="created-name">${account.name}</div>
+          <div class="created-meta">${account.phone}${gradeText} · 비밀번호: mb1234</div>
+        </div>
+        <span class="created-badge ${roleClass}">${roleLabel}</span>
+      `;
+      createdList.insertBefore(item, createdList.firstChild);
+    }
+
+    // ===== 폼 제출 =====
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // 초기화
+      nameError.classList.remove('show');
+      phoneError.classList.remove('show');
+      gradeError.classList.remove('show');
+      nameInput.classList.remove('error');
+      phoneInput.classList.remove('error');
+      gradeSelect.classList.remove('error');
+
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.replace(/-/g, '').trim();
+      const grade = gradeSelect.value;
+      const role = roleSelect.value;
+      let hasError = false;
+
+      // 검증
+      if (!name) {
+        nameError.classList.add('show');
+        nameInput.classList.add('error');
+        hasError = true;
+      }
+      if (!phone) {
+        document.getElementById('phoneErrorText').textContent = '전화번호를 입력해주세요';
+        phoneError.classList.add('show');
+        phoneInput.classList.add('error');
+        hasError = true;
+      } else if (!/^01[016789]\d{7,8}$/.test(phone)) {
+        document.getElementById('phoneErrorText').textContent = '올바른 전화번호 형식이 아닙니다';
+        phoneError.classList.add('show');
+        phoneInput.classList.add('error');
+        hasError = true;
+      }
+      // 중복 체크
+      if (phone && accounts.some(a => a.phone === phone)) {
+        document.getElementById('phoneErrorText').textContent = '이미 등록된 전화번호입니다';
+        phoneError.classList.add('show');
+        phoneInput.classList.add('error');
+        hasError = true;
+      }
+      if (role === 'STUDENT' && !grade) {
+        gradeError.classList.add('show');
+        gradeSelect.classList.add('error');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      // 로딩
+      createBtn.classList.add('loading');
+      createBtn.querySelector('span:last-child').textContent = '생성 중...';
+
+      /*
+        ★ Bubble Workflow 매핑:
+
+        Step 1: Sign the user up
+          Email:    Input_Phone's value:find & replace("-",""):append"@mama.app"
+          Password: "mb1234"
+
+        Step 2: Make changes to Current User
+          phone          = Input_Phone's value:find & replace("-","")
+          name           = Input_Name's value
+          role           = Dropdown_Role's value
+          grade          = Dropdown_Grade's value  (StudentProfile에 저장)
+          is_first_login = yes
+          status         = ACTIVE
+
+        Step 3: Log the user out
+          (Sign up 시 자동 로그인되므로 해제)
+      */
+      const emailForBubble = phone + '@mama.app';
+      console.log('Bubble 생성:', { email: emailForBubble, password: 'mb1234', name, phone, grade, role });
+
+      await new Promise(r => setTimeout(r, 600));
+
+      // 성공
+      addToList({ name, phone, grade, role });
+      showToast(`${name} ${roleLabel} 계정이 생성되었습니다`);
+
+      // 로딩 해제 + 폼 초기화
+      createBtn.classList.remove('loading');
+      createBtn.querySelector('span:last-child').textContent = '계정 생성';
+      nameInput.value = '';
+      phoneInput.value = '';
+      gradeSelect.selectedIndex = 0;
+      roleSelect.selectedIndex = 0;
+      nameInput.focus();
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 | MAMA-ASST MVP</title>
+  
+  <!-- Fonts -->
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <style>
+    /* ===== Design System Variables ===== */
+    :root {
+      /* Colors */
+      --primary: #FF6D4D;
+      --primary-hover: #E5573D;
+      --primary-light: #FFF0ED;
+      --navy: #1A2E4D;
+      --surface: #FFFFFF;
+      --background: #F9FAFB;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --text-tertiary: #9CA3AF;
+      --border-light: #E5E7EB;
+      --border-medium: #D1D5DB;
+      --error: #EF4444;
+      --error-bg: #FEF2F2;
+      --shadow-card: 0px 1px 3px 0px rgba(0,0,0,0.1);
+      --shadow-focus: 0 0 0 3px rgba(255,109,77,0.1);
+      
+      /* Typography */
+      --font: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      
+      /* Spacing */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+    
+    /* ===== Reset ===== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--font);
+      background: var(--background);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* ===== Page Layout ===== */
+    .login-wrapper {
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+    
+    /* ===== Logo Area ===== */
+    .logo-area {
+      text-align: center;
+    }
+    
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary), #FF8F75);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,109,77,0.3);
+    }
+    
+    .logo-icon span {
+      color: white;
+      font-size: 32px;
+    }
+    
+    .logo-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    
+    .logo-subtitle {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+    
+    /* ===== Login Card ===== */
+    .login-card {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 32px;
+    }
+    
+    /* ===== Form ===== */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    
+    .input-wrapper {
+      position: relative;
+    }
+    
+    .form-input {
+      width: 100%;
+      height: 48px;
+      padding: 12px 16px;
+      font-family: var(--font);
+      font-size: 16px; /* iOS 자동확대 방지 */
+      color: var(--text-primary);
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    
+    .form-input::placeholder {
+      color: var(--text-tertiary);
+    }
+    
+    .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-focus);
+    }
+    
+    .form-input.error {
+      border-color: var(--error);
+      background: var(--error-bg);
+    }
+    
+    .form-input.has-icon {
+      padding-right: 48px;
+    }
+    
+    /* Password Toggle */
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    
+    .password-toggle:hover {
+      color: var(--text-secondary);
+      background: var(--background);
+    }
+    
+    .password-toggle .material-icons-round {
+      font-size: 20px;
+    }
+    
+    /* Error Message */
+    .form-error {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--error);
+      margin-top: 6px;
+    }
+    
+    .form-error.show {
+      display: flex;
+    }
+    
+    .form-error .material-icons-round {
+      font-size: 14px;
+    }
+    
+    /* Login Error (전체) */
+    .login-error {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 16px;
+      background: var(--error-bg);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--error);
+      margin-bottom: 20px;
+    }
+    
+    .login-error.show {
+      display: flex;
+    }
+    
+    .login-error .material-icons-round {
+      font-size: 18px;
+    }
+    
+    /* ===== Button ===== */
+    .btn-login {
+      width: 100%;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      background: var(--primary);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-login:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255,109,77,0.3);
+    }
+    
+    .btn-login:active {
+      transform: translateY(0);
+    }
+    
+    .btn-login .material-icons-round {
+      font-size: 20px;
+      transition: transform 0.2s;
+    }
+    
+    .btn-login:hover .material-icons-round {
+      transform: translateX(3px);
+    }
+    
+    /* ===== Footer ===== */
+    .login-footer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+    
+    /* ===== Shake Animation ===== */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    
+    .shake {
+      animation: shake 0.4s ease-in-out;
+    }
+    
+    /* ===== Responsive ===== */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 24px;
+      }
+      
+      .logo-title {
+        font-size: 22px;
+      }
+    }
+
+    /* ===== Loading State ===== */
+    .btn-login.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .btn-login.loading::after {
+      content: '';
+      width: 18px;
+      height: 18px;
+      border: 2px solid white;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ===== Bubble Element Mapping Guide (주석) ===== */
+    /*
+      HTML Element          → Bubble Element
+      ─────────────────────────────────────────
+      .login-wrapper        → Group_LoginWrapper (Column, Center)
+      .logo-area            → Group_Logo (Column, Center)
+      .logo-icon            → Image_Logo (또는 Group + Icon)
+      .logo-title           → Text "MAMA-ASST"
+      .logo-subtitle        → Text "학습 관리 시작하기"
+      .login-card           → Group_LoginCard (Column)
+      .form-group (phone)   → Group_InputPhone (Column)
+      .form-label           → Text_LabelPhone
+      #phoneInput           → Input_Phone (Style: Input - Standard)
+      .form-error (phone)   → Text_ErrorPhone (Conditional 숨김)
+      .form-group (pw)      → Group_InputPassword (Column)
+      #passwordInput        → Input_Password (Content format: Password)
+      .password-toggle      → (Bubble에서는 기본 비밀번호 토글 없음, v1.1에서 추가)
+      .form-error (pw)      → Text_ErrorPassword
+      .login-error          → Text_LoginError (Conditional 숨김)
+      .btn-login            → Button_Login (Style: Button - Primary)
+      .login-footer         → Text_Copyright
+    */
+  </style>
+</head>
+<body>
+
+  <div class="login-wrapper">
+
+    <!-- Logo -->
+    <div class="logo-area">
+      <div class="logo-icon">
+        <span class="material-icons-round">school</span>
+      </div>
+      <h1 class="logo-title">MAMA-ASST</h1>
+      <p class="logo-subtitle">학습 관리 시작하기</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+
+      <!-- Login Error (전체) -->
+      <div class="login-error" id="loginError">
+        <span class="material-icons-round">error_outline</span>
+        전화번호 또는 비밀번호를 확인해주세요
+      </div>
+
+      <form id="loginForm" novalidate>
+
+        <!-- Phone -->
+        <div class="form-group">
+          <label class="form-label" for="phoneInput">전화번호</label>
+          <input 
+            type="tel" 
+            id="phoneInput" 
+            class="form-input" 
+            placeholder="01012345678"
+            maxlength="13"
+            autocomplete="tel"
+          >
+          <div class="form-error" id="phoneError">
+            <span class="material-icons-round">error_outline</span>
+            전화번호를 입력해주세요
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label" for="passwordInput">비밀번호</label>
+          <div class="input-wrapper">
+            <input 
+              type="password" 
+              id="passwordInput" 
+              class="form-input has-icon" 
+              placeholder="비밀번호를 입력하세요"
+              autocomplete="current-password"
+            >
+            <button type="button" class="password-toggle" id="togglePassword" aria-label="비밀번호 표시">
+              <span class="material-icons-round">visibility_off</span>
+            </button>
+          </div>
+          <div class="form-error" id="passwordError">
+            <span class="material-icons-round">error_outline</span>
+            비밀번호를 입력해주세요
+          </div>
+        </div>
+
+        <!-- Login Button -->
+        <button type="submit" class="btn-login" id="loginBtn">
+          <span>로그인</span>
+          <span class="material-icons-round">arrow_forward</span>
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      © 2025 MAMA-ASST. All rights reserved.
+    </div>
+
+  </div>
+
+  <script>
+    // ===== 테스트 계정 (개발 참조용) =====
+    const TEST_ACCOUNTS = {
+      '01099990000': { password: 'admin1234', role: 'ACADEMY_ADMIN', name: '테스트관리자', isFirstLogin: false },
+      '01011110000': { password: 'mb1234',   role: 'STUDENT',       name: '테스트학생A',  isFirstLogin: true },
+      '01022220000': { password: 'test1234',  role: 'STUDENT',       name: '테스트학생B',  isFirstLogin: false },
+    };
+
+    // ===== DOM =====
+    const form = document.getElementById('loginForm');
+    const phoneInput = document.getElementById('phoneInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginBtn = document.getElementById('loginBtn');
+    const phoneError = document.getElementById('phoneError');
+    const passwordError = document.getElementById('passwordError');
+    const loginError = document.getElementById('loginError');
+    const togglePassword = document.getElementById('togglePassword');
+
+    // ===== 비밀번호 토글 =====
+    togglePassword.addEventListener('click', () => {
+      const icon = togglePassword.querySelector('.material-icons-round');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.textContent = 'visibility';
+      } else {
+        passwordInput.type = 'password';
+        icon.textContent = 'visibility_off';
+      }
+    });
+
+    // ===== 에러 초기화 =====
+    function clearErrors() {
+      phoneError.classList.remove('show');
+      passwordError.classList.remove('show');
+      loginError.classList.remove('show');
+      phoneInput.classList.remove('error', 'shake');
+      passwordInput.classList.remove('error', 'shake');
+    }
+
+    // ===== Input 포커스 시 에러 초기화 =====
+    phoneInput.addEventListener('focus', () => {
+      phoneError.classList.remove('show');
+      phoneInput.classList.remove('error');
+      loginError.classList.remove('show');
+    });
+
+    passwordInput.addEventListener('focus', () => {
+      passwordError.classList.remove('show');
+      passwordInput.classList.remove('error');
+      loginError.classList.remove('show');
+    });
+
+    // ===== 폼 제출 =====
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const phone = phoneInput.value.replace(/-/g, '').trim();
+      const password = passwordInput.value;
+      let hasError = false;
+
+      // 빈값 검증
+      if (!phone) {
+        phoneError.classList.add('show');
+        phoneInput.classList.add('error', 'shake');
+        hasError = true;
+      }
+      if (!password) {
+        passwordError.classList.add('show');
+        passwordInput.classList.add('error', 'shake');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      // 로딩 상태
+      loginBtn.classList.add('loading');
+      loginBtn.querySelector('span:first-child').textContent = '로그인 중...';
+
+      // 로그인 시뮬레이션 (Bubble에서는 "Log the user in" 액션)
+      await new Promise(r => setTimeout(r, 800));
+
+      /*
+        ★ Bubble Workflow 매핑:
+        
+        Email 필드에 전달할 값: phone + "@mama.app"
+        예: "01011110000@mama.app"
+        
+        Bubble 표현식:
+        Input_Phone's value:find & replace(Find: "-", Replace by: ""):append"@mama.app"
+      */
+      const emailForBubble = phone + '@mama.app';
+      console.log('Bubble Email 필드 전달값:', emailForBubble);
+
+      const account = TEST_ACCOUNTS[phone];
+
+      if (account && account.password === password) {
+        // ✅ 로그인 성공
+        console.log(`✅ 로그인 성공: ${account.name} (${account.role})`);
+        
+        if (account.isFirstLogin) {
+          // 첫 로그인 → 비밀번호 변경
+          alert(`✅ 첫 로그인! → change-password 페이지로 이동\n\n사용자: ${account.name}\nBubble: Go to page "change-password"`);
+        } else if (account.role === 'STUDENT') {
+          // 학생 → 대시보드
+          alert(`✅ 학생 로그인 → student-dashboard 이동\n\n사용자: ${account.name}\nBubble: Go to page "student-dashboard"`);
+        } else if (account.role === 'ACADEMY_ADMIN') {
+          // 관리자 → 관리자 대시보드
+          alert(`✅ 관리자 로그인 → admin-dashboard 이동\n\n사용자: ${account.name}\nBubble: Go to page "admin-dashboard"`);
+        }
+      } else {
+        // ❌ 로그인 실패
+        loginError.classList.add('show');
+        phoneInput.classList.add('error', 'shake');
+        passwordInput.classList.add('error', 'shake');
+      }
+
+      // 로딩 해제
+      loginBtn.classList.remove('loading');
+      loginBtn.querySelector('span:first-child').textContent = '로그인';
+    });
+  </script>
+
+</body>
+</html>
