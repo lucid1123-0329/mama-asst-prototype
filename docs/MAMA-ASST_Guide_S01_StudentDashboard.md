@@ -23,13 +23,14 @@
 2. [Page HTML Header (CSS)](#2-page-html-header)
 3. [접근 제어 (Page Load)](#3-접근-제어)
 4. [Type A 템플릿 구성](#4-type-a-템플릿-구성)
-5. [인사말 섹션](#5-인사말-섹션)
-6. [Daily Target 요약 바](#6-daily-target-요약-바)
-7. [과목 카드 3개](#7-과목-카드-3개)
-8. [XP 카드](#8-xp-카드)
-9. [Workflow 총정리](#9-workflow-총정리)
-10. [Conditional 총정리](#10-conditional-총정리)
-11. [테스트 데이터 및 체크리스트](#11-테스트-데이터-및-체크리스트)
+5. [스타일 매핑 총정리](#5-스타일-매핑-총정리)
+6. [인사말 섹션](#6-인사말-섹션)
+7. [Daily Target 요약 바](#7-daily-target-요약-바)
+8. [과목 카드 3개](#8-과목-카드-3개)
+9. [XP 카드](#9-xp-카드)
+10. [Workflow 총정리](#10-workflow-총정리)
+11. [Conditional 총정리](#11-conditional-총정리)
+12. [테스트 데이터 및 체크리스트](#12-테스트-데이터-및-체크리스트)
 
 ---
 
@@ -350,12 +351,73 @@ notif_count 검색 설정:
 
 ---
 
-## 5. 인사말 섹션
+## 5. 스타일 매핑 총정리
+
+> ★ Element Styles에 이미 **반응형 Conditional(브레이크포인트별 폰트 크기)**이 포함되어 있으므로,
+> 스타일을 적용하면 별도 폰트 크기 Conditional이 **불필요**합니다.
+
+### 5.1 Text 스타일 매핑
+
+| 요소 | Element Style | 비고 |
+|------|-------------|------|
+| Text_GreetingTitle | **Heading 3** (24px, 600, Navy) | 반응형: 24→22→20→18 자동 |
+| Text_GreetingSub | **Body 14** + color 커스텀 | 색상 `#6B7280` (Text Secondary)로 오버라이드 |
+| Text_DTLabel | **Label** + weight 커스텀 | 14px→15px 불가, 14px 500 기반 + weight 600 오버라이드 |
+| Text_DTCount | **Body 14** + color 커스텀 | 색상 `#6B7280` (Text Secondary)로 오버라이드 |
+| Text_SCName | **Heading 5** + color 커스텀 | 18px, 600 일치. 색상 Navy로 오버라이드 |
+| Text_SCDesc | 커스텀 | 13px 스타일 없음. 수동: 13px, 400, `#6B7280` |
+| Text_SCBadge | **Badge** + Conditional | 12px, 500 기반. 11px 차이 → 수동 11px 오버라이드 |
+| Text_SCProgressLabel | **Caption** ✅ | 12px, 400, Text Secondary — 정확히 일치 |
+| Text_SCProgressCount | 커스텀 | 13px, 700, 과목 색상. 수동 설정 |
+| Text_DTSubjectLabel | **Caption** ✅ | 12px, 400, Text Secondary — 정확히 일치 |
+| 빈 상태 텍스트 | **Body 14** + color 커스텀 | 색상 `#9CA3AF` (Text Tertiary) |
+
+### 5.2 XP 카드 내부 (다크 배경 — 모두 커스텀)
+
+> XP 카드는 Navy 그래디언트 배경 위 흰색 텍스트이므로 기존 Element Style 적용 불가.
+> 모든 텍스트를 **커스텀**으로 수동 설정합니다.
+
+| 요소 | 스펙 | 비고 |
+|------|------|------|
+| "Lv." 라벨 | 10px, 500, `#FFFFFF99` | 커스텀 |
+| Text_LevelNum | 20px, 800, `#FFFFFF` | 커스텀 |
+| "누적 경험치" | 11px, 400, `#FFFFFF80` | 커스텀 |
+| Text_XPValue | 22px, 700, `#FFFFFF` | 커스텀 |
+| Stat 이모지 | 24px | 커스텀 (텍스트 요소) |
+| Stat 값 (16px) | 16px, 700, `#FFFFFF` | 커스텀 |
+| Stat 라벨 (11px) | 11px, 400, `#FFFFFF80` | 커스텀 |
+
+### 5.3 Group 스타일 매핑
+
+| 요소 | Element Style | 차이점 |
+|------|-------------|--------|
+| Group_DailyTarget | **Card Bordered** + roundness 커스텀 | 스타일: roundness 12 → 목업: 16으로 오버라이드 |
+| Group_CardKorean/English/Math | **Card Bordered** + roundness 커스텀 | 동일: roundness 12 → 16으로 오버라이드 |
+| Group_XP | 커스텀 | Navy gradient (CSS), roundness 16 |
+| Group_Greeting | **Transparent** ✅ | 정확히 일치 |
+| Group_SubjectCards | **Transparent** ✅ | 정확히 일치 |
+
+### 5.4 Button 스타일 매핑
+
+| 요소 | Element Style | 차이점 |
+|------|-------------|--------|
+| Button_StartKorean | 커스텀 (Tonal) | Light BG `#EBF2FE` + colored text — 기존 Filled/Outline과 다름 |
+| Button_StartEnglish | 커스텀 (Tonal) | Light BG `#E8F5E9` + colored text |
+| Button_StartMath | 커스텀 (Tonal) | Light BG `#FFF8E1` + colored text |
+
+> 💡 기존 **Filled Korean** 스타일은 진한 BG(`#4285F4`) + 흰색 텍스트입니다.
+> 대시보드 버튼은 연한 BG + 진한 텍스트(Tonal)이므로 커스텀 처리합니다.
+> Hover 시 Filled 스타일로 전환되는 패턴입니다.
+
+---
+
+## 6. 인사말 섹션
 
 ### Group_Greeting
 
-| 속성 | 값 |
-|------|-----|
+| 속성 | Element Style |
+|------|-------------|
+| **Style** | **Group - Transparent** |
 | **Container layout** | Column |
 | **Row gap** | `4px` |
 | **Width** | `100%` |
@@ -364,9 +426,8 @@ notif_count 검색 설정:
 
 | 속성 | 값 |
 |------|-----|
-| **Font size** | `24px` |
-| **Font weight** | `700` (Bold) |
-| **Color** | `#1A2E4D` (Navy) |
+| **Style** | **Text - Heading 3** ✅ |
+| 추가 설정 없음 | 24px, 600, Navy + 반응형 Conditional 모두 스타일에 포함 |
 
 **동적 텍스트:**
 
@@ -383,8 +444,10 @@ Bubble Editor에서:
 
 | 속성 | 값 |
 |------|-----|
-| **Font size** | `15px` |
-| **Color** | `#6B7280` (Text Secondary) |
+| **Style** | **Text - Body 14** |
+| **Color** | `#6B7280` (Text Secondary) ← 커스텀 오버라이드 |
+
+> Body 14 기본 색상은 Text Primary(`#1F2937`)이므로 색상만 변경합니다.
 
 **동적 텍스트:**
 
@@ -396,9 +459,9 @@ Current date/time:formatted as yyyy"년 "M"월 "d"일 "dddd + " · 오늘도 화
 
 ---
 
-## 6. Daily Target 요약 바
+## 7. Daily Target 요약 바
 
-### 6.1 Custom State (Page 레벨)
+### 7.1 Custom State (Page 레벨)
 
 > 반복 검색 방지를 위해 Page Load 시 한 번만 검색하여 Custom State에 저장합니다.
 
@@ -421,26 +484,33 @@ Set state 값:
     Constraint 2: target_date = Current date/time:rounded down to date
 ```
 
-### 6.2 Group_DailyTarget
+### 7.2 Group_DailyTarget
 
 | 속성 | 값 |
 |------|-----|
+| **Style** | **Group - Card Bordered** |
 | **Container layout** | Column |
 | **Row gap** | `14px` |
 | **Width** | `100%` |
-| **Background** | `#FFFFFF` (Surface) |
-| **Border** | `1px solid #E5E7EB` |
-| **Roundness** | `16` |
-| **Padding** | `20px 24px` |
+| **Roundness** | `16` ← 커스텀 오버라이드 (기본 12) |
+| **Padding** | `20px 24px` ← 커스텀 오버라이드 (기본 24) |
 
-### 6.3 Group_DTHeader (Row)
+### 7.3 Group_DTHeader (Row)
 
 **Text_DTLabel:**
-- 텍스트: `오늘의 학습 목표`
-- 15px, 600, `#1F2937`
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | **Text - Label** |
+| 텍스트 | `오늘의 학습 목표` |
+| **Font weight** | `600` ← 커스텀 오버라이드 (기본 500) |
 
 **Text_DTCount:**
-- 14px, `#6B7280`
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | **Text - Body 14** |
+| **Color** | `#6B7280` (Text Secondary) ← 커스텀 오버라이드 |
 
 동적 텍스트 — 완료/목표 합산:
 
@@ -455,11 +525,9 @@ Set state 값:
 ```
 
 > ⚠️ Bubble에서 `:each item's field:sum`이 작동하지 않는 경우가 있습니다.
-> **대안**: 과목별 개별 검색 후 합산 (6.5절 참조)
+> **대안**: 과목별 개별 검색 후 합산 (7.5절 참조)
 
-### 6.4 프로그레스 바 (HTML Element)
-
-> ★ v1.1에서 HTML Element로 확정. Group 방식보다 간편하고 정확합니다.
+### 7.4 프로그레스 바 (HTML Element)
 
 **HTML Element 추가:**
 - Bubble Editor → Visual elements → HTML
@@ -491,26 +559,28 @@ width: Insert dynamic data
 ```
 
 > ⚠️ 목표 합계가 0이면 NaN 방지 필요:
-> ```
-> Only when state_today_targets:count > 0 일 때만 표현식 사용
-> 아니면 width: 0%
-> ```
->
 > **가장 안전한 방법**: Conditional로 분기
 > - state_today_targets:count is 0 → HTML에서 width: 0%
 > - state_today_targets:count > 0 → 정상 계산
 
-### 6.5 과목별 소진도 (Row)
+### 7.5 과목별 소진도 (Row)
 
 #### Group_DTSubjects (Row, gap: 16px)
 
-3개 과목별 Text:
+3개 과목별 텍스트:
 
 ```
 ● 국어 [완료]/[목표]     ● (8×8, #4285F4)
 ● 영어 [완료]/[목표]     ● (8×8, #34A853)
 ● 수학 [완료]/[목표]     ● (8×8, #FBBC05)
 ```
+
+**각 라벨 텍스트:**
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | **Text - Caption** ✅ | 
+| 추가 설정 없음 | 12px, 400, Text Secondary — 정확히 일치 |
 
 **각 과목 데이터 바인딩 (국어 예시):**
 
@@ -525,17 +595,16 @@ width: Insert dynamic data
 ```
 
 > ★ `:filtered`는 클라이언트 사이드 연산이므로 **추가 서버 호출이 없습니다.**
-> Custom State에 저장된 리스트를 메모리에서 필터링합니다.
 
-### 6.6 빈 상태
+### 7.6 빈 상태
 
 **Group_DTEmpty** (state_today_targets:count is 0 일 때):
 
 | 속성 | 값 |
 |------|-----|
+| **Style** | **Text - Body 14** |
 | **Text** | `학습 목표가 설정되지 않았습니다` |
-| **Font size** | `14px` |
-| **Color** | `#9CA3AF` |
+| **Color** | `#9CA3AF` (Text Tertiary) ← 커스텀 오버라이드 |
 | **Align** | Center |
 | **Visible when** | `state_today_targets:count is 0` |
 
@@ -543,87 +612,128 @@ Group_DTHeader / HTML 프로그레스 / Group_DTSubjects → `state_today_target
 
 ---
 
-## 7. 과목 카드 3개
+## 8. 과목 카드 3개
 
-### 7.1 Group_SubjectCards (컨테이너)
+### 8.1 Group_SubjectCards (컨테이너)
 
-| 속성 | 값 |
-|------|-----|
+| 속성 | Element Style |
+|------|-------------|
+| **Style** | **Group - Transparent** |
 | **Container layout** | Row |
 | **Column gap** | `16px` |
 | **Width** | `100%` |
 
 > 각 카드는 **독립 Group**으로 만듭니다 (과목이 3개 고정이고, 색상/아이콘이 다르므로 RG보다 간단).
 
-### 7.2 카드 공통 구조 (국어 기준)
+### 8.2 카드 공통 구조 (국어 기준)
 
 ```
-Group_CardKorean (Column, Surface BG, border, rounded: 16, padding: 24)
+Group_CardKorean (Card Bordered, roundness 16)
 │
-├── Group_SCTop ────────── Row (justify: space-between, mb: 16px)
+├── Group_SCTop ────────── Row (justify: space-between)
 │   ├── Group_SCIcon ───── 48×48, rounded: 14, BG: #4285F4
-│   │   └── Icon: menu_book (24px, white) ← ★ v1.4에서 변경
-│   └── Text_SCBadge ──── "완료!" / "진행중" / "미시작"
+│   │   └── Icon: menu_book (24px, white)
+│   └── Text_SCBadge ──── Badge 커스텀 (11px, 600)
 │
-├── Text_SCName ─────────── "국어" (18px, Bold)
-├── Text_SCDesc ─────────── "5단계 구조화 학습" (13px, Secondary, mb: 16px)
+├── Text_SCName ─────────── Heading 5 (18px, 600, Navy 오버라이드)
+├── Text_SCDesc ─────────── 커스텀 (13px, 400, Secondary)
 │
-├── Group_SCProgress ────── Column (mb: 16px)
+├── Group_SCProgress ────── Column
 │   ├── Group_SCProgressHeader ── Row
-│   │   ├── Text_Label ──── "오늘 진도" (12px, Secondary)
-│   │   └── Text_Count ──── "2 / 2" (13px, Bold, #4285F4)
-│   └── HTML_ProgressBar ── HTML Element (프로그레스 바)
+│   │   ├── Text_Label ──── Caption ✅ (12px, 400, Secondary)
+│   │   └── Text_Count ──── 커스텀 (13px, 700, 과목색상)
+│   └── HTML_ProgressBar ── HTML Element
 │
-└── Button_StartKorean ──── "학습하기" (play_arrow 아이콘)
+└── Button_StartKorean ──── 커스텀 Tonal (Light BG → Hover: Filled)
 ```
 
-### 7.3 카드 속성
+### 8.3 카드 Group
 
 | 속성 | 값 |
 |------|-----|
-| **Container layout** | Column |
+| **Style** | **Group - Card Bordered** |
 | **Width** | (비움 — Row 안에서 3등분) |
 | **Min width** | `280px` |
-| **Background** | `#FFFFFF` (Surface) |
-| **Border** | `1px solid #E5E7EB` |
-| **Roundness** | `16` |
-| **Padding** | `24px` |
+| **Roundness** | `16` ← 커스텀 오버라이드 (기본 12) |
+| **Padding** | `24px` (기본과 동일) |
 
-### 7.4 과목별 색상표
+### 8.4 카드 내부 텍스트
 
-| 과목 | 아이콘 | 아이콘 BG | 프로그레스 CSS | 버튼 BG | 버튼 Hover BG |
-|------|--------|-----------|---------------|---------|---------------|
-| 국어 | `menu_book` | `#4285F4` | `.sc-bar-korean` | `#EBF2FE` | `#4285F4` (text: white) |
-| 영어 | `translate` | `#34A853` | `.sc-bar-english` | `#E8F5E9` | `#34A853` (text: white) |
-| 수학 | `calculate` | `#FBBC05` | `.sc-bar-math` | `#FFF8E1` | `#FBBC05` (text: #7A5C00) |
-
-### 7.5 상태 뱃지 (Text_SCBadge)
-
-각 과목의 DailyLearningTarget 기반:
-
-```
-데이터 참조 (국어 예시):
-  state_today_targets :filtered (subject = KOREAN) :first item
-```
-
-**Conditional 3개 (국어 기준):**
-
-| # | 조건 | 텍스트 | BG | Text Color |
-|---|------|--------|-----|-----------|
-| 1 | `...:first item's is_achieved is "yes"` | 완료! | `#DCFCE7` (green-100) | `#22C55E` |
-| 2 | `...:first item's completed_count > 0` AND `is_achieved is "no"` | 진행중 | `#DBEAFE` (blue-100) | `#3B82F6` |
-| 3 | `...:first item's completed_count is 0` OR count = 0 | 미시작 | `#F3F4F6` | `#9CA3AF` |
-
-**뱃지 기본 속성:**
+**Text_SCName (과목명 "국어"):**
 
 | 속성 | 값 |
 |------|-----|
+| **Style** | **Text - Heading 5** |
+| **Color** | `#1A2E4D` (Navy) ← 커스텀 오버라이드 (기본 Text Primary) |
+
+> 반응형: 18px→16px (≤1024) 자동 적용
+
+**Text_SCDesc (설명 "5단계 구조화 학습"):**
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | 커스텀 (스타일 없음) |
+| **Font size** | `13px` |
+| **Font weight** | `400` |
+| **Color** | `#6B7280` (Text Secondary) |
+| **Margin bottom** | `16px` |
+
+**과목별 설명 텍스트:**
+
+| 과목 | Text_SCDesc |
+|------|------------|
+| 국어 | 5단계 구조화 학습 |
+| 영어 | 7초 발음 테스트 |
+| 수학 | Jump/Anchor 문제풀이 |
+
+**Text_SCProgressLabel ("오늘 진도"):**
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | **Text - Caption** ✅ |
+| 추가 설정 없음 | 12px, 400, Text Secondary — 정확히 일치 |
+
+**Text_SCProgressCount ("2 / 2"):**
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | 커스텀 (스타일 없음) |
+| **Font size** | `13px` |
+| **Font weight** | `700` |
+| **Color** | 과목별 색상 (아래 표) |
+
+### 8.5 과목별 색상표
+
+| 과목 | 아이콘 | 아이콘 BG | Text_SCProgressCount Color | 프로그레스 CSS |
+|------|--------|-----------|---------------------------|---------------|
+| 국어 | `menu_book` | `#4285F4` | `#4285F4` | `.sc-bar-korean` |
+| 영어 | `translate` | `#34A853` | `#34A853` | `.sc-bar-english` |
+| 수학 | `calculate` | `#FBBC05` | `#E6A800` | `.sc-bar-math` |
+
+### 8.6 상태 뱃지 (Text_SCBadge)
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | 커스텀 (Badge 12px 기반이나 11px 필요) |
 | **Font size** | `11px` |
 | **Font weight** | `600` |
 | **Padding** | `4px 10px` |
 | **Roundness** | `20` |
 
-### 7.6 과목 프로그레스 바 (HTML Element)
+**Conditional 3개 (국어 기준):**
+
+```
+데이터 참조:
+  state_today_targets :filtered (subject = KOREAN) :first item
+```
+
+| # | 조건 | 텍스트 | BG | Text Color |
+|---|------|--------|-----|-----------|
+| 1 | `...:first item's is_achieved is "yes"` | 완료! | `#DCFCE7` | `#22C55E` |
+| 2 | `...:first item's completed_count > 0` AND `is_achieved is "no"` | 진행중 | `#DBEAFE` | `#3B82F6` |
+| 3 | `...:first item's completed_count is 0` OR count = 0 | 미시작 | `#F3F4F6` | `#9CA3AF` |
+
+### 8.7 과목 프로그레스 바 (HTML Element)
 
 각 카드 안에 HTML Element 1개:
 
@@ -646,12 +756,11 @@ state_today_targets :filtered (subject=KOREAN) :first item's target_count
 
 > 영어: `sc-bar-english`, 수학: `sc-bar-math`로 클래스만 변경
 
-### 7.7 학습하기 버튼
-
-**공통 속성:**
+### 8.8 학습하기 버튼
 
 | 속성 | 값 |
 |------|-----|
+| **Style** | 커스텀 (Tonal — 기존 버튼 스타일과 다름) |
 | **Width** | `100%` |
 | **Height** | `42px` |
 | **Roundness** | `10` |
@@ -659,7 +768,7 @@ state_today_targets :filtered (subject=KOREAN) :first item's target_count
 | **Font weight** | `600` |
 | **Icon** | `play_arrow` (왼쪽) |
 
-**과목별 스타일:**
+**과목별 색상:**
 
 | 과목 | 기본 BG | 기본 Color | Hover BG | Hover Color |
 |------|---------|-----------|----------|------------|
@@ -675,7 +784,7 @@ state_today_targets :filtered (subject=KOREAN) :first item's target_count
 | Button_StartEnglish | Go to page: `subject-english` |
 | Button_StartMath | Go to page: `subject-math` |
 
-### 7.8 카드 빈 상태
+### 8.9 카드 빈 상태
 
 DailyLearningTarget이 없어도 **카드는 항상 표시**합니다.
 
@@ -686,17 +795,19 @@ DailyLearningTarget이 없어도 **카드는 항상 표시**합니다.
 | 진행중 | "진행중" | `[완료] / [목표]` | 계산% |
 | 달성 | "완료!" | `[완료] / [목표]` | 100% |
 
-### 7.9 반응형
+### 8.10 반응형
 
 | 조건 | 변경 |
 |------|------|
 | `Current page width ≤ 900` | 각 카드 Min width = `100%` → 세로 1열 |
 
+> ★ 텍스트 반응형은 Element Style이 처리하므로 별도 Conditional 불필요
+
 ---
 
-## 8. XP 카드
+## 9. XP 카드
 
-### 8.1 데이터 소스
+### 9.1 데이터 소스
 
 ```
 StudentProfile 테이블:
@@ -707,49 +818,52 @@ StudentProfile 테이블:
 필드: total_xp, current_level
 ```
 
-### 8.2 Group_XP
+### 9.2 Group_XP
 
 | 속성 | 값 |
 |------|-----|
+| **Style** | 커스텀 (Navy gradient) |
 | **ID attribute** | `xpCard` |
 | **Container layout** | Row |
 | **Width** | `100%` |
 | **Min height** | `96px` |
-| **Background** | (CSS에서 gradient 처리) |
+| **Background** | `#1A2E4D` (Bubble) + CSS gradient 오버라이드 |
 | **Roundness** | `16` |
 | **Padding** | `24px` |
 | **Column gap** | `16px` |
 
 > gradient는 Section 2의 `#xpCard` CSS가 처리합니다.
-> Bubble 배경색은 **투명** 또는 `#1A2E4D`로 설정하세요.
 
-### 8.3 내부 구조
+### 9.3 내부 구조 (모두 커스텀)
+
+> ★ XP 카드는 다크 배경이므로 **모든 텍스트가 커스텀**입니다.
 
 ```
 Group_XP (Row, justify: space-between, align: center)
 │
 ├── Group_XPLeft (Row, gap: 16px, align: center)
-│   ├── Group_XPLevel (56×56, circle, BG: rgba 10% white, border: 2px rgba 20% white)
-│   │   ├── Text "Lv." (10px, white 60%)
-│   │   └── Text_LevelNum (동적, 20px, Bold, white)
+│   ├── Group_XPLevel ─── 56×56, circle
+│   │   │  BG: #FFFFFF1A, Border: 2px #FFFFFF33
+│   │   ├── Text "Lv."     커스텀 (10px, 500, #FFFFFF99)
+│   │   └── Text_LevelNum  커스텀 (20px, 800, #FFFFFF) ← 동적
 │   └── Group_XPInfo (Column)
-│       ├── Text "누적 경험치" (11px, white 50%)
-│       └── Text_XPValue (동적, 22px, Bold, white)
+│       ├── Text "누적 경험치"  커스텀 (11px, 400, #FFFFFF80)
+│       └── Text_XPValue       커스텀 (22px, 700, #FFFFFF) ← 동적
 │
 └── Group_XPRight (Row, gap: 24px)
-    ├── Stat: 🔥 / Text_Streak / "연속 학습"
-    ├── Stat: ⭐ / Text_WeekDone / "이번 주 완료"
-    └── Stat: 📊 / Text_WeekRate / "주간 달성률"
+    ├── Stat: 🔥 / 커스텀 (16px, 700, #FFF) / 커스텀 (11px, 400, #FFFFFF80)
+    ├── Stat: ⭐ / 커스텀 (16px, 700, #FFF) / 커스텀 (11px, 400, #FFFFFF80)
+    └── Stat: 📊 / 커스텀 (16px, 700, #FFF) / 커스텀 (11px, 400, #FFFFFF80)
 ```
 
-### 8.4 데이터 바인딩
+### 9.4 데이터 바인딩
 
 | 요소 | 표현식 |
 |------|--------|
 | Text_LevelNum | `Search for StudentProfiles (user_id=Current User) :first item's current_level` |
 | Text_XPValue | `...:first item's total_xp:formatted as #,###` + ` XP` |
 
-### 8.5 Streak / 이번 주 / 주간 달성률 — MVP 하드코딩
+### 9.5 Streak / 이번 주 / 주간 달성률 — MVP 하드코딩
 
 | 항목 | MVP 값 | 향후 교체 방법 |
 |------|--------|---------------|
@@ -759,15 +873,9 @@ Group_XP (Row, justify: space-between, align: center)
 
 > ★ Day 2 이후 학습 기능 완성되면 실제 계산으로 교체합니다.
 
-### 8.6 반응형
-
-| 조건 | 변경 |
-|------|------|
-| `Current page width ≤ 768` | Group_XP Layout → Column, Gap: 16, 텍스트 Center |
-
 ---
 
-## 9. Workflow 총정리
+## 10. Workflow 총정리
 
 ### Page Load (3개)
 
@@ -796,7 +904,7 @@ Group_XP (Row, justify: space-between, align: center)
 
 ---
 
-## 10. Conditional 총정리
+## 11. Conditional 총정리
 
 ### 반응형 (4개)
 
@@ -836,9 +944,9 @@ Group_XP (Row, justify: space-between, align: center)
 
 ---
 
-## 11. 테스트 데이터 및 체크리스트
+## 12. 테스트 데이터 및 체크리스트
 
-### 11.1 사전 준비
+### 12.1 사전 준비
 
 | 준비 항목 | 설정 |
 |-----------|------|
@@ -846,7 +954,7 @@ Group_XP (Row, justify: space-between, align: center)
 | User.is_first_login | ★ `no`로 변경 (Data 탭에서) |
 | StudentProfile | user_id = 테스트학생A, grade = E1, total_xp = 0, current_level = 1 |
 
-### 11.2 DailyLearningTarget 테스트 데이터
+### 12.2 DailyLearningTarget 테스트 데이터
 
 Data 탭 → DailyLearningTarget → `New entry` × 3:
 
@@ -856,7 +964,7 @@ Data 탭 → DailyLearningTarget → `New entry` × 3:
 | 2 | 테스트학생A | 오늘 | ENGLISH | 3 | 1 | no |
 | 3 | 테스트학생A | 오늘 | MATH | 2 | 1 | no |
 
-### 11.3 테스트 체크리스트 (20항목)
+### 12.3 테스트 체크리스트 (20항목)
 
 ```
 [접근 제어]
@@ -896,7 +1004,7 @@ Data 탭 → DailyLearningTarget → `New entry` × 3:
 □ 20. 768px 이하: 카드 1열, XP 카드 세로
 ```
 
-### 11.4 Data 탭 검증
+### 12.4 Data 탭 검증
 
 | Data Type | 확인 항목 | 예상 값 |
 |-----------|-----------|---------|
@@ -909,10 +1017,34 @@ Data 탭 → DailyLearningTarget → `New entry` × 3:
 
 ## 📌 Quick Reference — 복사용
 
+### Element Style 매핑 (빠른 참조)
+
+```
+✅ = 정확히 일치 (추가 설정 불필요)
+⚙️ = 스타일 적용 후 일부 오버라이드
+
+Text_GreetingTitle  → ✅ Heading 3
+Text_GreetingSub    → ⚙️ Body 14 (color → Text Secondary)
+Text_DTLabel        → ⚙️ Label (weight → 600)
+Text_DTCount        → ⚙️ Body 14 (color → Text Secondary)
+Text_SCName         → ⚙️ Heading 5 (color → Navy)
+Text_SCDesc         → ❌ 커스텀 (13px, 400, Secondary)
+Text_SCBadge        → ❌ 커스텀 (11px, 600, Conditional)
+Text_SCProgressLabel→ ✅ Caption
+Text_SCProgressCount→ ❌ 커스텀 (13px, 700, 과목색상)
+빈 상태 텍스트       → ⚙️ Body 14 (color → Text Tertiary)
+XP 카드 전체 텍스트  → ❌ 모두 커스텀 (다크 배경)
+
+Group_DailyTarget   → ⚙️ Card Bordered (roundness → 16)
+Group_Card*         → ⚙️ Card Bordered (roundness → 16)
+Group_XP            → ❌ 커스텀 (gradient)
+Button_Start*       → ❌ 커스텀 Tonal (Light BG + Hover: Filled)
+```
+
 ### RE Property 설정 (요소 Appearance 탭)
 
 ```
-RE_Header:
+RE_Header (Group_MainArea 안에 일반 배치):
   page_title  = "대시보드"
   notif_count = Search for Notifications [user_id=Current User, is_read=no]:count
 
@@ -970,4 +1102,4 @@ Day 2: 국어 학습
 
 ---
 
-*— MAMA-ASST S-01 학생 대시보드 구현 가이드 v1.1 끝 —*
+*— MAMA-ASST S-01 학생 대시보드 구현 가이드 v1.2 끝 —*
