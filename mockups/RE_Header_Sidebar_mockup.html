@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RE_Header + RE_Sidebar 목업 | MAMA-ASST</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #FF6D4D;
+      --primary-hover: #E55A3C;
+      --navy: #1A2E4D;
+      --navy-light: #243B5C;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --text-tertiary: #9CA3AF;
+      --border-light: #E5E7EB;
+      --background: #F9FAFB;
+      --surface: #FFFFFF;
+      --bg-hover: #F3F4F6;
+      --success: #22C55E;
+      --info: #3B82F6;
+      --alert: #F59E0B;
+      --error: #EF4444;
+      --korean: #4285F4;
+      --english: #34A853;
+      --math: #FBBC05;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.5;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ===== Role Switcher (데모용) ===== */
+    .role-switcher {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 9999; background: #111827;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; padding: 8px 16px;
+      font-size: 12px; color: #9CA3AF;
+    }
+    .role-btn {
+      padding: 6px 16px; border-radius: 6px; border: 1px solid #374151;
+      background: none; color: #9CA3AF; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .role-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .role-btn:hover:not(.active) { border-color: #6B7280; color: white; }
+
+    /* ===== App Layout ===== */
+    .app-layout { display: flex; height: calc(100vh - 36px); margin-top: 36px; }
+
+    /* ===== RE_Sidebar ===== */
+    .sidebar {
+      width: 256px; background: var(--navy);
+      display: flex; flex-direction: column; flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    /* -- Sidebar Header -- */
+    .sb-header {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; padding: 0 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sb-header-left { display: flex; align-items: center; gap: 12px; }
+    .sb-logo {
+      width: 32px; height: 32px; background: var(--primary); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sb-logo .material-icons-round { font-size: 18px; color: white; }
+    .sb-app-name { font-size: 16px; font-weight: 700; color: white; letter-spacing: -0.02em; }
+    .sb-close {
+      display: none; width: 32px; height: 32px; border-radius: 8px;
+      border: none; background: none; cursor: pointer;
+      color: rgba(255,255,255,0.5); align-items: center; justify-content: center;
+      transition: color 0.15s;
+    }
+    .sb-close:hover { color: white; }
+
+    /* -- User Profile -- */
+    .sb-profile {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 4px; padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sb-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; color: white;
+      margin-bottom: 4px;
+    }
+    .sb-avatar.student { background: var(--primary); }
+    .sb-avatar.admin { background: var(--navy-light); border: 2px solid rgba(255,255,255,0.2); }
+    .sb-avatar.instructor { background: var(--success); }
+    .sb-user-name { font-size: 14px; font-weight: 600; color: white; text-align: center; }
+    .sb-user-role { font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; }
+
+    /* -- Nav Menu -- */
+    .sb-nav {
+      flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 2px;
+      overflow-y: auto;
+    }
+    .sb-nav::-webkit-scrollbar { width: 4px; }
+    .sb-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+    .nav-section {
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.3);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 12px 16px 6px; user-select: none;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px; border-radius: 12px;
+      color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all 0.15s; text-decoration: none;
+      position: relative;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.9); }
+    .nav-item.active { background: rgba(255,255,255,0.1); color: white; font-weight: 600; }
+    .nav-item .material-icons-round { font-size: 20px; }
+
+    /* 과목 하위 메뉴 들여쓰기 */
+    .nav-item.sub { padding-left: 32px; font-size: 13px; }
+    .nav-item.sub .material-icons-round { font-size: 18px; }
+
+    /* 과목 컬러 active */
+    .nav-item.sub.active.korean { color: var(--korean); }
+    .nav-item.sub.active.english { color: var(--english); }
+    .nav-item.sub.active.math .material-icons-round { color: var(--math); }
+
+    /* Nav badge */
+    .nav-badge {
+      margin-left: auto; font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 10px;
+      background: var(--primary); color: white;
+    }
+
+    /* -- Footer -- */
+    .sb-footer {
+      padding: 8px; border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .nav-item.logout:hover {
+      background: rgba(239,68,68,0.1); color: var(--error);
+    }
+    .nav-item.logout:hover .material-icons-round { color: var(--error); }
+
+    /* ===== Main Area ===== */
+    .main-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    /* ===== RE_Header ===== */
+    .header {
+      height: 64px; background: var(--surface);
+      border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-hamburger {
+      display: none; width: 40px; height: 40px; border-radius: 8px;
+      border: none; background: none; cursor: pointer;
+      align-items: center; justify-content: center;
+      color: var(--text-secondary); transition: background 0.15s;
+    }
+    .header-hamburger:hover { background: var(--bg-hover); }
+    .header-title { font-size: 18px; font-weight: 700; color: var(--navy); }
+
+    .header-right { display: flex; align-items: center; gap: 8px; }
+    .header-icon-btn {
+      position: relative; width: 40px; height: 40px; border-radius: 10px;
+      border: none; background: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-secondary); transition: background 0.15s;
+    }
+    .header-icon-btn:hover { background: var(--bg-hover); }
+    .notif-dot {
+      position: absolute; top: 8px; right: 8px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--primary); border: 2px solid var(--surface);
+    }
+
+    .header-user {
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+      padding: 4px 8px 4px 4px; border-radius: 10px; transition: background 0.15s;
+      position: relative;
+    }
+    .header-user:hover { background: var(--bg-hover); }
+    .header-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: white;
+    }
+    .header-avatar.student { background: var(--primary); }
+    .header-avatar.admin { background: var(--navy); }
+    .header-avatar.instructor { background: var(--success); }
+    .header-user-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+
+    /* ===== GF_Notification ===== */
+    .gf-notification {
+      display: none; position: absolute; top: 48px; right: 0;
+      width: 360px; max-height: 480px; background: var(--surface);
+      border-radius: 16px; border: 1px solid var(--border-light);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      z-index: 100; overflow: hidden;
+      flex-direction: column;
+    }
+    .gf-notification.open { display: flex; }
+    .gf-notif-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; border-bottom: 1px solid var(--border-light);
+    }
+    .gf-notif-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+    .gf-notif-mark { font-size: 13px; color: var(--primary); cursor: pointer; font-weight: 500; }
+    .gf-notif-mark:hover { text-decoration: underline; }
+
+    .gf-notif-list { flex: 1; overflow-y: auto; }
+    .notif-item {
+      display: flex; gap: 12px; padding: 14px 20px;
+      border-bottom: 1px solid #F3F4F6; cursor: pointer;
+      transition: background 0.1s;
+    }
+    .notif-item:hover { background: #F9FAFB; }
+    .notif-item.unread { background: #FFF7ED; }
+    .notif-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .notif-icon .material-icons-round { font-size: 18px; color: white; }
+    .notif-icon.info { background: var(--info); }
+    .notif-icon.success { background: var(--success); }
+    .notif-icon.alert { background: var(--alert); }
+    .notif-text { font-size: 13px; color: var(--text-primary); line-height: 1.4; }
+    .notif-time { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+    .gf-notif-footer {
+      padding: 12px 20px; border-top: 1px solid var(--border-light);
+      text-align: center;
+    }
+    .gf-notif-footer a {
+      font-size: 13px; font-weight: 600; color: var(--primary); text-decoration: none;
+    }
+
+    /* ===== GF_UserMenu ===== */
+    .gf-usermenu {
+      display: none; position: absolute; top: 48px; right: 0;
+      width: 240px; background: var(--surface);
+      border-radius: 12px; border: 1px solid var(--border-light);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      z-index: 100; overflow: hidden;
+    }
+    .gf-usermenu.open { display: block; }
+    .gf-um-profile {
+      padding: 16px; text-align: center;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .gf-um-avatar {
+      width: 48px; height: 48px; border-radius: 50%; margin: 0 auto 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; color: white;
+    }
+    .gf-um-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .gf-um-role { font-size: 12px; color: var(--text-tertiary); }
+    .gf-um-items { padding: 8px; }
+    .gf-um-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 14px; color: var(--text-primary); transition: background 0.1s;
+    }
+    .gf-um-item:hover { background: var(--bg-hover); }
+    .gf-um-item .material-icons-round { font-size: 20px; color: var(--text-secondary); }
+    .gf-um-item.logout { color: var(--error); }
+    .gf-um-item.logout .material-icons-round { color: var(--error); }
+    .gf-um-item.logout:hover { background: #FEF2F2; }
+    .gf-um-divider { height: 1px; background: var(--border-light); margin: 4px 8px; }
+
+    /* ===== Main Content (데모) ===== */
+    .main-content {
+      flex: 1; overflow-y: auto; padding: 32px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .demo-placeholder {
+      text-align: center; color: var(--text-tertiary);
+    }
+    .demo-placeholder .material-icons-round { font-size: 64px; margin-bottom: 12px; color: var(--border-light); }
+    .demo-placeholder h2 { font-size: 18px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+    .demo-placeholder p { font-size: 14px; }
+
+    /* ===== Overlay ===== */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 40;
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1200px) {
+      .sidebar { position: fixed; top: 36px; left: 0; bottom: 0; z-index: 50; transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sb-close { display: flex; }
+      .header-hamburger { display: flex; }
+    }
+    @media (max-width: 768px) {
+      .header-user-name { display: none; }
+      .gf-notification { width: calc(100vw - 32px); right: -60px; }
+    }
+
+    /* ===== Annotations ===== */
+    .annotation {
+      position: absolute; font-size: 10px; font-weight: 700;
+      color: white; background: var(--primary); padding: 2px 6px;
+      border-radius: 4px; pointer-events: none; z-index: 200;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Role Switcher (데모 전용) -->
+  <div class="role-switcher">
+    <span>역할 전환:</span>
+    <button class="role-btn active" onclick="switchRole('student')">학생</button>
+    <button class="role-btn" onclick="switchRole('admin')">관리자</button>
+    <button class="role-btn" onclick="switchRole('instructor')">강사</button>
+    <span style="margin-left:16px;color:#4B5563">|</span>
+    <span style="margin-left:8px">클릭하여 알림/유저메뉴 드롭다운 테스트</span>
+  </div>
+
+  <div class="app-layout">
+
+    <!-- ===== RE_Sidebar ===== -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- SB Header -->
+      <div class="sb-header">
+        <div class="sb-header-left">
+          <div class="sb-logo"><span class="material-icons-round">school</span></div>
+          <span class="sb-app-name">MAMA-ASST</span>
+        </div>
+        <button class="sb-close" onclick="closeSidebar()" title="닫기">
+          <span class="material-icons-round">close</span>
+        </button>
+      </div>
+
+      <!-- User Profile -->
+      <div class="sb-profile" id="sbProfile">
+        <div class="sb-avatar student" id="sbAvatar">테</div>
+        <div class="sb-user-name" id="sbName">테스트학생A</div>
+        <div class="sb-user-role" id="sbRole">학생 · 중1</div>
+      </div>
+
+      <!-- Nav Menu -->
+      <nav class="sb-nav" id="sbNav">
+        <!-- 학생 메뉴 (기본 표시) -->
+        <div id="menuStudent">
+          <div class="nav-section">학습</div>
+          <a class="nav-item active">
+            <span class="material-icons-round">home</span> 홈
+          </a>
+          <a class="nav-item sub korean">
+            <span class="material-icons-round">menu_book</span> 국어
+          </a>
+          <a class="nav-item sub english">
+            <span class="material-icons-round">translate</span> 영어
+          </a>
+          <a class="nav-item sub math">
+            <span class="material-icons-round">calculate</span> 수학
+          </a>
+          <div class="nav-section">관리</div>
+          <a class="nav-item">
+            <span class="material-icons-round">event_note</span> 플래너
+          </a>
+          <a class="nav-item">
+            <span class="material-icons-round">insights</span> 리포트
+          </a>
+        </div>
+
+        <!-- 관리자 메뉴 -->
+        <div id="menuAdmin" style="display:none">
+          <div class="nav-section">관리</div>
+          <a class="nav-item active">
+            <span class="material-icons-round">dashboard</span> 대시보드
+          </a>
+          <a class="nav-item">
+            <span class="material-icons-round">people</span> 학생 관리
+            <span class="nav-badge">15</span>
+          </a>
+          <a class="nav-item">
+            <span class="material-icons-round">class</span> 반 관리
+          </a>
+          <a class="nav-item">
+            <span class="material-icons-round">trending_up</span> 학습 현황
+          </a>
+        </div>
+
+        <!-- 강사 메뉴 -->
+        <div id="menuInstructor" style="display:none">
+          <div class="nav-section">강사</div>
+          <a class="nav-item active">
+            <span class="material-icons-round">dashboard</span> 대시보드
+          </a>
+          <a class="nav-item">
+            <span class="material-icons-round">people</span> 학생 관리
+          </a>
+          <a class="nav-item">
+            <span class="material-icons-round">person_search</span> 학생 상세
+          </a>
+        </div>
+      </nav>
+
+      <!-- Footer -->
+      <div class="sb-footer">
+        <a class="nav-item">
+          <span class="material-icons-round">settings</span> 설정
+        </a>
+        <a class="nav-item logout">
+          <span class="material-icons-round">logout</span> 로그아웃
+        </a>
+      </div>
+    </aside>
+
+    <!-- Overlay (모바일) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- ===== Main Area ===== -->
+    <div class="main-area">
+
+      <!-- RE_Header -->
+      <header class="header">
+        <div class="header-left">
+          <button class="header-hamburger" onclick="openSidebar()">
+            <span class="material-icons-round">menu</span>
+          </button>
+          <span class="header-title" id="headerTitle">대시보드</span>
+        </div>
+        <div class="header-right">
+
+          <!-- Notification Bell -->
+          <button class="header-icon-btn" onclick="toggleNotif(event)" id="notifBtn">
+            <span class="material-icons-round">notifications_none</span>
+            <span class="notif-dot" id="notifDot"></span>
+          </button>
+
+          <!-- GF_Notification -->
+          <div class="gf-notification" id="gfNotif">
+            <div class="gf-notif-header">
+              <span class="gf-notif-title">알림</span>
+              <span class="gf-notif-mark" onclick="alert('모두 읽음 처리')">모두 읽음</span>
+            </div>
+            <div class="gf-notif-list">
+              <div class="notif-item unread">
+                <div class="notif-icon info"><span class="material-icons-round">menu_book</span></div>
+                <div>
+                  <div class="notif-text">오늘의 <b>국어 학습</b>이 준비되었습니다.</div>
+                  <div class="notif-time">5분 전</div>
+                </div>
+              </div>
+              <div class="notif-item unread">
+                <div class="notif-icon success"><span class="material-icons-round">emoji_events</span></div>
+                <div>
+                  <div class="notif-text"><b>영어 7초 테스트</b>에서 만점을 받았어요! 🎉</div>
+                  <div class="notif-time">1시간 전</div>
+                </div>
+              </div>
+              <div class="notif-item">
+                <div class="notif-icon alert"><span class="material-icons-round">event_note</span></div>
+                <div>
+                  <div class="notif-text">플래너 습관 <b>"수학 문제 10개"</b> 미완료입니다.</div>
+                  <div class="notif-time">어제</div>
+                </div>
+              </div>
+            </div>
+            <div class="gf-notif-footer">
+              <a href="#">전체 알림 보기</a>
+            </div>
+          </div>
+
+          <!-- User Menu Trigger -->
+          <div class="header-user" onclick="toggleUserMenu(event)" id="userMenuTrigger">
+            <div class="header-avatar student" id="headerAvatar">테</div>
+            <span class="header-user-name" id="headerUserName">테스트학생A</span>
+            <span class="material-icons-round" style="font-size:18px;color:var(--text-tertiary)">expand_more</span>
+          </div>
+
+          <!-- GF_UserMenu -->
+          <div class="gf-usermenu" id="gfUserMenu">
+            <div class="gf-um-profile">
+              <div class="gf-um-avatar student" id="umAvatar"
+                   style="background:var(--primary)">테</div>
+              <div class="gf-um-name" id="umName">테스트학생A</div>
+              <div class="gf-um-role" id="umRole">학생</div>
+            </div>
+            <div class="gf-um-items">
+              <div class="gf-um-item" onclick="alert('마이페이지')">
+                <span class="material-icons-round">person</span> 마이페이지
+              </div>
+              <div class="gf-um-item" onclick="alert('설정')">
+                <span class="material-icons-round">settings</span> 설정
+              </div>
+              <div class="gf-um-item" onclick="alert('도움말')">
+                <span class="material-icons-round">help_outline</span> 도움말
+              </div>
+              <div class="gf-um-divider"></div>
+              <div class="gf-um-item logout" onclick="alert('로그아웃 → login 이동')">
+                <span class="material-icons-round">logout</span> 로그아웃
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- Main Content (Placeholder) -->
+      <main class="main-content">
+        <div class="demo-placeholder">
+          <span class="material-icons-round">widgets</span>
+          <h2 id="demoTitle">학생 대시보드 콘텐츠 영역</h2>
+          <p>Group_MainContent — 각 페이지별 콘텐츠가 여기에 들어갑니다</p>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    /* ===== Role Data ===== */
+    const roles = {
+      student: {
+        name: '테스트학생A', roleText: '학생 · 중1', roleShort: '학생',
+        initial: '테', avatarClass: 'student', title: '대시보드',
+        demoTitle: '학생 대시보드 콘텐츠 영역', avatarBg: 'var(--primary)',
+        menu: 'menuStudent'
+      },
+      admin: {
+        name: '테스트관리자', roleText: '학원관리자', roleShort: '학원관리자',
+        initial: '테', avatarClass: 'admin', title: '대시보드',
+        demoTitle: '관리자 대시보드 콘텐츠 영역', avatarBg: 'var(--navy)',
+        menu: 'menuAdmin'
+      },
+      instructor: {
+        name: '테스트강사', roleText: '강사', roleShort: '강사',
+        initial: '테', avatarClass: 'instructor', title: '대시보드',
+        demoTitle: '강사 대시보드 콘텐츠 영역', avatarBg: 'var(--success)',
+        menu: 'menuInstructor'
+      }
+    };
+
+    let currentRole = 'student';
+
+    function switchRole(role) {
+      currentRole = role;
+      const d = roles[role];
+
+      // Role buttons
+      document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Sidebar profile
+      document.getElementById('sbAvatar').className = 'sb-avatar ' + d.avatarClass;
+      document.getElementById('sbAvatar').textContent = d.initial;
+      document.getElementById('sbName').textContent = d.name;
+      document.getElementById('sbRole').textContent = d.roleText;
+
+      // Header
+      document.getElementById('headerTitle').textContent = d.title;
+      document.getElementById('headerAvatar').className = 'header-avatar ' + d.avatarClass;
+      document.getElementById('headerAvatar').textContent = d.initial;
+      document.getElementById('headerUserName').textContent = d.name;
+
+      // UserMenu
+      document.getElementById('umAvatar').className = 'gf-um-avatar';
+      document.getElementById('umAvatar').style.background = d.avatarBg;
+      document.getElementById('umAvatar').textContent = d.initial;
+      document.getElementById('umName').textContent = d.name;
+      document.getElementById('umRole').textContent = d.roleShort;
+
+      // Demo content
+      document.getElementById('demoTitle').textContent = d.demoTitle;
+
+      // Menus
+      ['menuStudent', 'menuAdmin', 'menuInstructor'].forEach(id => {
+        document.getElementById(id).style.display = id === d.menu ? '' : 'none';
+      });
+
+      closeDropdowns();
+    }
+
+    /* ===== Sidebar Toggle ===== */
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarOverlay').classList.add('open');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('open');
+    }
+
+    /* ===== Dropdowns ===== */
+    function closeDropdowns() {
+      document.getElementById('gfNotif').classList.remove('open');
+      document.getElementById('gfUserMenu').classList.remove('open');
+    }
+
+    function toggleNotif(e) {
+      e.stopPropagation();
+      const el = document.getElementById('gfNotif');
+      const isOpen = el.classList.contains('open');
+      closeDropdowns();
+      if (!isOpen) el.classList.add('open');
+    }
+
+    function toggleUserMenu(e) {
+      e.stopPropagation();
+      const el = document.getElementById('gfUserMenu');
+      const isOpen = el.classList.contains('open');
+      closeDropdowns();
+      if (!isOpen) el.classList.add('open');
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.gf-notification') && !e.target.closest('#notifBtn'))
+        document.getElementById('gfNotif').classList.remove('open');
+      if (!e.target.closest('.gf-usermenu') && !e.target.closest('#userMenuTrigger'))
+        document.getElementById('gfUserMenu').classList.remove('open');
+    });
+  </script>
+
+  <!--
+    ★ Bubble 엘리먼트 매핑 요약
+    
+    RE_Header (Reusable Element)
+    ├── Properties: page_title (text), notif_count (number)
+    ├── Custom State: sidebar_open (yes/no, default: no)
+    ├── Group_Left
+    │   ├── Icon_Hamburger (≤1200px만 표시, 클릭 → sidebar_open toggle)
+    │   └── Text_PageTitle (= page_title Property)
+    ├── Group_Right
+    │   ├── Icon_Notification (종 아이콘, Reference for GF_Notification)
+    │   │   └── Shape_NotifDot (notif_count > 0일 때 표시)
+    │   └── Group_UserMenuTrigger (Reference for GF_UserMenu)
+    │       ├── Group_HeaderAvatar (역할별 색상)
+    │       ├── Text_HeaderUserName (Current User's name)
+    │       └── Icon_ExpandMore
+    ├── GF_Notification (Group Focus)
+    │   ├── Header: "알림" + "모두 읽음"
+    │   ├── RG_Notifications (Notification 테이블)
+    │   └── Footer: "전체 알림 보기"
+    └── GF_UserMenu (Group Focus)
+        ├── UserInfo: 아바타 + 이름 + 역할
+        ├── MenuItem: 마이페이지, 설정, 도움말
+        └── MenuItem_Logout: 로그아웃
+
+    RE_Sidebar (Reusable Element)
+    ├── Property: active_page (text)
+    ├── Custom State: close_requested (yes/no, default: no)
+    ├── Group_SidebarHeader
+    │   ├── Logo (32×32, Primary) + App Name
+    │   └── Icon_Close (≤1200px만 표시, 클릭 → close_requested = yes)
+    ├── Group_UserProfile
+    │   ├── Avatar (48×48, 역할별 색상)
+    │   ├── User Name
+    │   └── User Role (+ 학년: 학생만)
+    ├── Group_NavMenu (역할별 조건 표시)
+    │   ├── Group_StudentMenu (role = STUDENT)
+    │   │   ├── [학습] 홈 / 국어(sub) / 영어(sub) / 수학(sub)
+    │   │   └── [관리] 플래너 / 리포트
+    │   ├── Group_AdminMenu (role = ACADEMY_ADMIN)
+    │   │   └── [관리] 대시보드 / 학생관리 / 반관리 / 학습현황
+    │   └── Group_InstructorMenu (role = INSTRUCTOR)
+    │       └── [강사] 대시보드 / 학생관리 / 학생상세
+    └── Group_SidebarFooter
+        ├── NavItem_Settings
+        └── NavItem_Logout
+  -->
+</body>
+</html>
