@@ -620,6 +620,8 @@
     }
 
     // ===== 학년 라벨 변환 =====
+    // Bubble: Dropdown_Grade의 Option caption = Current option's School_Level
+    // Option Set GradeLevel의 School_Level attribute에서 한글 학년명 가져옴
     function gradeLabel(value) {
       const map = {
         E1:'초1', E2:'초2', E3:'초3', E4:'초4', E5:'초5', E6:'초6',
@@ -710,19 +712,22 @@
       /*
         ★ Bubble Workflow 매핑:
 
-        Step 1: Sign the user up
+        Step 6: Sign the user up
           Email:    Input_Phone's value:find & replace("-",""):append"@mama.app"
           Password: "mb1234"
 
-        Step 2: Make changes to Current User
-          phone          = Input_Phone's value:find & replace("-","")
-          name           = Input_Name's value
-          role           = Dropdown_Role's value
-          grade          = Dropdown_Grade's value  (StudentProfile에 저장)
-          is_first_login = yes
-          status         = ACTIVE
+        Step 7: Make changes to Current User
+          phone, name, role, is_first_login, status
+          ★ grade는 User에 없음 → Step 8에서 StudentProfile로 저장
 
-        Step 3: Log the user out
+        Step 8: Create StudentProfile (Only when: role = STUDENT)
+          user_id = Current User
+          grade   = Dropdown_Grade's value (GradeLevel Option Set)
+
+        Step 9: state_created_accounts에 텍스트 추가
+          "이름|전화번호|학년|역할코드"
+
+        Step 10: Log the user out
           (Sign up 시 자동 로그인되므로 해제)
       */
       const emailForBubble = phone + '@mama.app';

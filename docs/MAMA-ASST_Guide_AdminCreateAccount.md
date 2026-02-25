@@ -123,7 +123,7 @@ Page: admin-create-account
 │   │   ├── Group_CreatedHeader (Row)
 │   │   │   ├── Text_CreatedTitle ("생성된 계정")
 │   │   │   └── Text_CreatedCount ("0명")
-│   │   └── RG_CreatedUsers (Repeating Group, 생성 역순)
+│   │   └── RG_CreatedAccounts (Repeating Group, text list)
 │   │       └── Group_CreatedItem (Row)
 │   │           ├── Group_Avatar (40×40, 원형, 이니셜)
 │   │           ├── Group_CreatedInfo (Column)
@@ -347,25 +347,26 @@ Font: Pretendard 14px, Weight 500, Color: #374151
 #### Dropdown_Grade ★
 ```
 Type: Dropdown
-Style: (커스텀 또는 Input - Standard 기반)
+Type of choices: GradeLevel (Option Set)
 
-Choices style: Static choices (또는 Option Set "Grade")
-
-Static choices:
-  초1, 초2, 초3, 초4, 초5, 초6,
-  중1, 중2, 중3,
-  고1, 고2, 고3
+★★★ Option caption: Current option's School_Level
+  → "E1" 대신 "초1" 한글로 표시
+  → School_Level attribute에 한글 학년명 저장 필요
 
 Placeholder: "학년 선택"
 Size: Width 100%, Min height 48px
 Font: 16px
 Roundness: 8
 
-★ Option Set 사용 시:
-  Option Set: Grade
-  Options: E1(초1), E2(초2)... H3(고3)
-  Display: Display 속성 (예: "초1")
-  Value: Value 속성 (예: "E1")
+★ GradeLevel Option Set 구조:
+  | Display | Grade_order | School_Level |
+  |---------|-------------|--------------|
+  | E1      | 1           | 초1          |
+  | E2      | 2           | 초2          |
+  | ...     | ...         | ...          |
+  | H3      | 12          | 고3          |
+  
+  Sort by: Grade_order (오름차순)
 ```
 
 ### 4.9 Group_PasswordPreview (초기 비밀번호 표시)
@@ -437,7 +438,7 @@ Layout: Column
 ★ 기본 숨김:
   This element is visible on page load: 체크 해제
   Conditional: 
-    When RG_CreatedUsers's List of Users:count > 0 → Visible ✅
+    When state_created_accounts:count > 0 → Visible ✅
 ```
 
 #### Text_CreatedTitle
@@ -448,27 +449,26 @@ Font: Pretendard 16px, Weight 600, Color: #1A2E4D
 
 #### Text_CreatedCount
 ```
-Content: RG_CreatedUsers's List of Users:count 값 + "명"
+Content: state_created_accounts:count 값 + "명"
 Font: Pretendard 13px, Color: #9CA3AF
 
-★ Dynamic data: "Search for Users (Created by = Current User, Created Date > 오늘 시작):count" 또는
-  Custom State로 카운트 관리
+Dynamic data: admin-create-account's state_created_accounts:count
+  :formatted as → 숫자 + "명"
 ```
 
-#### RG_CreatedUsers (생성된 유저 목록)
+#### RG_CreatedAccounts (생성된 계정 목록)
 
 ```
 Type: Repeating Group
-Data source: Search for Users
-  Created By = (관리자 자신 — MVP에서는 생략 가능)
-  Sort by: Created Date, Descending (최신순)
+Type of content: text
+Data source: admin-create-account's state_created_accounts
 
 Layout: Column
 Rows per page: 20
 
-★ MVP 간소화:
-  "이 세션에서 생성한 계정"을 Custom State(list of Users)로 관리하는 것이 더 간단.
-  Button_Create 성공 시 → state_created_users에 추가
+★ 핵심: text list를 데이터소스로 사용
+  각 셀의 값: "이름|전화번호|학년표시|역할코드"
+  → 구분자 "|"로 split하여 각 필드 표시
 ```
 
 #### Group_CreatedItem (각 항목)
@@ -479,30 +479,55 @@ Padding: 14px 16px
 Background: #FFFFFF
 Border: 1px solid #E5E7EB
 Roundness: 12
+
+★ 텍스트 파싱 방법 (Bubble):
+  Current cell's text:split by("|"):item #1  → 이름
+  Current cell's text:split by("|"):item #2  → 전화번호
+  Current cell's text:split by("|"):item #3  → 학년 (빈 문자열 가능)
+  Current cell's text:split by("|"):item #4  → 역할코드
 ```
 
 #### Group_Avatar (이니셜 원형)
 ```
 Size: 40×40 (fixed)
 Roundness: 50%
-Background: 
-  역할이 STUDENT → #FF6D4D (Primary)
-  역할이 ACADEMY_ADMIN → #1A2E4D (Navy)
-  역할이 INSTRUCTOR → #22C55E (Success)
 
-Text: 이름 첫 글자, 15px, Bold, White
+Text: Current cell's text:split by("|"):item #1:truncated to 1
+  → 이름 첫 글자, 15px, Bold, White
+
+Background (Conditional):
+  When Current cell's text contains "STUDENT":
+    → #FF6D4D (Primary)
+  When Current cell's text contains "ACADEMY_ADMIN":
+    → #1A2E4D (Navy)
+  When Current cell's text contains "INSTRUCTOR":
+    → #22C55E (Success)
 ```
 
 #### Text_CreatedName
 ```
 Font: Pretendard 14px, Weight 600, Color: #1F2937
-Dynamic: Current cell's User's name
+Dynamic: Current cell's text:split by("|"):item #1
 ```
 
 #### Text_CreatedMeta
 ```
 Font: Pretendard 12px, Color: #9CA3AF
-Dynamic: "Current cell's User's phone · 학년 · 비밀번호: mb1234"
+Dynamic: Current cell's text:split by("|"):item #2
+         (학년이 있으면) " · " + :item #3
+         " · 비밀번호: mb1234"
+
+★ Bubble 표현식 (학생일 때):
+  Current cell's text:split by("|"):item #2
+  " · "
+  Current cell's text:split by("|"):item #3
+  " · 비밀번호: mb1234"
+
+★ Bubble 표현식 (관리자/강사일 때):
+  학년(:item #3)이 빈 문자열 → " · " + 학년 부분 생략
+  
+  팁: Conditional로 분기하거나, 
+      :item #3 is not empty → " · " + :item #3 추가
 ```
 
 #### Text_CreatedBadge
@@ -511,14 +536,13 @@ Font: Pretendard 11px, Weight 500
 Padding: 4px 8px
 Roundness: 6
 
-역할이 STUDENT:
-  Background: #FF6D4D, Color: #FFFFFF
-
-역할이 ACADEMY_ADMIN:
-  Background: #1A2E4D, Color: #FFFFFF
-
-역할이 INSTRUCTOR:
-  Background: #22C55E, Color: #FFFFFF
+★ Conditional 기반 표시:
+  When Current cell's text contains "STUDENT":
+    Text: "학생", Background: #FF6D4D, Color: #FFFFFF
+  When Current cell's text contains "ACADEMY_ADMIN":
+    Text: "관리자", Background: #1A2E4D, Color: #FFFFFF
+  When Current cell's text contains "INSTRUCTOR":
+    Text: "강사", Background: #22C55E, Color: #FFFFFF
 ```
 
 ### 4.13 Text_Copyright
@@ -543,8 +567,16 @@ Page: admin-create-account에 Custom State 추가:
 
 4. state_loading (type: yes/no, default: no)
 
-5. state_created_users (type: User, list: yes, default: empty)
-   → 이 세션에서 생성한 유저 목록 (RG 데이터소스로 사용)
+5. state_created_accounts (type: text, list: yes, default: empty)
+   → 이 세션에서 생성한 계정 정보를 텍스트로 저장
+   → 형식: "이름|전화번호|학년표시|역할코드"
+   → 예: "테스트학생A|01011110000|초1|STUDENT"
+   → 예: "테스트관리자|01099990000||ACADEMY_ADMIN"
+   
+   ★ User list 대신 text list를 사용하는 이유:
+     Sign the user up → 자동 로그인 → Log the user out 과정에서
+     Privacy Rules에 의해 다른 User 데이터 접근이 차단됨.
+     텍스트로 저장하면 Privacy Rules 영향을 받지 않음.
 ```
 
 ### Conditional
@@ -582,7 +614,7 @@ When state_loading is yes:
 
 #### Group_CreatedSection 표시
 ```
-When state_created_users:count > 0:
+When state_created_accounts:count > 0:
   → Visible ✅
 ```
 
@@ -632,44 +664,78 @@ Event: When Button_Create is clicked
      phone          = Input_Phone's value:find & replace(Find:"-", Replace by:"")
      name           = Input_Name's value
      role           = Dropdown_Role's value
-     grade          = Dropdown_Grade's value  (★ 또는 StudentProfile에 저장)
      is_first_login = yes
      status         = ACTIVE
      academy_id     = (MVP: 비워둠 또는 하드코딩)
+   
+   ★ grade는 User에 없음! → Step 8에서 StudentProfile로 저장
 
-── Step 8: 생성 목록에 추가
+── Step 8: StudentProfile 생성 (학생일 때만) ★★★ NEW
+   Only when: Dropdown_Role's value is "STUDENT"
+   Action: Create a new thing → StudentProfile
+     user_id  = Current User
+     grade    = Dropdown_Grade's value  (GradeLevel Option Set)
+   
+   ★ 반드시 Log the user out 전에 실행!
+     로그아웃하면 Current User 참조가 불가능해짐
+   
+   ★ 관리자/강사 선택 시: 이 Step은 자동으로 건너뜀 (Only when 조건)
+     → InstructorProfile은 Phase B에서 별도 생성
+
+── Step 9: 생성 목록에 추가 (텍스트로 저장) ★★★ 변경
    Action: Set state of admin-create-account
-     state_created_users add Current User
-     (★ 또는 state_created_users add Result of step 6)
+     state_created_accounts add
+       Input_Name's value
+       :append "|"
+       :append Input_Phone's value:find & replace(Find:"-", Replace by:"")
+       :append "|"
+       :append Dropdown_Grade's value's School_Level (학생일 때) 또는 "" (빈값)
+       :append "|"
+       :append Dropdown_Role's value
+   
+   ★ 결과 예시: "테스트학생A|01011110000|초1|STUDENT"
+   ★ 결과 예시: "테스트관리자|01099990000||ACADEMY_ADMIN"
+   
+   ★ Bubble 표현식 팁:
+     학년 부분은 Conditional을 사용하거나:
+     Dropdown_Role's value is STUDENT
+       → Dropdown_Grade's value's School_Level
+     Dropdown_Role's value is not STUDENT
+       → "" (빈 문자열)
 
-── Step 9: 로그아웃 ★★★
+── Step 10: 로그아웃 ★★★
    Action: Log the user out
    (← Sign the user up 시 자동 로그인됨, 다음 계정 생성을 위해 즉시 로그아웃)
 
-── Step 10: 로딩 해제
+── Step 11: 로딩 해제
    Action: Set state → state_loading = no
 
-── Step 11: 토스트 표시
+── Step 12: 토스트 표시
    Action: Show RE_Toast
      (또는 Custom State로 토스트 텍스트 설정 후 표시)
      메시지: "[이름] [역할] 계정이 생성되었습니다"
      예) "테스트학생A 학생 계정이 생성되었습니다"
 
-── Step 12: 폼 초기화
+── Step 13: 폼 초기화
    Action: Reset inputs
    (← Bubble 내장 Action, 모든 Input/Dropdown을 초기 상태로)
    ★ Reset inputs 후 Dropdown_Role도 기본값(STUDENT)으로 복원
    → Group_InputGrade Conditional이 자동으로 학년 다시 표시
 ```
 
-> ⚠️ **Step 9 (Log the user out)가 가장 중요합니다!**  
+> ⚠️ **Step 10 (Log the user out)가 가장 중요합니다!**  
 > "Sign the user up"은 새 계정을 만들면서 **자동으로 그 계정으로 로그인**합니다.  
-> 로그아웃하지 않으면 관리자가 아닌 방금 생성한 학생 계정으로 남게 됩니다.  
+> 로그아웃하지 않으면 관리자가 아닌 방금 생성한 계정으로 남게 됩니다.  
 > 연속 계정 생성을 위해 반드시 로그아웃 필요.
 
-> ⚠️ **Step 8의 타이밍 주의**:  
-> Make changes 후, Log the user out 전에 state에 User를 추가해야 합니다.  
+> ⚠️ **Step 8~9의 타이밍 주의**:  
+> StudentProfile 생성(Step 8)과 state 추가(Step 9)는 반드시 Log the user out(Step 10) 전에!  
 > 로그아웃 후에는 Current User 참조가 불가능하므로.
+
+> ⚠️ **text list를 사용하는 이유 (Privacy Rules 회피)**:  
+> Sign the user up → 새 계정으로 자동 로그인 → Log the user out 과정에서  
+> 이전에 생성한 User 데이터에 대한 접근이 Privacy Rules에 의해 차단됩니다.  
+> text list로 표시 정보만 저장하면 이 문제를 완전히 회피할 수 있습니다.
 
 ### WF-2: Sign the user up 실패 처리
 
@@ -731,26 +797,30 @@ Event: When Dropdown_Role's value is changed
 ### Dropdown_Grade (학년)
 
 ```
-Option 1 — Static Choices (MVP 빠른 구현):
-  초1, 초2, 초3, 초4, 초5, 초6, 중1, 중2, 중3, 고1, 고2, 고3
+★ Option Set: GradeLevel (이미 생성됨)
 
-Option 2 — Option Set (권장, 확장성):
-  Option Set 이름: Grade
+  | Display | Grade_order | School_Level |
+  |---------|-------------|--------------|
+  | E1      | 1           | 초1          |
+  | E2      | 2           | 초2          |
+  | E3      | 3           | 초3          |
+  | E4      | 4           | 초4          |
+  | E5      | 5           | 초5          |
+  | E6      | 6           | 초6          |
+  | M1      | 7           | 중1          |
+  | M2      | 8           | 중2          |
+  | M3      | 9           | 중3          |
+  | H1      | 10          | 고1          |
+  | H2      | 11          | 고2          |
+  | H3      | 12          | 고3          |
+
+Dropdown 설정:
+  Type of choices: GradeLevel
+  Option caption: Current option's School_Level  ★ 핵심!
+  Sort by: Grade_order (Ascending)
   
-  | Display | Value |
-  |---------|-------|
-  | 초1     | E1    |
-  | 초2     | E2    |
-  | 초3     | E3    |
-  | 초4     | E4    |
-  | 초5     | E5    |
-  | 초6     | E6    |
-  | 중1     | M1    |
-  | 중2     | M2    |
-  | 중3     | M3    |
-  | 고1     | H1    |
-  | 고2     | H2    |
-  | 고3     | H3    |
+  → 드롭다운에 "초1, 초2, ... 고3" 한글 표시
+  → 저장되는 값: GradeLevel Option 자체 (내부적으로 E1 등)
 ```
 
 ### Dropdown_Role (역할)
@@ -788,46 +858,51 @@ Input, Dropdown: Width 100%
 □ 1. 정상 생성 — 이름 + 전화번호 + 학년 입력 후 "계정 생성"
      → 토스트 "○○○ 학생 계정이 생성되었습니다" 표시되는가?
      → 하단 생성 목록에 추가되는가?
+     → Data 탭: StudentProfile 생성되었는가? (grade = 선택한 학년)
 
 □ 2. 관리자 생성 — 역할 "관리자" 선택 시
      → 학년 필드가 숨겨지는가?
      → 학년 없이 정상 생성되는가?
      → 토스트 "○○○ 관리자 계정이 생성되었습니다" 표시되는가?
-     → 폼이 초기화되는가?
+     → Data 탭: StudentProfile이 생성되지 않았는가? ★
 
-□ 3. 빈값 검증 — 이름 비움
+□ 3. 학년 Dropdown 표시 — 학년 드롭다운 클릭
+     → "초1, 초2, ... 고3" 한글로 표시되는가? (E1, E2가 아닌)
+
+□ 4. 빈값 검증 — 이름 비움
      → "이름을 입력해주세요" 표시되는가?
 
-□ 4. 빈값 검증 — 전화번호 비움
+□ 5. 빈값 검증 — 전화번호 비움
      → "전화번호를 입력해주세요" 표시되는가?
 
-□ 5. 빈값 검증 — 학년 미선택 (학생일 때)
+□ 6. 빈값 검증 — 학년 미선택 (학생일 때)
      → "학년을 선택해주세요" 표시되는가?
 
-□ 6. 중복 전화번호 — 이미 생성한 전화번호로 재생성 시도
+□ 7. 중복 전화번호 — 이미 생성한 전화번호로 재생성 시도
      → Sign up 에러 → 에러 표시되는가?
 
-□ 7. 연속 생성 — 1번째 생성 후 바로 2번째 생성
+□ 8. 연속 생성 — 1번째 생성 후 바로 2번째 생성
      → 로그아웃 후 폼 초기화되어 다음 계정 생성 가능한가?
-     → 생성 목록에 2명 모두 표시되는가?
+     → 생성 목록에 2명 모두 표시되는가? (Privacy Rules 문제 없는가?)
 
-□ 8. 생성 후 로그인 테스트 — /login에서 방금 생성한 계정으로 로그인
+□ 9. 생성 후 로그인 테스트 — /login에서 방금 생성한 계정으로 로그인
      → 01011110000 / mb1234 → change-password로 이동하는가?
 
-□ 9. 강사 계정 생성 — 역할을 "강사"로 변경 후 생성
+□ 10. 강사 계정 생성 — 역할을 "강사"로 변경 후 생성
      → role = INSTRUCTOR로 저장되는가?
      → 학년 필드가 숨겨져 있는가?
+     → Data 탭: StudentProfile이 생성되지 않았는가? ★
      → 뱃지가 초록색으로 표시되는가?
 
-□ 10. 역할 전환 — 학생→관리자→강사→학생 순서로 변경
+□ 11. 역할 전환 — 학생→관리자→강사→학생 순서로 변경
      → 학년 필드가 학생일 때만 나타나는가?
      → 관리자/강사 선택 시 학년이 부드럽게 사라지는가?
 
-□ 11. 로딩 상태 — 생성 버튼 클릭 시
+□ 12. 로딩 상태 — 생성 버튼 클릭 시
      → "생성 중..." + 로딩 스피너 표시되는가?
      → 중복 클릭 방지되는가?
 
-□ 12. 생성 목록 — 카운트 정확한가? (n명 표시)
+□ 13. 생성 목록 — 카운트 정확한가? (n명 표시)
 ```
 
 ### MVP 테스트 계정 생성 순서
@@ -862,6 +937,17 @@ App Data → All Users 검색:
 
 ★ password는 Data 탭에서 확인 불가 (정상)
 ★ email이 "전화번호@mama.app" 형태인지 확인
+
+App Data → All StudentProfiles 검색:
+
+| user_id (→User)      | grade (→GradeLevel) |
+|-----------------------|---------------------|
+| 테스트학생A            | E1 (School_Level: 중1) |
+| 테스트학생B            | E2 (School_Level: 중2) |
+
+★ 학생 계정에만 StudentProfile이 생성되어야 함
+★ 관리자/강사 계정에는 StudentProfile이 없어야 정상
+★ grade 필드가 GradeLevel Option Set 값인지 확인
 ```
 
 ---
@@ -913,7 +999,7 @@ p.logo-subtitle                  → Text_PageSubtitle (15px, #6B7280)
 .created-header                  → Group_CreatedHeader (Row, Space between)
 .created-title                   → Text_CreatedTitle (16px, Weight 600, Navy)
 .created-count                   → Text_CreatedCount (13px, Tertiary, "n명")
-.created-list                    → RG_CreatedUsers (Repeating Group, Desc)
+.created-list                    → RG_CreatedAccounts (Repeating Group, text list)
 .created-item                    → Group_CreatedItem (Row, V Center, gap 12)
 .created-avatar                  → Group_Avatar (40×40, 원형, 이니셜)
 .created-name                    → Text_CreatedName (14px, Weight 600)
