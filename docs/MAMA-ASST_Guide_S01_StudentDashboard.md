@@ -169,30 +169,83 @@ PC (> 1200px):
 ```
 student-dashboard (Page, ★ Row, 100% × 100vh, BG: #F9FAFB)
 │
-├── Group_SidebarWrapper ────── 256px × 100vh (Fixed width)
+├── Group_SidebarWrapper ──────── 256px × 100vh (Fixed width, Collapse when hidden ✅)
 │   └── RE_Sidebar
 │       📥 active_page = "student-dashboard"
 │
-├── Group_MainArea ─────────── Column (flex: 1, 100vh)
+├── Group_MainArea ────────────── Column (flex: 1, 100vh)
 │   │
-│   ├── RE_Header ─────────── 64px (일반 배치, Floating Group 아님!)
+│   ├── RE_Header ─────────────── 64px (일반 배치, Floating Group 아님!)
 │   │   📥 page_title = "대시보드"
 │   │   📥 notif_count = Search for Notifications:count
 │   │
-│   └── Group_MainContent ─── Column (flex: 1, scroll)
-│       ├── Group_Greeting ──────── 인사말
-│       ├── Group_DailyTarget ───── Daily Target 요약 바
-│       ├── Group_SubjectCards ──── Row (3개 카드)
-│       │   ├── Group_CardKorean
-│       │   ├── Group_CardEnglish
-│       │   └── Group_CardMath
-│       └── Group_XP ───────────── XP + 레벨 + Streak
+│   └── Group_MainContent ─────── Column (flex: 1, scroll, padding: 28 32, gap: 24)
+│       │
+│       ├── Group_Greeting ────── Column (Transparent, gap: 4)
+│       │   ├── Text_GreetingTitle ── Heading 3 ✅ | "안녕, [name]! 👋"
+│       │   └── Text_GreetingSub ──── Body 14 ⚙️ color→Secondary | "[날짜] · 오늘도 화이팅!"
+│       │
+│       ├── Group_DailyTarget ──── Column (Card Bordered ⚙️ roundness→16, gap: 14, pad: 20 24)
+│       │   ├── Group_DTHeader ────── Row (space-between)
+│       │   │   ├── Text_DTLabel ──── Label ⚙️ weight→600 | "오늘의 학습 목표"
+│       │   │   └── Text_DTCount ──── Body 14 ⚙️ color→Secondary | "[완료] / [목표] 완료"
+│       │   ├── HTML_DTProgress ───── HTML Element (.dt-track + .dt-bar)
+│       │   ├── Group_DTSubjects ──── Row (gap: 16)
+│       │   │   ├── Text_SubKorean ── Caption ✅ | "● 국어 [완료]/[목표]"
+│       │   │   ├── Text_SubEnglish ─ Caption ✅ | "● 영어 [완료]/[목표]"
+│       │   │   └── Text_SubMath ──── Caption ✅ | "● 수학 [완료]/[목표]"
+│       │   └── Group_DTEmpty ─────── Body 14 ⚙️ color→Tertiary (빈 상태, 기본 숨김)
+│       │
+│       ├── Group_SubjectCards ──── Row (Transparent, gap: 16)
+│       │   │
+│       │   ├── Group_CardKorean ──── Card Bordered ⚙️ roundness→16, pad: 24
+│       │   │   ├── Group_SCTop ──────── Row (space-between)
+│       │   │   │   ├── Group_SCIcon ──── 48×48, rounded: 14, BG: #4285F4
+│       │   │   │   │   └── Icon ──────── menu_book (24px, white)
+│       │   │   │   └── Text_SCBadge ──── 커스텀 (11px, 600) + Conditional 3개
+│       │   │   ├── Text_SCName ──────── Heading 5 ⚙️ color→Navy | "국어"
+│       │   │   ├── Text_SCDesc ──────── 커스텀 (13px, 400, Secondary) | "5단계 구조화 학습"
+│       │   │   ├── Group_SCProgress ──── Column
+│       │   │   │   ├── Group_SCProgressHeader ── Row
+│       │   │   │   │   ├── Text_Label ── Caption ✅ | "오늘 진도"
+│       │   │   │   │   └── Text_Count ── 커스텀 (13px, 700, #4285F4) | "2 / 2"
+│       │   │   │   └── HTML_Progress ── HTML Element (.sc-track + .sc-bar-korean)
+│       │   │   └── Button_StartKorean ── 커스텀 Tonal (BG: #EBF2FE, Color: #4285F4)
+│       │   │       Icon: play_arrow | "학습하기" → Go to page: subject-korean
+│       │   │
+│       │   ├── Group_CardEnglish ──── (국어와 동일 구조)
+│       │   │   └── 차이: translate, #34A853, "7초 발음 테스트", .sc-bar-english
+│       │   │
+│       │   └── Group_CardMath ──────── (국어와 동일 구조)
+│       │       └── 차이: calculate, #FBBC05, "Jump/Anchor 문제풀이", .sc-bar-math
+│       │
+│       └── Group_XP ──────────── 커스텀 (Row, id="xpCard", Navy gradient, rounded: 16)
+│           ├── Group_XPLeft ────── Row (gap: 16, align: center)
+│           │   ├── Group_XPLevel ── 56×56, circle, BG: #FFFFFF1A, Border: 2px #FFFFFF33
+│           │   │   ├── Text ─────── 커스텀 (10px, 500, #FFFFFF99) | "Lv."
+│           │   │   └── Text_LevelNum 커스텀 (20px, 800, #FFF) | 동적: current_level
+│           │   └── Group_XPInfo ──── Column
+│           │       ├── Text ─────── 커스텀 (11px, 400, #FFFFFF80) | "누적 경험치"
+│           │       └── Text_XPValue 커스텀 (22px, 700, #FFF) | 동적: total_xp + " XP"
+│           └── Group_XPRight ────── Row (gap: 24)
+│               ├── Group_Stat1 ──── Column (center)
+│               │   ├── Text ─────── 24px | "🔥"
+│               │   ├── Text ─────── 커스텀 (16px, 700, #FFF) | "0일" (MVP 하드코딩)
+│               │   └── Text ─────── 커스텀 (11px, 400, #FFFFFF80) | "연속 학습"
+│               ├── Group_Stat2 ──── Column (center)
+│               │   ├── Text ─────── 24px | "⭐"
+│               │   ├── Text ─────── 커스텀 (16px, 700, #FFF) | "0개" (MVP 하드코딩)
+│               │   └── Text ─────── 커스텀 (11px, 400, #FFFFFF80) | "이번 주 완료"
+│               └── Group_Stat3 ──── Column (center)
+│                   ├── Text ─────── 24px | "📊"
+│                   ├── Text ─────── 커스텀 (16px, 700, #FFF) | "0%" (MVP 하드코딩)
+│                   └── Text ─────── 커스텀 (11px, 400, #FFFFFF80) | "주간 달성률"
 │
-├── FG_MobileSidebar ──────── Floating Group (left, 256px, 기본 숨김)
+├── FG_MobileSidebar ──────────── Floating Group (left, 256px, 기본 숨김)
 │   └── RE_Sidebar
 │       📥 active_page = "student-dashboard"
 │
-└── Group_SidebarOverlay ──── 반투명 오버레이 (기본 숨김)
+└── Group_SidebarOverlay ──────── 반투명 BG: #00000080 (기본 숨김)
 ```
 
 > ★ **핵심 차이** (v1.1과 비교):
