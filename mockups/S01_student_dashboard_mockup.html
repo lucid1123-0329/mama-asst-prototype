@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>학생 대시보드 | MAMA-ASST MVP</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <style>
+    /* ===== Reset & Variables ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #FF6D4D;
+      --primary-hover: #E55A3C;
+      --navy: #1A2E4D;
+      --navy-light: #243B5C;
+      --text-primary: #1F2937;
+      --text-secondary: #6B7280;
+      --text-tertiary: #9CA3AF;
+      --text-inverse: #FFFFFF;
+      --border-light: #E5E7EB;
+      --background: #F9FAFB;
+      --surface: #FFFFFF;
+      --bg-hover: #F3F4F6;
+      --success: #22C55E;
+      --info: #3B82F6;
+      --alert: #F59E0B;
+      --error: #EF4444;
+      /* 과목 컬러 */
+      --korean: #4285F4;
+      --english: #34A853;
+      --math: #FBBC05;
+      --korean-light: #EBF2FE;
+      --english-light: #E8F5E9;
+      --math-light: #FFF8E1;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--background);
+      color: var(--text-primary);
+      line-height: 1.5;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    /* ===== Layout ===== */
+    .app-layout { display: flex; height: 100vh; }
+
+    /* ===== Sidebar (RE_Sidebar) ===== */
+    .sidebar {
+      width: 256px;
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-logo {
+      width: 32px; height: 32px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sidebar-logo .material-icons-round { font-size: 18px; color: white; }
+    .sidebar-app-name { font-size: 16px; font-weight: 700; color: white; letter-spacing: -0.02em; }
+
+    .sidebar-profile {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--primary); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; color: white;
+    }
+    .sidebar-user-name { font-size: 14px; font-weight: 600; color: white; }
+    .sidebar-user-role { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+    .sidebar-nav { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-section-label {
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.35);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 12px 12px 6px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 10px;
+      color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all 0.15s;
+      text-decoration: none;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); }
+    .nav-item.active { background: var(--primary); color: white; }
+    .nav-item .material-icons-round { font-size: 20px; }
+
+    .sidebar-footer {
+      padding: 12px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .nav-item.logout:hover { color: var(--error); background: rgba(239,68,68,0.1); }
+
+    /* ===== Main Area ===== */
+    .main-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    /* ===== Header (RE_Header) ===== */
+    .header {
+      height: 64px; background: var(--surface);
+      border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-hamburger {
+      display: none; width: 40px; height: 40px; border-radius: 8px;
+      border: none; background: none; cursor: pointer;
+      align-items: center; justify-content: center;
+      color: var(--text-secondary);
+    }
+    .header-title { font-size: 18px; font-weight: 700; color: var(--navy); }
+
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .header-icon-btn {
+      position: relative; width: 40px; height: 40px; border-radius: 10px;
+      border: none; background: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-secondary); transition: background 0.15s;
+    }
+    .header-icon-btn:hover { background: var(--bg-hover); }
+    .notif-badge {
+      position: absolute; top: 6px; right: 6px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--primary); border: 2px solid var(--surface);
+    }
+    .header-user {
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+      padding: 4px 8px 4px 4px; border-radius: 10px; transition: background 0.15s;
+    }
+    .header-user:hover { background: var(--bg-hover); }
+    .header-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--primary); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: white;
+    }
+    .header-user-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+
+    /* ===== MainContent ===== */
+    .main-content {
+      flex: 1; overflow-y: auto; padding: 28px 32px;
+    }
+
+    /* ===== Greeting ===== */
+    .greeting { margin-bottom: 28px; }
+    .greeting-title {
+      font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 4px;
+    }
+    .greeting-subtitle { font-size: 15px; color: var(--text-secondary); }
+
+    /* ===== Daily Target ===== */
+    .daily-target {
+      background: var(--surface); border-radius: 16px;
+      padding: 20px 24px; margin-bottom: 24px;
+      border: 1px solid var(--border-light);
+    }
+    .dt-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px;
+    }
+    .dt-label { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .dt-count { font-size: 14px; color: var(--text-secondary); }
+    .dt-count strong { color: var(--primary); font-weight: 700; }
+
+    .dt-progress-track {
+      width: 100%; height: 12px; background: #F3F4F6;
+      border-radius: 6px; overflow: hidden; margin-bottom: 14px;
+    }
+    .dt-progress-bar {
+      height: 100%; border-radius: 6px;
+      background: linear-gradient(90deg, var(--primary) 0%, #FF8F73 100%);
+      transition: width 0.6s ease;
+    }
+    .dt-subjects {
+      display: flex; gap: 16px;
+    }
+    .dt-subject {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-secondary);
+    }
+    .dt-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .dt-dot.korean { background: var(--korean); }
+    .dt-dot.english { background: var(--english); }
+    .dt-dot.math { background: var(--math); }
+
+    /* ===== Subject Cards ===== */
+    .subject-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin-bottom: 24px;
+    }
+    .subject-card {
+      background: var(--surface); border-radius: 16px;
+      padding: 24px; border: 1px solid var(--border-light);
+      cursor: pointer; transition: all 0.2s;
+      display: flex; flex-direction: column;
+    }
+    .subject-card:hover {
+      border-color: transparent;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .sc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .sc-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sc-icon .material-icons-round { font-size: 24px; color: white; }
+    .sc-icon.korean { background: var(--korean); }
+    .sc-icon.english { background: var(--english); }
+    .sc-icon.math { background: var(--math); }
+
+    .sc-badge {
+      font-size: 11px; font-weight: 600; padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .sc-badge.done { background: rgba(34,197,94,0.1); color: var(--success); }
+    .sc-badge.progress { background: rgba(59,130,246,0.1); color: var(--info); }
+    .sc-badge.pending { background: var(--bg-hover); color: var(--text-tertiary); }
+
+    .sc-name { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .sc-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+
+    .sc-progress { margin-bottom: 16px; }
+    .sc-progress-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px;
+    }
+    .sc-progress-label { font-size: 12px; color: var(--text-secondary); }
+    .sc-progress-count { font-size: 13px; font-weight: 700; }
+    .sc-progress-count.korean { color: var(--korean); }
+    .sc-progress-count.english { color: var(--english); }
+    .sc-progress-count.math { color: var(--math); }
+
+    .sc-progress-track {
+      width: 100%; height: 6px; background: #F3F4F6;
+      border-radius: 3px; overflow: hidden;
+    }
+    .sc-progress-bar { height: 100%; border-radius: 3px; transition: width 0.6s; }
+    .sc-progress-bar.korean { background: var(--korean); }
+    .sc-progress-bar.english { background: var(--english); }
+    .sc-progress-bar.math { background: var(--math); }
+
+    .sc-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; height: 42px; border-radius: 10px;
+      border: none; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; margin-top: auto;
+    }
+    .sc-btn .material-icons-round { font-size: 18px; }
+    .sc-btn.korean { background: var(--korean-light); color: var(--korean); }
+    .sc-btn.korean:hover { background: var(--korean); color: white; }
+    .sc-btn.english { background: var(--english-light); color: var(--english); }
+    .sc-btn.english:hover { background: var(--english); color: white; }
+    .sc-btn.math { background: var(--math-light); color: #E6A800; }
+    .sc-btn.math:hover { background: var(--math); color: #7A5C00; }
+
+    /* ===== XP Card ===== */
+    .xp-card {
+      background: linear-gradient(135deg, var(--navy) 0%, #2A4060 100%);
+      border-radius: 16px; padding: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      color: white;
+    }
+    .xp-left { display: flex; align-items: center; gap: 16px; }
+    .xp-level {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+    .xp-level-label { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.6); }
+    .xp-level-num { font-size: 20px; font-weight: 800; line-height: 1; }
+    .xp-info-name { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 2px; }
+    .xp-info-value { font-size: 22px; font-weight: 700; }
+    .xp-info-value span { font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.6); }
+
+    .xp-right { display: flex; gap: 24px; }
+    .xp-stat { text-align: center; }
+    .xp-stat-icon { font-size: 24px; margin-bottom: 4px; }
+    .xp-stat-value { font-size: 16px; font-weight: 700; }
+    .xp-stat-label { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1200px) {
+      .sidebar { display: none; }
+      .header-hamburger { display: flex; }
+    }
+    @media (max-width: 768px) {
+      .main-content { padding: 20px 16px; }
+      .subject-cards { grid-template-columns: 1fr; }
+      .greeting-title { font-size: 20px; }
+      .xp-card { flex-direction: column; gap: 16px; text-align: center; }
+      .xp-left { flex-direction: column; }
+      .header-user-name { display: none; }
+    }
+
+    /*
+      ★ Bubble 엘리먼트 매핑:
+      
+      .sidebar                       → RE_Sidebar (이미 구현됨)
+      .header                        → RE_Header (이미 구현됨, FG_Header에 배치)
+      .main-content                  → Group_MainContent (Column, flex: 1, 스크롤)
+      
+      .greeting                      → Group_Greeting (Column)
+      .greeting-title                → Text_Greeting (Dynamic: "안녕, " + Current User's name + "!")
+      .greeting-subtitle             → Text_GreetingSub (Dynamic: 오늘 날짜)
+      
+      .daily-target                  → Group_DailyTarget (Column, Surface BG)
+      .dt-progress-bar               → Shape_ProgressBar (width = 완료/목표 %)
+      
+      .subject-cards                 → Group_SubjectCards (Row, Gap 16)
+      .subject-card.korean           → Group_CardKorean (Column)
+      .subject-card.english          → Group_CardEnglish (Column)
+      .subject-card.math             → Group_CardMath (Column)
+      .sc-btn                        → Button_StartKorean / English / Math → 각 과목 메인으로
+      
+      .xp-card                       → Group_XP (Row, Navy gradient BG)
+    */
+  </style>
+</head>
+<body>
+
+  <div class="app-layout">
+    
+    <!-- ===== Sidebar (RE_Sidebar) ===== -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <span class="material-icons-round">school</span>
+        </div>
+        <span class="sidebar-app-name">MAMA-ASST</span>
+      </div>
+
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">테</div>
+        <div>
+          <div class="sidebar-user-name">테스트학생A</div>
+          <div class="sidebar-user-role">학생 · 중1</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">학습</div>
+        <a class="nav-item active">
+          <span class="material-icons-round">home</span> 대시보드
+        </a>
+        <a class="nav-item">
+          <span class="material-icons-round">menu_book</span> 국어
+        </a>
+        <a class="nav-item">
+          <span class="material-icons-round">translate</span> 영어
+        </a>
+        <a class="nav-item">
+          <span class="material-icons-round">calculate</span> 수학
+        </a>
+
+        <div class="nav-section-label">관리</div>
+        <a class="nav-item">
+          <span class="material-icons-round">event_note</span> 플래너
+        </a>
+        <a class="nav-item">
+          <span class="material-icons-round">insights</span> 리포트
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a class="nav-item">
+          <span class="material-icons-round">settings</span> 설정
+        </a>
+        <a class="nav-item logout">
+          <span class="material-icons-round">logout</span> 로그아웃
+        </a>
+      </div>
+    </aside>
+
+    <!-- ===== Main Area ===== -->
+    <div class="main-area">
+
+      <!-- Header (RE_Header) -->
+      <header class="header">
+        <div class="header-left">
+          <button class="header-hamburger">
+            <span class="material-icons-round">menu</span>
+          </button>
+          <span class="header-title">대시보드</span>
+        </div>
+        <div class="header-right">
+          <button class="header-icon-btn" title="알림">
+            <span class="material-icons-round">notifications_none</span>
+            <span class="notif-badge"></span>
+          </button>
+          <div class="header-user">
+            <div class="header-avatar">테</div>
+            <span class="header-user-name">테스트학생A</span>
+            <span class="material-icons-round" style="font-size:18px;color:var(--text-tertiary)">expand_more</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- MainContent -->
+      <main class="main-content">
+
+        <!-- 인사말 -->
+        <section class="greeting">
+          <h1 class="greeting-title">안녕, 테스트학생A! 👋</h1>
+          <p class="greeting-subtitle">2025년 2월 25일 화요일 · 오늘도 화이팅!</p>
+        </section>
+
+        <!-- Daily Target -->
+        <section class="daily-target">
+          <div class="dt-header">
+            <span class="dt-label">오늘의 학습 목표</span>
+            <span class="dt-count"><strong>4</strong> / 7 완료</span>
+          </div>
+          <div class="dt-progress-track">
+            <div class="dt-progress-bar" style="width: 57%"></div>
+          </div>
+          <div class="dt-subjects">
+            <div class="dt-subject">
+              <span class="dt-dot korean"></span> 국어 2/2
+            </div>
+            <div class="dt-subject">
+              <span class="dt-dot english"></span> 영어 1/3
+            </div>
+            <div class="dt-subject">
+              <span class="dt-dot math"></span> 수학 1/2
+            </div>
+          </div>
+        </section>
+
+        <!-- 과목 카드 -->
+        <section class="subject-cards">
+          
+          <!-- 국어 -->
+          <div class="subject-card" onclick="alert('→ subject-korean 페이지로 이동')">
+            <div class="sc-top">
+              <div class="sc-icon korean">
+                <span class="material-icons-round">menu_book</span>
+              </div>
+              <span class="sc-badge done">완료!</span>
+            </div>
+            <div class="sc-name">국어</div>
+            <div class="sc-desc">5단계 구조화 학습</div>
+            <div class="sc-progress">
+              <div class="sc-progress-header">
+                <span class="sc-progress-label">오늘 진도</span>
+                <span class="sc-progress-count korean">2 / 2</span>
+              </div>
+              <div class="sc-progress-track">
+                <div class="sc-progress-bar korean" style="width: 100%"></div>
+              </div>
+            </div>
+            <button class="sc-btn korean">
+              <span class="material-icons-round">play_arrow</span>
+              학습하기
+            </button>
+          </div>
+
+          <!-- 영어 -->
+          <div class="subject-card" onclick="alert('→ subject-english 페이지로 이동')">
+            <div class="sc-top">
+              <div class="sc-icon english">
+                <span class="material-icons-round">translate</span>
+              </div>
+              <span class="sc-badge progress">진행중</span>
+            </div>
+            <div class="sc-name">영어</div>
+            <div class="sc-desc">7초 발음 테스트</div>
+            <div class="sc-progress">
+              <div class="sc-progress-header">
+                <span class="sc-progress-label">오늘 진도</span>
+                <span class="sc-progress-count english">1 / 3</span>
+              </div>
+              <div class="sc-progress-track">
+                <div class="sc-progress-bar english" style="width: 33%"></div>
+              </div>
+            </div>
+            <button class="sc-btn english">
+              <span class="material-icons-round">play_arrow</span>
+              학습하기
+            </button>
+          </div>
+
+          <!-- 수학 -->
+          <div class="subject-card" onclick="alert('→ subject-math 페이지로 이동')">
+            <div class="sc-top">
+              <div class="sc-icon math">
+                <span class="material-icons-round">calculate</span>
+              </div>
+              <span class="sc-badge progress">진행중</span>
+            </div>
+            <div class="sc-name">수학</div>
+            <div class="sc-desc">Jump & Anchor 문제풀이</div>
+            <div class="sc-progress">
+              <div class="sc-progress-header">
+                <span class="sc-progress-label">오늘 진도</span>
+                <span class="sc-progress-count math">1 / 2</span>
+              </div>
+              <div class="sc-progress-track">
+                <div class="sc-progress-bar math" style="width: 50%"></div>
+              </div>
+            </div>
+            <button class="sc-btn math">
+              <span class="material-icons-round">play_arrow</span>
+              학습하기
+            </button>
+          </div>
+
+        </section>
+
+        <!-- XP Card -->
+        <section class="xp-card">
+          <div class="xp-left">
+            <div class="xp-level">
+              <span class="xp-level-label">Lv.</span>
+              <span class="xp-level-num">3</span>
+            </div>
+            <div>
+              <div class="xp-info-name">누적 경험치</div>
+              <div class="xp-info-value">1,250 <span>XP</span></div>
+            </div>
+          </div>
+          <div class="xp-right">
+            <div class="xp-stat">
+              <div class="xp-stat-icon">🔥</div>
+              <div class="xp-stat-value">12일</div>
+              <div class="xp-stat-label">연속 학습</div>
+            </div>
+            <div class="xp-stat">
+              <div class="xp-stat-icon">⭐</div>
+              <div class="xp-stat-value">48개</div>
+              <div class="xp-stat-label">이번 주 완료</div>
+            </div>
+            <div class="xp-stat">
+              <div class="xp-stat-icon">📊</div>
+              <div class="xp-stat-value">78%</div>
+              <div class="xp-stat-label">주간 달성률</div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+</body>
+</html>
