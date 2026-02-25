@@ -49,7 +49,7 @@ MVP 단계: 접근 제어 생략 가능 (URL 직접 접속)
 ```
 Pages → Add a new page
   Page name: admin-create-account
-  Page title: 학생 계정 생성 | MAMA-ASST MVP
+  Page title: 계정 생성 | MAMA-ASST MVP
   Clone from: (없음 또는 login 복사 후 수정)
   Type of content: (비워둠)
 ```
@@ -83,8 +83,8 @@ Page: admin-create-account
 │   ├── Group_Logo (Column, Center)
 │   │   ├── Group_LogoIcon (64×64, Primary, Roundness 16)
 │   │   │   └── Icon_Logo (person_add, 32px, white)
-│   │   ├── Text_PageTitle ("학생 계정 생성")
-│   │   └── Text_PageSubtitle ("학원 학생의 계정을 등록하세요")
+│   │   ├── Text_PageTitle ("계정 생성")
+│   │   └── Text_PageSubtitle ("학원 구성원의 계정을 등록하세요")
 │   │
 │   ├── Group_Card (Column, 카드 스타일)
 │   │   │
@@ -102,14 +102,14 @@ Page: admin-create-account
 │   │   │   ├── Input_Phone
 │   │   │   └── Group_ErrorPhone (Row — 기본 숨김)
 │   │   │
-│   │   ├── Group_FormRow (Row — 학년 + 역할)
-│   │   │   ├── Group_InputGrade (Column, flex 1)
-│   │   │   │   ├── Text_LabelGrade ("학년 *")
-│   │   │   │   ├── Dropdown_Grade
-│   │   │   │   └── Group_ErrorGrade (Row — 기본 숨김)
-│   │   │   └── Group_InputRole (Column, flex 1)
-│   │   │       ├── Text_LabelRole ("역할")
-│   │   │       └── Dropdown_Role
+│   │   ├── Group_InputRole (Column)
+│   │   │   ├── Text_LabelRole ("역할 *")
+│   │   │   └── Dropdown_Role
+│   │   │
+│   │   ├── Group_InputGrade (Column) ★ Visible when: Dropdown_Role = STUDENT
+│   │   │   ├── Text_LabelGrade ("학년 *")
+│   │   │   ├── Dropdown_Grade
+│   │   │   └── Group_ErrorGrade (Row — 기본 숨김)
 │   │   │
 │   │   ├── Group_PasswordPreview (Row)
 │   │   │   ├── Text_PasswordLabel ("자동 설정")
@@ -171,7 +171,7 @@ Size: 32px, Color: #FFFFFF
 
 #### Text_PageTitle
 ```
-Content: "학생 계정 생성"
+Content: "계정 생성"
 Font: Pretendard 24px, Weight 700, Color: #1A2E4D (Navy)
 Margin Bottom: 4px
 
@@ -180,7 +180,7 @@ Margin Bottom: 4px
 
 #### Text_PageSubtitle
 ```
-Content: "학원 학생의 계정을 등록하세요"
+Content: "학원 구성원의 계정을 등록하세요"
 Font: Pretendard 15px, Weight 400, Color: #6B7280
 ```
 
@@ -246,7 +246,7 @@ Font: Pretendard 14px, Weight 500, Color: #1F2937
 ```
 Type: Input
 Style: Input - Standard
-Placeholder: "학생 이름"
+Placeholder: "이름 입력"
 Max length: 20
 Content format: Text
 Size: Width 100%, Min height 48px
@@ -285,17 +285,63 @@ Text: "전화번호를 입력해주세요" (기본)
   - 중복: "이미 등록된 전화번호입니다" (Bubble에서 Sign up 실패 시)
 ```
 
-### 4.7 Group_FormRow (학년 + 역할 한 줄)
+### 4.7 Group_InputRole (역할 선택)
 
 ```
 Type: Group
-Layout: Row
-Apply gap: ✅ Column gap: 12
+Layout: Column
+Size: Width 100%
+Margin Bottom: 20px
+```
 
+#### Text_LabelRole
+```
+Content: "역할"
+Font: Pretendard 14px, Weight 500, Color: #374151
+★ Required 표시: " *" (빨강 #EF4444)
+```
+
+#### Dropdown_Role
+```
+Type: Dropdown
+Choices: Static (또는 Option Set: UserRole)
+  학생 (value: STUDENT)
+  관리자 (value: ACADEMY_ADMIN)
+  강사 (value: INSTRUCTOR) ★ 추후 활성화 예정
+
+Default: 학생 (STUDENT)
+Size: Width 100%, Min height 48px
+Font: 16px
+Roundness: 8
+
+★ MVP에서 강사 선택 시:
+  계정은 생성되지만 전용 대시보드가 아직 없으므로
+  로그인 후 student-dashboard로 임시 라우팅 (또는 접근 불가 안내)
+  Phase B 이후 instructor-dashboard 추가 시 정상 라우팅
+```
+
+### 4.8 Group_InputGrade (학년 선택 — 조건부 표시) ★★★
+
+```
+Type: Group
+Layout: Column
 Size: Width 100%
 Margin Bottom: 20px
 
-모바일 (< 480px): Column으로 변경 (세로 배치)
+★★★ Conditional Visibility:
+  This element is visible when:
+    Dropdown_Role's value is "STUDENT"
+
+  → 역할이 관리자/강사일 때 자동으로 숨겨짐
+  → Bubble에서 "Collapse when hidden" 체크 ✅
+     (아래 비밀번호 표시가 자연스럽게 올라옴)
+```
+
+#### Text_LabelGrade
+```
+Content: "학년"
+Font: Pretendard 14px, Weight 500, Color: #374151
+★ Required 표시: " *" (빨강 #EF4444) — 보일 때만 필수
 ```
 
 #### Dropdown_Grade ★
@@ -311,7 +357,7 @@ Static choices:
   고1, 고2, 고3
 
 Placeholder: "학년 선택"
-Size: Width 100% (Group 내), Min height 48px
+Size: Width 100%, Min height 48px
 Font: 16px
 Roundness: 8
 
@@ -322,23 +368,7 @@ Roundness: 8
   Value: Value 속성 (예: "E1")
 ```
 
-#### Dropdown_Role
-```
-Type: Dropdown
-Choices: Static (또는 Option Set: UserRole)
-  학생 (value: STUDENT)
-  관리자 (value: ACADEMY_ADMIN)
-  강사 (value: INSTRUCTOR) ★ 추후 활성화 예정
-
-Default: 학생 (STUDENT)
-
-★ MVP에서 강사 선택 시:
-  계정은 생성되지만 전용 대시보드가 아직 없으므로
-  로그인 후 student-dashboard로 임시 라우팅 (또는 접근 불가 안내)
-  Phase B 이후 instructor-dashboard 추가 시 정상 라우팅
-```
-
-### 4.8 Group_PasswordPreview (초기 비밀번호 표시)
+### 4.9 Group_PasswordPreview (초기 비밀번호 표시)
 
 ```
 Type: Group
@@ -367,7 +397,7 @@ Color: #1F2937
 Letter spacing: 4px
 ```
 
-### 4.9 Shape_Divider
+### 4.10 Shape_Divider
 
 ```
 Type: Shape (Rectangle) 또는 Group
@@ -379,7 +409,7 @@ Margin: 24px 0 (위아래)
 ★ Bubble에서 구분선: Shape 요소 또는 HTML element로 <hr> 사용
 ```
 
-### 4.10 Button_Create ★
+### 4.11 Button_Create ★
 
 ```
 Type: Button
@@ -398,7 +428,7 @@ Appearance:
   Position: Left of the label
 ```
 
-### 4.11 Group_CreatedSection (생성된 계정 목록)
+### 4.12 Group_CreatedSection (생성된 계정 목록)
 
 ```
 Type: Group
@@ -491,7 +521,7 @@ Roundness: 6
   Background: #22C55E, Color: #FFFFFF
 ```
 
-### 4.12 Text_Copyright
+### 4.13 Text_Copyright
 
 ```
 Content: "© 2025 MAMA-ASST. All rights reserved."
@@ -622,11 +652,14 @@ Event: When Button_Create is clicked
 ── Step 11: 토스트 표시
    Action: Show RE_Toast
      (또는 Custom State로 토스트 텍스트 설정 후 표시)
-     메시지: "학생 계정이 생성되었습니다"
+     메시지: "[이름] [역할] 계정이 생성되었습니다"
+     예) "테스트학생A 학생 계정이 생성되었습니다"
 
 ── Step 12: 폼 초기화
    Action: Reset inputs
-   (← Bubble 내장 Action, 모든 Input을 초기 상태로)
+   (← Bubble 내장 Action, 모든 Input/Dropdown을 초기 상태로)
+   ★ Reset inputs 후 Dropdown_Role도 기본값(STUDENT)으로 복원
+   → Group_InputGrade Conditional이 자동으로 학년 다시 표시
 ```
 
 > ⚠️ **Step 9 (Log the user out)가 가장 중요합니다!**  
@@ -666,6 +699,29 @@ Event: When Input_Phone is focused
 
 Event: When Dropdown_Grade is changed (또는 focused)
 ── Set state → state_grade_error = no
+```
+
+### WF-4: 역할 변경 시 학년 표시/숨김 ★★★
+
+```
+Event: When Dropdown_Role's value is changed
+
+★ Bubble에서는 Conditional Visibility로 자동 처리:
+  Group_InputGrade:
+    This element is visible when:
+      Dropdown_Role's value is "STUDENT"
+    Collapse when hidden: ✅
+
+  → Workflow 대신 Conditional 하나로 해결!
+
+추가 처리 (Workflow):
+── Step 1: 학년 초기화 (역할이 학생이 아닐 때)
+   Action: Reset Dropdown_Grade
+   Only when: Dropdown_Role's value is not "STUDENT"
+
+── Step 2: 학년 에러 초기화
+   Action: Set state → state_grade_error = no
+   Only when: Dropdown_Role's value is not "STUDENT"
 ```
 
 ---
@@ -719,7 +775,7 @@ Default: STUDENT
 Group_PageWrapper: Max width 480px, Padding 40px 24px
 Group_Card: Padding 32px → 24px (< 480px)
 Text_PageTitle: 24px → 22px (< 480px)
-Group_FormRow: Row(PC) → Column(< 480px, 세로 배치)
+Group_InputGrade: Collapse when hidden (역할 변경 시 자연스러운 레이아웃)
 Button_Create: Width 100%
 Input, Dropdown: Width 100%
 ```
@@ -732,41 +788,46 @@ Input, Dropdown: Width 100%
 □ 1. 정상 생성 — 이름 + 전화번호 + 학년 입력 후 "계정 생성"
      → 토스트 "○○○ 학생 계정이 생성되었습니다" 표시되는가?
      → 하단 생성 목록에 추가되는가?
+
+□ 2. 관리자 생성 — 역할 "관리자" 선택 시
+     → 학년 필드가 숨겨지는가?
+     → 학년 없이 정상 생성되는가?
+     → 토스트 "○○○ 관리자 계정이 생성되었습니다" 표시되는가?
      → 폼이 초기화되는가?
 
-□ 2. 빈값 검증 — 이름 비움
+□ 3. 빈값 검증 — 이름 비움
      → "이름을 입력해주세요" 표시되는가?
 
-□ 3. 빈값 검증 — 전화번호 비움
+□ 4. 빈값 검증 — 전화번호 비움
      → "전화번호를 입력해주세요" 표시되는가?
 
-□ 4. 빈값 검증 — 학년 미선택 (학생일 때)
+□ 5. 빈값 검증 — 학년 미선택 (학생일 때)
      → "학년을 선택해주세요" 표시되는가?
 
-□ 5. 중복 전화번호 — 이미 생성한 전화번호로 재생성 시도
+□ 6. 중복 전화번호 — 이미 생성한 전화번호로 재생성 시도
      → Sign up 에러 → 에러 표시되는가?
 
-□ 6. 연속 생성 — 1번째 생성 후 바로 2번째 생성
+□ 7. 연속 생성 — 1번째 생성 후 바로 2번째 생성
      → 로그아웃 후 폼 초기화되어 다음 계정 생성 가능한가?
      → 생성 목록에 2명 모두 표시되는가?
 
-□ 7. 생성 후 로그인 테스트 — /login에서 방금 생성한 계정으로 로그인
+□ 8. 생성 후 로그인 테스트 — /login에서 방금 생성한 계정으로 로그인
      → 01011110000 / mb1234 → change-password로 이동하는가?
-
-□ 8. 관리자 계정 생성 — 역할을 "관리자"로 변경 후 생성
-     → role = ACADEMY_ADMIN으로 저장되는가?
-     → 학년은 미선택이어도 에러 없이 생성되는가?
 
 □ 9. 강사 계정 생성 — 역할을 "강사"로 변경 후 생성
      → role = INSTRUCTOR로 저장되는가?
-     → 학년은 미선택이어도 에러 없이 생성되는가?
+     → 학년 필드가 숨겨져 있는가?
      → 뱃지가 초록색으로 표시되는가?
 
-□ 10. 로딩 상태 — 생성 버튼 클릭 시
+□ 10. 역할 전환 — 학생→관리자→강사→학생 순서로 변경
+     → 학년 필드가 학생일 때만 나타나는가?
+     → 관리자/강사 선택 시 학년이 부드럽게 사라지는가?
+
+□ 11. 로딩 상태 — 생성 버튼 클릭 시
      → "생성 중..." + 로딩 스피너 표시되는가?
      → 중복 클릭 방지되는가?
 
-□ 11. 생성 목록 — 카운트 정확한가? (n명 표시)
+□ 12. 생성 목록 — 카운트 정확한가? (n명 표시)
 ```
 
 ### MVP 테스트 계정 생성 순서
@@ -812,7 +873,7 @@ App Data → All Users 검색:
 
 이 페이지는 MVP 테스트 이후:
   → Phase B (Day 8) admin-students 페이지의 
-    "학생 추가" Popup으로 통합될 예정
+    "구성원 추가" Popup으로 통합될 예정
   → 그때까지는 이 독립 페이지를 계속 사용 가능
 ```
 
@@ -835,14 +896,15 @@ p.logo-subtitle                  → Text_PageSubtitle (15px, #6B7280)
 .info-box > p                    → Text_Info (13px, #1E40AF)
 .form-group (name)               → Group_InputName (Column, gap 6, mb 20)
 .form-label (name)               → Text_LabelName (14px, Weight 500, "이름 *")
-#nameInput                       → Input_Name (Text, "학생 이름")
+#nameInput                       → Input_Name (Text, "이름 입력")
 .form-error (name)               → Group_ErrorName (Row, 숨김)
 .form-group (phone)              → Group_InputPhone (Column, gap 6, mb 20)
 #phoneInput                      → Input_Phone (Text, "01012345678")
 .form-error (phone)              → Group_ErrorPhone (Row, 숨김)
-.form-row                        → Group_FormRow (Row → Column on mobile)
+.form-group (role)               → Group_InputRole (Column, mb 20)
+#roleSelect                      → Dropdown_Role (STUDENT / ACADEMY_ADMIN / INSTRUCTOR)
+#gradeGroup                      → Group_InputGrade (Column, ★ Visible when Role=STUDENT, Collapse)
 #gradeSelect                     → Dropdown_Grade (12 choices, "학년 선택")
-#roleSelect                      → Dropdown_Role (STUDENT / ACADEMY_ADMIN)
 .form-error (grade)              → Group_ErrorGrade (Row, 숨김)
 .password-preview                → Group_PasswordPreview (Row, BG, "mb1234")
 .divider                         → Shape_Divider (1px, #E5E7EB)

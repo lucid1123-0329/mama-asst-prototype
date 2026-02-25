@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>학생 계정 생성 | MAMA-ASST MVP</title>
+  <title>계정 생성 | MAMA-ASST MVP</title>
   
   <!-- Fonts -->
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
@@ -179,11 +179,19 @@
     .form-error .material-icons-round { font-size: 14px; }
     
     /* ===== Row (학년 + 역할) ===== */
-    .form-row {
-      display: flex;
-      gap: 12px;
+    .form-group.slide-hidden {
+      max-height: 0;
+      overflow: hidden;
+      margin-bottom: 0;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.2s ease, margin-bottom 0.3s ease;
     }
-    .form-row .form-group { flex: 1; }
+    .form-group.slide-visible {
+      max-height: 120px;
+      opacity: 1;
+      margin-bottom: 20px;
+      transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+    }
     
     /* ===== Divider ===== */
     .divider {
@@ -377,7 +385,6 @@
       body { padding: 24px 16px; }
       .card { padding: 24px; }
       .logo-title { font-size: 22px; }
-      .form-row { flex-direction: column; gap: 0; }
     }
 
     /* ===== Bubble Element Mapping ===== */
@@ -394,8 +401,9 @@
       .info-box                  → Group_InfoBox (Row, Info BG)
       #nameInput                 → Input_Name (Text)
       #phoneInput                → Input_Phone (Text, tel)
-      #gradeSelect               → Dropdown_Grade (Option Set 또는 Static)
       #roleSelect                → Dropdown_Role (STUDENT / ACADEMY_ADMIN / INSTRUCTOR)
+      #gradeGroup                → Group_InputGrade (Column, 학생일 때만 Visible)
+      #gradeSelect               → Dropdown_Grade (Option Set 또는 Static)
       .password-preview          → Group_PasswordPreview (Row, BG)
       .btn-primary               → Button_Create (Primary, 52px)
       .created-section           → Group_CreatedList
@@ -409,7 +417,7 @@
   <!-- Toast -->
   <div class="toast" id="toast">
     <span class="material-icons-round">check_circle</span>
-    <span id="toastText">학생 계정이 생성되었습니다</span>
+    <span id="toastText">계정이 생성되었습니다</span>
   </div>
 
   <div class="page-wrapper">
@@ -419,8 +427,8 @@
       <div class="logo-icon">
         <span class="material-icons-round">person_add</span>
       </div>
-      <h1 class="logo-title">학생 계정 생성</h1>
-      <p class="logo-subtitle">학원 학생의 계정을 등록하세요</p>
+      <h1 class="logo-title">계정 생성</h1>
+      <p class="logo-subtitle">학원 구성원의 계정을 등록하세요</p>
     </div>
 
     <!-- Card -->
@@ -431,7 +439,7 @@
         <span class="material-icons-round">info</span>
         <p>
           초기 비밀번호는 <strong>mb1234</strong>으로 자동 설정됩니다.<br>
-          학생은 첫 로그인 시 비밀번호를 변경합니다.
+          첫 로그인 시 비밀번호를 변경하게 됩니다.
         </p>
       </div>
 
@@ -446,7 +454,7 @@
             type="text" 
             id="nameInput" 
             class="form-input" 
-            placeholder="학생 이름"
+            placeholder="이름 입력"
             maxlength="20"
           >
           <div class="form-error" id="nameError">
@@ -473,46 +481,47 @@
           </div>
         </div>
 
-        <!-- 학년 + 역할 (한 줄) -->
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="gradeSelect">
-              학년 <span class="required">*</span>
-            </label>
-            <select id="gradeSelect" class="form-select">
-              <option value="" disabled selected>학년 선택</option>
-              <optgroup label="초등학교">
-                <option value="E1">초1</option>
-                <option value="E2">초2</option>
-                <option value="E3">초3</option>
-                <option value="E4">초4</option>
-                <option value="E5">초5</option>
-                <option value="E6">초6</option>
-              </optgroup>
-              <optgroup label="중학교">
-                <option value="M1">중1</option>
-                <option value="M2">중2</option>
-                <option value="M3">중3</option>
-              </optgroup>
-              <optgroup label="고등학교">
-                <option value="H1">고1</option>
-                <option value="H2">고2</option>
-                <option value="H3">고3</option>
-              </optgroup>
-            </select>
-            <div class="form-error" id="gradeError">
-              <span class="material-icons-round">error_outline</span>
-              학년을 선택해주세요
-            </div>
-          </div>
+        <!-- 역할 선택 (전체 폭) -->
+        <div class="form-group">
+          <label class="form-label" for="roleSelect">
+            역할 <span class="required">*</span>
+          </label>
+          <select id="roleSelect" class="form-select">
+            <option value="STUDENT" selected>학생</option>
+            <option value="ACADEMY_ADMIN">관리자</option>
+            <option value="INSTRUCTOR">강사</option>
+          </select>
+        </div>
 
-          <div class="form-group">
-            <label class="form-label" for="roleSelect">역할</label>
-            <select id="roleSelect" class="form-select">
-              <option value="STUDENT" selected>학생</option>
-              <option value="ACADEMY_ADMIN">관리자</option>
-              <option value="INSTRUCTOR">강사</option>
-            </select>
+        <!-- 학년 선택 (학생일 때만 표시) -->
+        <div class="form-group" id="gradeGroup">
+          <label class="form-label" for="gradeSelect">
+            학년 <span class="required">*</span>
+          </label>
+          <select id="gradeSelect" class="form-select">
+            <option value="" disabled selected>학년 선택</option>
+            <optgroup label="초등학교">
+              <option value="E1">초1</option>
+              <option value="E2">초2</option>
+              <option value="E3">초3</option>
+              <option value="E4">초4</option>
+              <option value="E5">초5</option>
+              <option value="E6">초6</option>
+            </optgroup>
+            <optgroup label="중학교">
+              <option value="M1">중1</option>
+              <option value="M2">중2</option>
+              <option value="M3">중3</option>
+            </optgroup>
+            <optgroup label="고등학교">
+              <option value="H1">고1</option>
+              <option value="H2">고2</option>
+              <option value="H3">고3</option>
+            </optgroup>
+          </select>
+          <div class="form-error" id="gradeError">
+            <span class="material-icons-round">error_outline</span>
+            학년을 선택해주세요
           </div>
         </div>
 
@@ -568,8 +577,26 @@
     const createdSection = document.getElementById('createdSection');
     const createdList = document.getElementById('createdList');
     const createdCount = document.getElementById('createdCount');
+    const gradeGroup = document.getElementById('gradeGroup');
 
     let accounts = [];
+
+    // ===== 역할 변경 시 학년 표시/숨김 ★ =====
+    function toggleGradeGroup() {
+      if (roleSelect.value === 'STUDENT') {
+        gradeGroup.classList.remove('slide-hidden');
+        gradeGroup.classList.add('slide-visible');
+      } else {
+        gradeGroup.classList.remove('slide-visible');
+        gradeGroup.classList.add('slide-hidden');
+        gradeSelect.selectedIndex = 0; // 학년 초기화
+        gradeError.classList.remove('show');
+        gradeSelect.classList.remove('error');
+      }
+    }
+    roleSelect.addEventListener('change', toggleGradeGroup);
+    // 초기 상태: 학생이 기본값이므로 학년 표시
+    gradeGroup.classList.add('slide-visible');
 
     // ===== 포커스 시 에러 초기화 =====
     nameInput.addEventListener('focus', () => {
@@ -704,8 +731,9 @@
       await new Promise(r => setTimeout(r, 600));
 
       // 성공
+      const roleLabelMap = { STUDENT: '학생', ACADEMY_ADMIN: '관리자', INSTRUCTOR: '강사' };
       addToList({ name, phone, grade, role });
-      showToast(`${name} ${roleLabel} 계정이 생성되었습니다`);
+      showToast(`${name} ${roleLabelMap[role]} 계정이 생성되었습니다`);
 
       // 로딩 해제 + 폼 초기화
       createBtn.classList.remove('loading');
@@ -714,6 +742,7 @@
       phoneInput.value = '';
       gradeSelect.selectedIndex = 0;
       roleSelect.selectedIndex = 0;
+      toggleGradeGroup(); // 학년 표시 상태 초기화
       nameInput.focus();
     });
   </script>
