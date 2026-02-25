@@ -1,24 +1,35 @@
 # MAMA-ASST S-01 학생 대시보드 — Bubble.io 구현 가이드
 
-> **버전**: v1.0 | **작성일**: 2025-02-25  
+> **버전**: v1.1 | **작성일**: 2025-02-25  
+> **참조 문서**: RE_DevGuide v1.3, RE_UpdateGuide v1.4, PageDevPlan v2.2  
 > **선행 완료**: RE_Header, RE_Sidebar (Bubble 구현 완료), C-02 로그인, C-05 비밀번호 변경  
-> **목업 파일**: `S01_student_dashboard_mockup.html`  
+> **목업 파일**: `S01_student_dashboard_mockup.html`, `RE_Header_Sidebar_mockup.html`  
 > **예상 소요**: 약 4시간 (Type A 템플릿 1.5시간 + 콘텐츠 2.5시간)
+>
+> ### v1.1 변경사항 (vs v1.0)
+> | 항목 | v1.0 | v1.1 |
+> |------|------|------|
+> | RE_Sidebar 메뉴 | v1.3 기준 | ★ v1.4 반영 (subjects 삭제, 섹션 라벨 추가) |
+> | 모바일 사이드바 | 3가지 방법 혼재 | ★ 1가지(Floating Group)로 통일 |
+> | 프로그레스 바 | 2가지 방법 제시 | ★ HTML Element로 확정 + 복붙 코드 제공 |
+> | Page HTML Header | 없음 | ★ 추가 (sticky CSS + 프로그레스 바 스타일) |
+> | active_page | "student-dashboard" | 동일 (변경 없음) |
 
 ---
 
 ## 📋 목차
 
 1. [페이지 생성 및 기본 설정](#1-페이지-생성-및-기본-설정)
-2. [접근 제어 (Page Load)](#2-접근-제어-page-load)
-3. [Type A 템플릿 구성](#3-type-a-템플릿-구성)
-4. [인사말 섹션](#4-인사말-섹션)
-5. [Daily Target 요약 바](#5-daily-target-요약-바)
-6. [과목 카드 3개](#6-과목-카드-3개)
-7. [XP 카드](#7-xp-카드)
-8. [Workflow 정리](#8-workflow-정리)
-9. [Conditional 정리](#9-conditional-정리)
-10. [테스트 체크리스트](#10-테스트-체크리스트)
+2. [Page HTML Header (CSS)](#2-page-html-header)
+3. [접근 제어 (Page Load)](#3-접근-제어)
+4. [Type A 템플릿 구성](#4-type-a-템플릿-구성)
+5. [인사말 섹션](#5-인사말-섹션)
+6. [Daily Target 요약 바](#6-daily-target-요약-바)
+7. [과목 카드 3개](#7-과목-카드-3개)
+8. [XP 카드](#8-xp-카드)
+9. [Workflow 총정리](#9-workflow-총정리)
+10. [Conditional 총정리](#10-conditional-총정리)
+11. [테스트 데이터 및 체크리스트](#11-테스트-데이터-및-체크리스트)
 
 ---
 
@@ -28,12 +39,10 @@
 
 `Pages` → `Add a new page`
 
-### 페이지 설정
-
 | 설정 항목 | 값 | 비고 |
 |-----------|-----|------|
 | **Page name** | `student-dashboard` | URL: `/student-dashboard` |
-| **Page title** | `대시보드 | MAMA-ASST` | 브라우저 탭 |
+| **Page title** | `대시보드 \| MAMA-ASST` | 브라우저 탭 |
 | **Type of content** | (없음) | |
 | **Container layout** | Column | |
 | **Width** | `100%` | |
@@ -42,97 +51,140 @@
 
 ---
 
-## 2. 접근 제어 (Page Load)
+## 2. Page HTML Header
 
-> 비로그인 사용자와 학생이 아닌 사용자 차단
+> Settings → SEO / metatags → Script/meta tags in header
 
-### Page Load Workflow
+아래 CSS를 **그대로 복사**하여 Page HTML Header에 붙여넣으세요.
 
-**Event**: `Page is loaded`
+```html
+<style>
+  /* ===== RE_Sidebar sticky (PC 고정) ===== */
+  #sidebarWrapper {
+    position: sticky !important;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
 
-#### WF-LOAD-01: 비로그인 → 로그인 페이지
+  /* ===== 프로그레스 바 공통 ===== */
+  .progress-track {
+    width: 100%;
+    background: #F3F4F6;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s ease;
+  }
+
+  /* Daily Target 프로그레스 */
+  .dt-track { height: 12px; }
+  .dt-bar { background: linear-gradient(90deg, #FF6D4D, #FF8F73); }
+
+  /* 과목별 프로그레스 */
+  .sc-track { height: 6px; }
+  .sc-bar-korean  { background: #4285F4; }
+  .sc-bar-english { background: #34A853; }
+  .sc-bar-math    { background: #FBBC05; }
+
+  /* ===== XP 카드 그래디언트 ===== */
+  #xpCard {
+    background: linear-gradient(135deg, #1A2E4D 0%, #2A4060 100%) !important;
+  }
+</style>
+```
+
+> ⚠️ Bubble의 Group에는 CSS `position: sticky`를 직접 지정할 수 없으므로
+> element ID + Page HTML Header CSS로 처리합니다.
+
+---
+
+## 3. 접근 제어
+
+### WF-LOAD-01: 비로그인 → 로그인
 
 | 항목 | 값 |
 |------|-----|
+| **Event** | Page is loaded |
 | **Only when** | `Current User is logged out` |
 | **Action** | Navigation > Go to page: `login` |
 
-#### WF-LOAD-02: 학생이 아닌 사용자 → 역할별 라우팅
+### WF-LOAD-02: 비학생 → 역할별 라우팅
 
 | 항목 | 값 |
 |------|-----|
-| **Only when** | `Current User's role is not "STUDENT"` |
-| **Action** | Navigation > Go to page: (역할별 분기) |
+| **Event** | Page is loaded *(별도 이벤트로 생성)* |
+| **Only when** | `Current User is logged in` AND `Current User's role is not "STUDENT"` |
+| **Action** | Navigation > Go to page: (아래 분기) |
 
 ```
 역할별 분기:
   ACADEMY_ADMIN → "admin-dashboard"
-  INSTRUCTOR    → "instructor-dashboard"  (MVP 미구현 시 login으로)
+  INSTRUCTOR    → "instructor-dashboard" (미구현 시 "login")
 ```
 
-> ⚠️ Bubble에서 Page Load에 조건부 Go to page를 2개 넣으면 첫 번째 조건이 true일 때만 실행됩니다.
-> 두 WF 모두 별도 "Page is loaded" 이벤트로 만들어야 합니다.
+> ⚠️ Bubble에서 Page is loaded 이벤트를 **2개 별도로** 만들어야 합니다.
+> 하나의 이벤트에 Only when 조건 2개를 넣으면 첫 번째만 실행됩니다.
 
 ---
 
-## 3. Type A 템플릿 구성
+## 4. Type A 템플릿 구성
 
-> ★ 이 구조는 한 번만 만들면 이후 모든 Type A 페이지에서 복사 재사용합니다.
+> ★ 이 구조는 **한 번만 만들면 이후 모든 Type A 페이지에서 복사** 재사용합니다.
 
-### 3.1 전체 구조 트리
+### 4.1 전체 구조 트리
 
 ```
-student-dashboard (Page, Column, 100%, min-height: 100vh, BG: #F9FAFB)
+student-dashboard (Page, Column, 100%)
 │
-├── FG_Header (Floating Group)
-│   └── RE_Header ← (이미 구현됨)
-│       Properties:
-│         page_title = "대시보드"
-│         notif_count = Search for Notifications [...]  :count
+├── FG_Header ──────────────── Floating Group (top, 64px)
+│   └── RE_Header
+│       📥 page_title = "대시보드"
+│       📥 notif_count = Search for Notifications:count
 │
-├── Group_PageBody (Row, width: 100%, margin-top: 64px)
+├── Group_PageBody ─────────── Row (100%, margin-top: 64px)
 │   │
-│   ├── Group_SidebarWrapper (width: 256px, sticky)
-│   │   └── RE_Sidebar ← (이미 구현됨)
-│   │       Properties:
-│   │         active_page = "student-dashboard"
+│   ├── Group_SidebarWrapper ─ 256px, id="sidebarWrapper"
+│   │   └── RE_Sidebar
+│   │       📥 active_page = "student-dashboard"
 │   │
-│   └── Group_MainContent (Column, flex: 1, min-width: 0)
-│       ├── Group_Greeting
-│       ├── Group_DailyTarget
-│       ├── Group_SubjectCards (Row)
+│   └── Group_MainContent ──── Column (flex: 1, scroll)
+│       ├── Group_Greeting ──────── 인사말
+│       ├── Group_DailyTarget ───── Daily Target 요약 바
+│       ├── Group_SubjectCards ──── Row (3개 카드)
 │       │   ├── Group_CardKorean
 │       │   ├── Group_CardEnglish
 │       │   └── Group_CardMath
-│       └── Group_XP
+│       └── Group_XP ───────────── XP + 레벨 + Streak
 │
-└── Group_SidebarOverlay (모바일용, 기본 숨김)
+├── FG_MobileSidebar ───────── Floating Group (left, 256px, 기본 숨김)
+│   └── RE_Sidebar
+│       📥 active_page = "student-dashboard"
+│
+└── Group_SidebarOverlay ───── 반투명 오버레이 (기본 숨김)
 ```
 
-### 3.2 FG_Header (Floating Group)
+### 4.2 FG_Header (Floating Group)
 
-| 속성 | 값 | 비고 |
-|------|-----|------|
-| **Type** | Floating Group | |
-| **Vertically float relative to** | Top | |
-| **Float margin** | `0` | |
-| **Width** | `100%` | |
-| **Height** | `64px` | |
-| **Z-index** | 기본값 (Floating Group은 자동 상위) | |
-
-**내부에 RE_Header 배치:**
-
-| RE_Header 속성 | 값 |
-|----------------|-----|
+| 속성 | 값 |
+|------|-----|
+| **Type** | Floating Group |
+| **Vertically float relative to** | Top |
+| **Float margin** | `0` |
 | **Width** | `100%` |
 | **Height** | `64px` |
 
-**📥 RE_Header Property 설정** (Appearance 탭):
+**내부: RE_Header** (100% × 64px)
+
+📥 **Property 설정** (Appearance 탭에서 직접 입력):
 
 | Property | 값 | 비고 |
 |----------|-----|------|
-| `page_title` | `대시보드` | 텍스트 직접 입력 |
-| `notif_count` | `Search for Notifications` | 아래 상세 |
+| `page_title` | `대시보드` | 텍스트 |
+| `notif_count` | `Search for Notifications` | 아래 참조 |
 
 ```
 notif_count 검색 설정:
@@ -140,77 +192,91 @@ notif_count 검색 설정:
   Constraint 1: user_id = Current User
   Constraint 2: is_read = no
   → :count
+
+→ MVP에서 Notification 데이터 없으면 0 표시 (정상)
+→ 하드코딩 NO — 검색식 미리 넣어두면 향후 자동 작동
 ```
 
-> ⚠️ MVP 단계에서 Notification 데이터가 없으므로 `0`이 표시됩니다.
-> 하드코딩하지 말고 검색식을 미리 넣어두면 나중에 자동 동작합니다.
+### 4.3 Group_PageBody
 
-### 3.3 Group_PageBody
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Row |
+| **Width** | `100%` |
+| **Margin top** | `64px` |
+| **Column gap** | `0` |
 
-| 속성 | 값 | 비고 |
-|------|-----|------|
-| **Container layout** | Row | |
-| **Width** | `100%` | |
-| **Min height** | `calc 방식` | Bubble에서: 페이지 높이 - 64px |
-| **Margin top** | `64px` | FG_Header 높이만큼 |
-| **Column gap** | `0` | |
-
-### 3.4 Group_SidebarWrapper
+### 4.4 Group_SidebarWrapper
 
 | 속성 | 값 | 비고 |
 |------|-----|------|
-| **Width** | `256px` (Fixed) | 사이드바 너비 |
-| **Height** | `calc(100vh - 64px)` | Bubble: "Fit height to content" 해제, 직접 수식 |
+| **ID attribute** | `sidebarWrapper` | ★ Page HTML Header CSS 연동 |
+| **Width** | `256px` (Fixed) | |
 | **Make this element fixed-width** | ✅ | |
-| **Position** | sticky (CSS로) | `top: 64px` |
 | **Overflow** | Hidden | |
 
-> ⚠️ Bubble에서 sticky 포지션:
-> Element Inspector에서 `This element is fixed on the page` 체크하지 마세요 (이건 Fixed).
-> 대신 HTML 속성 추가 방식: element의 ID를 `sidebarWrapper`로 설정하고,
-> Page HTML Header에 CSS 추가:
-> ```html
-> <style>
->   #sidebarWrapper { position: sticky !important; top: 64px; }
-> </style>
-> ```
+> sticky 동작은 Section 2의 CSS가 처리합니다.
 
-**내부에 RE_Sidebar 배치:**
+**내부: RE_Sidebar** (256px × 100%)
 
-| RE_Sidebar 속성 | 값 |
-|-----------------|-----|
-| **Width** | `256px` |
-| **Height** | `100%` |
-
-**📥 RE_Sidebar Property 설정** (Appearance 탭):
+📥 **Property 설정**:
 
 | Property | 값 |
 |----------|-----|
 | `active_page` | `student-dashboard` |
 
-### 3.5 Group_MainContent
+> ★ RE v1.4에서 active_page가 "student-dashboard"이면 사이드바의 **"홈"** NavItem이 하이라이트됩니다.
+
+### 4.5 Group_MainContent
+
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Column |
+| **Make this element fixed-width** | ❌ (flex: 1) |
+| **Min width** | `0` |
+| **Padding** | 상 `28px`, 좌우 `32px`, 하 `28px` |
+| **Row gap** | `24px` |
+| **Vertical scrolling** | ✅ when content is taller |
+
+### 4.6 모바일 사이드바 (≤ 1200px)
+
+> ★ v1.1에서 **FG_MobileSidebar (Floating Group)** 방식으로 통일
+
+#### FG_MobileSidebar
 
 | 속성 | 값 | 비고 |
 |------|-----|------|
-| **Container layout** | Column | |
-| **Min width** | `0` | flex 자식 overflow 방지 |
-| **Width** | (비움 — flex: 1 자동) | `Make this element fixed-width` 해제 |
+| **Type** | Floating Group | |
+| **Horizontally float relative to** | Left | |
+| **Float margin** | `0` | |
+| **Width** | `256px` | |
 | **Height** | `100%` | |
-| **Padding** | `28px 32px` | 상하 28, 좌우 32 |
-| **Row gap** | `24px` | 내부 섹션 간격 |
-| **Overflow** | `Auto (scrolling)` | ★ 메인 콘텐츠 스크롤 |
-
-### 3.6 Group_SidebarOverlay (모바일용)
-
-> 화면 너비 ≤ 1200px에서 사이드바가 열릴 때 뒤에 깔리는 반투명 오버레이
-
-| 속성 | 값 | 비고 |
-|------|-----|------|
-| **Width** | `100%` | |
-| **Height** | `100%` | |
-| **Background** | `#000000`, Opacity 50% | |
 | **Visible on page load** | ❌ | |
-| **Collapse when hidden** | ❌ | (고정 위치이므로) |
+| **Background** | (없음 — RE_Sidebar의 Navy가 처리) | |
+
+**내부: RE_Sidebar** (256px × 100%)
+
+📥 `active_page` = `student-dashboard`
+
+**Conditional:**
+
+| 조건 | 속성 | 값 |
+|------|------|-----|
+| `RE_Header's sidebar_open is "yes"` | Visible | `true` |
+
+> 💡 FG_MobileSidebar는 **항상 왼쪽에 떠 있으므로** PC에서도 존재하지만,
+> PC에서는 Group_SidebarWrapper가 같은 위치에 있어 겹쳐지므로 보이지 않습니다.
+> `sidebar_open`이 `no`(기본)이면 FG_MobileSidebar는 숨겨져 있습니다.
+
+#### Group_SidebarOverlay
+
+| 속성 | 값 |
+|------|-----|
+| **Width** | `100%` |
+| **Height** | `100%` |
+| **Background** | `#000000`, Opacity `50%` |
+| **Visible on page load** | ❌ |
+| **Collapse when hidden** | ❌ |
 
 **Conditional:**
 
@@ -218,13 +284,12 @@ notif_count 검색 설정:
 |------|------|-----|
 | `Current page width ≤ 1200` AND `RE_Header's sidebar_open is "yes"` | Visible | `true` |
 
-**Workflow: Overlay 클릭 시 사이드바 닫기**
+**Workflow: Overlay 클릭**
 
-| Event | `Group_SidebarOverlay is clicked` |
-|-------|-----------------------------------|
 | Action | Set state: `RE_Header's sidebar_open` = `no` |
+|--------|------|
 
-### 3.7 close_requested 신호 처리 (부모 페이지 Workflow)
+### 4.7 close_requested 신호 처리
 
 | Event | `Do when condition is true` |
 |-------|----------------------------|
@@ -232,72 +297,21 @@ notif_count 검색 설정:
 | **Action 1** | Set state: `RE_Header's sidebar_open` = `no` |
 | **Action 2** | Set state: `RE_Sidebar's close_requested` = `no` |
 
-### 3.8 반응형 Conditional
+> ⚠️ FG_MobileSidebar 안의 RE_Sidebar에서도 close_requested가 발생합니다.
+> 부모 페이지에서 이 신호를 감지하므로 **두 RE_Sidebar 인스턴스 모두 동일하게** 처리됩니다.
 
-#### Group_SidebarWrapper
-
-| 조건 | 속성 | 값 | 비고 |
-|------|------|-----|------|
-| `Current page width ≤ 1200` | Visible | `false` | PC에서만 표시 |
-
-> ⚠️ 모바일에서 사이드바는 Overlay + RE_Sidebar 조합으로 열립니다.
-> 별도 모바일 사이드바 Group이 필요합니다:
-
-#### Group_MobileSidebar (모바일 전용)
-
-| 속성 | 값 | 비고 |
-|------|-----|------|
-| **Width** | `256px` | |
-| **Height** | `100vh` | |
-| **Background** | (없음 — RE_Sidebar가 처리) | |
-| **Visible on page load** | ❌ | |
-| **Position** | Fixed, left: 0, top: 0 | |
-| **Z-index** | Overlay 위 | |
-
-**Conditional:**
+### 4.8 반응형: Group_SidebarWrapper 숨김
 
 | 조건 | 속성 | 값 |
 |------|------|-----|
-| `Current page width ≤ 1200` AND `RE_Header's sidebar_open is "yes"` | Visible | `true` |
+| `Current page width ≤ 1200` | Visible | `false` |
+| `Current page width ≤ 1200` | Collapse when hidden | `true` |
 
-**내부에 RE_Sidebar 두 번째 인스턴스 배치:**
-
-| Property | 값 |
-|----------|-----|
-| `active_page` | `student-dashboard` |
-
-> 💡 **간소화 방법**: 모바일 사이드바를 별도로 만들기 복잡하다면,
-> Group_SidebarWrapper의 Conditional을 아래처럼 변경하는 것도 가능합니다:
->
-> | 조건 | 속성 | 값 |
-> |------|------|-----|
-> | `Current page width ≤ 1200` AND `RE_Header's sidebar_open is "no"` | Visible | `false` |
-> | `Current page width ≤ 1200` AND `RE_Header's sidebar_open is "yes"` | Visible | `true`, Position: Fixed |
->
-> → 이 방식은 1200px 이하에서 사이드바가 토글됩니다.
-> 단, Bubble에서 position을 Conditional로 변경하려면 CSS 추가가 필요합니다.
-
-**🔴 MVP 권장 방식: 심플 구현**
-
-```
-[PC: 1200px 초과]
-  Group_SidebarWrapper: 항상 표시 (256px 고정)
-  Group_SidebarOverlay: 항상 숨김
-  햄버거 버튼: 숨김 (RE_Header 내부에서 Conditional 처리됨)
-
-[모바일/태블릿: 1200px 이하]
-  Group_SidebarWrapper: 숨김
-  → 사이드바 없이 MainContent만 전체 폭으로 표시
-  → 햄버거 클릭 시: Group_SidebarOverlay + Group_MobileSidebar 표시
-
-MVP 단계에서는 모바일 사이드바를 생략하고
-Group_SidebarWrapper만 숨기는 것도 가능합니다.
-(사이드바 없이 대시보드 콘텐츠만 표시)
-```
+> 1200px 이하에서 SidebarWrapper가 사라지면 MainContent가 전체 폭을 차지합니다.
 
 ---
 
-## 4. 인사말 섹션
+## 5. 인사말 섹션
 
 ### Group_Greeting
 
@@ -309,91 +323,66 @@ Group_SidebarWrapper만 숨기는 것도 가능합니다.
 
 ### Text_GreetingTitle
 
-| 속성 | 값 | 비고 |
-|------|-----|------|
-| **Content** | 동적 (아래 참조) | |
-| **Style** | 직접 설정 (아래) | |
-| **Font size** | `24px` | |
-| **Font weight** | `700` (Bold) | |
-| **Color** | `#1A2E4D` (Navy) | Style Variable |
+| 속성 | 값 |
+|------|-----|
+| **Font size** | `24px` |
+| **Font weight** | `700` (Bold) |
+| **Color** | `#1A2E4D` (Navy) |
 
-**동적 텍스트 설정:**
+**동적 텍스트:**
 
 ```
 "안녕, " + Current User's name + "! 👋"
 ```
 
-Bubble 표현식:
-```
-Insert dynamic data → "안녕, "
-Insert dynamic data → Current User's name
-Insert dynamic data → "! 👋"
-```
+Bubble Editor에서:
+1. `Insert dynamic data` → 텍스트 `안녕, `
+2. `Insert dynamic data` → `Current User's name`
+3. `Insert dynamic data` → 텍스트 `! 👋`
 
 ### Text_GreetingSub
 
-| 속성 | 값 | 비고 |
-|------|-----|------|
-| **Content** | 동적 (아래 참조) | |
-| **Font size** | `15px` | |
-| **Color** | `#6B7280` (Text Secondary) | |
+| 속성 | 값 |
+|------|-----|
+| **Font size** | `15px` |
+| **Color** | `#6B7280` (Text Secondary) |
 
-**동적 텍스트 설정:**
+**동적 텍스트:**
 
 ```
-Current date/time:formatted as "YYYY년 M월 D일 dddd" + " · 오늘도 화이팅!"
+Current date/time:formatted as yyyy"년 "M"월 "d"일 "dddd + " · 오늘도 화이팅!"
 ```
 
-Bubble 날짜 포맷:
-```
-Insert dynamic data → Current date/time:formatted as yyyy"년 "M"월 "d"일 "dddd
-Insert dynamic data → " · 오늘도 화이팅!"
-```
-
-> ⚠️ Bubble의 날짜 포맷에서 한글 요일(월/화/수/목/금/토/일)은
-> 사용자 브라우저 locale이 한국어면 자동 표시됩니다.
-> 확인: Settings > Languages > Default language = Korean
+> Settings > Languages > Default language = Korean 설정 시 요일이 한글로 표시됩니다.
 
 ---
 
-## 5. Daily Target 요약 바
+## 6. Daily Target 요약 바
 
-### 5.1 데이터 소스
+### 6.1 Custom State (Page 레벨)
 
-```
-DailyLearningTarget 테이블:
-  student_id = Current User
-  target_date = Current date/time:rounded down to date ★
+> 반복 검색 방지를 위해 Page Load 시 한 번만 검색하여 Custom State에 저장합니다.
 
-→ 오늘 날짜의 과목별 목표 3개 (국어/영어/수학)
-→ 데이터가 없으면 "학습 목표가 설정되지 않았습니다" 표시
-```
+| State Name | Type | Default |
+|------------|------|---------|
+| `state_today_targets` | List of DailyLearningTargets | (비움) |
 
-### 5.2 Custom States (Page 레벨)
-
-> 반복 검색을 피하기 위해 Page Load 시 Custom State에 저장
-
-| State Name | Type | 용도 |
-|------------|------|------|
-| `state_today_targets` | List of DailyLearningTargets | 오늘의 학습 목표 3개 |
-
-**Page Load Workflow (WF-LOAD-03):**
+### WF-LOAD-03: 데이터 로드
 
 | 항목 | 값 |
 |------|-----|
 | **Event** | Page is loaded |
-| **Only when** | Current User is logged in AND Current User's role is "STUDENT" |
-| **Action** | Set state: `state_today_targets` = Search for DailyLearningTargets |
+| **Only when** | `Current User is logged in` AND `Current User's role is "STUDENT"` |
+| **Action** | Set state → `state_today_targets` |
 
 ```
-Search 설정:
-  Type: DailyLearningTarget
-  Constraint 1: student_id = Current User
-  Constraint 2: target_date = Current date/time:rounded down to date
-  Sort: (없음)
+Set state 값:
+  Search for DailyLearningTargets
+    Constraint 1: student_id = Current User
+    Constraint 2: target_date = Current date/time:rounded down to date
 ```
 
-### 5.3 Group_DailyTarget
+### 6.2 Group_DailyTarget
 
 | 속성 | 값 |
 |------|-----|
@@ -401,479 +390,403 @@ Search 설정:
 | **Row gap** | `14px` |
 | **Width** | `100%` |
 | **Background** | `#FFFFFF` (Surface) |
-| **Border** | `1px solid #E5E7EB` (Border Light) |
-| **Roundness** | `16px` |
+| **Border** | `1px solid #E5E7EB` |
+| **Roundness** | `16` |
 | **Padding** | `20px 24px` |
 
-### 5.4 내부 요소
-
-#### Group_DTHeader (Row)
-
-| 속성 | 값 |
-|------|-----|
-| **Container layout** | Row |
-| **Justify** | Space between |
-| **Align** | Center |
+### 6.3 Group_DTHeader (Row)
 
 **Text_DTLabel:**
-
-| 속성 | 값 |
-|------|-----|
-| **Content** | `오늘의 학습 목표` |
-| **Font size** | `15px` |
-| **Font weight** | `600` |
-| **Color** | `#1F2937` (Text Primary) |
+- 텍스트: `오늘의 학습 목표`
+- 15px, 600, `#1F2937`
 
 **Text_DTCount:**
+- 14px, `#6B7280`
 
-| 속성 | 값 |
-|------|-----|
-| **Font size** | `14px` |
-| **Color** | `#6B7280` (Text Secondary) |
-
-**동적 텍스트:**
+동적 텍스트 — 완료/목표 합산:
 
 ```
-완료 합계:
-  This page's state_today_targets:each item's completed_count:sum
+완료 합계 표현식:
+  state_today_targets:each item's completed_count:sum
 
-목표 합계:
-  This page's state_today_targets:each item's target_count:sum
+목표 합계 표현식:
+  state_today_targets:each item's target_count:sum
 
-표시: "[완료합계] / [목표합계] 완료"
+표시: [완료합계] + " / " + [목표합계] + " 완료"
 ```
 
-> ⚠️ `:each item's completed_count:sum` 사용법:
-> Bubble에서 리스트의 각 항목 필드를 합산하려면:
-> `state_today_targets:each item's completed_count:sum`
-> 이 표현식이 작동하지 않으면 `:count` 등으로 대체하거나
-> Backend Workflow에서 미리 계산합니다.
->
-> **대안 (간단):** 3개 과목을 각각 검색해서 합산
-> ```
-> 국어 완료: Search for DailyLearningTargets [...subject=KOREAN]:first item's completed_count
-> 영어 완료: Search for DailyLearningTargets [...subject=ENGLISH]:first item's completed_count
-> 수학 완료: Search for DailyLearningTargets [...subject=MATH]:first item's completed_count
-> ```
+> ⚠️ Bubble에서 `:each item's field:sum`이 작동하지 않는 경우가 있습니다.
+> **대안**: 과목별 개별 검색 후 합산 (6.5절 참조)
 
-#### Shape_DTProgressTrack (진도 바)
+### 6.4 프로그레스 바 (HTML Element)
 
-| 속성 | 값 |
-|------|-----|
-| **Type** | Shape (Rectangle) 또는 Group |
-| **Width** | `100%` |
-| **Height** | `12px` |
-| **Background** | `#F3F4F6` |
-| **Roundness** | `6px` |
+> ★ v1.1에서 HTML Element로 확정. Group 방식보다 간편하고 정확합니다.
 
-**Shape_DTProgressBar (내부 채우기):**
+**HTML Element 추가:**
+- Bubble Editor → Visual elements → HTML
+- Width: 100%, Height: 자동
 
-| 속성 | 값 |
-|------|-----|
-| **Width** | 동적 (%) | 
-| **Height** | `12px` |
-| **Background** | `linear-gradient` 또는 `#FF6D4D` (Primary) |
-| **Roundness** | `6px` |
-
-**진도 바 너비 계산:**
-
-```
-Bubble에서 프로그레스 바 구현 방법:
-
-방법 A — HTML Element:
-  <div style="
-    width: 100%;
-    height: 12px;
-    background: #F3F4F6;
-    border-radius: 6px;
-    overflow: hidden;
-  ">
-    <div style="
-      width: [완료/목표*100]%;
-      height: 100%;
-      background: linear-gradient(90deg, #FF6D4D, #FF8F73);
-      border-radius: 6px;
-      transition: width 0.6s;
-    "></div>
-  </div>
-
-  동적 너비: 
-  완료 합계 ÷ 목표 합계 × 100
-  → Bubble: state_today_targets:each item's completed_count:sum 
-            / state_today_targets:each item's target_count:sum × 100
-
-방법 B — Group 너비 조절:
-  외부 Group (100%, 12px, #F3F4F6, rounded 6)
-    내부 Group (동적 %, 12px, Primary, rounded 6)
-    
-  내부 Group의 Width를 퍼센트로 지정:
-    → Bubble에서는 비율 너비가 어려우므로 HTML Element 권장
-
-★ 권장: 방법 A (HTML Element)
-```
-
-#### Group_DTSubjects (과목별 진도)
-
-| 속성 | 값 |
-|------|-----|
-| **Container layout** | Row |
-| **Column gap** | `16px` |
-
-각 과목별로 `Group_DTSubject` 3개:
-
-```
-[국어]
-  ● (8×8, #4285F4) + "국어 [완료]/[목표]"
-
-[영어]
-  ● (8×8, #34A853) + "영어 [완료]/[목표]"
-
-[수학]
-  ● (8×8, #FBBC05) + "수학 [완료]/[목표]"
-```
-
-**각 과목 데이터 바인딩:**
-
-```
-국어 완료:
-  Search for DailyLearningTargets
-    student_id = Current User
-    target_date = Current date/time:rounded down to date
-    subject = KOREAN
-  :first item's completed_count
-
-국어 목표:
-  (위와 동일):first item's target_count
-```
-
-> ⚠️ 검색을 6번 하면 부하가 클 수 있습니다.
-> **최적화**: 5.2절의 `state_today_targets` Custom State를 활용
-> ```
-> state_today_targets:filtered (subject = KOREAN):first item's completed_count
-> ```
-> Bubble의 `:filtered` 연산자는 클라이언트 사이드이므로 추가 서버 호출이 없습니다.
-
-### 5.5 빈 상태 처리
-
-**Group_DTEmpty** (Daily Target이 없을 때):
-
-| 속성 | 값 |
-|------|-----|
-| **Visible when** | `state_today_targets:count is 0` |
-| **Content** | Text: "학습 목표가 설정되지 않았습니다" |
-| **Color** | `#9CA3AF` (Text Tertiary) |
-| **Font size** | `14px` |
-| **Align** | Center |
-
-**Group_DailyTarget (메인) Conditional:**
-
-| 조건 | 속성 | 값 |
-|------|------|-----|
-| `state_today_targets:count is 0` | 내부 DTHeader, ProgressTrack, DTSubjects | Visible = false |
-
----
-
-## 6. 과목 카드 3개
-
-### 6.1 Group_SubjectCards (컨테이너)
-
-| 속성 | 값 | 비고 |
-|------|-----|------|
-| **Container layout** | Row | |
-| **Column gap** | `16px` | |
-| **Width** | `100%` | |
-| **Wrap** | ✅ (Wrapping 허용) | 모바일에서 세로 배치 |
-
-### 6.2 과목 카드 공통 구조
-
-각 카드는 독립 Group으로 만듭니다 (RG가 아닌 수동 배치).
-
-> **이유**: 과목이 3개 고정이고, 각 카드의 아이콘/색상/설명이 다르므로
-> Repeating Group보다 각각 만드는 것이 간단합니다.
-
-#### Group_CardKorean / Group_CardEnglish / Group_CardMath
-
-**공통 속성:**
-
-| 속성 | 값 | 비고 |
-|------|-----|------|
-| **Container layout** | Column |
-| **Width** | `calc((100% - 32px) / 3)` | 3등분 — Bubble: Min width 280, Fixed width 해제 |
-| **Min width** | `280px` | 모바일에서 wrap시 전체폭 |
-| **Background** | `#FFFFFF` (Surface) |
-| **Border** | `1px solid #E5E7EB` |
-| **Roundness** | `16px` |
-| **Padding** | `24px` |
-| **Row gap** | `0` | 내부에서 개별 마진 조정 |
-
-### 6.3 카드 내부 요소 (국어 예시)
-
-```
-Group_CardKorean (Column, 24px padding)
-│
-├── Group_SCTop (Row, justify: space-between, margin-bottom: 16px)
-│   ├── Group_SCIcon (48×48, rounded: 14, BG: #4285F4)
-│   │   └── Icon: menu_book (24px, white)
-│   └── Text_SCBadge ("완료!" or "진행중" or "미시작")
-│
-├── Text_SCName ("국어", 18px, Bold, margin-bottom: 4px)
-│
-├── Text_SCDesc ("5단계 구조화 학습", 13px, Text Secondary, margin-bottom: 16px)
-│
-├── Group_SCProgress (Column, margin-bottom: 16px)
-│   ├── Group_SCProgressHeader (Row, justify: space-between)
-│   │   ├── Text_SCProgressLabel ("오늘 진도", 12px, Text Secondary)
-│   │   └── Text_SCProgressCount ("2 / 2", 13px, Bold, #4285F4)
-│   └── Shape_SCProgressTrack (100%, 6px, #F3F4F6, rounded: 3)
-│       └── Shape_SCProgressBar (동적%, 6px, #4285F4, rounded: 3)
-│
-└── Button_StartKorean ("학습하기", play_arrow 아이콘)
-```
-
-### 6.4 과목별 색상표
-
-| 과목 | 아이콘 BG | 프로그레스 | 버튼 BG | 버튼 Hover BG | 아이콘 |
-|------|-----------|-----------|---------|---------------|--------|
-| 국어 | `#4285F4` | `#4285F4` | `#EBF2FE` | `#4285F4` (텍스트: white) | `menu_book` |
-| 영어 | `#34A853` | `#34A853` | `#E8F5E9` | `#34A853` (텍스트: white) | `translate` |
-| 수학 | `#FBBC05` | `#FBBC05` | `#FFF8E1` | `#FBBC05` (텍스트: #7A5C00) | `calculate` |
-
-### 6.5 상태 뱃지 동적 표시
-
-**Text_SCBadge Conditional:**
-
-각 과목의 DailyLearningTarget 데이터를 기반으로:
-
-```
-국어 Target:
-  state_today_targets:filtered (subject = KOREAN):first item
-
-조건 판단:
-  ① completed_count ≥ target_count → "완료!" (Success)
-  ② completed_count > 0 AND < target_count → "진행중" (Info)
-  ③ completed_count = 0 → "미시작" (Tertiary)
-  ④ Target 없음 → "미설정" (Tertiary)
-```
-
-**Conditional 설정 (국어 기준):**
-
-| # | 조건 | 텍스트 | BG | Color |
-|---|------|--------|-----|-------|
-| 1 | `state_today_targets:filtered(subject=KOREAN):first item's is_achieved is "yes"` | 완료! | `rgba(34,197,94,0.1)` | `#22C55E` |
-| 2 | `...completed_count > 0` AND `...is_achieved is "no"` | 진행중 | `rgba(59,130,246,0.1)` | `#3B82F6` |
-| 3 | `...completed_count is 0` OR Target 없음 | 미시작 | `#F3F4F6` | `#9CA3AF` |
-
-### 6.6 프로그레스 바 (과목별)
-
-**방법 A — HTML Element (권장):**
+**HTML 코드:**
 
 ```html
-<!-- 국어 프로그레스 바 -->
-<div style="width:100%;height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden">
-  <div style="width:[동적]%;height:100%;background:#4285F4;border-radius:3px;transition:width 0.6s"></div>
+<div class="progress-track dt-track">
+  <div class="progress-bar dt-bar" style="width: [동적]%"></div>
 </div>
 ```
 
-동적 너비: 
+**동적 너비 설정 방법:**
+
+HTML Element의 코드에서 `[동적]` 부분을 Bubble 표현식으로 교체:
+
 ```
-국어 완료 / 국어 목표 × 100
+width: Insert dynamic data
 
-Bubble 표현식:
-  state_today_targets:filtered(subject=KOREAN):first item's completed_count 
-  / state_today_targets:filtered(subject=KOREAN):first item's target_count 
-  × 100
+표현식:
+  state_today_targets:each item's completed_count:sum
+  /
+  state_today_targets:each item's target_count:sum
+  * 100
+  :formatted as #
 
-→ 목표가 0이면 NaN 방지: 
-  Conditional — target_count is 0 → width: 0%
+결과 예시: width: 57%
 ```
 
-**방법 B — Bubble 기본 Progress Bar** (Bubble에 내장 Progress Bar 플러그인 있으면 활용)
+> ⚠️ 목표 합계가 0이면 NaN 방지 필요:
+> ```
+> Only when state_today_targets:count > 0 일 때만 표현식 사용
+> 아니면 width: 0%
+> ```
+>
+> **가장 안전한 방법**: Conditional로 분기
+> - state_today_targets:count is 0 → HTML에서 width: 0%
+> - state_today_targets:count > 0 → 정상 계산
 
-### 6.7 학습하기 버튼
+### 6.5 과목별 소진도 (Row)
 
-**Button_StartKorean:**
+#### Group_DTSubjects (Row, gap: 16px)
+
+3개 과목별 Text:
+
+```
+● 국어 [완료]/[목표]     ● (8×8, #4285F4)
+● 영어 [완료]/[목표]     ● (8×8, #34A853)
+● 수학 [완료]/[목표]     ● (8×8, #FBBC05)
+```
+
+**각 과목 데이터 바인딩 (국어 예시):**
+
+```
+국어 완료:
+  state_today_targets :filtered
+    Advanced: This DailyLearningTarget's subject is KOREAN
+  :first item's completed_count
+
+국어 목표:
+  (동일 필터) :first item's target_count
+```
+
+> ★ `:filtered`는 클라이언트 사이드 연산이므로 **추가 서버 호출이 없습니다.**
+> Custom State에 저장된 리스트를 메모리에서 필터링합니다.
+
+### 6.6 빈 상태
+
+**Group_DTEmpty** (state_today_targets:count is 0 일 때):
 
 | 속성 | 값 |
 |------|-----|
-| **Text** | `학습하기` |
-| **Icon** | `play_arrow` (왼쪽) |
-| **Width** | `100%` |
-| **Height** | `42px` |
-| **Roundness** | `10px` |
+| **Text** | `학습 목표가 설정되지 않았습니다` |
 | **Font size** | `14px` |
-| **Font weight** | `600` |
-| **Background** | `#EBF2FE` (Korean Light) |
-| **Color** | `#4285F4` (Korean) |
+| **Color** | `#9CA3AF` |
+| **Align** | Center |
+| **Visible when** | `state_today_targets:count is 0` |
 
-**Hover Conditional:**
-
-| 조건 | 속성 | 값 |
-|------|------|-----|
-| `This Button is hovered` | Background | `#4285F4` |
-| `This Button is hovered` | Font color | `#FFFFFF` |
-
-**Workflow: Button_StartKorean 클릭**
-
-| Action | Go to page: `subject-korean` |
-|--------|------|
-
-> 영어: → `subject-english`
-> 수학: → `subject-math`
-
-### 6.8 빈 상태 (DailyLearningTarget 없을 때)
-
-과목 카드는 Daily Target이 없어도 항상 표시합니다.
-
-| 상황 | 표시 |
-|------|------|
-| Target 없음 | 진도: `0 / 0`, 뱃지: "미설정", 프로그레스: 0% |
-| Target 있고 완료 0 | 진도: `0 / [목표]`, 뱃지: "미시작" |
-| Target 있고 진행중 | 진도: `[완료] / [목표]`, 뱃지: "진행중" |
-| Target 달성 | 진도: `[완료] / [목표]`, 뱃지: "완료!" |
+Group_DTHeader / HTML 프로그레스 / Group_DTSubjects → `state_today_targets:count is 0` 일 때 Visible = false
 
 ---
 
-## 7. XP 카드
+## 7. 과목 카드 3개
 
-### 7.1 데이터 소스
-
-```
-StudentProfile 테이블:
-  user_id = Current User
-
-필드:
-  total_xp      → 누적 경험치
-  current_level  → 현재 레벨
-```
-
-### 7.2 Group_XP
+### 7.1 Group_SubjectCards (컨테이너)
 
 | 속성 | 값 |
 |------|-----|
 | **Container layout** | Row |
-| **Width** | `100%` |
-| **Min height** | `96px` |
-| **Background** | Gradient: `#1A2E4D → #2A4060` (135deg) |
-| **Roundness** | `16px` |
-| **Padding** | `24px` |
 | **Column gap** | `16px` |
-| **Justify** | Space between |
-| **Align** | Center |
+| **Width** | `100%` |
 
-> Bubble gradient 설정:
-> Background style: Gradient
-> Color 1: `#1A2E4D` | Color 2: `#2A4060`
-> Direction: `135°`
+> 각 카드는 **독립 Group**으로 만듭니다 (과목이 3개 고정이고, 색상/아이콘이 다르므로 RG보다 간단).
 
-### 7.3 내부 요소
+### 7.2 카드 공통 구조 (국어 기준)
 
 ```
-Group_XP (Row, gradient navy BG)
+Group_CardKorean (Column, Surface BG, border, rounded: 16, padding: 24)
+│
+├── Group_SCTop ────────── Row (justify: space-between, mb: 16px)
+│   ├── Group_SCIcon ───── 48×48, rounded: 14, BG: #4285F4
+│   │   └── Icon: menu_book (24px, white) ← ★ v1.4에서 변경
+│   └── Text_SCBadge ──── "완료!" / "진행중" / "미시작"
+│
+├── Text_SCName ─────────── "국어" (18px, Bold)
+├── Text_SCDesc ─────────── "5단계 구조화 학습" (13px, Secondary, mb: 16px)
+│
+├── Group_SCProgress ────── Column (mb: 16px)
+│   ├── Group_SCProgressHeader ── Row
+│   │   ├── Text_Label ──── "오늘 진도" (12px, Secondary)
+│   │   └── Text_Count ──── "2 / 2" (13px, Bold, #4285F4)
+│   └── HTML_ProgressBar ── HTML Element (프로그레스 바)
+│
+└── Button_StartKorean ──── "학습하기" (play_arrow 아이콘)
+```
+
+### 7.3 카드 속성
+
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Column |
+| **Width** | (비움 — Row 안에서 3등분) |
+| **Min width** | `280px` |
+| **Background** | `#FFFFFF` (Surface) |
+| **Border** | `1px solid #E5E7EB` |
+| **Roundness** | `16` |
+| **Padding** | `24px` |
+
+### 7.4 과목별 색상표
+
+| 과목 | 아이콘 | 아이콘 BG | 프로그레스 CSS | 버튼 BG | 버튼 Hover BG |
+|------|--------|-----------|---------------|---------|---------------|
+| 국어 | `menu_book` | `#4285F4` | `.sc-bar-korean` | `#EBF2FE` | `#4285F4` (text: white) |
+| 영어 | `translate` | `#34A853` | `.sc-bar-english` | `#E8F5E9` | `#34A853` (text: white) |
+| 수학 | `calculate` | `#FBBC05` | `.sc-bar-math` | `#FFF8E1` | `#FBBC05` (text: #7A5C00) |
+
+### 7.5 상태 뱃지 (Text_SCBadge)
+
+각 과목의 DailyLearningTarget 기반:
+
+```
+데이터 참조 (국어 예시):
+  state_today_targets :filtered (subject = KOREAN) :first item
+```
+
+**Conditional 3개 (국어 기준):**
+
+| # | 조건 | 텍스트 | BG | Text Color |
+|---|------|--------|-----|-----------|
+| 1 | `...:first item's is_achieved is "yes"` | 완료! | `#DCFCE7` (green-100) | `#22C55E` |
+| 2 | `...:first item's completed_count > 0` AND `is_achieved is "no"` | 진행중 | `#DBEAFE` (blue-100) | `#3B82F6` |
+| 3 | `...:first item's completed_count is 0` OR count = 0 | 미시작 | `#F3F4F6` | `#9CA3AF` |
+
+**뱃지 기본 속성:**
+
+| 속성 | 값 |
+|------|-----|
+| **Font size** | `11px` |
+| **Font weight** | `600` |
+| **Padding** | `4px 10px` |
+| **Roundness** | `20` |
+
+### 7.6 과목 프로그레스 바 (HTML Element)
+
+각 카드 안에 HTML Element 1개:
+
+```html
+<!-- 국어 프로그레스 -->
+<div class="progress-track sc-track">
+  <div class="progress-bar sc-bar-korean" style="width: [동적]%"></div>
+</div>
+```
+
+동적 너비 (국어):
+
+```
+state_today_targets :filtered (subject=KOREAN) :first item's completed_count
+÷
+state_today_targets :filtered (subject=KOREAN) :first item's target_count
+× 100
+:formatted as #
+```
+
+> 영어: `sc-bar-english`, 수학: `sc-bar-math`로 클래스만 변경
+
+### 7.7 학습하기 버튼
+
+**공통 속성:**
+
+| 속성 | 값 |
+|------|-----|
+| **Width** | `100%` |
+| **Height** | `42px` |
+| **Roundness** | `10` |
+| **Font size** | `14px` |
+| **Font weight** | `600` |
+| **Icon** | `play_arrow` (왼쪽) |
+
+**과목별 스타일:**
+
+| 과목 | 기본 BG | 기본 Color | Hover BG | Hover Color |
+|------|---------|-----------|----------|------------|
+| 국어 | `#EBF2FE` | `#4285F4` | `#4285F4` | `#FFFFFF` |
+| 영어 | `#E8F5E9` | `#34A853` | `#34A853` | `#FFFFFF` |
+| 수학 | `#FFF8E1` | `#E6A800` | `#FBBC05` | `#7A5C00` |
+
+**Workflow:**
+
+| 버튼 | Action |
+|------|--------|
+| Button_StartKorean | Go to page: `subject-korean` |
+| Button_StartEnglish | Go to page: `subject-english` |
+| Button_StartMath | Go to page: `subject-math` |
+
+### 7.8 카드 빈 상태
+
+DailyLearningTarget이 없어도 **카드는 항상 표시**합니다.
+
+| 상황 | 뱃지 | 진도 | 프로그레스 |
+|------|------|------|----------|
+| Target 없음 | "미시작" | `- / -` | 0% |
+| Target 있고 완료 0 | "미시작" | `0 / [목표]` | 0% |
+| 진행중 | "진행중" | `[완료] / [목표]` | 계산% |
+| 달성 | "완료!" | `[완료] / [목표]` | 100% |
+
+### 7.9 반응형
+
+| 조건 | 변경 |
+|------|------|
+| `Current page width ≤ 900` | 각 카드 Min width = `100%` → 세로 1열 |
+
+---
+
+## 8. XP 카드
+
+### 8.1 데이터 소스
+
+```
+StudentProfile 테이블:
+  Search for StudentProfiles
+    Constraint: user_id = Current User
+  :first item
+
+필드: total_xp, current_level
+```
+
+### 8.2 Group_XP
+
+| 속성 | 값 |
+|------|-----|
+| **ID attribute** | `xpCard` |
+| **Container layout** | Row |
+| **Width** | `100%` |
+| **Min height** | `96px` |
+| **Background** | (CSS에서 gradient 처리) |
+| **Roundness** | `16` |
+| **Padding** | `24px` |
+| **Column gap** | `16px` |
+
+> gradient는 Section 2의 `#xpCard` CSS가 처리합니다.
+> Bubble 배경색은 **투명** 또는 `#1A2E4D`로 설정하세요.
+
+### 8.3 내부 구조
+
+```
+Group_XP (Row, justify: space-between, align: center)
 │
 ├── Group_XPLeft (Row, gap: 16px, align: center)
-│   ├── Group_XPLevel (56×56, circle)
-│   │   ├── Text_LevelLabel ("Lv.", 10px, white 60%)
+│   ├── Group_XPLevel (56×56, circle, BG: rgba 10% white, border: 2px rgba 20% white)
+│   │   ├── Text "Lv." (10px, white 60%)
 │   │   └── Text_LevelNum (동적, 20px, Bold, white)
 │   └── Group_XPInfo (Column)
-│       ├── Text_XPLabel ("누적 경험치", 11px, white 50%)
+│       ├── Text "누적 경험치" (11px, white 50%)
 │       └── Text_XPValue (동적, 22px, Bold, white)
 │
 └── Group_XPRight (Row, gap: 24px)
-    ├── Group_XPStat1 (연속 학습)
-    ├── Group_XPStat2 (이번 주 완료)
-    └── Group_XPStat3 (주간 달성률)
+    ├── Stat: 🔥 / Text_Streak / "연속 학습"
+    ├── Stat: ⭐ / Text_WeekDone / "이번 주 완료"
+    └── Stat: 📊 / Text_WeekRate / "주간 달성률"
 ```
 
-### 7.4 데이터 바인딩
+### 8.4 데이터 바인딩
 
-**Text_LevelNum:**
+| 요소 | 표현식 |
+|------|--------|
+| Text_LevelNum | `Search for StudentProfiles (user_id=Current User) :first item's current_level` |
+| Text_XPValue | `...:first item's total_xp:formatted as #,###` + ` XP` |
 
-```
-Search for StudentProfiles (user_id = Current User):first item's current_level
-```
+### 8.5 Streak / 이번 주 / 주간 달성률 — MVP 하드코딩
 
-**Text_XPValue:**
+| 항목 | MVP 값 | 향후 교체 방법 |
+|------|--------|---------------|
+| 연속 학습 | `0일` | StudentProfile에 `streak_days` 필드 추가 |
+| 이번 주 완료 | `0개` | DailyLearningTarget (이번 주, is_achieved=yes):count |
+| 주간 달성률 | `0%` | 완료/목표 비율 계산 |
 
-```
-Search for StudentProfiles (user_id = Current User):first item's total_xp:formatted as #,###
-+ " XP"
-```
+> ★ Day 2 이후 학습 기능 완성되면 실제 계산으로 교체합니다.
 
-> 숫자 포맷: Bubble의 `:formatted as` 에서 `#,###` 패턴 사용
+### 8.6 반응형
 
-### 7.5 Streak (연속 학습) — MVP 간소화
-
-> DB에 streak 전용 필드가 없으므로 MVP에서는 간소화 처리합니다.
-
-**방법 A — 하드코딩 (MVP 최소):**
-```
-Text_StreakValue: "0일"
-→ 학습 기능 완성 후 실제 계산으로 교체
-```
-
-**방법 B — 간단 계산 (Day 2 이후 연결):**
-```
-// DailyLearningTarget에서 연속 달성일 계산은 복잡하므로
-// StudentProfile에 streak_days 필드 추가 권장 (number, 기본값: 0)
-// 각 학습 완료 시 Workflow에서 업데이트
-```
-
-**★ MVP 권장: 방법 A (하드코딩) → 학습 기능 완료 후 교체**
-
-### 7.6 이번 주 완료 / 주간 달성률 — MVP 간소화
-
-| 항목 | MVP 처리 | 향후 교체 |
-|------|----------|----------|
-| 이번 주 완료 | 하드코딩: `0개` | DailyLearningTarget에서 이번 주 is_achieved = yes 카운트 |
-| 주간 달성률 | 하드코딩: `0%` | 완료/목표 비율 계산 |
+| 조건 | 변경 |
+|------|------|
+| `Current page width ≤ 768` | Group_XP Layout → Column, Gap: 16, 텍스트 Center |
 
 ---
 
-## 8. Workflow 정리
+## 9. Workflow 총정리
 
-### Page Level Workflows
+### Page Load (3개)
 
-| # | Event | Only when | Action | 비고 |
-|---|-------|-----------|--------|------|
-| WF-LOAD-01 | Page is loaded | Current User is logged out | Go to page: login | 접근 제어 |
-| WF-LOAD-02 | Page is loaded | Current User's role ≠ STUDENT | Go to page: (역할별) | 접근 제어 |
-| WF-LOAD-03 | Page is loaded | Current User is logged in AND role = STUDENT | Set state: state_today_targets | 데이터 로드 |
-| WF-SB-01 | Do when condition is true | RE_Sidebar's close_requested = yes | Set state × 2 | 사이드바 닫기 |
-| WF-OV-01 | Group_SidebarOverlay clicked | — | Set state: sidebar_open = no | 오버레이 닫기 |
+| # | Event | Only when | Action |
+|---|-------|-----------|--------|
+| WF-LOAD-01 | Page is loaded | Current User is logged out | Go to page: `login` |
+| WF-LOAD-02 | Page is loaded | role ≠ STUDENT | Go to page: 역할별 |
+| WF-LOAD-03 | Page is loaded | role = STUDENT | Set state: `state_today_targets` |
 
-### Button Workflows
+### 사이드바 연동 (2개)
 
-| # | Event | Action | 비고 |
-|---|-------|--------|------|
-| WF-BTN-01 | Button_StartKorean clicked | Go to page: subject-korean | 국어 학습 |
-| WF-BTN-02 | Button_StartEnglish clicked | Go to page: subject-english | 영어 학습 |
-| WF-BTN-03 | Button_StartMath clicked | Go to page: subject-math | 수학 학습 |
+| # | Event | Action |
+|---|-------|--------|
+| WF-SB-01 | Do when: `RE_Sidebar's close_requested = yes` | Set state: sidebar_open = no → close_requested = no |
+| WF-OV-01 | Group_SidebarOverlay clicked | Set state: sidebar_open = no |
+
+### 버튼 (3개)
+
+| # | Event | Action |
+|---|-------|--------|
+| WF-BTN-01 | Button_StartKorean clicked | Go to page: `subject-korean` |
+| WF-BTN-02 | Button_StartEnglish clicked | Go to page: `subject-english` |
+| WF-BTN-03 | Button_StartMath clicked | Go to page: `subject-math` |
+
+**총 Workflow: 8개**
 
 ---
 
-## 9. Conditional 정리
+## 10. Conditional 총정리
 
-### 반응형 (Responsive)
+### 반응형 (5개)
 
-| # | 요소 | 조건 | 변경 | 값 |
-|---|------|------|------|-----|
-| C-01 | Group_SidebarWrapper | `Current page width ≤ 1200` | Visible | false |
-| C-02 | Group_SidebarOverlay | `width ≤ 1200` AND `sidebar_open = yes` | Visible | true |
-| C-03 | Group_MobileSidebar | `width ≤ 1200` AND `sidebar_open = yes` | Visible | true |
-| C-04 | Group_SubjectCards | `Current page width ≤ 768` | 내부 카드 Min width | 100% |
-| C-05 | Group_XP | `Current page width ≤ 768` | Layout | Column (wrap) |
+| # | 요소 | 조건 | 변경 |
+|---|------|------|------|
+| C-01 | Group_SidebarWrapper | `width ≤ 1200` | Visible = false, Collapse = true |
+| C-02 | FG_MobileSidebar | `sidebar_open = yes` | Visible = true |
+| C-03 | Group_SidebarOverlay | `width ≤ 1200` AND `sidebar_open = yes` | Visible = true |
+| C-04 | Group_SubjectCards 내부 카드 | `width ≤ 900` | Min width = 100% |
+| C-05 | Group_XP | `width ≤ 768` | Layout → Column |
 
-### 과목 뱃지
+### Daily Target 빈 상태 (2개)
 
-| # | 요소 | 조건 | 텍스트 | 스타일 |
-|---|------|------|--------|--------|
-| C-10 | Text_KoreanBadge | `...is_achieved = yes` | 완료! | BG: green 10%, Color: #22C55E |
-| C-11 | Text_KoreanBadge | `...completed > 0 AND is_achieved = no` | 진행중 | BG: blue 10%, Color: #3B82F6 |
-| C-12 | Text_KoreanBadge | `...completed = 0` | 미시작 | BG: #F3F4F6, Color: #9CA3AF |
-| C-13~C-15 | Text_EnglishBadge | (동일 패턴, subject = ENGLISH) | — | — |
-| C-16~C-18 | Text_MathBadge | (동일 패턴, subject = MATH) | — | — |
+| # | 요소 | 조건 | 변경 |
+|---|------|------|------|
+| C-06 | Group_DTEmpty | `state_today_targets:count is 0` | Visible = true |
+| C-07 | DTHeader + Progress + DTSubjects | `state_today_targets:count is 0` | Visible = false |
 
-### 버튼 Hover
+### 과목 뱃지 (9개 — 과목당 3개)
+
+| # | 과목 | 조건 | 텍스트 | BG / Color |
+|---|------|------|--------|-----------|
+| C-10 | 국어 | is_achieved = yes | 완료! | `#DCFCE7` / `#22C55E` |
+| C-11 | 국어 | completed > 0 AND not achieved | 진행중 | `#DBEAFE` / `#3B82F6` |
+| C-12 | 국어 | completed = 0 또는 없음 | 미시작 | `#F3F4F6` / `#9CA3AF` |
+| C-13~15 | 영어 | (동일 패턴) | — | — |
+| C-16~18 | 수학 | (동일 패턴) | — | — |
+
+### 버튼 Hover (3개)
 
 | # | 요소 | 조건 | BG | Color |
 |---|------|------|-----|-------|
@@ -881,89 +794,135 @@ Text_StreakValue: "0일"
 | C-21 | Button_StartEnglish | hovered | `#34A853` | white |
 | C-22 | Button_StartMath | hovered | `#FBBC05` | `#7A5C00` |
 
+**총 Conditional: 19개**
+
 ---
 
-## 10. 테스트 체크리스트
+## 11. 테스트 데이터 및 체크리스트
 
-### 사전 조건
+### 11.1 사전 준비
 
 | 준비 항목 | 설정 |
 |-----------|------|
-| 테스트 계정 | 01011110000 / mb1234 (is_first_login = no로 변경 필요) |
+| 테스트 계정 | 01011110000 / mb1234 |
+| User.is_first_login | ★ `no`로 변경 (Data 탭에서) |
 | StudentProfile | user_id = 테스트학생A, grade = E1, total_xp = 0, current_level = 1 |
-| DailyLearningTarget × 3 | student_id = 테스트학생A, target_date = 오늘, subject = KOREAN/ENGLISH/MATH |
 
-> ⚠️ is_first_login이 yes면 change-password로 리다이렉트됩니다.
-> 테스트 전 Data 탭에서 테스트학생A의 is_first_login = no로 변경하세요.
-
-### DailyLearningTarget 테스트 데이터 입력
+### 11.2 DailyLearningTarget 테스트 데이터
 
 Data 탭 → DailyLearningTarget → `New entry` × 3:
 
 | # | student_id | target_date | subject | target_count | completed_count | is_achieved |
 |---|------------|-------------|---------|-------------|----------------|-------------|
-| 1 | 테스트학생A | 오늘 날짜 | KOREAN | 2 | 2 | yes |
-| 2 | 테스트학생A | 오늘 날짜 | ENGLISH | 3 | 1 | no |
-| 3 | 테스트학생A | 오늘 날짜 | MATH | 2 | 1 | no |
+| 1 | 테스트학생A | 오늘 | KOREAN | 2 | 2 | yes |
+| 2 | 테스트학생A | 오늘 | ENGLISH | 3 | 1 | no |
+| 3 | 테스트학생A | 오늘 | MATH | 2 | 1 | no |
 
-### 테스트 항목
+### 11.3 테스트 체크리스트 (20항목)
 
 ```
 [접근 제어]
-□ 1. 비로그인 → /student-dashboard 접속 → login으로 리다이렉트
-□ 2. 관리자 계정 로그인 → /student-dashboard 접속 → admin-dashboard로 리다이렉트
-□ 3. 학생 계정 로그인 → 정상 표시
+□ 1.  비로그인 → /student-dashboard → login 리다이렉트
+□ 2.  관리자(01099990000) 로그인 → /student-dashboard → admin-dashboard 리다이렉트
+□ 3.  학생(01011110000) 로그인 → 정상 표시
+
+[Type A 템플릿]
+□ 4.  FG_Header: "대시보드" 텍스트 표시
+□ 5.  RE_Sidebar: "홈" NavItem 하이라이트 (active)
+□ 6.  사이드바 메뉴: [학습] 홈/국어/영어/수학 + [관리] 플래너/리포트
 
 [인사말]
-□ 4. "안녕, 테스트학생A! 👋" 표시
-□ 5. 오늘 날짜 한글 표시 (2025년 2월 25일 화요일)
+□ 7.  "안녕, 테스트학생A! 👋" 표시
+□ 8.  오늘 날짜 한글 표시 (YYYY년 M월 D일 요일)
 
 [Daily Target]
-□ 6. 전체 진도: "4 / 7 완료" 표시
-□ 7. 프로그레스 바: 약 57% 채움
-□ 8. 과목별 진도: 국어 2/2, 영어 1/3, 수학 1/2
+□ 9.  전체 진도: "4 / 7 완료"
+□ 10. 프로그레스 바: 약 57% 채움
+□ 11. 과목별: 국어 2/2, 영어 1/3, 수학 1/2
 
 [과목 카드]
-□ 9. 국어: "완료!" 뱃지 (초록), 프로그레스 100%
-□ 10. 영어: "진행중" 뱃지 (파랑), 프로그레스 33%
-□ 11. 수학: "진행중" 뱃지 (파랑), 프로그레스 50%
-□ 12. "학습하기" 버튼 호버 → 색상 변경
+□ 12. 국어: "완료!" 뱃지 (초록), 100%
+□ 13. 영어: "진행중" 뱃지 (파랑), 33%
+□ 14. 수학: "진행중" 뱃지 (파랑), 50%
+□ 15. "학습하기" 버튼 호버 → 색상 변경
 
 [XP 카드]
-□ 13. 레벨: "1" (StudentProfile current_level)
-□ 14. XP: "0 XP" (StudentProfile total_xp)
-□ 15. 연속 학습: "0일" (MVP 하드코딩)
+□ 16. 레벨: "1", XP: "0 XP"
+□ 17. Streak/이번주/달성률: "0일" / "0개" / "0%"
 
 [빈 상태]
-□ 16. DailyLearningTarget 삭제 후 → "학습 목표가 설정되지 않았습니다"
-□ 17. 과목 카드: "미설정" 뱃지, 진도 0/0
+□ 18. DailyLearningTarget 3개 삭제 → "학습 목표가 설정되지 않았습니다"
 
 [반응형]
-□ 18. PC (1200px+): 사이드바 표시, 3열 카드
-□ 19. 태블릿 (768~1200px): 사이드바 숨김, 햄버거 표시
-□ 20. 모바일 (768px 미만): 카드 1열, XP 카드 세로
+□ 19. 1200px 이하: 사이드바 숨김, 햄버거 클릭 → 모바일 사이드바
+□ 20. 768px 이하: 카드 1열, XP 카드 세로
 ```
 
----
-
-## 📌 Data 탭 검증 테이블
-
-테스트 완료 후 확인:
+### 11.4 Data 탭 검증
 
 | Data Type | 확인 항목 | 예상 값 |
 |-----------|-----------|---------|
 | User (테스트학생A) | role | STUDENT |
-| User (테스트학생A) | is_first_login | no (테스트 전 변경) |
-| StudentProfile | user_id → 테스트학생A | ✅ |
-| StudentProfile | total_xp | 0 |
-| StudentProfile | current_level | 1 |
+| User (테스트학생A) | is_first_login | no |
+| StudentProfile | total_xp / current_level | 0 / 1 |
 | DailyLearningTarget × 3 | target_date = 오늘 | ✅ |
 
 ---
 
-## 🚀 다음 단계
+## 📌 Quick Reference — 복사용
 
-대시보드 완성 후:
+### RE Property 설정 (요소 Appearance 탭)
+
+```
+RE_Header:
+  page_title  = "대시보드"
+  notif_count = Search for Notifications [user_id=Current User, is_read=no]:count
+
+RE_Sidebar (× 2개 인스턴스: SidebarWrapper + MobileSidebar):
+  active_page = "student-dashboard"
+```
+
+### Page HTML Header (그대로 복사)
+
+```html
+<style>
+#sidebarWrapper{position:sticky!important;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+.progress-track{width:100%;background:#F3F4F6;border-radius:999px;overflow:hidden}
+.progress-bar{height:100%;border-radius:999px;transition:width .6s ease}
+.dt-track{height:12px}.dt-bar{background:linear-gradient(90deg,#FF6D4D,#FF8F73)}
+.sc-track{height:6px}
+.sc-bar-korean{background:#4285F4}.sc-bar-english{background:#34A853}.sc-bar-math{background:#FBBC05}
+#xpCard{background:linear-gradient(135deg,#1A2E4D 0%,#2A4060 100%)!important}
+</style>
+```
+
+### 프로그레스 바 HTML (카드에 복사)
+
+```html
+<!-- Daily Target -->
+<div class="progress-track dt-track">
+  <div class="progress-bar dt-bar" style="width: [동적]%"></div>
+</div>
+
+<!-- 국어 -->
+<div class="progress-track sc-track">
+  <div class="progress-bar sc-bar-korean" style="width: [동적]%"></div>
+</div>
+
+<!-- 영어 -->
+<div class="progress-track sc-track">
+  <div class="progress-bar sc-bar-english" style="width: [동적]%"></div>
+</div>
+
+<!-- 수학 -->
+<div class="progress-track sc-track">
+  <div class="progress-bar sc-bar-math" style="width: [동적]%"></div>
+</div>
+```
+
+---
+
+## 🚀 다음 단계
 
 ```
 Day 2: 국어 학습
@@ -974,4 +933,4 @@ Day 2: 국어 학습
 
 ---
 
-*— MAMA-ASST S-01 학생 대시보드 구현 가이드 v1.0 끝 —*
+*— MAMA-ASST S-01 학생 대시보드 구현 가이드 v1.1 끝 —*
