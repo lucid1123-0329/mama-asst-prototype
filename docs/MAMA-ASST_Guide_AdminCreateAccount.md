@@ -123,7 +123,7 @@ Page: admin-create-account
 │   │   ├── Group_CreatedHeader (Row)
 │   │   │   ├── Text_CreatedTitle ("생성된 계정")
 │   │   │   └── Text_CreatedCount ("0명")
-│   │   └── RG_CreatedAccounts (Repeating Group, text list)
+│   │   └── RG_CreatedAccounts (Repeating Group, User, Data source 비움)
 │   │       └── Group_CreatedItem (Row)
 │   │           ├── Group_Avatar (40×40, 원형, 이니셜)
 │   │           ├── Group_CreatedInfo (Column)
@@ -438,7 +438,7 @@ Layout: Column
 ★ 기본 숨김:
   This element is visible on page load: 체크 해제
   Conditional: 
-    When state_created_accounts:count > 0 → Visible ✅
+    When state_created_users:count > 0 → Visible ✅
 ```
 
 #### Text_CreatedTitle
@@ -449,10 +449,10 @@ Font: Pretendard 16px, Weight 600, Color: #1A2E4D
 
 #### Text_CreatedCount
 ```
-Content: state_created_accounts:count 값 + "명"
+Content: state_created_users:count 값 + "명"
 Font: Pretendard 13px, Color: #9CA3AF
 
-Dynamic data: admin-create-account's state_created_accounts:count
+Dynamic data: admin-create-account's state_created_users:count
   :formatted as → 숫자 + "명"
 ```
 
@@ -460,15 +460,15 @@ Dynamic data: admin-create-account's state_created_accounts:count
 
 ```
 Type: Repeating Group
-Type of content: text
-Data source: admin-create-account's state_created_accounts
+Type of content: User
+Data source: (비워둠!) ★★★
+
+★★★ 핵심: Data source를 비워두고,
+  Workflow에서 "Display list in Repeating Group" 액션으로 데이터 주입.
+  page Custom State를 RG Data source에 직접 바인딩하기 어려운 경우 이 방식 사용.
 
 Layout: Column
 Rows per page: 20
-
-★ 핵심: text list를 데이터소스로 사용
-  각 셀의 값: "이름|전화번호|학년표시|역할코드"
-  → 구분자 "|"로 split하여 각 필드 표시
 ```
 
 #### Group_CreatedItem (각 항목)
@@ -479,12 +479,6 @@ Padding: 14px 16px
 Background: #FFFFFF
 Border: 1px solid #E5E7EB
 Roundness: 12
-
-★ 텍스트 파싱 방법 (Bubble):
-  Current cell's text:split by("|"):item #1  → 이름
-  Current cell's text:split by("|"):item #2  → 전화번호
-  Current cell's text:split by("|"):item #3  → 학년 (빈 문자열 가능)
-  Current cell's text:split by("|"):item #4  → 역할코드
 ```
 
 #### Group_Avatar (이니셜 원형)
@@ -492,42 +486,53 @@ Roundness: 12
 Size: 40×40 (fixed)
 Roundness: 50%
 
-Text: Current cell's text:split by("|"):item #1:truncated to 1
+Text: Current cell's User's name:truncated to 1
   → 이름 첫 글자, 15px, Bold, White
 
 Background (Conditional):
-  When Current cell's text contains "STUDENT":
+  When Current cell's User's role is STUDENT:
     → #FF6D4D (Primary)
-  When Current cell's text contains "ACADEMY_ADMIN":
+  When Current cell's User's role is ACADEMY_ADMIN:
     → #1A2E4D (Navy)
-  When Current cell's text contains "INSTRUCTOR":
+  When Current cell's User's role is INSTRUCTOR:
     → #22C55E (Success)
 ```
 
 #### Text_CreatedName
 ```
 Font: Pretendard 14px, Weight 600, Color: #1F2937
-Dynamic: Current cell's text:split by("|"):item #1
+Dynamic: Current cell's User's name
 ```
 
 #### Text_CreatedMeta
 ```
 Font: Pretendard 12px, Color: #9CA3AF
-Dynamic: Current cell's text:split by("|"):item #2
-         (학년이 있으면) " · " + :item #3
-         " · 비밀번호: mb1234"
 
-★ Bubble 표현식 (학생일 때):
-  Current cell's text:split by("|"):item #2
-  " · "
-  Current cell's text:split by("|"):item #3
-  " · 비밀번호: mb1234"
-
-★ Bubble 표현식 (관리자/강사일 때):
-  학년(:item #3)이 빈 문자열 → " · " + 학년 부분 생략
+★ 학년 정보는 StudentProfile에서 가져와야 함:
   
-  팁: Conditional로 분기하거나, 
-      :item #3 is not empty → " · " + :item #3 추가
+  학생일 때:
+    Current cell's User's phone
+    " · "
+    Search for StudentProfiles (user_id = Current cell's User):first item's grade's School_Level
+    " · 비밀번호: mb1234"
+  
+  관리자/강사일 때:
+    Current cell's User's phone
+    " · 비밀번호: mb1234"
+
+★ Bubble 구현 팁:
+  Text 하나에 Conditional로 분기:
+  
+  기본값: Current cell's User's phone  " · 비밀번호: mb1234"
+  
+  Conditional:
+    When Current cell's User's role is STUDENT:
+      → Current cell's User's phone
+        " · "
+        Search for StudentProfiles
+          (Constraint: user_id = Current cell's User)
+          :first item's grade's School_Level
+        " · 비밀번호: mb1234"
 ```
 
 #### Text_CreatedBadge
@@ -536,12 +541,12 @@ Font: Pretendard 11px, Weight 500
 Padding: 4px 8px
 Roundness: 6
 
-★ Conditional 기반 표시:
-  When Current cell's text contains "STUDENT":
+Conditional:
+  When Current cell's User's role is STUDENT:
     Text: "학생", Background: #FF6D4D, Color: #FFFFFF
-  When Current cell's text contains "ACADEMY_ADMIN":
+  When Current cell's User's role is ACADEMY_ADMIN:
     Text: "관리자", Background: #1A2E4D, Color: #FFFFFF
-  When Current cell's text contains "INSTRUCTOR":
+  When Current cell's User's role is INSTRUCTOR:
     Text: "강사", Background: #22C55E, Color: #FFFFFF
 ```
 
@@ -567,16 +572,14 @@ Page: admin-create-account에 Custom State 추가:
 
 4. state_loading (type: yes/no, default: no)
 
-5. state_created_accounts (type: text, list: yes, default: empty)
-   → 이 세션에서 생성한 계정 정보를 텍스트로 저장
-   → 형식: "이름|전화번호|학년표시|역할코드"
-   → 예: "테스트학생A|01011110000|초1|STUDENT"
-   → 예: "테스트관리자|01099990000||ACADEMY_ADMIN"
-   
-   ★ User list 대신 text list를 사용하는 이유:
-     Sign the user up → 자동 로그인 → Log the user out 과정에서
-     Privacy Rules에 의해 다른 User 데이터 접근이 차단됨.
-     텍스트로 저장하면 Privacy Rules 영향을 받지 않음.
+5. state_created_users (type: User, list: yes, default: empty)
+   → 이 세션에서 생성한 유저 목록
+   → Workflow의 "Display list" 액션으로 RG에 표시
+
+   ★ RG Data source에 직접 바인딩하지 않음!
+     Bubble에서 page Custom State를 RG Data source로 
+     직접 설정이 안 되는 경우가 있으므로,
+     Workflow "Display list in Repeating Group" 액션으로 해결.
 ```
 
 ### Conditional
@@ -614,7 +617,7 @@ When state_loading is yes:
 
 #### Group_CreatedSection 표시
 ```
-When state_created_accounts:count > 0:
+When state_created_users:count > 0:
   → Visible ✅
 ```
 
@@ -682,60 +685,59 @@ Event: When Button_Create is clicked
    ★ 관리자/강사 선택 시: 이 Step은 자동으로 건너뜀 (Only when 조건)
      → InstructorProfile은 Phase B에서 별도 생성
 
-── Step 9: 생성 목록에 추가 (텍스트로 저장) ★★★ 변경
+── Step 9: 생성 목록에 추가 ★★★
    Action: Set state of admin-create-account
-     state_created_accounts add
-       Input_Name's value
-       :append "|"
-       :append Input_Phone's value:find & replace(Find:"-", Replace by:"")
-       :append "|"
-       :append Dropdown_Grade's value's School_Level (학생일 때) 또는 "" (빈값)
-       :append "|"
-       :append Dropdown_Role's value
+     state_created_users add Current User
    
-   ★ 결과 예시: "테스트학생A|01011110000|초1|STUDENT"
-   ★ 결과 예시: "테스트관리자|01099990000||ACADEMY_ADMIN"
-   
-   ★ Bubble 표현식 팁:
-     학년 부분은 Conditional을 사용하거나:
-     Dropdown_Role's value is STUDENT
-       → Dropdown_Grade's value's School_Level
-     Dropdown_Role's value is not STUDENT
-       → "" (빈 문자열)
+   ★ 반드시 Log the user out(Step 11) 전에 실행!
+     로그아웃하면 Current User 참조가 불가능해짐
 
-── Step 10: 로그아웃 ★★★
+── Step 10: RG에 목록 표시 ★★★ (Display list)
+   Action: Display list in Repeating Group
+     Repeating Group: RG_CreatedAccounts
+     Data source: admin-create-account's state_created_users
+   
+   ★★★ 이것이 핵심!
+     RG Data source를 비워두고, 이 액션으로 데이터를 주입함.
+     page Custom State를 RG Data source에 직접 설정이 어려운 경우
+     이 Workflow 액션이 공식적인 해결 방법.
+
+── Step 11: 로그아웃 ★★★
    Action: Log the user out
    (← Sign the user up 시 자동 로그인됨, 다음 계정 생성을 위해 즉시 로그아웃)
 
-── Step 11: 로딩 해제
+── Step 12: 로딩 해제
    Action: Set state → state_loading = no
 
-── Step 12: 토스트 표시
+── Step 13: 토스트 표시
    Action: Show RE_Toast
      (또는 Custom State로 토스트 텍스트 설정 후 표시)
      메시지: "[이름] [역할] 계정이 생성되었습니다"
      예) "테스트학생A 학생 계정이 생성되었습니다"
 
-── Step 13: 폼 초기화
+── Step 14: 폼 초기화
    Action: Reset inputs
    (← Bubble 내장 Action, 모든 Input/Dropdown을 초기 상태로)
    ★ Reset inputs 후 Dropdown_Role도 기본값(STUDENT)으로 복원
    → Group_InputGrade Conditional이 자동으로 학년 다시 표시
 ```
 
-> ⚠️ **Step 10 (Log the user out)가 가장 중요합니다!**  
+> ⚠️ **Step 11 (Log the user out)가 가장 중요합니다!**  
 > "Sign the user up"은 새 계정을 만들면서 **자동으로 그 계정으로 로그인**합니다.  
 > 로그아웃하지 않으면 관리자가 아닌 방금 생성한 계정으로 남게 됩니다.  
 > 연속 계정 생성을 위해 반드시 로그아웃 필요.
 
-> ⚠️ **Step 8~9의 타이밍 주의**:  
-> StudentProfile 생성(Step 8)과 state 추가(Step 9)는 반드시 Log the user out(Step 10) 전에!  
+> ⚠️ **Step 8~10의 타이밍 주의**:  
+> StudentProfile 생성(Step 8), state 추가(Step 9), Display list(Step 10)는  
+> 반드시 Log the user out(Step 11) 전에 실행!  
 > 로그아웃 후에는 Current User 참조가 불가능하므로.
 
-> ⚠️ **text list를 사용하는 이유 (Privacy Rules 회피)**:  
-> Sign the user up → 새 계정으로 자동 로그인 → Log the user out 과정에서  
-> 이전에 생성한 User 데이터에 대한 접근이 Privacy Rules에 의해 차단됩니다.  
-> text list로 표시 정보만 저장하면 이 문제를 완전히 회피할 수 있습니다.
+> ⚠️ **Privacy Rules 주의**:  
+> Log the user out 후 RG가 이전에 생성한 User 데이터를 표시하려면  
+> Privacy Rules에서 비로그인 상태에서도 User의 name, phone, role을  
+> 읽을 수 있어야 합니다. 만약 RG에서 빈 행이 표시된다면:  
+> **해결**: User Privacy Rules → "Everyone else" 규칙에서  
+> name, phone, role 필드의 View 권한을 허용하세요. (MVP 한정)
 
 ### WF-2: Sign the user up 실패 처리
 
@@ -999,7 +1001,7 @@ p.logo-subtitle                  → Text_PageSubtitle (15px, #6B7280)
 .created-header                  → Group_CreatedHeader (Row, Space between)
 .created-title                   → Text_CreatedTitle (16px, Weight 600, Navy)
 .created-count                   → Text_CreatedCount (13px, Tertiary, "n명")
-.created-list                    → RG_CreatedAccounts (Repeating Group, text list)
+.created-list                    → RG_CreatedAccounts (RG, User, Data source 비움 + Display list)
 .created-item                    → Group_CreatedItem (Row, V Center, gap 12)
 .created-avatar                  → Group_Avatar (40×40, 원형, 이니셜)
 .created-name                    → Text_CreatedName (14px, Weight 600)
