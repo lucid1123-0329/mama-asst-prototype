@@ -446,19 +446,20 @@ notif_count 검색 설정:
 
 ### Group_Greeting
 
-| 속성 | Element Style |
-|------|-------------|
+| 속성 | 값 |
+|------|-----|
 | **Style** | **Group - Transparent** |
 | **Container layout** | Column |
-| **Row gap** | `4px` |
 | **Width** | `100%` |
+| **Row gap** | `4px` |
 
 ### Text_GreetingTitle
 
 | 속성 | 값 |
 |------|-----|
 | **Style** | **Text - Heading 3** ✅ |
-| 추가 설정 없음 | 24px, 600, Navy + 반응형 Conditional 모두 스타일에 포함 |
+| **Width** | `100%` |
+| 추가 설정 없음 | 24px, 600, Navy + 반응형 자동 포함 |
 
 **동적 텍스트:**
 
@@ -476,6 +477,7 @@ Bubble Editor에서:
 | 속성 | 값 |
 |------|-----|
 | **Style** | **Text - Body 14** |
+| **Width** | `100%` |
 | **Color** | `#6B7280` (Text Secondary) ← 커스텀 오버라이드 |
 
 > Body 14 기본 색상은 Text Primary(`#1F2937`)이므로 색상만 변경합니다.
@@ -515,56 +517,62 @@ Set state 값:
     Constraint 2: target_date = Current date/time:rounded down to date
 ```
 
-### 7.2 Group_DailyTarget
+### 7.2 Group_DailyTarget (최상위)
 
 | 속성 | 값 |
 |------|-----|
 | **Style** | **Group - Card Bordered** |
 | **Container layout** | Column |
-| **Row gap** | `14px` |
 | **Width** | `100%` |
+| **Row gap** | `14px` |
 | **Roundness** | `16` ← 커스텀 오버라이드 (기본 12) |
-| **Padding** | `20px 24px` ← 커스텀 오버라이드 (기본 24) |
+| **Padding** | `20px 24px` ← 커스텀 오버라이드 (기본 24 all) |
 
-### 7.3 Group_DTHeader (Row)
+### 7.3 Group_DTHeader
 
-**Text_DTLabel:**
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Row |
+| **Width** | `100%` |
+| **H Alignment** | Space between |
+| **V Alignment** | Center |
+
+#### Text_DTLabel
 
 | 속성 | 값 |
 |------|-----|
 | **Style** | **Text - Label** |
-| 텍스트 | `오늘의 학습 목표` |
 | **Font weight** | `600` ← 커스텀 오버라이드 (기본 500) |
+| 텍스트 | `오늘의 학습 목표` |
 
-**Text_DTCount:**
+#### Text_DTCount
 
 | 속성 | 값 |
 |------|-----|
 | **Style** | **Text - Body 14** |
 | **Color** | `#6B7280` (Text Secondary) ← 커스텀 오버라이드 |
 
-동적 텍스트 — 완료/목표 합산:
+**동적 텍스트:**
 
 ```
-완료 합계 표현식:
+[완료합계] + " / " + [목표합계] + " 완료"
+
+완료 합계:
   state_today_targets:each item's completed_count:sum
-
-목표 합계 표현식:
+목표 합계:
   state_today_targets:each item's target_count:sum
-
-표시: [완료합계] + " / " + [목표합계] + " 완료"
 ```
 
-> ⚠️ Bubble에서 `:each item's field:sum`이 작동하지 않는 경우가 있습니다.
-> **대안**: 과목별 개별 검색 후 합산 (7.5절 참조)
+> ⚠️ Bubble에서 `:each item's field:sum`이 작동하지 않는 경우,
+> 과목별 개별 검색 후 합산합니다 (7.5절 참조).
 
-### 7.4 프로그레스 바 (HTML Element)
+### 7.4 HTML_DTProgress (프로그레스 바)
 
-> ★ Bubble HTML Element는 Page Header CSS가 내부에 적용되지 않으므로 **인라인 스타일**을 사용합니다.
-
-**HTML Element 추가:**
-- Bubble Editor → Visual elements → HTML
-- Width: 100%, **Min height: 12px**
+| 속성 | 값 |
+|------|-----|
+| **Type** | HTML Element |
+| **Width** | `100%` |
+| **Min height** | `12px` |
 
 **HTML 코드 (그대로 복사):**
 
@@ -574,74 +582,82 @@ Set state 값:
 </div>
 ```
 
-**동적 너비 설정 방법:**
-
-`[동적]` 부분을 Bubble 표현식으로 교체:
+**`[동적]` 부분을 Bubble 표현식으로 교체:**
 
 ```
-width: Insert dynamic data
-
-표현식:
-  state_today_targets:each item's completed_count:sum
-  /
-  state_today_targets:each item's target_count:sum
-  * 100
-  :formatted as #
-
-결과 예시: width: 57%
+state_today_targets:each item's completed_count:sum
+÷
+state_today_targets:each item's target_count:sum
+× 100
+:formatted as #
 ```
 
-> ⚠️ 목표 합계가 0이면 NaN 방지 필요:
-> **가장 안전한 방법**: Conditional로 분기
-> - state_today_targets:count is 0 → HTML에서 width: 0%
+> ⚠️ 목표 합계 0이면 NaN → Conditional로 분기:
+> - state_today_targets:count is 0 → width: 0%
 > - state_today_targets:count > 0 → 정상 계산
 
-### 7.5 과목별 소진도 (Row)
-
-#### Group_DTSubjects (Row, gap: 16px)
-
-3개 과목별 텍스트:
-
-```
-● 국어 [완료]/[목표]     ● (8×8, #4285F4)
-● 영어 [완료]/[목표]     ● (8×8, #34A853)
-● 수학 [완료]/[목표]     ● (8×8, #FBBC05)
-```
-
-**각 라벨 텍스트:**
+### 7.5 Group_DTSubjects (과목별 소진도)
 
 | 속성 | 값 |
 |------|-----|
-| **Style** | **Text - Caption** ✅ | 
-| 추가 설정 없음 | 12px, 400, Text Secondary — 정확히 일치 |
+| **Container layout** | Row |
+| **Width** | `100%` |
+| **Column gap** | `16px` |
 
-**각 과목 데이터 바인딩 (국어 예시):**
+#### 각 과목 항목 구조 (Group_DTSubKorean 예시)
+
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Row |
+| **Column gap** | `6px` |
+| **V Alignment** | Center |
+| **Fit width to content** | ✅ |
+
+**내부 요소 2개:**
+
+| 요소 | 속성 |
+|------|------|
+| Group_Dot | 8px × 8px (Fixed), Roundness: 4 (circle), BG: `#4285F4` (국어) |
+| Text_SubLabel | Style: **Caption** ✅ (12px, 400, Text Secondary) |
+
+**Text_SubLabel 동적 텍스트 (국어 예시):**
 
 ```
-국어 완료:
-  state_today_targets :filtered
-    Advanced: This DailyLearningTarget's subject is KOREAN
-  :first item's completed_count
-
-국어 목표:
-  (동일 필터) :first item's target_count
+"국어 " +
+state_today_targets :filtered (subject = KOREAN) :first item's completed_count
++ "/" +
+state_today_targets :filtered (subject = KOREAN) :first item's target_count
 ```
+
+**과목별 Dot 색상:**
+
+| 과목 | Dot BG |
+|------|--------|
+| 국어 | `#4285F4` |
+| 영어 | `#34A853` |
+| 수학 | `#FBBC05` |
 
 > ★ `:filtered`는 클라이언트 사이드 연산이므로 **추가 서버 호출이 없습니다.**
 
-### 7.6 빈 상태
-
-**Group_DTEmpty** (state_today_targets:count is 0 일 때):
+### 7.6 Group_DTEmpty (빈 상태)
 
 | 속성 | 값 |
 |------|-----|
 | **Style** | **Text - Body 14** |
+| **Width** | `100%` |
 | **Text** | `학습 목표가 설정되지 않았습니다` |
 | **Color** | `#9CA3AF` (Text Tertiary) ← 커스텀 오버라이드 |
-| **Align** | Center |
-| **Visible when** | `state_today_targets:count is 0` |
+| **H Alignment** | Center |
+| **Visible on page load** | ❌ |
+| **Collapse when hidden** | ✅ |
 
-Group_DTHeader / HTML 프로그레스 / Group_DTSubjects → `state_today_targets:count is 0` 일 때 Visible = false
+**Conditional:**
+
+| 조건 | 속성 | 값 |
+|------|------|-----|
+| `state_today_targets:count is 0` | Visible | true |
+
+Group_DTHeader / HTML_DTProgress / Group_DTSubjects → `state_today_targets:count is 0` 일 때 Visible = false, Collapse = ✅
 
 ---
 
@@ -649,109 +665,73 @@ Group_DTHeader / HTML 프로그레스 / Group_DTSubjects → `state_today_target
 
 ### 8.1 Group_SubjectCards (컨테이너)
 
-| 속성 | Element Style |
-|------|-------------|
+| 속성 | 값 |
+|------|-----|
 | **Style** | **Group - Transparent** |
 | **Container layout** | Row |
-| **Column gap** | `16px` |
 | **Width** | `100%` |
+| **Column gap** | `16px` |
 
 > 각 카드는 **독립 Group**으로 만듭니다 (과목이 3개 고정이고, 색상/아이콘이 다르므로 RG보다 간단).
 
-### 8.2 카드 공통 구조 (국어 기준)
+### 8.2 Group_CardKorean (카드 1개 상세)
 
-```
-Group_CardKorean (Card Bordered, roundness 16)
-│
-├── Group_SCTop ────────── Row (justify: space-between)
-│   ├── Group_SCIcon ───── 48×48, rounded: 14, BG: #4285F4
-│   │   └── Icon: menu_book (24px, white)
-│   └── Text_SCBadge ──── Badge 커스텀 (11px, 600)
-│
-├── Text_SCName ─────────── Heading 5 (18px, 600, Navy 오버라이드)
-├── Text_SCDesc ─────────── 커스텀 (13px, 400, Secondary)
-│
-├── Group_SCProgress ────── Column
-│   ├── Group_SCProgressHeader ── Row
-│   │   ├── Text_Label ──── Caption ✅ (12px, 400, Secondary)
-│   │   └── Text_Count ──── 커스텀 (13px, 700, 과목색상)
-│   └── HTML_ProgressBar ── HTML Element (인라인 스타일)
-│
-└── Button_StartKorean ──── 커스텀 Tonal (Light BG → Hover: Filled)
-```
-
-### 8.3 카드 Group
+> 영어/수학 카드는 **동일 구조**, 색상/아이콘/텍스트만 다릅니다.
 
 | 속성 | 값 |
 |------|-----|
 | **Style** | **Group - Card Bordered** |
-| **Width** | (비움 — Row 안에서 3등분) |
+| **Container layout** | Column |
+| **Width** | (비움 — Row 안에서 3등분, flex) |
 | **Min width** | `280px` |
 | **Roundness** | `16` ← 커스텀 오버라이드 (기본 12) |
 | **Padding** | `24px` (기본과 동일) |
 
-### 8.4 카드 내부 텍스트
+**반응형:**
 
-**Text_SCName (과목명 "국어"):**
+| 조건 | 변경 |
+|------|------|
+| `Current page width ≤ 900` | Min width = `100%` → 세로 1열 |
 
-| 속성 | 값 |
-|------|-----|
-| **Style** | **Text - Heading 5** |
-| **Color** | `#1A2E4D` (Navy) ← 커스텀 오버라이드 (기본 Text Primary) |
-
-> 반응형: 18px→16px (≤1024) 자동 적용
-
-**Text_SCDesc (설명 "5단계 구조화 학습"):**
+#### Group_SCTop
 
 | 속성 | 값 |
 |------|-----|
-| **Style** | 커스텀 (스타일 없음) |
-| **Font size** | `13px` |
-| **Font weight** | `400` |
-| **Color** | `#6B7280` (Text Secondary) |
+| **Container layout** | Row |
+| **Width** | `100%` |
+| **H Alignment** | Space between |
+| **V Alignment** | Center |
 | **Margin bottom** | `16px` |
 
-**과목별 설명 텍스트:**
-
-| 과목 | Text_SCDesc |
-|------|------------|
-| 국어 | 5단계 구조화 학습 |
-| 영어 | 7초 발음 테스트 |
-| 수학 | Jump/Anchor 문제풀이 |
-
-**Text_SCProgressLabel ("오늘 진도"):**
+#### Group_SCIcon
 
 | 속성 | 값 |
 |------|-----|
-| **Style** | **Text - Caption** ✅ |
-| 추가 설정 없음 | 12px, 400, Text Secondary — 정확히 일치 |
+| **Width** | `48px` (Fixed) |
+| **Height** | `48px` (Fixed) |
+| **Roundness** | `14` |
+| **Background** | `#4285F4` (국어) / `#34A853` (영어) / `#FBBC05` (수학) |
+| **H Alignment** | Center |
+| **V Alignment** | Center |
 
-**Text_SCProgressCount ("2 / 2"):**
-
-| 속성 | 값 |
-|------|-----|
-| **Style** | 커스텀 (스타일 없음) |
-| **Font size** | `13px` |
-| **Font weight** | `700` |
-| **Color** | 과목별 색상 (아래 표) |
-
-### 8.5 과목별 색상표
-
-| 과목 | 아이콘 | 아이콘 BG | Text_SCProgressCount Color | 프로그레스 색상 |
-|------|--------|-----------|---------------------------|---------------|
-| 국어 | `menu_book` | `#4285F4` | `#4285F4` | `#4285F4` |
-| 영어 | `translate` | `#34A853` | `#34A853` | `#34A853` |
-| 수학 | `calculate` | `#FBBC05` | `#E6A800` | `#FBBC05` |
-
-### 8.6 상태 뱃지 (Text_SCBadge)
+**내부 Icon:**
 
 | 속성 | 값 |
 |------|-----|
-| **Style** | 커스텀 (Badge 12px 기반이나 11px 필요) |
+| **Icon** | `menu_book` (국어) / `translate` (영어) / `calculate` (수학) |
+| **Size** | `24px` |
+| **Color** | `#FFFFFF` (white) |
+
+#### Text_SCBadge
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | 커스텀 |
 | **Font size** | `11px` |
 | **Font weight** | `600` |
 | **Padding** | `4px 10px` |
 | **Roundness** | `20` |
+| **Fit width to content** | ✅ |
 
 **Conditional 3개 (국어 기준):**
 
@@ -766,40 +746,134 @@ Group_CardKorean (Card Bordered, roundness 16)
 | 2 | `...:first item's completed_count > 0` AND `is_achieved is "no"` | 진행중 | `#DBEAFE` | `#3B82F6` |
 | 3 | `...:first item's completed_count is 0` OR count = 0 | 미시작 | `#F3F4F6` | `#9CA3AF` |
 
-### 8.7 과목 프로그레스 바 (HTML Element)
+#### Text_SCName (과목명)
 
-각 카드 안에 HTML Element 1개 (Min height: 6px):
+| 속성 | 값 |
+|------|-----|
+| **Style** | **Text - Heading 5** |
+| **Width** | `100%` |
+| **Color** | `#1A2E4D` (Navy) ← 커스텀 오버라이드 (기본 Text Primary) |
+| **Margin bottom** | `4px` |
+
+> 반응형: 18px→16px (≤1024) 스타일이 자동 처리
+
+**과목별 텍스트:**
+
+| 과목 | Text_SCName |
+|------|------------|
+| 국어 | 국어 |
+| 영어 | 영어 |
+| 수학 | 수학 |
+
+#### Text_SCDesc (설명)
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | 커스텀 (매칭 스타일 없음) |
+| **Width** | `100%` |
+| **Font size** | `13px` |
+| **Font weight** | `400` |
+| **Color** | `#6B7280` (Text Secondary) |
+| **Margin bottom** | `16px` |
+
+**과목별 텍스트:**
+
+| 과목 | Text_SCDesc |
+|------|------------|
+| 국어 | 5단계 구조화 학습 |
+| 영어 | 7초 발음 테스트 |
+| 수학 | Jump/Anchor 문제풀이 |
+
+#### Group_SCProgress
+
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Column |
+| **Width** | `100%` |
+| **Row gap** | `6px` |
+| **Margin bottom** | `16px` |
+
+#### Group_SCProgressHeader
+
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Row |
+| **Width** | `100%` |
+| **H Alignment** | Space between |
+| **V Alignment** | Center |
+
+**Text_SCProgressLabel:**
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | **Text - Caption** ✅ |
+| 텍스트 | `오늘 진도` |
+| 추가 설정 없음 | 12px, 400, Text Secondary — 정확히 일치 |
+
+**Text_SCProgressCount:**
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | 커스텀 (매칭 스타일 없음) |
+| **Font size** | `13px` |
+| **Font weight** | `700` |
+| **Color** | 과목별 — `#4285F4` (국어) / `#34A853` (영어) / `#E6A800` (수학) |
+
+**동적 텍스트:**
+
+```
+state_today_targets :filtered (subject = KOREAN) :first item's completed_count
++ " / " +
+state_today_targets :filtered (subject = KOREAN) :first item's target_count
+```
+
+#### HTML_SCProgress (과목 프로그레스 바)
+
+| 속성 | 값 |
+|------|-----|
+| **Type** | HTML Element |
+| **Width** | `100%` |
+| **Min height** | `6px` |
 
 ```html
 <!-- 국어 (그대로 복사) -->
 <div style="width:100%; height:6px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
   <div style="width:[동적]%; height:100%; background:#4285F4; border-radius:999px; transition:width 0.6s ease;"></div>
 </div>
-
-<!-- 영어 — background만 변경 -->
-<div style="width:100%; height:6px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
-  <div style="width:[동적]%; height:100%; background:#34A853; border-radius:999px; transition:width 0.6s ease;"></div>
-</div>
-
-<!-- 수학 — background만 변경 -->
-<div style="width:100%; height:6px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
-  <div style="width:[동적]%; height:100%; background:#FBBC05; border-radius:999px; transition:width 0.6s ease;"></div>
-</div>
 ```
 
-> ★ 과목별 차이는 **내부 div의 `background` 색상**만 다릅니다.
+**동적 너비 (국어):**
 
-### 8.8 학습하기 버튼
+```
+state_today_targets :filtered (subject=KOREAN) :first item's completed_count
+÷
+:first item's target_count
+× 100
+:formatted as #
+```
+
+**영어/수학 — background 색상만 변경:**
+
+| 과목 | background |
+|------|-----------|
+| 영어 | `#34A853` |
+| 수학 | `#FBBC05` |
+
+#### Button_StartKorean (학습하기)
 
 | 속성 | 값 |
 |------|-----|
 | **Style** | 커스텀 (Tonal — 기존 버튼 스타일과 다름) |
+| **Container layout** | Row |
+| **H Alignment** | Center |
+| **V Alignment** | Center |
+| **Column gap** | `6px` |
 | **Width** | `100%` |
-| **Height** | `42px` |
+| **Height** | `42px` (Fixed) |
 | **Roundness** | `10` |
 | **Font size** | `14px` |
 | **Font weight** | `600` |
-| **Icon** | `play_arrow` (왼쪽) |
+| **Icon** | `play_arrow` (왼쪽, 18px) |
 
 **과목별 색상:**
 
@@ -817,7 +891,7 @@ Group_CardKorean (Card Bordered, roundness 16)
 | Button_StartEnglish | Go to page: `subject-english` |
 | Button_StartMath | Go to page: `subject-math` |
 
-### 8.9 카드 빈 상태
+### 8.3 카드 빈 상태
 
 DailyLearningTarget이 없어도 **카드는 항상 표시**합니다.
 
@@ -827,14 +901,6 @@ DailyLearningTarget이 없어도 **카드는 항상 표시**합니다.
 | Target 있고 완료 0 | "미시작" | `0 / [목표]` | 0% |
 | 진행중 | "진행중" | `[완료] / [목표]` | 계산% |
 | 달성 | "완료!" | `[완료] / [목표]` | 100% |
-
-### 8.10 반응형
-
-| 조건 | 변경 |
-|------|------|
-| `Current page width ≤ 900` | 각 카드 Min width = `100%` → 세로 1열 |
-
-> ★ 텍스트 반응형은 Element Style이 처리하므로 별도 Conditional 불필요
 
 ---
 
@@ -851,7 +917,7 @@ StudentProfile 테이블:
 필드: total_xp, current_level
 ```
 
-### 9.2 Group_XP
+### 9.2 Group_XP (최상위)
 
 | 속성 | 값 |
 |------|-----|
@@ -860,49 +926,120 @@ StudentProfile 테이블:
 | **Container layout** | Row |
 | **Width** | `100%` |
 | **Min height** | `96px` |
+| **H Alignment** | Space between |
+| **V Alignment** | Center |
 | **Background** | `#1A2E4D` (Bubble) + CSS gradient 오버라이드 |
 | **Roundness** | `16` |
 | **Padding** | `24px` |
 | **Column gap** | `16px` |
 
-> gradient는 Section 2의 `#xpCard` CSS가 처리합니다.
+> gradient는 Page HTML Header의 `#xpCard` CSS가 처리합니다.
 
-### 9.3 내부 구조 (모두 커스텀)
+### 9.3 Group_XPLeft
 
-> ★ XP 카드는 다크 배경이므로 **모든 텍스트가 커스텀**입니다.
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Row |
+| **Column gap** | `16px` |
+| **V Alignment** | Center |
+| **Fit width to content** | ✅ |
 
-```
-Group_XP (Row, justify: space-between, align: center)
-│
-├── Group_XPLeft (Row, gap: 16px, align: center)
-│   ├── Group_XPLevel ─── 56×56, circle
-│   │   │  BG: #FFFFFF1A, Border: 2px #FFFFFF33
-│   │   ├── Text "Lv."     커스텀 (10px, 500, #FFFFFF99)
-│   │   └── Text_LevelNum  커스텀 (20px, 800, #FFFFFF) ← 동적
-│   └── Group_XPInfo (Column)
-│       ├── Text "누적 경험치"  커스텀 (11px, 400, #FFFFFF80)
-│       └── Text_XPValue       커스텀 (22px, 700, #FFFFFF) ← 동적
-│
-└── Group_XPRight (Row, gap: 24px)
-    ├── Stat: 🔥 / 커스텀 (16px, 700, #FFF) / 커스텀 (11px, 400, #FFFFFF80)
-    ├── Stat: ⭐ / 커스텀 (16px, 700, #FFF) / 커스텀 (11px, 400, #FFFFFF80)
-    └── Stat: 📊 / 커스텀 (16px, 700, #FFF) / 커스텀 (11px, 400, #FFFFFF80)
-```
+### 9.4 Group_XPLevel
 
-### 9.4 데이터 바인딩
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Column |
+| **Width** | `56px` (Fixed) |
+| **Height** | `56px` (Fixed) |
+| **Roundness** | `28` (circle) |
+| **H Alignment** | Center |
+| **V Alignment** | Center |
+| **Background** | `#FFFFFF1A` |
+| **Border** | `2px solid #FFFFFF33` |
 
-| 요소 | 표현식 |
-|------|--------|
-| Text_LevelNum | `Search for StudentProfiles (user_id=Current User) :first item's current_level` |
-| Text_XPValue | `...:first item's total_xp:formatted as #,###` + ` XP` |
+#### Text "Lv." (레벨 라벨)
 
-### 9.5 Streak / 이번 주 / 주간 달성률 — MVP 하드코딩
+| 속성 | 값 |
+|------|-----|
+| **Style** | 커스텀 |
+| **Font size** | `10px` |
+| **Font weight** | `500` |
+| **Color** | `#FFFFFF99` |
 
-| 항목 | MVP 값 | 향후 교체 방법 |
-|------|--------|---------------|
-| 연속 학습 | `0일` | StudentProfile에 `streak_days` 필드 추가 |
-| 이번 주 완료 | `0개` | DailyLearningTarget (이번 주, is_achieved=yes):count |
-| 주간 달성률 | `0%` | 완료/목표 비율 계산 |
+#### Text_LevelNum (동적)
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | 커스텀 |
+| **Font size** | `20px` |
+| **Font weight** | `800` |
+| **Color** | `#FFFFFF` |
+| **Line height** | `1` |
+
+**동적 텍스트:** `Search for StudentProfiles (user_id=Current User) :first item's current_level`
+
+### 9.5 Group_XPInfo
+
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Column |
+| **Row gap** | `2px` |
+
+#### Text "누적 경험치" (라벨)
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | 커스텀 |
+| **Font size** | `11px` |
+| **Font weight** | `400` |
+| **Color** | `#FFFFFF80` |
+
+#### Text_XPValue (동적)
+
+| 속성 | 값 |
+|------|-----|
+| **Style** | 커스텀 |
+| **Font size** | `22px` |
+| **Font weight** | `700` |
+| **Color** | `#FFFFFF` |
+
+**동적 텍스트:** `...:first item's total_xp:formatted as #,###` + ` XP`
+
+> "XP" 부분을 별도 span 처리가 불가하므로 전체 텍스트로 표시합니다.
+
+### 9.6 Group_XPRight
+
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Row |
+| **Column gap** | `24px` |
+| **V Alignment** | Center |
+| **Fit width to content** | ✅ |
+
+### 9.7 Group_Stat (× 3개 — 공통 구조)
+
+| 속성 | 값 |
+|------|-----|
+| **Container layout** | Column |
+| **H Alignment** | Center |
+| **Row gap** | `4px` |
+| **Fit width to content** | ✅ |
+
+#### 각 Stat 내부 요소 3개:
+
+| 요소 | 스타일 | 비고 |
+|------|--------|------|
+| Text_StatIcon | 커스텀 24px | 이모지: 🔥 / ⭐ / 📊 |
+| Text_StatValue | 커스텀 16px, 700, `#FFFFFF` | MVP 하드코딩 (아래 표) |
+| Text_StatLabel | 커스텀 11px, 400, `#FFFFFF80` | 고정 텍스트 (아래 표) |
+
+#### Stat 3개 데이터:
+
+| # | Icon | Value (MVP) | Label | 향후 교체 |
+|---|------|------------|-------|----------|
+| 1 | 🔥 | `0일` | `연속 학습` | StudentProfile.streak_days |
+| 2 | ⭐ | `0개` | `이번 주 완료` | DailyLearningTarget (이번 주, achieved):count |
+| 3 | 📊 | `0%` | `주간 달성률` | 완료/목표 비율 계산 |
 
 > ★ Day 2 이후 학습 기능 완성되면 실제 계산으로 교체합니다.
 
