@@ -61,29 +61,6 @@
 
 ```html
 <style>
-  /* ===== 프로그레스 바 공통 ===== */
-  .progress-track {
-    width: 100%;
-    background: #F3F4F6;
-    border-radius: 999px;
-    overflow: hidden;
-  }
-  .progress-bar {
-    height: 100%;
-    border-radius: 999px;
-    transition: width 0.6s ease;
-  }
-
-  /* Daily Target 프로그레스 */
-  .dt-track { height: 12px; }
-  .dt-bar { background: linear-gradient(90deg, #FF6D4D, #FF8F73); }
-
-  /* 과목별 프로그레스 */
-  .sc-track { height: 6px; }
-  .sc-bar-korean  { background: #4285F4; }
-  .sc-bar-english { background: #34A853; }
-  .sc-bar-math    { background: #FBBC05; }
-
   /* ===== XP 카드 그래디언트 ===== */
   #xpCard {
     background: linear-gradient(135deg, #1A2E4D 0%, #2A4060 100%) !important;
@@ -91,7 +68,8 @@
 </style>
 ```
 
-> v1.2에서 sticky CSS 삭제 — 사이드바가 Page Row의 직접 자식이므로 별도 sticky 불필요
+> v1.2에서 프로그레스 바 CSS 클래스 삭제 — **인라인 스타일로 HTML Element 내부에서 완결**
+> Bubble HTML Element는 Page Header CSS가 내부에 적용되지 않는 경우가 있어, 인라인 방식이 안정적입니다.
 
 ---
 
@@ -189,7 +167,7 @@ student-dashboard (Page, ★ Row, 100% × 100vh, BG: #F9FAFB)
 │       │   ├── Group_DTHeader ────── Row (space-between)
 │       │   │   ├── Text_DTLabel ──── Label ⚙️ weight→600 | "오늘의 학습 목표"
 │       │   │   └── Text_DTCount ──── Body 14 ⚙️ color→Secondary | "[완료] / [목표] 완료"
-│       │   ├── HTML_DTProgress ───── HTML Element (.dt-track + .dt-bar)
+│       │   ├── HTML_DTProgress ───── HTML Element (인라인 스타일, height: 12px)
 │       │   ├── Group_DTSubjects ──── Row (gap: 16)
 │       │   │   ├── Text_SubKorean ── Caption ✅ | "● 국어 [완료]/[목표]"
 │       │   │   ├── Text_SubEnglish ─ Caption ✅ | "● 영어 [완료]/[목표]"
@@ -209,15 +187,15 @@ student-dashboard (Page, ★ Row, 100% × 100vh, BG: #F9FAFB)
 │       │   │   │   ├── Group_SCProgressHeader ── Row
 │       │   │   │   │   ├── Text_Label ── Caption ✅ | "오늘 진도"
 │       │   │   │   │   └── Text_Count ── 커스텀 (13px, 700, #4285F4) | "2 / 2"
-│       │   │   │   └── HTML_Progress ── HTML Element (.sc-track + .sc-bar-korean)
+│       │   │   │   └── HTML_Progress ── HTML Element (인라인 스타일, height: 6px)
 │       │   │   └── Button_StartKorean ── 커스텀 Tonal (BG: #EBF2FE, Color: #4285F4)
 │       │   │       Icon: play_arrow | "학습하기" → Go to page: subject-korean
 │       │   │
 │       │   ├── Group_CardEnglish ──── (국어와 동일 구조)
-│       │   │   └── 차이: translate, #34A853, "7초 발음 테스트", .sc-bar-english
+│       │   │   └── 차이: translate, #34A853, "7초 발음 테스트"
 │       │   │
 │       │   └── Group_CardMath ──────── (국어와 동일 구조)
-│       │       └── 차이: calculate, #FBBC05, "Jump/Anchor 문제풀이", .sc-bar-math
+│       │       └── 차이: calculate, #FBBC05, "Jump/Anchor 문제풀이"
 │       │
 │       └── Group_XP ──────────── 커스텀 (Row, id="xpCard", Navy gradient, rounded: 16)
 │           ├── Group_XPLeft ────── Row (gap: 16, align: center)
@@ -582,21 +560,23 @@ Set state 값:
 
 ### 7.4 프로그레스 바 (HTML Element)
 
+> ★ Bubble HTML Element는 Page Header CSS가 내부에 적용되지 않으므로 **인라인 스타일**을 사용합니다.
+
 **HTML Element 추가:**
 - Bubble Editor → Visual elements → HTML
-- Width: 100%, Height: 자동
+- Width: 100%, **Min height: 12px**
 
-**HTML 코드:**
+**HTML 코드 (그대로 복사):**
 
 ```html
-<div class="progress-track dt-track">
-  <div class="progress-bar dt-bar" style="width: [동적]%"></div>
+<div style="width:100%; height:12px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
+  <div style="width:[동적]%; height:100%; background:linear-gradient(90deg,#FF6D4D,#FF8F73); border-radius:999px; transition:width 0.6s ease;"></div>
 </div>
 ```
 
 **동적 너비 설정 방법:**
 
-HTML Element의 코드에서 `[동적]` 부분을 Bubble 표현식으로 교체:
+`[동적]` 부분을 Bubble 표현식으로 교체:
 
 ```
 width: Insert dynamic data
@@ -695,7 +675,7 @@ Group_CardKorean (Card Bordered, roundness 16)
 │   ├── Group_SCProgressHeader ── Row
 │   │   ├── Text_Label ──── Caption ✅ (12px, 400, Secondary)
 │   │   └── Text_Count ──── 커스텀 (13px, 700, 과목색상)
-│   └── HTML_ProgressBar ── HTML Element
+│   └── HTML_ProgressBar ── HTML Element (인라인 스타일)
 │
 └── Button_StartKorean ──── 커스텀 Tonal (Light BG → Hover: Filled)
 ```
@@ -757,11 +737,11 @@ Group_CardKorean (Card Bordered, roundness 16)
 
 ### 8.5 과목별 색상표
 
-| 과목 | 아이콘 | 아이콘 BG | Text_SCProgressCount Color | 프로그레스 CSS |
+| 과목 | 아이콘 | 아이콘 BG | Text_SCProgressCount Color | 프로그레스 색상 |
 |------|--------|-----------|---------------------------|---------------|
-| 국어 | `menu_book` | `#4285F4` | `#4285F4` | `.sc-bar-korean` |
-| 영어 | `translate` | `#34A853` | `#34A853` | `.sc-bar-english` |
-| 수학 | `calculate` | `#FBBC05` | `#E6A800` | `.sc-bar-math` |
+| 국어 | `menu_book` | `#4285F4` | `#4285F4` | `#4285F4` |
+| 영어 | `translate` | `#34A853` | `#34A853` | `#34A853` |
+| 수학 | `calculate` | `#FBBC05` | `#E6A800` | `#FBBC05` |
 
 ### 8.6 상태 뱃지 (Text_SCBadge)
 
@@ -788,26 +768,26 @@ Group_CardKorean (Card Bordered, roundness 16)
 
 ### 8.7 과목 프로그레스 바 (HTML Element)
 
-각 카드 안에 HTML Element 1개:
+각 카드 안에 HTML Element 1개 (Min height: 6px):
 
 ```html
-<!-- 국어 프로그레스 -->
-<div class="progress-track sc-track">
-  <div class="progress-bar sc-bar-korean" style="width: [동적]%"></div>
+<!-- 국어 (그대로 복사) -->
+<div style="width:100%; height:6px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
+  <div style="width:[동적]%; height:100%; background:#4285F4; border-radius:999px; transition:width 0.6s ease;"></div>
+</div>
+
+<!-- 영어 — background만 변경 -->
+<div style="width:100%; height:6px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
+  <div style="width:[동적]%; height:100%; background:#34A853; border-radius:999px; transition:width 0.6s ease;"></div>
+</div>
+
+<!-- 수학 — background만 변경 -->
+<div style="width:100%; height:6px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
+  <div style="width:[동적]%; height:100%; background:#FBBC05; border-radius:999px; transition:width 0.6s ease;"></div>
 </div>
 ```
 
-동적 너비 (국어):
-
-```
-state_today_targets :filtered (subject=KOREAN) :first item's completed_count
-÷
-state_today_targets :filtered (subject=KOREAN) :first item's target_count
-× 100
-:formatted as #
-```
-
-> 영어: `sc-bar-english`, 수학: `sc-bar-math`로 클래스만 변경
+> ★ 과목별 차이는 **내부 div의 `background` 색상**만 다릅니다.
 
 ### 8.8 학습하기 버튼
 
@@ -1109,36 +1089,31 @@ RE_Sidebar (× 2개 인스턴스: SidebarWrapper + MobileSidebar):
 
 ```html
 <style>
-.progress-track{width:100%;background:#F3F4F6;border-radius:999px;overflow:hidden}
-.progress-bar{height:100%;border-radius:999px;transition:width .6s ease}
-.dt-track{height:12px}.dt-bar{background:linear-gradient(90deg,#FF6D4D,#FF8F73)}
-.sc-track{height:6px}
-.sc-bar-korean{background:#4285F4}.sc-bar-english{background:#34A853}.sc-bar-math{background:#FBBC05}
 #xpCard{background:linear-gradient(135deg,#1A2E4D 0%,#2A4060 100%)!important}
 </style>
 ```
 
-### 프로그레스 바 HTML (카드에 복사)
+### 프로그레스 바 HTML (인라인 스타일 — 카드에 복사)
 
 ```html
-<!-- Daily Target -->
-<div class="progress-track dt-track">
-  <div class="progress-bar dt-bar" style="width: [동적]%"></div>
+<!-- Daily Target (height: 12px) -->
+<div style="width:100%; height:12px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
+  <div style="width:[동적]%; height:100%; background:linear-gradient(90deg,#FF6D4D,#FF8F73); border-radius:999px; transition:width 0.6s ease;"></div>
 </div>
 
-<!-- 국어 -->
-<div class="progress-track sc-track">
-  <div class="progress-bar sc-bar-korean" style="width: [동적]%"></div>
+<!-- 국어 (height: 6px, background: #4285F4) -->
+<div style="width:100%; height:6px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
+  <div style="width:[동적]%; height:100%; background:#4285F4; border-radius:999px; transition:width 0.6s ease;"></div>
 </div>
 
-<!-- 영어 -->
-<div class="progress-track sc-track">
-  <div class="progress-bar sc-bar-english" style="width: [동적]%"></div>
+<!-- 영어 (background: #34A853) -->
+<div style="width:100%; height:6px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
+  <div style="width:[동적]%; height:100%; background:#34A853; border-radius:999px; transition:width 0.6s ease;"></div>
 </div>
 
-<!-- 수학 -->
-<div class="progress-track sc-track">
-  <div class="progress-bar sc-bar-math" style="width: [동적]%"></div>
+<!-- 수학 (background: #FBBC05) -->
+<div style="width:100%; height:6px; background:#F3F4F6; border-radius:999px; overflow:hidden;">
+  <div style="width:[동적]%; height:100%; background:#FBBC05; border-radius:999px; transition:width 0.6s ease;"></div>
 </div>
 ```
 
